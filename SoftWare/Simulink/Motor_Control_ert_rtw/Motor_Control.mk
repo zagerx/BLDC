@@ -2,7 +2,7 @@
 ## Makefile generated for component 'Motor_Control'. 
 ## 
 ## Makefile     : Motor_Control.mk
-## Generated on : Tue Aug 22 23:22:07 2023
+## Generated on : Mon Nov 06 15:35:24 2023
 ## Final product: $(RELATIVE_PATH_TO_ANCHOR)\Motor_Control.exe
 ## Product type : executable
 ## 
@@ -23,7 +23,7 @@ MAKEFILE                  = Motor_Control.mk
 MATLAB_ROOT               = D:\Program Files\Polyspace\R2021a
 MATLAB_BIN                = D:\Program Files\Polyspace\R2021a\bin
 MATLAB_ARCH_BIN           = $(MATLAB_BIN)\win64
-START_DIR                 = E:\Users\zager\Desktop\57BLDC\Simulink
+START_DIR                 = E:\Users\zager\Desktop\BLDC\SoftWare\Simulink
 SOLVER                    = 
 SOLVER_OBJ                = 
 CLASSIC_INTERFACE         = 0

@@ -6,13 +6,11 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
+  * 1、simulink模型为单电流环
+  * 2、q轴电流设置0.6
+  * 3、按键按下，电机会出现卡死情况，手动转动，可以引导电机转动起来
+  * 4、电机给小负载，电机的iq电流相对平滑，能够稳定在参考值附近
+  * 5、q轴的电流设置不能过大，如0.8会导致电机失控，0.6几乎没有力矩，需要调整！！！
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -25,7 +23,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Motor_Control.h"
+#include "motortctrl.h"
+#include "ipc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,132 +39,17 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 extern ADC_HandleTypeDef hadc1;
-unsigned char KEY_FLAG = 0;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-static float theta = 0.0f;
-float A1,A2,A3;
-#define AD_OFFSET 2116
-#define t_PWM 0.0001f
-#define R_S 0.01F
-#define BETA_ 5.7F
-float Ia,Ib,Ic;
-static unsigned int cnt = 0;
 
-void PWM_EN(void)
-{
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
-  HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
-  HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
-  HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3);   
-  HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
-  HAL_ADCEx_InjectedStart_IT(&hadc1);
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
-}
-static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned short c)
-{
-	short max;
-	if(a>b)
-	{
-		max = a;
-	}else{
-		max = b;
-	}
-	if(c>max)
-	{
-		max = c;
-	}
-	return max;
-}
-volatile unsigned int AngleIn17bits = 0;
-float a_real_theta;
-unsigned char Spi_TxData[4]={0x83,0xff,0xff,0xff};///////03 04 05 瀵勫瓨鍣ㄥ瓨瑙掑害
-unsigned char Spi_pRxData[4]={0};
-float read_angle(void)
-{
-  /*2*pi/2^14 = 0.00038349f*/
-  float theta;
-  //Read in Burst mode
-  HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);///CSN LOW   
-  HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xffff);
-  HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);///CSN HIGH
-
-  AngleIn17bits =(((Spi_pRxData[1]&0x00ff)<<8)|(Spi_pRxData[2]&0x00fc))>>2;;////14bits 
-  theta = AngleIn17bits * 0.00038349f;
-  if(theta > 6.28)
-    theta = 6.28;
-  if (theta < 0)
-  {
-    theta = 0;
-  }
-  
-  return (theta);	    
-}
-float angle_offset = 0;
-void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-  float a1,a2,a3;
-  a1 = (float)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1) - AD_OFFSET;
-  a2 = (float)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_2) - AD_OFFSET;
-  a3 = (float)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_3) - AD_OFFSET;
-
-  A1 = a1;A2 = a2;A3 = a3;
-
-	Ia=(float)A1*(float)(3.3f/4096.0f/R_S/BETA_);//0.01413446
-	Ib=(float)A2*(float)(3.3f/4096.0f/R_S/BETA_);
-	Ic=(float)A3*(float)(3.3f/4096.0f/R_S/BETA_);	
-  Ia /= 1.2f;
-  Ic /= 1.3f;
-
-  // rtU.Bus_voltage = 24.0f;
-  if(cnt>=20)
-  {
-    rtU.speed_ref = 2500;
-  }else{
-    rtU.speed_ref = 2000;
-  }
-  
-  rtU.abc[0] = Ia;
-  rtU.abc[1] = Ib;
-  rtU.abc[2] = Ic;
-  HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
-  /*about 12us*/
-  a_real_theta = read_angle();
-  a_real_theta -= angle_offset;
-  HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_RESET);
-  a_real_theta *= 2;
-  if(a_real_theta >= 6.28)
-  {
-    a_real_theta -= 6.28;
-  }
-  rtU.test_angle = a_real_theta;
-  if(KEY_FLAG)
-  {
-
-    Motor_Control_step();
-
-    float a,b,c;
-    a = ((1.0f-(float)rtY.Ta)*_ARR);
-    b = ((1.0f-(float)rtY.Tb)*_ARR);
-    c = ((1.0f-(float)rtY.Tc)*_ARR);  
-    unsigned short max;
-    max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);	
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)c);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)b);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)a);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 100));	
-  }
-}
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  KEY_FLAG = 1;
-  PWM_EN();
+    /*------------------*/
+    IPC_SET_EVENT(gEventGroup,KEY01_SHORT_PRESS);
 }
 
 /* USER CODE END PV */
@@ -214,20 +98,14 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
-  Motor_Control_initialize();
-  angle_offset = read_angle();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
-    
-    cnt++;
-    HAL_Delay(500);
+    motortctrl_process();
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
