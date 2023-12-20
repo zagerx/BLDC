@@ -5,7 +5,7 @@
  *
  * Model version                  : 1.28
  * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Tue Nov  7 17:39:38 2023
+ * C/C++ source code generated on : Thu Nov 16 01:26:09 2023
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: NXP->Cortex-M4
@@ -16,12 +16,12 @@
  */
 
 #include "Motor_Control.h"
+#include "Motor_Control_private.h"
 
 /* Named constants for Chart: '<S1>/Chart' */
 #define IN_AligStage                   ((uint8_T)1U)
 #define IN_CLP                         ((uint8_T)2U)
 #define IN_OPL                         ((uint8_T)3U)
-#define NumBitsPerChar                 8U
 
 /* Exported block signals */
 real32_T a_reaid;                      /* '<S7>/Add1' */
@@ -51,233 +51,7 @@ ExtY rtY;
 /* Real-time model */
 static RT_MODEL rtM_;
 RT_MODEL *const rtM = &rtM_;
-extern real32_T rt_modf_snf(real32_T u0, real32_T u1);
-static void open_loop_Enable(DW_open_loop *localDW);
-static void open_loop(RT_MODEL * const rtM, real32_T rtu_opl_spd, real32_T
-                      rtu_opl_time, real32_T rtu_opl_tor, real32_T
-                      *rty_theta_fd1, real32_T *rty_iq_ref1, DW_open_loop
-                      *localDW);
-static void SCR_Enable(DW_SCR *localDW);
-static void SCR(real32_T rtu_Speed_target, real32_T rtu_Obs_Speed, real32_T
-                *rty_Iq_ref, const uint32_T *rtd_close_loop_ELAPS_T, DW_SCR
-                *localDW);
-static void close_loop_Enable(DW_close_loop *localDW);
-static void close_loop(RT_MODEL * const rtM, real32_T rtu_obs_spd, real32_T
-  rtu_obs_theta, real32_T rtu_speed_ref, real32_T *rty_theta_fd1, real32_T
-  *rty_iq_ref1, DW_close_loop *localDW);
-static void Luenberger_Init(void);
-static void Luenberger_Enable(void);
-static void Luenberger(void);
-static void _inverse_park(void);
 static void rate_scheduler(void);
-static real_T rtGetNaN(void);
-static real32_T rtGetNaNF(void);
-extern real_T rtInf;
-extern real_T rtMinusInf;
-extern real_T rtNaN;
-extern real32_T rtInfF;
-extern real32_T rtMinusInfF;
-extern real32_T rtNaNF;
-static void rt_InitInfAndNaN(size_t realSize);
-static boolean_T rtIsInf(real_T value);
-static boolean_T rtIsInfF(real32_T value);
-static boolean_T rtIsNaN(real_T value);
-static boolean_T rtIsNaNF(real32_T value);
-typedef struct {
-  struct {
-    uint32_T wordH;
-    uint32_T wordL;
-  } words;
-} BigEndianIEEEDouble;
-
-typedef struct {
-  struct {
-    uint32_T wordL;
-    uint32_T wordH;
-  } words;
-} LittleEndianIEEEDouble;
-
-typedef struct {
-  union {
-    real32_T wordLreal;
-    uint32_T wordLuint;
-  } wordL;
-} IEEESingle;
-
-real_T rtInf;
-real_T rtMinusInf;
-real_T rtNaN;
-real32_T rtInfF;
-real32_T rtMinusInfF;
-real32_T rtNaNF;
-static real_T rtGetInf(void);
-static real32_T rtGetInfF(void);
-static real_T rtGetMinusInf(void);
-static real32_T rtGetMinusInfF(void);
-
-/*
- * Initialize rtNaN needed by the generated code.
- * NaN is initialized as non-signaling. Assumes IEEE.
- */
-static real_T rtGetNaN(void)
-{
-  size_t bitsPerReal = sizeof(real_T) * (NumBitsPerChar);
-  real_T nan = 0.0;
-  if (bitsPerReal == 32U) {
-    nan = rtGetNaNF();
-  } else {
-    union {
-      LittleEndianIEEEDouble bitVal;
-      real_T fltVal;
-    } tmpVal;
-
-    tmpVal.bitVal.words.wordH = 0xFFF80000U;
-    tmpVal.bitVal.words.wordL = 0x00000000U;
-    nan = tmpVal.fltVal;
-  }
-
-  return nan;
-}
-
-/*
- * Initialize rtNaNF needed by the generated code.
- * NaN is initialized as non-signaling. Assumes IEEE.
- */
-static real32_T rtGetNaNF(void)
-{
-  IEEESingle nanF = { { 0.0F } };
-
-  nanF.wordL.wordLuint = 0xFFC00000U;
-  return nanF.wordL.wordLreal;
-}
-
-/*
- * Initialize the rtInf, rtMinusInf, and rtNaN needed by the
- * generated code. NaN is initialized as non-signaling. Assumes IEEE.
- */
-static void rt_InitInfAndNaN(size_t realSize)
-{
-  (void) (realSize);
-  rtNaN = rtGetNaN();
-  rtNaNF = rtGetNaNF();
-  rtInf = rtGetInf();
-  rtInfF = rtGetInfF();
-  rtMinusInf = rtGetMinusInf();
-  rtMinusInfF = rtGetMinusInfF();
-}
-
-/* Test if value is infinite */
-static boolean_T rtIsInf(real_T value)
-{
-  return (boolean_T)((value==rtInf || value==rtMinusInf) ? 1U : 0U);
-}
-
-/* Test if single-precision value is infinite */
-static boolean_T rtIsInfF(real32_T value)
-{
-  return (boolean_T)(((value)==rtInfF || (value)==rtMinusInfF) ? 1U : 0U);
-}
-
-/* Test if value is not a number */
-static boolean_T rtIsNaN(real_T value)
-{
-  boolean_T result = (boolean_T) 0;
-  size_t bitsPerReal = sizeof(real_T) * (NumBitsPerChar);
-  if (bitsPerReal == 32U) {
-    result = rtIsNaNF((real32_T)value);
-  } else {
-    union {
-      LittleEndianIEEEDouble bitVal;
-      real_T fltVal;
-    } tmpVal;
-
-    tmpVal.fltVal = value;
-    result = (boolean_T)((tmpVal.bitVal.words.wordH & 0x7FF00000) == 0x7FF00000 &&
-                         ( (tmpVal.bitVal.words.wordH & 0x000FFFFF) != 0 ||
-                          (tmpVal.bitVal.words.wordL != 0) ));
-  }
-
-  return result;
-}
-
-/* Test if single-precision value is not a number */
-static boolean_T rtIsNaNF(real32_T value)
-{
-  IEEESingle tmp;
-  tmp.wordL.wordLreal = value;
-  return (boolean_T)( (tmp.wordL.wordLuint & 0x7F800000) == 0x7F800000 &&
-                     (tmp.wordL.wordLuint & 0x007FFFFF) != 0 );
-}
-
-/*
- * Initialize rtInf needed by the generated code.
- * Inf is initialized as non-signaling. Assumes IEEE.
- */
-static real_T rtGetInf(void)
-{
-  size_t bitsPerReal = sizeof(real_T) * (NumBitsPerChar);
-  real_T inf = 0.0;
-  if (bitsPerReal == 32U) {
-    inf = rtGetInfF();
-  } else {
-    union {
-      LittleEndianIEEEDouble bitVal;
-      real_T fltVal;
-    } tmpVal;
-
-    tmpVal.bitVal.words.wordH = 0x7FF00000U;
-    tmpVal.bitVal.words.wordL = 0x00000000U;
-    inf = tmpVal.fltVal;
-  }
-
-  return inf;
-}
-
-/*
- * Initialize rtInfF needed by the generated code.
- * Inf is initialized as non-signaling. Assumes IEEE.
- */
-static real32_T rtGetInfF(void)
-{
-  IEEESingle infF;
-  infF.wordL.wordLuint = 0x7F800000U;
-  return infF.wordL.wordLreal;
-}
-
-/*
- * Initialize rtMinusInf needed by the generated code.
- * Inf is initialized as non-signaling. Assumes IEEE.
- */
-static real_T rtGetMinusInf(void)
-{
-  size_t bitsPerReal = sizeof(real_T) * (NumBitsPerChar);
-  real_T minf = 0.0;
-  if (bitsPerReal == 32U) {
-    minf = rtGetMinusInfF();
-  } else {
-    union {
-      LittleEndianIEEEDouble bitVal;
-      real_T fltVal;
-    } tmpVal;
-
-    tmpVal.bitVal.words.wordH = 0xFFF00000U;
-    tmpVal.bitVal.words.wordL = 0x00000000U;
-    minf = tmpVal.fltVal;
-  }
-
-  return minf;
-}
-
-/*
- * Initialize rtMinusInfF needed by the generated code.
- * Inf is initialized as non-signaling. Assumes IEEE.
- */
-static real32_T rtGetMinusInfF(void)
-{
-  IEEESingle minfF;
-  minfF.wordL.wordLuint = 0xFF800000U;
-  return minfF.wordL.wordLreal;
-}
 
 /*
  *   This function updates active task flag for each subrate.
@@ -333,7 +107,7 @@ real32_T rt_modf_snf(real32_T u0, real32_T u1)
 }
 
 /* Enable for function-call system: '<S3>/open_loop' */
-static void open_loop_Enable(DW_open_loop *localDW)
+void open_loop_Enable(DW_open_loop *localDW)
 {
   localDW->open_loop_RESET_ELAPS_T = true;
 
@@ -345,10 +119,9 @@ static void open_loop_Enable(DW_open_loop *localDW)
 }
 
 /* Output and update for function-call system: '<S3>/open_loop' */
-static void open_loop(RT_MODEL * const rtM, real32_T rtu_opl_spd, real32_T
-                      rtu_opl_time, real32_T rtu_opl_tor, real32_T
-                      *rty_theta_fd1, real32_T *rty_iq_ref1, DW_open_loop
-                      *localDW)
+void open_loop(RT_MODEL * const rtM, real32_T rtu_opl_spd, real32_T rtu_opl_time,
+               real32_T rtu_opl_tor, real32_T *rty_theta_fd1, real32_T
+               *rty_iq_ref1, DW_open_loop *localDW)
 {
   real32_T DiscreteTimeIntegrator1;
   real32_T DiscreteTimeIntegrator2;
@@ -416,16 +189,15 @@ static void open_loop(RT_MODEL * const rtM, real32_T rtu_opl_spd, real32_T
 }
 
 /* Enable for atomic system: '<S111>/SCR' */
-static void SCR_Enable(DW_SCR *localDW)
+void SCR_Enable(DW_SCR *localDW)
 {
   /* Enable for DiscreteIntegrator: '<S114>/Discrete-Time Integrator' */
   localDW->DiscreteTimeIntegrator_SYSTEM_E = 1U;
 }
 
 /* Output and update for atomic system: '<S111>/SCR' */
-static void SCR(real32_T rtu_Speed_target, real32_T rtu_Obs_Speed, real32_T
-                *rty_Iq_ref, const uint32_T *rtd_close_loop_ELAPS_T, DW_SCR
-                *localDW)
+void SCR(real32_T rtu_Speed_target, real32_T rtu_Obs_Speed, real32_T *rty_Iq_ref,
+         const uint32_T *rtd_close_loop_ELAPS_T, DW_SCR *localDW)
 {
   real32_T DiscreteTimeIntegrator;
   real32_T rtb_Add_l;
@@ -499,7 +271,7 @@ static void SCR(real32_T rtu_Speed_target, real32_T rtu_Obs_Speed, real32_T
 }
 
 /* Enable for function-call system: '<S3>/close_loop' */
-static void close_loop_Enable(DW_close_loop *localDW)
+void close_loop_Enable(DW_close_loop *localDW)
 {
   localDW->close_loop_RESET_ELAPS_T = true;
 
@@ -510,9 +282,9 @@ static void close_loop_Enable(DW_close_loop *localDW)
 }
 
 /* Output and update for function-call system: '<S3>/close_loop' */
-static void close_loop(RT_MODEL * const rtM, real32_T rtu_obs_spd, real32_T
-  rtu_obs_theta, real32_T rtu_speed_ref, real32_T *rty_theta_fd1, real32_T
-  *rty_iq_ref1, DW_close_loop *localDW)
+void close_loop(RT_MODEL * const rtM, real32_T rtu_obs_spd, real32_T
+                rtu_obs_theta, real32_T rtu_speed_ref, real32_T *rty_theta_fd1,
+                real32_T *rty_iq_ref1, DW_close_loop *localDW)
 {
   uint32_T close_loop_ELAPS_T;
   if (localDW->close_loop_RESET_ELAPS_T) {
@@ -535,14 +307,14 @@ static void close_loop(RT_MODEL * const rtM, real32_T rtu_obs_spd, real32_T
 }
 
 /* System initialize for atomic system: '<S1>/Luenberger' */
-static void Luenberger_Init(void)
+void Luenberger_Init(void)
 {
   /* InitializeConditions for DiscreteIntegrator: '<S154>/Integrator' */
   rtDW.Integrator_DSTATE = 1.0F;
 }
 
 /* Enable for atomic system: '<S1>/Luenberger' */
-static void Luenberger_Enable(void)
+void Luenberger_Enable(void)
 {
   /* Enable for DiscreteIntegrator: '<S116>/Integrator3' */
   rtDW.Integrator3_SYSTEM_ENABLE = 1U;
@@ -558,7 +330,7 @@ static void Luenberger_Enable(void)
 }
 
 /* Output and update for atomic system: '<S1>/Luenberger' */
-static void Luenberger(void)
+void Luenberger(void)
 {
   int32_T tmp;
   real32_T Integrator2;
@@ -864,7 +636,7 @@ static void Luenberger(void)
 }
 
 /* Output and update for atomic system: '<S1>/_inverse_park' */
-static void _inverse_park(void)
+void _inverse_park(void)
 {
   /* Sum: '<S6>/Add1' incorporates:
    *  Product: '<S6>/Product1'
@@ -886,10 +658,10 @@ void Motor_Control_step(void)
 {
   real32_T rtb_Gain2_p;
   real32_T rtb_Gain5_m;
-  real32_T rtb_IndexVector1;
   real32_T rtb_IntegralGain;
   real32_T rtb_Integrator_m;
   real32_T rtb_Sum_b;
+  real32_T rtb_Sum_g;
   real32_T rtb_Switch_l;
   uint32_T elapsedTicks;
 
@@ -976,13 +748,13 @@ void Motor_Control_step(void)
 
   /* Signum: '<S35>/SignPreIntegrator' */
   if (rtb_Sum_b < 0.0F) {
-    rtb_IndexVector1 = -1.0F;
+    rtb_Sum_g = -1.0F;
   } else if (rtb_Sum_b > 0.0F) {
-    rtb_IndexVector1 = 1.0F;
+    rtb_Sum_g = 1.0F;
   } else if (rtb_Sum_b == 0.0F) {
-    rtb_IndexVector1 = 0.0F;
+    rtb_Sum_g = 0.0F;
   } else {
-    rtb_IndexVector1 = (rtNaNF);
+    rtb_Sum_g = (rtNaNF);
   }
 
   /* End of Signum: '<S35>/SignPreIntegrator' */
@@ -997,7 +769,7 @@ void Motor_Control_step(void)
    *  RelationalOperator: '<S35>/NotEqual'
    */
   if ((0.0F * rtb_IntegralGain != rtb_Integrator_m) && ((int8_T)rtb_Switch_l ==
-       (int8_T)rtb_IndexVector1)) {
+       (int8_T)rtb_Sum_g)) {
     rtb_Switch_l = 0.0F;
   } else {
     rtb_Switch_l = rtb_Sum_b;
@@ -1070,13 +842,13 @@ void Motor_Control_step(void)
 
   /* Signum: '<S85>/SignPreIntegrator' */
   if (rtb_IntegralGain < 0.0F) {
-    rtb_IndexVector1 = -1.0F;
+    rtb_Sum_g = -1.0F;
   } else if (rtb_IntegralGain > 0.0F) {
-    rtb_IndexVector1 = 1.0F;
+    rtb_Sum_g = 1.0F;
   } else if (rtb_IntegralGain == 0.0F) {
-    rtb_IndexVector1 = 0.0F;
+    rtb_Sum_g = 0.0F;
   } else {
-    rtb_IndexVector1 = (rtNaNF);
+    rtb_Sum_g = (rtNaNF);
   }
 
   /* End of Signum: '<S85>/SignPreIntegrator' */
@@ -1091,7 +863,7 @@ void Motor_Control_step(void)
    *  RelationalOperator: '<S85>/NotEqual'
    */
   if ((0.0F * rtb_Sum_b != rtb_Integrator_m) && ((int8_T)rtb_Switch_l == (int8_T)
-       rtb_IndexVector1)) {
+       rtb_Sum_g)) {
     rtb_IntegralGain = 0.0F;
   }
 
@@ -1107,297 +879,14 @@ void Motor_Control_step(void)
 
   /* End of Outputs for SubSystem: '<S1>/_inverse_park' */
 
-  /* Outputs for Atomic SubSystem: '<S8>/XYZ Caculate' */
-  /* Outputs for Atomic SubSystem: '<S8>/N Sector  Caculate' */
-  /* Gain: '<S177>/Gain' incorporates:
-   *  Gain: '<S183>/Gain'
-   */
-  rtb_Sum_b = 1.73205078F * rtDW.Add1;
-
-  /* Sum: '<S177>/Add2' incorporates:
-   *  Gain: '<S177>/Gain'
-   *  Sum: '<S183>/Add2'
-   */
-  rtb_Integrator_m = (0.0F - rtDW.Add2) - rtb_Sum_b;
-
-  /* Sum: '<S177>/Add1' incorporates:
-   *  Gain: '<S177>/Gain'
-   *  Sum: '<S183>/Add1'
-   */
-  rtb_Switch_l = rtb_Sum_b - rtDW.Add2;
-
-  /* End of Outputs for SubSystem: '<S8>/XYZ Caculate' */
-
-  /* Saturate: '<S177>/Saturation' incorporates:
-   *  Gain: '<S177>/Gain1'
-   *  Gain: '<S177>/Gain2'
-   *  Sum: '<S177>/Add'
-   *  Sum: '<S177>/Add1'
-   *  Sum: '<S177>/Add2'
-   *  Switch: '<S177>/Switch'
-   *  Switch: '<S177>/Switch1'
-   *  Switch: '<S177>/Switch2'
-   */
-  rtb_IntegralGain = (real32_T)((((rtb_Switch_l >= 0.0F) << 1) + (rtDW.Add2 >=
-    0.0F)) + ((rtb_Integrator_m >= 0.0F) << 2));
-  if (rtb_IntegralGain > 6.0F) {
-    rtb_IntegralGain = 6.0F;
-  } else if (rtb_IntegralGain < 1.0F) {
-    rtb_IntegralGain = 1.0F;
-  }
-
-  /* End of Saturate: '<S177>/Saturation' */
-  /* End of Outputs for SubSystem: '<S8>/N Sector  Caculate' */
-
-  /* Outputs for Atomic SubSystem: '<S8>/T1 T2  Caculate' */
-  /* MultiPortSwitch: '<S181>/Index Vector' incorporates:
-   *  Gain: '<S181>/Gain'
-   *  Gain: '<S181>/Gain1'
-   *  Gain: '<S181>/Gain2'
-   *  Gain: '<S183>/Gain1'
-   *  Gain: '<S183>/Gain2'
-   *  Product: '<S183>/Product'
-   *  Product: '<S183>/Product1'
-   *  Product: '<S183>/Product2'
-   *  Sum: '<S183>/Add1'
-   *  Sum: '<S183>/Add2'
-   */
-  switch ((int32_T)rtb_IntegralGain) {
-   case 1:
-    /* Outputs for Atomic SubSystem: '<S8>/XYZ Caculate' */
-    rtb_Integrator_m = rtb_Switch_l * -0.5F * 7.2168782E-6F;
-
-    /* MultiPortSwitch: '<S181>/Index Vector1' incorporates:
-     *  Gain: '<S183>/Gain1'
-     *  Gain: '<S183>/Gain2'
-     *  Product: '<S183>/Product1'
-     *  Product: '<S183>/Product2'
-     *  Sum: '<S183>/Add2'
-     */
-    rtb_Sum_b = ((0.0F - rtDW.Add2) - rtb_Sum_b) * -0.5F * 7.2168782E-6F;
-
-    /* End of Outputs for SubSystem: '<S8>/XYZ Caculate' */
-    break;
-
-   case 2:
-    /* Outputs for Atomic SubSystem: '<S8>/XYZ Caculate' */
-    rtb_Integrator_m = ((0.0F - rtDW.Add2) - rtb_Sum_b) * -0.5F * 7.2168782E-6F;
-
-    /* MultiPortSwitch: '<S181>/Index Vector1' incorporates:
-     *  Gain: '<S181>/Gain'
-     *  Gain: '<S183>/Gain2'
-     *  Product: '<S183>/Product'
-     *  Product: '<S183>/Product1'
-     *  Sum: '<S183>/Add2'
-     */
-    rtb_Sum_b = -(rtDW.Add2 * 7.2168782E-6F);
-
-    /* End of Outputs for SubSystem: '<S8>/XYZ Caculate' */
-    break;
-
-   case 3:
-    /* Outputs for Atomic SubSystem: '<S8>/XYZ Caculate' */
-    rtb_Integrator_m = -((rtb_Sum_b - rtDW.Add2) * -0.5F * 7.2168782E-6F);
-
-    /* MultiPortSwitch: '<S181>/Index Vector1' incorporates:
-     *  Gain: '<S181>/Gain2'
-     *  Gain: '<S183>/Gain1'
-     *  Product: '<S183>/Product'
-     *  Product: '<S183>/Product2'
-     *  Sum: '<S183>/Add1'
-     */
-    rtb_Sum_b = rtDW.Add2 * 7.2168782E-6F;
-
-    /* End of Outputs for SubSystem: '<S8>/XYZ Caculate' */
-    break;
-
-   case 4:
-    /* Outputs for Atomic SubSystem: '<S8>/XYZ Caculate' */
-    rtb_Integrator_m = -(rtDW.Add2 * 7.2168782E-6F);
-
-    /* MultiPortSwitch: '<S181>/Index Vector1' incorporates:
-     *  Gain: '<S181>/Gain'
-     *  Gain: '<S183>/Gain1'
-     *  Product: '<S183>/Product'
-     *  Product: '<S183>/Product2'
-     *  Sum: '<S183>/Add1'
-     */
-    rtb_Sum_b = (rtb_Sum_b - rtDW.Add2) * -0.5F * 7.2168782E-6F;
-
-    /* End of Outputs for SubSystem: '<S8>/XYZ Caculate' */
-    break;
-
-   case 5:
-    /* Outputs for Atomic SubSystem: '<S8>/XYZ Caculate' */
-    rtb_Integrator_m = rtDW.Add2 * 7.2168782E-6F;
-
-    /* MultiPortSwitch: '<S181>/Index Vector1' incorporates:
-     *  Gain: '<S181>/Gain1'
-     *  Gain: '<S183>/Gain2'
-     *  Product: '<S183>/Product'
-     *  Product: '<S183>/Product1'
-     *  Sum: '<S183>/Add2'
-     */
-    rtb_Sum_b = -(((0.0F - rtDW.Add2) - rtb_Sum_b) * -0.5F * 7.2168782E-6F);
-
-    /* End of Outputs for SubSystem: '<S8>/XYZ Caculate' */
-    break;
-
-   default:
-    /* Outputs for Atomic SubSystem: '<S8>/XYZ Caculate' */
-    rtb_Integrator_m = -(rtb_Integrator_m * -0.5F * 7.2168782E-6F);
-
-    /* MultiPortSwitch: '<S181>/Index Vector1' incorporates:
-     *  Gain: '<S181>/Gain1'
-     *  Gain: '<S181>/Gain2'
-     *  Gain: '<S183>/Gain1'
-     *  Gain: '<S183>/Gain2'
-     *  Product: '<S183>/Product1'
-     *  Product: '<S183>/Product2'
-     *  Sum: '<S183>/Add1'
-     */
-    rtb_Sum_b = -((rtb_Sum_b - rtDW.Add2) * -0.5F * 7.2168782E-6F);
-
-    /* End of Outputs for SubSystem: '<S8>/XYZ Caculate' */
-    break;
-  }
-
-  /* End of MultiPortSwitch: '<S181>/Index Vector' */
-
-  /* Sum: '<S181>/Add' */
-  rtb_Switch_l = rtb_Integrator_m + rtb_Sum_b;
-
-  /* Switch: '<S181>/Switch' incorporates:
-   *  Constant: '<S8>/Constant4'
-   *  Product: '<S181>/Divide'
-   *  Product: '<S181>/Divide1'
-   *  Sum: '<S181>/Add1'
-   *  Switch: '<S181>/Switch2'
-   */
-  if (!(0.0001F - rtb_Switch_l > 0.0F)) {
-    rtb_Integrator_m = rtb_Integrator_m * 0.0001F / rtb_Switch_l;
-    rtb_Sum_b *= 1.0F / rtb_Switch_l * 0.0001F;
-  }
-
-  /* End of Switch: '<S181>/Switch' */
-  /* End of Outputs for SubSystem: '<S8>/T1 T2  Caculate' */
-
-  /* Outputs for Atomic SubSystem: '<S8>/Tcm calculate' */
-  /* Gain: '<S182>/Gain2' incorporates:
-   *  Constant: '<S8>/Constant4'
-   *  Sum: '<S182>/Add'
-   */
-  rtb_Switch_l = ((0.0001F - rtb_Integrator_m) - rtb_Sum_b) * 0.25F;
-
-  /* Sum: '<S182>/Add1' incorporates:
-   *  Gain: '<S182>/Gain'
-   */
-  rtb_Integrator_m = 0.5F * rtb_Integrator_m + rtb_Switch_l;
-
-  /* MultiPortSwitch: '<S182>/Index Vector' incorporates:
-   *  Gain: '<S182>/Gain1'
-   *  Sum: '<S182>/Add2'
-   */
-  switch ((int32_T)rtb_IntegralGain) {
-   case 1:
-    rtb_IntegralGain = rtb_Integrator_m;
-
-    /* MultiPortSwitch: '<S182>/Index Vector1' */
-    rtb_IndexVector1 = rtb_Switch_l;
-
-    /* MultiPortSwitch: '<S182>/Index Vector2' incorporates:
-     *  Gain: '<S182>/Gain1'
-     *  Sum: '<S182>/Add2'
-     */
-    rtb_Switch_l = 0.5F * rtb_Sum_b + rtb_Integrator_m;
-    break;
-
-   case 2:
-    rtb_IntegralGain = rtb_Switch_l;
-
-    /* MultiPortSwitch: '<S182>/Index Vector1' incorporates:
-     *  Gain: '<S182>/Gain1'
-     *  Sum: '<S182>/Add2'
-     */
-    rtb_IndexVector1 = 0.5F * rtb_Sum_b + rtb_Integrator_m;
-
-    /* MultiPortSwitch: '<S182>/Index Vector2' */
-    rtb_Switch_l = rtb_Integrator_m;
-    break;
-
-   case 3:
-    rtb_IntegralGain = rtb_Switch_l;
-
-    /* MultiPortSwitch: '<S182>/Index Vector1' */
-    rtb_IndexVector1 = rtb_Integrator_m;
-
-    /* MultiPortSwitch: '<S182>/Index Vector2' incorporates:
-     *  Gain: '<S182>/Gain1'
-     *  Sum: '<S182>/Add2'
-     */
-    rtb_Switch_l = 0.5F * rtb_Sum_b + rtb_Integrator_m;
-    break;
-
-   case 4:
-    rtb_IntegralGain = 0.5F * rtb_Sum_b + rtb_Integrator_m;
-
-    /* MultiPortSwitch: '<S182>/Index Vector1' incorporates:
-     *  Gain: '<S182>/Gain1'
-     *  Sum: '<S182>/Add2'
-     */
-    rtb_IndexVector1 = rtb_Integrator_m;
-    break;
-
-   case 5:
-    rtb_IntegralGain = 0.5F * rtb_Sum_b + rtb_Integrator_m;
-
-    /* MultiPortSwitch: '<S182>/Index Vector1' incorporates:
-     *  Gain: '<S182>/Gain1'
-     *  Sum: '<S182>/Add2'
-     */
-    rtb_IndexVector1 = rtb_Switch_l;
-
-    /* MultiPortSwitch: '<S182>/Index Vector2' */
-    rtb_Switch_l = rtb_Integrator_m;
-    break;
-
-   default:
-    rtb_IntegralGain = rtb_Integrator_m;
-
-    /* MultiPortSwitch: '<S182>/Index Vector1' incorporates:
-     *  Gain: '<S182>/Gain1'
-     *  Sum: '<S182>/Add2'
-     */
-    rtb_IndexVector1 = 0.5F * rtb_Sum_b + rtb_Integrator_m;
-    break;
-  }
-
-  /* End of MultiPortSwitch: '<S182>/Index Vector' */
-  /* End of Outputs for SubSystem: '<S8>/Tcm calculate' */
-
+  /* Outputs for Atomic SubSystem: '<S1>/_svpwm' */
   /* Outport: '<Root>/Ta' incorporates:
-   *  Constant: '<S178>/Constant'
-   *  Gain: '<S178>/Gain1'
-   *  Gain: '<S178>/Gain4'
-   *  Sum: '<S178>/Add'
+   *  Outport: '<Root>/Tb'
+   *  Outport: '<Root>/Tc'
    */
-  rtY.Ta = (0.0001F - 2.0F * rtb_IntegralGain) * 10000.0F;
+  s_svpwm(rtDW.Add1, rtDW.Add2, &rtY.Ta, &rtY.Tb, &rtY.Tc);
 
-  /* Outport: '<Root>/Tb' incorporates:
-   *  Constant: '<S179>/Constant'
-   *  Gain: '<S179>/Gain1'
-   *  Gain: '<S179>/Gain4'
-   *  Sum: '<S179>/Add'
-   */
-  rtY.Tb = (0.0001F - 2.0F * rtb_IndexVector1) * 10000.0F;
-
-  /* Outport: '<Root>/Tc' incorporates:
-   *  Constant: '<S180>/Constant'
-   *  Gain: '<S180>/Gain1'
-   *  Gain: '<S180>/Gain4'
-   *  Sum: '<S180>/Add'
-   */
-  rtY.Tc = (0.0001F - 2.0F * rtb_Switch_l) * 10000.0F;
+  /* End of Outputs for SubSystem: '<S1>/_svpwm' */
 
   /* UnitDelay: '<S1>/Unit Delay1' */
   a_lbg_speed = rtDW.UnitDelay1_DSTATE;

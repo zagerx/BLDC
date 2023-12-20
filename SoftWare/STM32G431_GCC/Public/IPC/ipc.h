@@ -18,9 +18,17 @@ extern unsigned int gEventGroup;
 typedef enum{
     PUBLIC_DATA_START_INDEX,
     PUBLIC_DATA_IQ_TARGET,
+    PUBLIC_DATA_IA,
+    PUBLIC_DATA_IB,    
+    PUBLIC_DATA_IC,
+    PUBLIC_DATA_IALPHA,
+    PUBLIC_DATA_IBETA,
+    PUBLIC_DATA_ID,
+    PUBLIC_DATA_IQ,
+    PUBLIC_DATA_TEMP0,
+    PUBLIC_DATA_TEMP1,    
     PUBLIC_DATA_STOP_INDEX,
 }E_PUBLIC_DATA;
-
 float ipc_read_data(E_PUBLIC_DATA index);
 char ipc_write_data(E_PUBLIC_DATA index,float data);
 

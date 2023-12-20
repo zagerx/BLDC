@@ -87,14 +87,14 @@ fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
         ptThis->chState = SEND_CMD;
     case SEND_CMD:
         // _send_proframe(pframe,data_len+sizeof(pro_frame_t));
-        USER_DEBUG("send one cmd = 0x%x\r\n",cmd_fun);
+        USER_DEBUG_NORMAL("send one cmd = 0x%x\r\n",cmd_fun);
         ptThis->chState = WAIT_ACK;        
     case WAIT_ACK:
         if (pmsg->recnt >= RESEND_CNT)
         {
             pmsg->recnt = 0;
             /* 没有接收到该命令的响应 */
-            USER_DEBUG("cmd=0x%x no ack\r\n",cmd_fun);
+            USER_DEBUG_NORMAL("cmd=0x%x no ack\r\n",cmd_fun);
             ptThis->chState = EXIT;
             break;
         }
@@ -105,7 +105,7 @@ fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
             if (pmsg->timeout++ >= TIMEOUT/fsm_cycle)//超时
             {
                 /* code */
-                USER_DEBUG("cmd=0x%x timeout\r\n",cmd_fun);
+                USER_DEBUG_NORMAL("cmd=0x%x timeout\r\n",cmd_fun);
                 pmsg->timeout = 0;
                 pmsg->recnt++;
                 ptThis->chState = SEND_CMD;
@@ -115,7 +115,7 @@ fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
         IPC_CLEAR_EVENT(g_protocol_event,event);
         ptThis->chState = RECIVE_ACK;
     case RECIVE_ACK:
-        USER_DEBUG("recive cmd(0x%x) ack\r\n",cmd_fun);
+        USER_DEBUG_NORMAL("recive cmd(0x%x) ack\r\n",cmd_fun);
         /*接收到命令对应的响应 进行数据处理*/
         ptThis->chState = EXIT;        
     case EXIT:
@@ -164,8 +164,49 @@ void protocol_transmitprocess(void)
         {
             /*当前状态机执行结束  可以删除*/
             list_delete_node(gtransmit_list,cur_node);
-            USER_DEBUG("free \r\n");
+            USER_DEBUG_NORMAL("free \r\n");
         }
         cur_node = cur_node->next; 
     }
+}
+
+
+void protocol02_transmit(unsigned char *pdata,unsigned short datalen)
+{
+    unsigned char *pdata1;
+    unsigned short len = 0;
+    unsigned char databuf[128];
+    len = datalen + 6;
+    pdata1 = databuf;
+    pdata1[0] = 0xAA;
+    pdata1[1] = 0xFF;
+    pdata1[2] = 0xF1;
+    pdata1[3] = datalen;
+    memcpy(&(pdata1[4]),pdata,datalen);
+    unsigned char sumcheck = 0;
+    unsigned char sum_sumcheck = 0;
+    for (unsigned char i = 0; i < len-2; i++)
+    {
+        /* code */
+        sumcheck += pdata1[i];
+        sum_sumcheck += sumcheck;
+    }
+    pdata1[len-2] = sumcheck;
+    pdata1[len-1] = sum_sumcheck;
+    _bsp_protransmit(pdata1,len);
+}
+
+#define SEND_NUMBER 8
+void protocol02_process(void)
+{
+    int buf2[SEND_NUMBER];
+    buf2[0] = ipc_read_data(PUBLIC_DATA_IA)*1000;
+    buf2[1] = ipc_read_data(PUBLIC_DATA_IB)*1000;
+    buf2[2] = ipc_read_data(PUBLIC_DATA_IC)*1000;
+    buf2[3] = ipc_read_data(PUBLIC_DATA_IALPHA)*1000;
+    buf2[4] = ipc_read_data(PUBLIC_DATA_IBETA)*1000;
+    buf2[5] = ipc_read_data(PUBLIC_DATA_ID)*1000;
+    buf2[6] = ipc_read_data(PUBLIC_DATA_IQ)*1000;
+    buf2[7] = ipc_read_data(PUBLIC_DATA_TEMP0)*1000;
+    protocol02_transmit((unsigned char*)buf2,sizeof(buf2));    
 }

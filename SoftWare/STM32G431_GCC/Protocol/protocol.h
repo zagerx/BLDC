@@ -13,9 +13,8 @@ enum{
 #if 1
     typedef enum{
         PRO_FUNC_TESTCMD01 = 1,
-        PRO_FUNC_CMD01 ,
-        PRO_FUNC_CMD02,        
-        PRO_FUNC_CMD03= 0x0A,
+        PRO_FUNC_CMD02,
+        PRO_FUNC_CMD03,        
         PRO_FUNC_CMD04,
         CMD_NUMBER
     }E_CMD;
@@ -37,4 +36,10 @@ extern void protocol_transmit(unsigned char cmd_type,unsigned char cmd,\
                             void *pdata,unsigned short data_len);      
 void protocol_transmitprocess(void);
 /*--------------------------------------------------------------------------------------*/
+
+
+/*----------------------–≠“È2--------------------------------*/
+void protocol02_transmit(unsigned char *pdata,unsigned short datalen);
+void protocol02_process(void);
+
 #endif

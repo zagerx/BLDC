@@ -2,7 +2,7 @@
 ## Makefile generated for component 'Motor_Control'. 
 ## 
 ## Makefile     : Motor_Control.mk
-## Generated on : Mon Nov 06 15:35:24 2023
+## Generated on : Thu Nov 16 01:26:30 2023
 ## Final product: $(RELATIVE_PATH_TO_ANCHOR)\Motor_Control.exe
 ## Product type : executable
 ## 
@@ -23,7 +23,7 @@ MAKEFILE                  = Motor_Control.mk
 MATLAB_ROOT               = D:\Program Files\Polyspace\R2021a
 MATLAB_BIN                = D:\Program Files\Polyspace\R2021a\bin
 MATLAB_ARCH_BIN           = $(MATLAB_BIN)\win64
-START_DIR                 = E:\Users\zager\Desktop\BLDC\SoftWare\Simulink
+START_DIR                 = E:\Users\zager\Desktop\BLDC\SoftWare\STM32G431_GCC\Simulink
 SOLVER                    = 
 SOLVER_OBJ                = 
 CLASSIC_INTERFACE         = 0
@@ -183,7 +183,7 @@ DEFINES = $(DEFINES_BUILD_ARGS) $(DEFINES_CUSTOM) $(DEFINES_OPTS) $(DEFINES_STAN
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = $(START_DIR)\Motor_Control_ert_rtw\Motor_Control.c
+SRCS = $(START_DIR)\Motor_Control_ert_rtw\Motor_Control.c $(START_DIR)\Motor_Control_ert_rtw\rtGetInf.c $(START_DIR)\Motor_Control_ert_rtw\rtGetNaN.c $(START_DIR)\Motor_Control_ert_rtw\rt_nonfinite.c $(START_DIR)\Motor_Control_ert_rtw\xxxx.c
 
 MAIN_SRC = $(MATLAB_ROOT)\rtw\c\src\common\rt_main.c
 
@@ -193,7 +193,7 @@ ALL_SRCS = $(SRCS) $(MAIN_SRC)
 ## OBJECTS
 ###########################################################################
 
-OBJS = Motor_Control.obj
+OBJS = Motor_Control.obj rtGetInf.obj rtGetNaN.obj rt_nonfinite.obj xxxx.obj
 
 MAIN_OBJ = rt_main.obj
 
@@ -352,6 +352,22 @@ $(PRODUCT) : $(OBJS) $(PREBUILT_OBJS) $(MAIN_OBJ)
 
 Motor_Control.obj : $(START_DIR)\Motor_Control_ert_rtw\Motor_Control.c
 	$(CC) $(CFLAGS) -Fo"$@" $(START_DIR)\Motor_Control_ert_rtw\Motor_Control.c
+
+
+rtGetInf.obj : $(START_DIR)\Motor_Control_ert_rtw\rtGetInf.c
+	$(CC) $(CFLAGS) -Fo"$@" $(START_DIR)\Motor_Control_ert_rtw\rtGetInf.c
+
+
+rtGetNaN.obj : $(START_DIR)\Motor_Control_ert_rtw\rtGetNaN.c
+	$(CC) $(CFLAGS) -Fo"$@" $(START_DIR)\Motor_Control_ert_rtw\rtGetNaN.c
+
+
+rt_nonfinite.obj : $(START_DIR)\Motor_Control_ert_rtw\rt_nonfinite.c
+	$(CC) $(CFLAGS) -Fo"$@" $(START_DIR)\Motor_Control_ert_rtw\rt_nonfinite.c
+
+
+xxxx.obj : $(START_DIR)\Motor_Control_ert_rtw\xxxx.c
+	$(CC) $(CFLAGS) -Fo"$@" $(START_DIR)\Motor_Control_ert_rtw\xxxx.c
 
 
 rt_main.obj : $(MATLAB_ROOT)\rtw\c\src\common\rt_main.c

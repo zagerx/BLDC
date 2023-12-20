@@ -34,14 +34,15 @@ void protocol_parse(void)
     p_r_fram = _unpack_proframe((unsigned char*)frame_buf,frame_len);
     if (!p_r_fram)
     {
+        USER_DEBUG_NORMAL("malloc fail\r\n");
         return;
     }
     unsigned short cmd = __SWP16(p_r_fram->func_c);
     unsigned char cmd_fun = (unsigned char)cmd;
     unsigned char cmd_type = (unsigned char)(cmd>>8);
-
     search_msgmap(cmd_fun,p_r_fram->pdata,p_r_fram->len);
     heap_free(p_r_fram);
+
     return;
 }
 

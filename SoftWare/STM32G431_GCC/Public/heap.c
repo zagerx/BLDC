@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "_assert.h"
 #include "stdint.h"
+
+#if 1
 #define TOTAL_HEAP_SIZE                    ((size_t)4096)
 #define BYTE_ALIGNMENT			8
 #if BYTE_ALIGNMENT == 8
@@ -38,9 +40,8 @@ static size_t block_allocatedbit = 0;
 
 void *heap_malloc( size_t wanted_size )
 {
-blocklink_t *pxBlock, *p_previous_block, *p_new_blocklink;
-void *p_return = NULL;
-
+    blocklink_t *pxBlock, *p_previous_block, *p_new_blocklink;
+    void *p_return = NULL;
 	// vTaskSuspendAll();
 	{
 		if( pend == NULL )
@@ -248,4 +249,24 @@ static void insert_block_into_freeList( blocklink_t *pblockto_insert )
 		pxIterator->p_next_freeblock = pblockto_insert;
 	}
 }
+#else
 
+void *heap_malloc( size_t wanted_size )
+{
+    return malloc(wanted_size);
+}
+void heap_free( void *pv )
+{
+    free(pv);
+}
+
+size_t heap_get_minimumever_freeheapsize( void )
+{
+    return 1;
+}
+
+size_t heap_get_freeheap_size( void )
+{
+    return 0;
+}
+#endif

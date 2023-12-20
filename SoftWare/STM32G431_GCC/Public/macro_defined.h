@@ -12,6 +12,12 @@
                                         (( (unsigned int)(A) & 0x00ff0000) >> 8)   | \
                                         (( (unsigned int)(A) & 0x0000ff00) << 8)   | \
                                         (( (unsigned int)(A) & 0x000000ff) << 24))
+#define BYTE0(dwTemp) (*((char *)(&dwTemp)))
+#define BYTE1(dwTemp) (*((char *)(&dwTemp) + 1))
+#define BYTE2(dwTemp) (*((char *)(&dwTemp) + 2))
+#define BYTE3(dwTemp) (*((char *)(&dwTemp) + 3))
+
+
 /*----------------------------------计算数组的元素个数---------------------------------------------*/
 #ifndef dimof
 #define   dimof(__array)     (sizeof(__array)/sizeof(__array[0]))

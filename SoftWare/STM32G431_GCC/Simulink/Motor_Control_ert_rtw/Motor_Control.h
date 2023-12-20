@@ -5,7 +5,7 @@
  *
  * Model version                  : 1.28
  * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Tue Nov  7 17:39:38 2023
+ * C/C++ source code generated on : Thu Nov 16 01:26:09 2023
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: NXP->Cortex-M4
@@ -17,8 +17,6 @@
 
 #ifndef RTW_HEADER_Motor_Control_h_
 #define RTW_HEADER_Motor_Control_h_
-#include "rtwtypes.h"
-#include <stddef.h>
 #include <float.h>
 #include <math.h>
 #ifndef Motor_Control_COMMON_INCLUDES_
@@ -26,7 +24,12 @@
 #include "rtwtypes.h"
 #endif                                 /* Motor_Control_COMMON_INCLUDES_ */
 
-/* Model Code Variants */
+#include "Motor_Control_types.h"
+
+/* Child system includes */
+#include "xxxx.h"
+#include "rt_nonfinite.h"
+#include "rtGetInf.h"
 
 /* Macros for accessing real-time model data structure */
 #ifndef rtmGetErrorStatus
@@ -38,21 +41,6 @@
 #endif
 
 #define Motor_Control_M                (rtM)
-
-/* Forward declaration for rtModel */
-typedef struct tag_RTM RT_MODEL;
-
-#ifndef DEFINED_TYPEDEF_FOR_pid_t_
-#define DEFINED_TYPEDEF_FOR_pid_t_
-
-typedef struct {
-  real32_T kp;
-  real32_T ki;
-  real32_T kd;
-  real32_T target;
-} pid_t;
-
-#endif
 
 /* Block signals and states (default storage) for system '<S3>/open_loop' */
 typedef struct {

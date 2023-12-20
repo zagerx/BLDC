@@ -6,11 +6,9 @@
   ******************************************************************************
   * @attention
   *
-  * 1、simulink模型为单电流环
-  * 2、q轴电流设置0.6
-  * 3、按键按下，电机会出现卡死情况，手动转动，可以引导电机转动起来
-  * 4、电机给小负载，电机的iq电流相对平滑，能够稳定在参考值附近
-  * 5、q轴的电流设置不能过大，如0.8会导致电机失控，0.6几乎没有力矩，需要调整！！！
+  * 1、42BLDC 电机接线顺序为 电源+ 电源- 蓝线 黄线 绿线
+  * 2、若q轴值给小一点，用手堵住电机，电机会停止转动，即使复位也无法恢复正常现象
+  *     可以尝试给theta -PI/2
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -28,7 +26,8 @@
 #include "motortctrl.h"
 #include "ipc.h"
 #include "protocol.h"
-#include "printf_log.h"
+#include "debuglog_.h"
+#include "focmethod.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +41,6 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-extern ADC_HandleTypeDef hadc1;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -61,11 +59,59 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/*--------------系统线程-------------------*/
+#define SYSRUNNING_PERCI            (1)
+#define DELAY_1MS                   (1)/SYSRUNNING_PERCI
+#define DELAY_2MS                   (2)/SYSRUNNING_PERCI
+#define DELAY_5MS                   (5)/SYSRUNNING_PERCI
+#define DELAY_20MS                  (20)/SYSRUNNING_PERCI
+#define DELAY_500MS                 (500)/SYSRUNNING_PERCI
+#define DELAY_1000MS                (1000)/SYSRUNNING_PERCI
+#define DELAY_5000MS                (5000)/SYSRUNNING_PERCI
+typedef struct
+{
+    /* data */
+    unsigned int time_cnt;
+    unsigned char state;
+}sys_run_t;
+static sys_run_t sg_SYSRuning;
+void sysrunning_process(void)
+{
+    enum{
+        SYS_IDLE,
+        SYS_NORMLE,
+    };
+    /*-----------------------*/
+    sg_SYSRuning.time_cnt++;
+    switch (sg_SYSRuning.state)
+    {
+        case SYS_IDLE:
+            if(!(sg_SYSRuning.time_cnt % (DELAY_5000MS))){
+                // ipc_write_data(PUBLIC_DATA_IQ_TARGET,1);
+                sg_SYSRuning.time_cnt = 0;
+                break;
+            }           
+            if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
+                // ipc_write_data(PUBLIC_DATA_IQ_TARGET,2.0);
+                break;
+            }
+            if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
+            {
+                HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                
+            }          
+            if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
+                // protocol02_process();
+                break;
+            }
+        default:
+            break;
+    }
+}
+
 
 /* USER CODE END 0 */
 
@@ -103,6 +149,8 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  User_Printf_Init();
+  USER_DEBUG_NORMAL("hello world\r\n");
   protocol_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
   /* USER CODE END 2 */
@@ -111,8 +159,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    sysrunning_process();
     motortctrl_process();
     protocol_process();
+    HAL_Delay(1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

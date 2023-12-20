@@ -1,6 +1,5 @@
 #include "../method/method.h"
 
-/*Ò»½×µÍÍ¨ÂË²¨Æ÷*/
 void lowfilter_init(lowfilter_t *pfilter,float freq)
 {
     pfilter->freq = 1/freq;

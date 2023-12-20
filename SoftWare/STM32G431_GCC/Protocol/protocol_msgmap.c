@@ -4,7 +4,7 @@
 该文件需完善
 */
 static char pro_testfunc(cmdmsg_t *p,void *pdata,unsigned short datalen);
-static char read_sensordata(cmdmsg_t *p,void *pdata,unsigned short datalen);
+static char write_opt(cmdmsg_t *p,void *pdata,unsigned short datalen);
 
 static const cmdmsg_t sgMsgTable[] = {
     [0] = {
@@ -13,15 +13,20 @@ static const cmdmsg_t sgMsgTable[] = {
         .fnHandler = pro_testfunc,        
     }, 
     [1] = {
-        .cmd = PRO_FUNC_CMD03,        
+        .cmd = PRO_FUNC_CMD02,        
         .flagbit = CMD_EVENT_01,
-        .fnHandler = read_sensordata,
+        .fnHandler = write_opt,
     },
     [2] = {
+        .cmd = PRO_FUNC_CMD03,        
+        .flagbit = CMD_EVENT_02,
+        .fnHandler = write_opt,        
+    },
+    [3] = {
         .cmd = PRO_FUNC_CMD04,        
         .flagbit = CMD_EVENT_02,
-        .fnHandler = read_sensordata,        
-    },   
+        .fnHandler = write_opt,        
+    },        
 };
 
 char pro_testfunc(cmdmsg_t *p,void *pdata,unsigned short datalen)
@@ -33,14 +38,23 @@ char pro_testfunc(cmdmsg_t *p,void *pdata,unsigned short datalen)
     return 1;
 }
 
-char read_sensordata(cmdmsg_t *p,void *pdata,unsigned short datalen)
+char write_opt(cmdmsg_t *p,void *pdata,unsigned short datalen)
 {
-    int flagbit;
-    flagbit = p->flagbit;
-    if (flagbit != CMD_EVENT_UNINVAIL)
+    if (p->cmd == PRO_FUNC_CMD02)
     {
-        IPC_SET_EVENT(g_protocol_event,flagbit);
+        /* code */
+        ipc_write_data(PUBLIC_DATA_IQ_TARGET,1.2f);
     }
+    if (p->cmd == PRO_FUNC_CMD03)
+    {
+        /* code */
+        ipc_write_data(PUBLIC_DATA_IQ_TARGET,0.5f);
+    }
+    if (p->cmd == PRO_FUNC_CMD04)
+    {
+        /* code */
+        ipc_write_data(PUBLIC_DATA_IQ_TARGET,-0.5f);
+    }    
     return 0;
 }
 
@@ -55,7 +69,7 @@ char search_msgmap(unsigned char cmd,
         }
         if (NULL == ptItem->fnHandler) {
             continue; 
-        }       
+        }
         ptItem->fnHandler((cmdmsg_t *)ptItem, pData, hwSize); 
         return 1;
     }    

@@ -1,5 +1,6 @@
 #include "pid.h"
-void pid_init(pid_cb_t *pid,float kp,float ki,float kc,float outmax,float outmin)
+void pid_init(pid_cb_t *pid,float kp,float ki,float kc,\
+                            float outmax,float outmin)
 {
     pid->kp = kp;
     pid->ki = ki;
@@ -36,10 +37,10 @@ float pid_contrl(pid_cb_t *pid,float tar,float cur){
     pid->satErr = v_out - presat;
     
     /*Ìí¼ÓÎ¢·Ö¿ØÖÆ,Î´²âÊÔ*/
-    #if 0
+#if 0
         u_p1 = u_p;
         ud = kd*(u_p-u_p1);
         pid->presat = u_p + u_i + u_d;
-    #endif
+#endif
     return v_out;
 }

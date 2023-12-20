@@ -21,7 +21,7 @@
 #include "protocol_cfg.h"
 #include "protocol.h"
 /*-------------------------------FIFO组件------------------------------------------*/
-static unsigned char fifo_receive_buff[PRO_FRAME_MAX_SIZE];//fifo数据缓存区
+static unsigned char fifo_receive_buff[PRO_FIFO_SIZE];//fifo数据缓存区
 static byte_fifo_t protocol_fifo_handle;//fifo控制块
 
 _list_t *gtransmit_list;
@@ -173,7 +173,7 @@ pro_frame_t* _unpack_proframe(unsigned char *pdata,unsigned short len)
     r_crc_16 = CRC16_Subsection((unsigned char *)pr_buf_1,0xFFFF,r_fram_len-4);
     if(r_crc_16 != (pr_buf_1[r_fram_len-4]<<8 | pr_buf_1[r_fram_len-3]))
     {
-        USER_DEBUG("CRC16 0x%2x\r\n",r_crc_16);
+        USER_DEBUG_NORMAL("CRC16 Err 0x%2x\r\n",r_crc_16);
         heap_free(pr_buf_1);
         return NULL;
     }
@@ -187,8 +187,9 @@ pro_frame_t* _unpack_proframe(unsigned char *pdata,unsigned short len)
 
     unsigned char *pr_buf_data;
     pr_buf_data = heap_malloc(r_data_len);
-    if (pr_buf_data == NULL)
+    if (pr_buf_data==NULL && r_data_len!=0)
     {
+        heap_free(pr_buf_2);
         heap_free(pr_buf_data);
         return NULL;
     }

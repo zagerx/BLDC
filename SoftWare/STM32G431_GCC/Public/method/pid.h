@@ -1,6 +1,5 @@
 #ifndef __PID__H
 #define __PID__H
-
 typedef struct pid_contrlblock
 {
     float kp;
@@ -11,7 +10,6 @@ typedef struct pid_contrlblock
     float satErr;
     unsigned short out_max;
     unsigned short out_min;
-    
 }pid_cb_t;
 
 extern float pid_contrl(pid_cb_t *pid,float tar,float cur);

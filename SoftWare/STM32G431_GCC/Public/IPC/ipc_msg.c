@@ -58,7 +58,7 @@ void ipc_msgpool_del(node_item_t *msg)
     if (msg== NULL)
     {
         /* code */
-        USER_DEBUG("no use data\r\n");
+        USER_DEBUG_NORMAL("no use data\r\n");
         return ;
     }
     
