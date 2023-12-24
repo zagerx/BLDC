@@ -1,14 +1,8 @@
-#include "motortctrl.h"
-/*----------------输入配置---------------------*/
-#include "tim.h"
-#include "mt6816.h"
-#include "adc.h"
-#include "ipc.h"
-// #include "Motor_Control.h"
-#include "method.h"
+#include "./motorctrl.h"
+
+/*----------------模块内部的相互引用---------------------*/
 #include "focmethod.h"
-#include "motorhardware.h"
-#include "debuglog_.h"
+
 #define MOTORCTRL_PERCI            (1)
 
 enum{
@@ -37,28 +31,6 @@ static float sg_MecThetaOffset = 0.0f;
 extern alpbet_t _2r_2s(dq_t i_dq,float theta);
 static lowfilter_t sg_elefilter[3];
 
-static void motor_enable(void);
-static void motor_disable(void);
-static void motor_set_pwm(duty_t duty);
-static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned short c);
-static char motor_findzerpoint(float *cur_theta,float tar_theta,float beta)
-{
-#if 0    
-    if((tar_theta)<=*cur_theta && *cur_theta<(tar_theta+0.05f) && \
-    (beta > -0.1f && beta < 0.1f))
-    {
-        return 0;//
-    }
-    return 1;//未找到
-#else
-   if((tar_theta)<=*cur_theta && *cur_theta<(tar_theta+0.05f))
-    {
-        return 0;//
-    }
-    return 1;//未找到
-#endif    
-}
-
 void motortctrl_process(void)
 {
     float theta = 100.0f;
@@ -73,7 +45,7 @@ void motortctrl_process(void)
         for (unsigned char  i = 0; i < 10; i++)
         {
             /* code */
-            theta = mt6816_readangle();
+            theta = sensor_readanlge();
         }
         // Motor_Control_initialize();
         /*------设置IQ的目标电流------*/
@@ -91,17 +63,21 @@ void motortctrl_process(void)
         temp1 += 0.01f;
         temp2 = _2r_2s(udq,temp1*2.0f);
         ipc_write_data(PUBLIC_DATA_IALPHA,temp2.alpha);
-        ipc_write_data(PUBLIC_DATA_IBETA,temp2.beta);     
-        motor_set_pwm(_svpwm(temp2.alpha,temp2.beta));   
+        ipc_write_data(PUBLIC_DATA_IBETA,temp2.beta);  
+
+        duty_t duty_01;
+        duty_01 = _svpwm(temp2.alpha,temp2.beta);
+        motor_set_pwm(duty_01._a,duty_01._b,duty_01._c);   
         HAL_Delay(1);
-        theta = mt6816_readangle() * 2.0f;  
+        theta = sensor_readanlge() * 2.0f;  
         ipc_write_data(PUBLIC_DATA_TEMP0,theta); 
 
-        if(motor_findzerpoint(&theta,0,0))
-        {
-            break;
-        }
-        motor_set_pwm(_svpwm(0.0f,0.0f)); 
+        // if(motor_findzerpoint(&theta,0,0))
+        // {
+        //     break;
+        // }
+        duty_01 = _svpwm(temp2.alpha,temp2.beta);
+        motor_set_pwm(duty_01._a,duty_01._b,duty_01._c); 
         g_Motor1.state = MOTOR_IDLE;
         break;        
     }
@@ -111,9 +87,11 @@ void motortctrl_process(void)
             motor_enable_noirq();
             /* code */
             // temp2 = _2r_2s(udq,0.0f);  
-            motor_set_pwm(_svpwm(temp2.alpha,temp2.beta));
+            duty_t duty_01;
+            duty_01 = _svpwm(temp2.alpha,temp2.beta);
+            motor_set_pwm(duty_01._a,duty_01._b,duty_01._c); 
             HAL_Delay(2000);
-            sg_MecThetaOffset = mt6816_readangle();
+            sg_MecThetaOffset = sensor_readanlge();
             g_Motor1.state = MOTOR_TEST;
             for (unsigned char i = 0; i < 5*2; i++)
             {
@@ -126,39 +104,11 @@ void motortctrl_process(void)
         }
     case MOTOR_TEST:
         {
-            duty_t a = {1,0,0};
-            while (1)
-            {
-                // dq_t udq = {0.0f,1.0f};
-                // alpbet_t alp_beta;
-                // float nor_eletheta;
-                // float test_theta = 0.0f;
-                // float real_theta = 0.0f;
-                // real_theta = mt6816_readangle();
-                // test_theta = (real_theta - sg_MecThetaOffset)*2.0f;            
-                // nor_eletheta = _normalize_angle(test_theta);
-                // alp_beta = _2r_2s(udq,nor_eletheta);
-                // motor_set_pwm(_svpwm(alp_beta.alpha,alp_beta.beta)); 
-                // HAL_Delay(10);
-
-                // real_theta = mt6816_readangle();
-                // test_theta = (real_theta - sg_MecThetaOffset)*2.0f;            
-                // nor_eletheta = _normalize_angle(test_theta);
-                // alp_beta = _2r_2s(udq,nor_eletheta);
-                // motor_set_pwm(_svpwm(alp_beta.alpha,alp_beta.beta)); 
-                // HAL_Delay(10);
-                // real_theta = mt6816_readangle();
-                // test_theta = (real_theta - sg_MecThetaOffset)*2.0f;            
-                // nor_eletheta = _normalize_angle(test_theta);
-                // alp_beta = _2r_2s(udq,nor_eletheta);
-                // motor_set_pwm(_svpwm(alp_beta.alpha,alp_beta.beta)); 
-                // HAL_Delay(10);
-            }
             g_Motor1.state = MOTOR_IDLE;
         }
         break;        
     case MOTOR_IDLE:
-        theta = mt6816_readangle();
+        theta = sensor_readanlge();
         ipc_write_data(PUBLIC_DATA_TEMP0,theta);
         if(!IPC_GET_EVENT(gEventGroup,KEY01_SHORT_PRESS))
         {
@@ -184,10 +134,8 @@ void motortctrl_process(void)
 }
 
 
-/*----------------------------------------ADC中断----------------------------------------------------
-** 每100us执行一次 pwm频率10KHz
-*/
-void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
+
+void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 {
     float Ia,Ib,Ic;
     float a_Iafilter100HZ = 0.0f;
@@ -196,9 +144,9 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     duty_t duty;
     /*------------------------电流转换-------------------------------------------*/
     float a1,a2,a3;
-    a1 = (float)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1) - AD_OFFSET;
-    a2 = (float)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_2) - AD_OFFSET;
-    a3 = (float)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_3) - AD_OFFSET;
+    a1 = (float)abc_vale[0] - AD_OFFSET;
+    a2 = (float)abc_vale[1] - AD_OFFSET;
+    a3 = (float)abc_vale[2] - AD_OFFSET;
     Ia = (float)a1*(float)(3.3f/4096.0f/RA_S/BETA_);
     Ib = (float)a2*(float)(3.3f/4096.0f/RB_S/BETA_);
     Ic = (float)a3*(float)(3.3f/4096.0f/RC_S/BETA_);
@@ -220,12 +168,11 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     rtU.abc[1] = Ib;
     rtU.abc[2] = Ic;//更新到simulink
 #endif
-    
 
     /*-------------------------获取机械角度和电角度--------------------------------------------*/
     float mech_theta = 0.0f;
     float elec_theta = 0.0;
-    mech_theta = mt6816_readangle() - sg_MecThetaOffset;    
+    mech_theta = sensor_readanlge() - sg_MecThetaOffset;    
     elec_theta = _normalize_angle(mech_theta) * MOTOR_PAIR;
     // elec_theta = mech_theta;
     // rtU.test_angle = elec_theta;//更新到simulink
@@ -250,79 +197,11 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         }
         duty = foc_curloopcale(i_abc,(temp_theta));
     #else
-        duty = foc_curloopcale(i_abc,(elec_theta) - PI/2.0f);
+        duty = foc_curloopcale(i_abc,(elec_theta));
     #endif    
 #endif
     /*-------------------------------更新到PWM模块-----------------------------------------*/
-    motor_set_pwm(duty);
+    motor_set_pwm(duty._a,duty._b,duty._c);
 }
-static void motor_set_pwm(duty_t duty)
-{
-    float a,b,c;
-    a = ((1.0f-(float)duty._a)*_ARR);
-    b = ((1.0f-(float)duty._b)*_ARR);
-    c = ((1.0f-(float)duty._c)*_ARR);
-    unsigned short max;
-    max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);	
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)a);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)b);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)c);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 100));	
-}
-static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned short c)
-{
-	short max;
-	if(a>b)
-	{
-		max = a;
-	}else{
-		max = b;
-	}
-	if(c>max)
-	{
-		max = c;
-	}
-	return max;
-}
-void motor_enable_noirq(void)
-{
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)0);    
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3);     
-}
-static void motor_enable(void)
-{
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3); 
 
-    /*----------启动ADC采样--------------*/
-    HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
-    HAL_ADCEx_InjectedStart_IT(&hadc1);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);  
-}
-static void motor_disable(void)
-{
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(0));
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(0));
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(0));
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(0));	
 
-    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_1);
-    HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_1);
-    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_2);
-    HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_3);
-    HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_3); 
-    HAL_ADCEx_InjectedStop_IT(&hadc1);
-    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_4);      
-}

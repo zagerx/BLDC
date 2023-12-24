@@ -7,7 +7,7 @@
   * @attention
   *
   * 1、42BLDC 电机接线顺序为 电源+ 电源- 蓝线 黄线 绿线
-  * 2、若q轴值给小一点，用手堵住电机，电机会停止转动，即使复位也无法恢复正常现象
+  * git
   *     可以尝试给theta -PI/2
   ******************************************************************************
   */
@@ -23,11 +23,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "motortctrl.h"
 #include "ipc.h"
-#include "protocol.h"
-#include "debuglog_.h"
-#include "focmethod.h"
+#include "../Protocol/protocol.h"
+#include "../BLDCMotor/motorctrl.h"
+#include "../Public/pubilc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -104,7 +103,7 @@ void sysrunning_process(void)
                 HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                
             }          
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
-                // protocol02_process();
+                protocol02_process();
                 break;
             }
         default:
@@ -153,6 +152,7 @@ int main(void)
   USER_DEBUG_NORMAL("hello world\r\n");
   protocol_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
+  USER_DEBUG_NORMAL("SYS start runing\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -162,6 +162,7 @@ int main(void)
     sysrunning_process();
     motortctrl_process();
     protocol_process();
+
     HAL_Delay(1);
     /* USER CODE END WHILE */
 
@@ -181,7 +182,7 @@ void SystemClock_Config(void)
 
   /** Configure the main internal regulator output voltage
   */
-  HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
+  HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1_BOOST);
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
@@ -190,11 +191,11 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV2;
-  RCC_OscInitStruct.PLL.PLLN = 21;
+  RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV8;
+  RCC_OscInitStruct.PLL.PLLN = 85;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
-  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV4;
+  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -209,7 +210,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
   {
     Error_Handler();
   }

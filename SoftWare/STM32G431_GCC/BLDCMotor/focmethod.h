@@ -1,5 +1,6 @@
 #ifndef __FOCMETHOD__H
 #define __FOCMETHOD__H
+#include "./bldcmotor_cfg.h"
 
 #define PI               3.14159260f
 #define _2PI             6.2831852f
@@ -40,7 +41,6 @@ typedef struct _abc
 }abc_t;
 
 /*------电流环参数--------*/
-#include "method.h"
 typedef struct curloop
 {
     pid_cb_t d_pid;
@@ -52,5 +52,4 @@ float _normalize_angle(float angle);
 duty_t _svpwm(float ualpha,float ubeta);
 duty_t foc_curloopcale(abc_t i_abc,float theta);
 void foc_paraminit(void);
-void mechie_zero(float theta);
 #endif

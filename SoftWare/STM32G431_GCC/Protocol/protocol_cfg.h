@@ -14,9 +14,11 @@
 #include "ipc.h"
 #include "list.h"
 #include "fsm.h"
-#include "debuglog_.h"
+#include "debuglog.h"
 #include "_assert.h"
 #include "heap.h"
+
+
 #undef NULL
 #define NULL 0
 #undef bool
@@ -26,7 +28,10 @@
 #undef false
 #define false	0
 
+
 #define PRO_FRAME_MIN_SIZE  8
 #define	PRO_FRAME_MAX_SIZE	256
 #define PRO_FIFO_SIZE PRO_FRAME_MAX_SIZE * (4)
+
+
 #endif

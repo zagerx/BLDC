@@ -1,10 +1,6 @@
-#include "focmethod.h"
-#include "math.h"
-// #include "xxxx.h"
-#include "ipc.h"
-#include "motorhardware.h"
+#include "./focmethod.h"
 
- alpbet_t _2r_2s(dq_t i_dq,float theta);
+alpbet_t _2r_2s(dq_t i_dq,float theta);
 static void _2s_2r(alpbet_t i_alphabeta,float theta,dq_t *dq);
 static void _3s_2s(abc_t i_abc,alpbet_t *alp_bet);
 static dq_t circle_limit(dq_t dq);
@@ -46,7 +42,7 @@ duty_t foc_curloopcale(abc_t i_abc,float theta)
     float target_uq = 8.0f;  
     dq_t u_dq;  
     u_dq.d = 0.0f;
-    u_dq.q = -1.0f;
+    u_dq.q = 1.0f;
     // u_dq.d = pid_contrl(sgp_curloop_d_pid,0.0f,real_id);
     // u_dq.q = pid_contrl(sgp_curloop_q_pid,target_uq,real_iq);
     /*------------IPC DATA--------------*/
@@ -57,7 +53,6 @@ duty_t foc_curloopcale(abc_t i_abc,float theta)
     ipc_write_data(PUBLIC_DATA_IBETA,i_alphbeta.beta);
     ipc_write_data(PUBLIC_DATA_ID,real_id);
     ipc_write_data(PUBLIC_DATA_IQ,real_iq);
-    // ipc_write_data(PUBLIC_DATA_TEMP0,u_dq.q);
     ipc_write_data(PUBLIC_DATA_TEMP0,theta);
 #else
     dq_t u_dq;  
@@ -72,10 +67,8 @@ duty_t foc_curloopcale(abc_t i_abc,float theta)
     duty = _svpwm(u_alphabeta.alpha,u_alphabeta.beta);
     return duty;
 }
-#if 1
-/*----*/
 duty_t _svpwm(float ualpha,float ubeta)
-{    
+{
     unsigned char sector;    
     sector = 0;
     /*--------------判断扇区-----------------*/
@@ -150,112 +143,25 @@ duty_t _svpwm(float ualpha,float ubeta)
 
     /*-----------------------计算占空比-----------------------------*/
     float duty_a,duty_b,duty_c;
-    duty_a =(T_PWM - Tcmp1*2.0f )*F_PWM;
-    duty_b =(T_PWM - Tcmp2*2.0f )*F_PWM;
-    duty_c =(T_PWM - Tcmp3*2.0f )*F_PWM;
+    // duty_a =(T_PWM - Tcmp1*2.0f )*F_PWM;
+    // duty_b =(T_PWM - Tcmp2*2.0f )*F_PWM;
+    // duty_c =(T_PWM - Tcmp3*2.0f )*F_PWM;
+
+    duty_a =(Tcmp1)/T_PWM;
+    duty_b =(Tcmp2)/T_PWM;
+    duty_c =(Tcmp3)/T_PWM;
 
     duty_t sg_duty;
     sg_duty._a = duty_a;
     sg_duty._b = duty_b;
     sg_duty._c = duty_c;
+
+    // ipc_write_data(PUBLIC_DATA_IA,Tcmp1 * 10000.0f);
+    // ipc_write_data(PUBLIC_DATA_IB,Tcmp2);
+    // ipc_write_data(PUBLIC_DATA_IC,sg_duty._a);
     return sg_duty;
 }
-#else
-duty_t _svpwm(float ud,float uq,float theta)
-{
-    static duty_t sg_duty;
-    unsigned char sector;
-    float ualpha;
-    float ubeta;
-    float Ta,Tb,Tc;
-    sector = 0;
-    float s_vector = 0.0f,m_vector = 0.0f;
-    dq_t u_dq;
-    alpbet_t u_alphabeta;
-    u_dq.d = ud;
-    u_dq.q = uq;
-    u_alphabeta = _2r_2s(u_dq,theta); 
-    ubeta = u_alphabeta.beta;
-    ualpha = u_alphabeta.alpha;
-    /*--------------判断扇区-----------------*/
-    if(ubeta > 0.0F) {
-        sector = 1;
-    }
-    if((sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
-        sector += 2;
-    }  
-    if((-sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
-        sector += 4;
-    }
 
-    /*--------------------计算主副矢量--------------------------------*/
-    switch (sector) {
-        case 1:
-            m_vector = (-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
-            s_vector = (1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
-        break;
-
-        case 2:
-            m_vector = (1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
-            s_vector = -(sqrt3 * ubeta * T_UDC);
-        break;
-
-        case 3:
-            m_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
-            s_vector = sqrt3 * ubeta * T_UDC;
-        break;
-
-        case 4:
-            m_vector = -(sqrt3 * ubeta * T_UDC);
-            s_vector = (-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
-        break;
-
-        case 5:
-            m_vector = sqrt3 * ubeta * T_UDC;
-            s_vector = -((1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
-        break;
-
-        default:
-            m_vector = -((1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
-            s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
-        break;
-    }
-    /*---------------------------限制矢量圆---------------------------------*/
-    if (m_vector + s_vector > T_PWM) 
-    {
-        m_vector /= (m_vector + s_vector);
-        s_vector /= m_vector + s_vector;
-    }
-
-    /*--------------------计算三相桥臂作用时长-------------------------------*/
-    Ta = (T_PWM - (m_vector + s_vector)) / 4.0F;  
-    Tb = Ta + m_vector/2.0f;
-    Tc = Tb + s_vector/2.0f;
-
-    /*-------------------------分配引信------------------------------------*/
-    float Tcmp1 = 0.0f;
-    float Tcmp2 = 0.0f;
-    float Tcmp3 = 0.0f;
-    switch (sector) {
-        case 1:Tcmp1 = Tb;Tcmp2 = Ta;Tcmp3 = Tc;break;
-        case 2:Tcmp1 = Ta;Tcmp2 = Tc;Tcmp3 = Tb;break;
-        case 3:Tcmp1 = Ta;Tcmp2 = Tb;Tcmp3 = Tc;break;
-        case 4:Tcmp1 = Tc;Tcmp2 = Tb;Tcmp3 = Ta;break;
-        case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
-        case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
-    }
-
-    /*-----------------------计算占空比-----------------------------*/
-    float duty_a,duty_b,duty_c;
-    duty_a =(T_PWM - Tcmp1*2 )*F_PWM;
-    duty_b =(T_PWM - Tcmp2*2 )*F_PWM;
-    duty_c =(T_PWM - Tcmp3*2 )*F_PWM;
-    sg_duty.duty_a = duty_a;
-    sg_duty.duty_b = duty_b;
-    sg_duty.duty_c = duty_c;
-    return sg_duty;
-}
-#endif
 
 /*---------------Clark变换------------------------*/
 static void _3s_2s(abc_t i_abc,alpbet_t *alp_bet)
@@ -367,18 +273,4 @@ dq_t circle_limit(dq_t dq)
 }
 
 
-/*----------------机械找零---------------------*/
-
-void mechie_zero(float theta)
-{
-    dq_t udq;
-    alpbet_t ualpbeta;
-    // do
-    // {
-    //     // ualpbeta = _2r_2s(udq,theta);
-    //     _svpwm(1,0);
-
-    // } while (theta >= 0.02f);
-    _svpwm(2,0);
-}
 

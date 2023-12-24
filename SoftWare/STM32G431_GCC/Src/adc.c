@@ -221,5 +221,16 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
+#include "bldcmotor.h"
+/*----------------------------------------ADC中断----------------------------------------------------
+** 每100us执行一次 pwm频率10KHz
+*/
+void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+    unsigned int adc_vale[3];
+    adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+    adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_2);
+    adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_3);
+    motorctrl_foccalc(adc_vale,0.0f);
+}
 /* USER CODE END 1 */

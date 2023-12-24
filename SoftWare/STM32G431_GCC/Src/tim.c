@@ -43,9 +43,9 @@ void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 1;
+  htim1.Init.Prescaler = _PSC-1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED1;
-  htim1.Init.Period = 2099;
+  htim1.Init.Period = 8499;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV2;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -207,5 +207,85 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
+#include "adc.h"
+
+static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned short c)
+{
+	short max;
+	if(a>b)
+	{
+		max = a;
+	}else{
+		max = b;
+	}
+	if(c>max)
+	{
+		max = c;
+	}
+	return max;
+}
+void motor_set_pwm(float _a,float _b,float _c)
+{
+    // _a = 0.25f;_b = 1.0f;_c = 1.0f;
+    float a,b,c;
+    // a = ((1.0f-(float)_a)*_ARR);
+    // b = ((1.0f-(float)_b)*_ARR);
+    // c = ((1.0f-(float)_c)*_ARR);
+    a = (((float)_a)*_ARR);
+    b = (((float)_b)*_ARR);
+    c = (((float)_c)*_ARR);
+    unsigned short max = 0;
+    max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
+    // max = ((1.0f-(float)max_val_01((uint16_t)_a,(uint16_t)_b,(uint16_t)_c))*_ARR);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)b);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)a);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)c);
+
+    /*触发ADC采样*/
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 100));	
+}
+void motor_enable_noirq(void)
+{
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)0);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)0);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)0);    
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
+    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
+    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
+    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3);     
+}
+void motor_enable(void)
+{
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
+    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
+    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
+    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3); 
+
+    /*----------启动ADC采样--------------*/
+    HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
+    HAL_ADCEx_InjectedStart_IT(&hadc1);
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);  
+}
+void motor_disable(void)
+{
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(0));
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(0));
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(0));
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(0));	
+
+    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_1);
+    HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_1);
+    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_2);
+    HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_2);
+    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_3);
+    HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_3); 
+    HAL_ADCEx_InjectedStop_IT(&hadc1);
+    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_4);      
+}
+
 
 /* USER CODE END 1 */

@@ -1,20 +1,16 @@
 #ifndef __METHOD__H
 #define __METHOD__H
-/*----------------------?????----------------------------------*/
-typedef struct lowfilter
-{
-    /* data */
-    float freq;//
-    float pre_val;
 
-}lowfilter_t;
-extern void lowfilter_init(lowfilter_t *pfilter,float freq);
-extern float lowfilter_cale(lowfilter_t *pfilter,float val);
+    #ifndef EN_FILTER
+        #include "filter.h"
+    #endif
 
-/*----------------------PID???---------------------------------*/
-#include "pid.h"
+    #ifndef EN_PID
+        #include "pid.h"
+    #endif
 
+    #ifndef EN_CRC
+        #include "crc.h"
+    #endif
 
 #endif
-
-

@@ -1,7 +1,6 @@
 #ifndef __MT6816__H
 #define __MT6816__H
-#include "stdint.h"
-#include "stdbool.h"
+#include "./hardware_cfg.h"
 typedef struct mt6816
 {
     /* data */
@@ -10,6 +9,5 @@ typedef struct mt6816
     uint32_t pc_flag;
     uint32_t sample_data;
 }mt6816_t;
-void MT6816_SPI_Get_AngleData(void);
 float mt6816_readangle(void);
 #endif

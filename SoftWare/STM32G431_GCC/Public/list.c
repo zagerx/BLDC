@@ -1,7 +1,7 @@
 
 #include "list.h"
 #include "heap.h"
-#include "debuglog_.h"
+#include "debuglog.h"
 #undef NULL
 #define NULL 0
 

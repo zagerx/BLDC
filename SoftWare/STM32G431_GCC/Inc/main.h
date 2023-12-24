@@ -57,7 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define _ARR 2100
+#define _ARR 8500
+#define _PSC 1
 #define LED_01_Pin GPIO_PIN_13
 #define LED_01_GPIO_Port GPIOC
 #define KEY_01_Pin GPIO_PIN_12

@@ -1,4 +1,5 @@
-#include "pid.h"
+#include "./pid.h"
+#include "../method/method_cfg.h"
 void pid_init(pid_cb_t *pid,float kp,float ki,float kc,\
                             float outmax,float outmin)
 {
