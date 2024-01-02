@@ -11,7 +11,7 @@
 #define DEBUG_LEVEL          (DEBUG_INFO_NORMAL)
 
 
-#define DEBUG_SW   DEBUG_RTT
+#define DEBUG_SW   DEBUG_UART
 
 
 #if (DEBUG_SW == DEBUG_UART)

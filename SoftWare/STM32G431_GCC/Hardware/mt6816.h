@@ -9,5 +9,16 @@ typedef struct mt6816
     uint32_t pc_flag;
     uint32_t sample_data;
 }mt6816_t;
+
+
+typedef struct mt6816_data
+{
+    unsigned int raw; //原始数据
+    float cov_data;   //转换后的数据    
+    float filter_data;    //滤波后数据
+}mt6816_data_t;
+
+
 float mt6816_readangle(void);
+void* mt6816_read(void);
 #endif

@@ -1,6 +1,6 @@
 #include "./motorctrl.h"
 
-/*----------------Ä£¿éÄÚ²¿µÄÏà»¥ÒýÓÃ---------------------*/
+/*----------------Ä£ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½à»¥ï¿½ï¿½ï¿½ï¿½---------------------*/
 #include "focmethod.h"
 
 #define MOTORCTRL_PERCI            (1)
@@ -26,7 +26,7 @@ motorctrl_t g_Motor1 = {
     .state = MOTOR_INIT,
 };
 static float sg_MecThetaOffset = 0.0f;
-/*-------------ÓÉsimulinkÌá¹©---------*/
+/*-------------ï¿½ï¿½simulinkï¿½á¹©---------*/
 // extern pid_t eleloop_param;
 extern alpbet_t _2r_2s(dq_t i_dq,float theta);
 static lowfilter_t sg_elefilter[3];
@@ -45,12 +45,12 @@ void motortctrl_process(void)
         for (unsigned char  i = 0; i < 10; i++)
         {
             /* code */
-            theta = sensor_readanlge();
+            theta = (*(sensor_data_t*)sensor_user_real_read(SENSOR_MT6818)).cov_data;
         }
         // Motor_Control_initialize();
-        /*------ÉèÖÃIQµÄÄ¿±êµçÁ÷------*/
+        /*------ï¿½ï¿½ï¿½ï¿½IQï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½------*/
         // ipc_write_data(PUBLIC_DATA_IQ_TARGET,0.8f);
-        /*--------×ª×ÓÔ¤¶¨Î»-----------*/
+        /*--------×ªï¿½ï¿½Ô¤ï¿½ï¿½Î»-----------*/
         g_Motor1.state = MOTOR_OFFSET;   
         break;
     case MODE_ANALOG:          
@@ -69,7 +69,7 @@ void motortctrl_process(void)
         duty_01 = _svpwm(temp2.alpha,temp2.beta);
         motor_set_pwm(duty_01._a,duty_01._b,duty_01._c);   
         HAL_Delay(1);
-        theta = sensor_readanlge() * 2.0f;  
+        theta = (*(sensor_data_t*)sensor_user_real_read(SENSOR_MT6818)).cov_data * 2.0f;  
         ipc_write_data(PUBLIC_DATA_TEMP0,theta); 
 
         // if(motor_findzerpoint(&theta,0,0))
@@ -91,7 +91,7 @@ void motortctrl_process(void)
             duty_01 = _svpwm(temp2.alpha,temp2.beta);
             motor_set_pwm(duty_01._a,duty_01._b,duty_01._c); 
             HAL_Delay(2000);
-            sg_MecThetaOffset = sensor_readanlge();
+            sg_MecThetaOffset = (*(sensor_data_t*)sensor_user_real_read(SENSOR_MT6818)).cov_data;
             g_Motor1.state = MOTOR_TEST;
             for (unsigned char i = 0; i < 5*2; i++)
             {
@@ -108,8 +108,9 @@ void motortctrl_process(void)
         }
         break;        
     case MOTOR_IDLE:
-        theta = sensor_readanlge();
+        theta = (*(sensor_data_t*)sensor_user_real_read(SENSOR_MT6818)).cov_data;
         ipc_write_data(PUBLIC_DATA_TEMP0,theta);
+        USER_DEBUG_NORMAL("theta %f\r\n",theta);
         if(!IPC_GET_EVENT(gEventGroup,KEY01_SHORT_PRESS))
         {
             break;
@@ -142,7 +143,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     float a_Ibfilter100HZ = 0.0f;
     float a_Icfilter100HZ = 0.0f;    
     duty_t duty;
-    /*------------------------µçÁ÷×ª»»-------------------------------------------*/
+    /*------------------------ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½-------------------------------------------*/
     float a1,a2,a3;
     a1 = (float)abc_vale[0] - AD_OFFSET;
     a2 = (float)abc_vale[1] - AD_OFFSET;
@@ -152,42 +153,42 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     Ic = (float)a3*(float)(3.3f/4096.0f/RC_S/BETA_);
     // Ic = 0.0f - Ia - Ib; 
 #if 1
-    /*------------------------µçÁ÷ÂË²¨--------------------------------------------------*/
+    /*------------------------ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½--------------------------------------------------*/
     a_Iafilter100HZ = lowfilter_cale(&sg_elefilter[0],Ia);
     a_Ibfilter100HZ = lowfilter_cale(&sg_elefilter[1],Ib);
     a_Icfilter100HZ = lowfilter_cale(&sg_elefilter[2],Ic);
     abc_t i_abc;
     i_abc.a = a_Iafilter100HZ;
     i_abc.b = a_Ibfilter100HZ;
-    i_abc.c = a_Icfilter100HZ;//¸üÐÂµ½simulink
+    i_abc.c = a_Icfilter100HZ;//ï¿½ï¿½ï¿½Âµï¿½simulink
 #else
     rtU.abc[0] = a_Iafilter100HZ;
     rtU.abc[1] = a_Ibfilter100HZ;
-    rtU.abc[2] = a_Icfilter100HZ;//¸üÐÂµ½simulink
+    rtU.abc[2] = a_Icfilter100HZ;//ï¿½ï¿½ï¿½Âµï¿½simulink
     rtU.abc[0] = Ia;
     rtU.abc[1] = Ib;
-    rtU.abc[2] = Ic;//¸üÐÂµ½simulink
+    rtU.abc[2] = Ic;//ï¿½ï¿½ï¿½Âµï¿½simulink
 #endif
 
-    /*-------------------------»ñÈ¡»úÐµ½Ç¶ÈºÍµç½Ç¶È--------------------------------------------*/
+    /*-------------------------ï¿½ï¿½È¡ï¿½ï¿½Ðµï¿½Ç¶ÈºÍµï¿½Ç¶ï¿½--------------------------------------------*/
     float mech_theta = 0.0f;
     float elec_theta = 0.0;
-    mech_theta = sensor_readanlge() - sg_MecThetaOffset;    
+    mech_theta = (*(sensor_data_t*)sensor_user_real_read(SENSOR_MT6818)).cov_data - sg_MecThetaOffset;    
     elec_theta = _normalize_angle(mech_theta) * MOTOR_PAIR;
     // elec_theta = mech_theta;
-    // rtU.test_angle = elec_theta;//¸üÐÂµ½simulink
-    /*-------------------------ÉèÖÃ×ªËÙ-----------------------------------------------------*/
+    // rtU.test_angle = elec_theta;//ï¿½ï¿½ï¿½Âµï¿½simulink
+    /*-------------------------ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½-----------------------------------------------------*/
     // rtU.speed_ref = 1200;
 
 #if 0
-    /*-------------------µçÁ÷»·/ËÙ¶È»·/¹Û²âÆ÷¼ÆËã-----------------------------------*/
+    /*-------------------ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½Ù¶È»ï¿½/ï¿½Û²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-----------------------------------*/
     Motor_Control_step();
     duty.duty_a = rtY.Ta;
     duty.duty_b = rtY.Tb;
     duty.duty_c = rtY.Tc;   
 #else
     #if 0
-    /*----µ±²½½ø½Ç¶ÈÎª 0.01fÊ±£¬qÖáÉèÖÃÎª2.4f½ÏÎªºÏÀí-----*/
+    /*----ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½Îª 0.01fÊ±ï¿½ï¿½qï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª2.4fï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½-----*/
         static float temp_theta = 0.0f;
         temp_theta += 0.01f;
         if (temp_theta >= _2PI)
@@ -200,7 +201,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
         duty = foc_curloopcale(i_abc,(elec_theta));
     #endif    
 #endif
-    /*-------------------------------¸üÐÂµ½PWMÄ£¿é-----------------------------------------*/
+    /*-------------------------------ï¿½ï¿½ï¿½Âµï¿½PWMÄ£ï¿½ï¿½-----------------------------------------*/
     motor_set_pwm(duty._a,duty._b,duty._c);
 }
 

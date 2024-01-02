@@ -6,9 +6,9 @@
   ******************************************************************************
   * @attention
   *
-  * 1¡¢42BLDC µç»ú½ÓÏßË³ÐòÎª µçÔ´+ µçÔ´- À¶Ïß »ÆÏß ÂÌÏß
+  * 1ï¿½ï¿½42BLDC ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Îª ï¿½ï¿½Ô´+ ï¿½ï¿½Ô´- ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   * git
-  *     ¿ÉÒÔ³¢ÊÔ¸øtheta -PI/2
+  *     ï¿½ï¿½ï¿½Ô³ï¿½ï¿½Ô¸ï¿½theta -PI/2
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -23,7 +23,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
 #include "ipc.h"
+#include "sensor.h"
 #include "../Protocol/protocol.h"
 #include "../BLDCMotor/motorctrl.h"
 #include "../Public/pubilc.h"
@@ -62,7 +64,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/*--------------ÏµÍ³Ïß³Ì-------------------*/
+/*--------------ÏµÍ³ï¿½ß³ï¿½-------------------*/
 #define SYSRUNNING_PERCI            (1)
 #define DELAY_1MS                   (1)/SYSRUNNING_PERCI
 #define DELAY_2MS                   (2)/SYSRUNNING_PERCI
@@ -159,9 +161,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    sysrunning_process();
+    // sysrunning_process();
+    sensor_process();
     motortctrl_process();
-    protocol_process();
+    // protocol_process();
 
     HAL_Delay(1);
     /* USER CODE END WHILE */
