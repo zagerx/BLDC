@@ -237,11 +237,11 @@ void motor_set_pwm(float _a,float _b,float _c)
     unsigned short max = 0;
     max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
     // max = ((1.0f-(float)max_val_01((uint16_t)_a,(uint16_t)_b,(uint16_t)_c))*_ARR);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)b);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)a);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)a);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)b);
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)c);
 
-    /*´¥·¢ADC²ÉÑù*/
+    /*ï¿½ï¿½ï¿½ï¿½ADCï¿½ï¿½ï¿½ï¿½*/
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 100));	
 }
 void motor_enable_noirq(void)
@@ -265,7 +265,7 @@ void motor_enable(void)
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3); 
 
-    /*----------Æô¶¯ADC²ÉÑù--------------*/
+    /*----------ï¿½ï¿½ï¿½ï¿½ADCï¿½ï¿½ï¿½ï¿½--------------*/
     HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
     HAL_ADCEx_InjectedStart_IT(&hadc1);
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);  

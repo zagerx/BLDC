@@ -8,7 +8,7 @@
     #define ANGLE_SENSOR_NONE               (0)
     #define ANGLE_SENSOR_MT6818             (1)
     #define ANGLE_SENSOR_TLE5012B           (2)
-    #define ANGLE_SENSOR                    ANGLE_SENSOR_TLE5012B
+    #define ANGLE_SENSOR                    ANGLE_SENSOR_MT6818
     #if(ANGLE_SENSOR == ANGLE_SENSOR_MT6818)
         #include "mt6816.h"
     #elif(ANGLE_SENSOR == ANGLE_SENSOR_TLE5012B)
