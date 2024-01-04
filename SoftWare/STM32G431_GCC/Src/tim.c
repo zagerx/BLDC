@@ -241,7 +241,6 @@ void motor_set_pwm(float _a,float _b,float _c)
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)b);
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)c);
 
-    /*����ADC����*/
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 100));	
 }
 void motor_enable_noirq(void)
@@ -265,7 +264,7 @@ void motor_enable(void)
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3); 
 
-    /*----------����ADC����--------------*/
+    /*------------------------*/
     HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
     HAL_ADCEx_InjectedStart_IT(&hadc1);
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);  
@@ -275,7 +274,7 @@ void motor_disable(void)
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(0));
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(0));
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(0));
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(0));	
+    // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(0));	
 
     HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_1);
     HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_1);

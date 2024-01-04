@@ -9,18 +9,18 @@
 #define TIMEOUT     1000
 
 /*
-**  Ð­Òéµ×²ã·¢ËÍ½Ó¿Ú£¬Ó¦¸ù¾ÝÓ²¼þ½Ó¿ÚÓÉÍâ²¿ÊµÏÖ
+**  Ð­ï¿½ï¿½×²ã·¢ï¿½Í½Ó¿Ú£ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½â²¿Êµï¿½ï¿½
 */
 __attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 {
 }
 
 /*
-**  len: Ö¡µÄ×Ü³¤
+**  len: Ö¡ï¿½ï¿½ï¿½Ü³ï¿½
 */
 static char _send_proframe(pro_frame_t *msg,unsigned short len)
 {
-    /*ÕûÀíÖ¡Êý¾Ý*/
+    /*ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½*/
     unsigned char *pucmsg;
     unsigned char *pdata;
     unsigned short data_len;
@@ -47,9 +47,9 @@ char protocol_nowtransmit(unsigned char cmd_type,unsigned char cmd,\
                             void *pdata,unsigned short data_len)
 {
     pro_frame_t* p_fram;
-    /*Ð­ÒéÖ¡·â°ü*/
+    /*Ð­ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½*/
     p_fram = _packet_proframe(cmd | (cmd_type<<8),pdata,data_len);
-    /*×¼±¸Êý¾Ý*/
+    /*×¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
     _send_proframe(p_fram,sizeof(pro_frame_t)+data_len);
     heap_free(p_fram);
     return NULL;
@@ -57,7 +57,7 @@ char protocol_nowtransmit(unsigned char cmd_type,unsigned char cmd,\
 
 
 
-/*---------------------------------------Ð­ÒéÖØ·¢»úÖÆ--------------------------------------------------*/
+/*---------------------------------------Ð­ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½ï¿½ï¿½--------------------------------------------------*/
 fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
 {
     enum{
@@ -93,16 +93,16 @@ fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
         if (pmsg->recnt >= RESEND_CNT)
         {
             pmsg->recnt = 0;
-            /* Ã»ÓÐ½ÓÊÕµ½¸ÃÃüÁîµÄÏìÓ¦ */
+            /* Ã»ï¿½Ð½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ */
             USER_DEBUG_NORMAL("cmd=0x%x no ack\r\n",cmd_fun);
             ptThis->chState = EXIT;
             break;
         }
         event =search_msgmap_event(cmd_fun);
-        if (!IPC_GET_EVENT(g_protocol_event,event))//Ã»ÓÐ½ÓÊÕµ½ÏìÓ¦
+        if (!IPC_GET_EVENT(g_protocol_event,event))//Ã»ï¿½Ð½ï¿½ï¿½Õµï¿½ï¿½ï¿½Ó¦
         {
             /* code */
-            if (pmsg->timeout++ >= TIMEOUT/fsm_cycle)//³¬Ê±
+            if (pmsg->timeout++ >= TIMEOUT/fsm_cycle)//ï¿½ï¿½Ê±
             {
                 /* code */
                 USER_DEBUG_NORMAL("cmd=0x%x timeout\r\n",cmd_fun);
@@ -116,7 +116,7 @@ fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
         ptThis->chState = RECIVE_ACK;
     case RECIVE_ACK:
         USER_DEBUG_NORMAL("recive cmd(0x%x) ack\r\n",cmd_fun);
-        /*½ÓÊÕµ½ÃüÁî¶ÔÓ¦µÄÏìÓ¦ ½øÐÐÊý¾Ý´¦Àí*/
+        /*ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ó¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý´ï¿½ï¿½ï¿½*/
         ptThis->chState = EXIT;        
     case EXIT:
         pmsg->timeout = 0;
@@ -132,37 +132,37 @@ void protocol_transmit(unsigned char cmd_type,unsigned char cmd,\
                             void *pdata,unsigned short data_len)
 {
     pro_frame_t* p_fram;
-    /*Ð­ÒéÖ¡·â°ü*/
+    /*Ð­ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½*/
     p_fram = _packet_proframe(cmd | (cmd_type<<8),pdata,data_len);
 
-    /*ÏûÏ¢¶ÓÁÐ·â°ü*/
+    /*ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Ð·ï¿½ï¿½*/
     pro_pack_t *pmsg;
     pmsg = _packet_propack(p_fram,1000,5);
-/*-------------------------------list node ·â°ü--------------------*/
-    /*list½Úµã·â°ü*/
+/*-------------------------------list node ï¿½ï¿½ï¿½--------------------*/
+    /*listï¿½Úµï¿½ï¿½ï¿½*/
     _node_t *pnode;
     pnode = list_creatnode(pmsg,sizeof(node_item_t));
 /*-----------------------------------------------------------------*/    
-    /*Ìí¼Óµ½ÏûÏ¢ÁÐ±í¼´¿É*/
+    /*ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½Ï¢ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½*/
     list_insert_node(gtransmit_list,pnode);
 }
 
 void protocol_transmitprocess(void)
 {
-    /*»ñÈ¡Á´±í ²é¿´ÊÇ·ñÓÐ´ý·¢ËÍµÄÏûÏ¢*/
+    /*ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ ï¿½é¿´ï¿½Ç·ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½Ï¢*/
     _node_t *cur_node;
     node_item_t *cur_item;
     pro_pack_t *pack;
     pro_frame_t* p_fram;     
     cur_node = gtransmit_list->head;
-    while (cur_node != 0)//±éÀúÕû¸öÁ´±í
+    while (cur_node != 0)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     {
         cur_item = cur_node->pitem;
         pack = (pro_pack_t *)cur_item->pdata;
         p_fram = (pro_frame_t *)pack->frame;
         if(DISPATCH_FSM(((fsm_cb_t *)pack)) == fsm_rt_cpl)
         {
-            /*µ±Ç°×´Ì¬»úÖ´ÐÐ½áÊø  ¿ÉÒÔÉ¾³ý*/
+            /*ï¿½ï¿½Ç°×´Ì¬ï¿½ï¿½Ö´ï¿½Ð½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½*/
             list_delete_node(gtransmit_list,cur_node);
             USER_DEBUG_NORMAL("free \r\n");
         }

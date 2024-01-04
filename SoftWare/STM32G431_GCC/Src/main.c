@@ -161,7 +161,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // sysrunning_process();
+    sysrunning_process();
     sensor_process();
     motortctrl_process();
     // protocol_process();

@@ -222,8 +222,8 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
 /* USER CODE BEGIN 1 */
 #include "bldcmotor.h"
-/*----------------------------------------ADCÖÐ¶Ï----------------------------------------------------
-** Ã¿100usÖ´ÐÐÒ»´Î pwmÆµÂÊ10KHz
+/*----------------------------------------ADCï¿½Ð¶ï¿½----------------------------------------------------
+** Ã¿100usÖ´ï¿½ï¿½Ò»ï¿½ï¿½ pwmÆµï¿½ï¿½10KHz
 */
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
