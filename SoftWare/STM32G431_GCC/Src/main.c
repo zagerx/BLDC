@@ -27,7 +27,8 @@
 #include "ipc.h"
 #include "sensor.h"
 #include "../Protocol/protocol.h"
-#include "../BLDCMotor/motorctrl.h"
+#include "../../BLDCMotor/motorctrl.h"
+// #include "motorctrl.h"
 #include "../Public/pubilc.h"
 /* USER CODE END Includes */
 
@@ -97,15 +98,15 @@ void sysrunning_process(void)
                 break;
             }           
             if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
-                // ipc_write_data(PUBLIC_DATA_IQ_TARGET,2.0);
+                // USER_DEBUG_NORMAL("theta %f\r\n",(*(sensor_data_t*)sensor_user_read(SENSOR_MT6818)).cov_data);
                 break;
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
             {
                 HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                
-            }          
+            }
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
-                protocol02_process();
+                // protocol02_process();
                 break;
             }
         default:

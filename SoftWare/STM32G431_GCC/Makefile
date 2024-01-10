@@ -40,14 +40,6 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-BLDCMotor/focmethod.c \
-BLDCMotor/motorctrl.c \
-Sensor/sensor.c \
-Hardware/mt6816.c \
-Protocol/protocol.c \
-Protocol/protocol_msgmap.c \
-Protocol/protocol_process.c \
-Protocol/protocol_transmit.c \
 Public/Fsm/fsm.c \
 Public/list.c \
 Public/crc.c \
@@ -93,11 +85,13 @@ Src/dma.c \
 Src/usart.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart_ex.c
-# Simulink/Motor_Control_ert_rtw/rtGetInf.c \
-# Simulink/Motor_Control_ert_rtw/rtGetInf.c \# Simulink/Motor_Control_ert_rtw/rtGetInf.c \# Simulink/Motor_Control_ert_rtw/rtGetInf.c \# Simulink/Motor_Control_ert_rtw/rtGetInf.c \# Simulink/Motor_Control_ert_rtw/rtGetInf.c \# Simulink/Motor_Control_ert_rtw/rtGetNaN.c \
-# Simulink/Motor_Control_ert_rtw/rt_nonfinite.c \
-# Simulink/Motor_Control_ert_rtw/xxxx.c \
-# Simulink/Motor_Control_ert_rtw/Motor_Control.c \
+
+C_SOURCES += $(wildcard ../BLDCMotor/*.c)
+C_SOURCES += $(wildcard ../Protocol/*.c)
+C_SOURCES += $(wildcard ../Sensor/*.c)
+C_SOURCES += $(wildcard ../Hardware/mt6816.c)
+
+
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32g431xx.s \
@@ -154,9 +148,10 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--ISensor \
--IBLDCMotor \
--IHardware \
+-I../Sensor \
+-I../Hardware \
+-I../BLDCMotor \
+-I../protocol \
 -IPublic/debuglog/SEGGER_RTT_V792h/Config \
 -IPublic/debuglog/SEGGER_RTT_V792h/RTT \
 -IPublic/debuglog \
@@ -164,13 +159,15 @@ C_INCLUDES =  \
 -IPublic/IPC \
 -IPublic \
 -IPublic/Fsm \
--Iprotocol \
 -Iuser \
 -IInc \
 -IDrivers/STM32G4xx_HAL_Driver/Inc \
 -IDrivers/STM32G4xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32G4xx/Include \
 -IDrivers/CMSIS/Include
+
+# C_INCLUDES += -I../Sensor -I../BLDCMotor -I../protocol -I../Hardware
+
 # -ISimulink/Motor_Control_ert_rtw \
 # -ISimulink/Motor_Control_ert_rtw \# -ISimulink/Motor_Control_ert_rtw \# -ISimulink/Motor_Control_ert_rtw \# -ISimulink/Motor_Control_ert_rtw \# -ISimulink/Motor_Control_ert_rtw \
 # compile gcc flags

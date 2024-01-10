@@ -4,14 +4,14 @@
 #include "math.h"
 #include "ipc.h"
 #include "tim.h"
-#include "../Sensor/sensor.h"
-#include "../Public/pubilc.h"
+#include "sensor.h"
+#include "pubilc.h"
 // #include "Motor_Control.h"
 
 #define AD_OFFSET                   2116.0f
-#define RA_S                        0.01F
-#define RB_S                        0.01F
-#define RC_S                        0.01F
+#define RA_S                        0.1F
+#define RB_S                        0.1F
+#define RC_S                        0.1F
 #define MOTOR_PAIR                  2.0f
 #define BETA_                       5.7F
 

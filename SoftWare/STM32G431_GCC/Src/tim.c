@@ -224,24 +224,45 @@ static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned shor
 	}
 	return max;
 }
+static unsigned short min_val_01(unsigned short a,unsigned short b,unsigned short c)
+{
+  unsigned short min;
+  if(a<b)
+  {
+    min = a;
+  }else{
+    min = b;
+  }
+  if (c < min)
+  {
+    min = c;
+  }
+  return min;
+}
+#include "ipc.h"
+float AAAAA;
 void motor_set_pwm(float _a,float _b,float _c)
 {
-    // _a = 0.25f;_b = 1.0f;_c = 1.0f;
     float a,b,c;
-    // a = ((1.0f-(float)_a)*_ARR);
-    // b = ((1.0f-(float)_b)*_ARR);
-    // c = ((1.0f-(float)_c)*_ARR);
-    a = (((float)_a)*_ARR);
-    b = (((float)_b)*_ARR);
-    c = (((float)_c)*_ARR);
-    unsigned short max = 0;
-    max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
-    // max = ((1.0f-(float)max_val_01((uint16_t)_a,(uint16_t)_b,(uint16_t)_c))*_ARR);
+    a = ((1.0f-(float)_a)*_ARR);
+    b = ((1.0f-(float)_b)*_ARR);
+    c = ((1.0f-(float)_c)*_ARR);
+    AAAAA = a;
+    // a = (((float)_a)*_ARR);
+    // b = (((float)_b)*_ARR);
+    // c = (((float)_c)*_ARR);
+    ipc_write_data(PUBLIC_DATA_TEMP0,a);
+
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)a);
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)b);
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)c);
 
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 100));	
+    unsigned short max = 0;
+    max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 100));	    
+    // unsigned short min = 0;
+    // min = min_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);  
+    // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(min + 20));	
 }
 void motor_enable_noirq(void)
 {
@@ -274,7 +295,6 @@ void motor_disable(void)
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(0));
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(0));
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(0));
-    // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(0));	
 
     HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_1);
     HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_1);

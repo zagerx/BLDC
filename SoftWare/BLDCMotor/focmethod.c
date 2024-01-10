@@ -6,14 +6,13 @@ alpbet_t _2r_2s(dq_t i_dq,float theta);
 static dq_t circle_limit(dq_t dq);
 
 static curloop_t sg_curloop_param;
-static pid_cb_t *sgp_curloop_d_pid;
-static pid_cb_t *sgp_curloop_q_pid;
-static pid_cb_t sg_Q_cur;
+ pid_cb_t *sgp_curloop_d_pid;
+ pid_cb_t *sgp_curloop_q_pid;
 void foc_paraminit(void)
 {
     sgp_curloop_d_pid = &sg_curloop_param.d_pid;
     sgp_curloop_q_pid = &sg_curloop_param.q_pid;
-    pid_init(sgp_curloop_d_pid,0.2f,0.0001f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(sgp_curloop_d_pid,0.010f,0.0001f,1.0f,D_MAX_VAL,D_MIN_VAL);
     pid_init(sgp_curloop_q_pid,0.050f,0.01f,1.0f,Q_MAX_VAL,Q_MIN_VAL);
 }
 
@@ -60,7 +59,6 @@ duty_t foc_curloopcale(abc_t i_abc,float theta)
     u_dq.q = 1.0f;    
 #endif
 
-
     alpbet_t u_alphabeta;
     u_alphabeta = _2r_2s(u_dq,(theta));// + PI/2.0f); 
     duty_t duty;
@@ -71,18 +69,18 @@ duty_t _svpwm(float ualpha,float ubeta)
 {
     unsigned char sector;    
     sector = 0;
-    /*--------------�ж�����-----------------*/
+    /*-------------------------------*/
     if(ubeta > 0.0F) {
         sector = 1;
     }
     if((sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
         sector += 2;
-    }  
+    }
     if((-sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
         sector += 4;
     }
 
-    /*--------------------��������ʸ��--------------------------------*/
+    /*----------------------------------------------------*/
     float s_vector = 0.0f,m_vector = 0.0f;
     switch (sector) {
         case 1:
@@ -115,20 +113,20 @@ duty_t _svpwm(float ualpha,float ubeta)
             s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
         break;
     }
-    /*---------------------------����ʸ��Բ---------------------------------*/
+    /*------------------------------------------------------------*/
     if (m_vector + s_vector > T_PWM) 
     {
         m_vector /= (m_vector + s_vector);
         s_vector /= m_vector + s_vector;
     }
 
-    /*--------------------���������ű�����ʱ��-------------------------------*/
+    /*---------------------------------------------------*/
     float Ta,Tb,Tc;
     Ta = (T_PWM - (m_vector + s_vector)) / 4.0F;  
     Tb = Ta + m_vector/2.0f;
     Tc = Tb + s_vector/2.0f;
 
-    /*-------------------------��������------------------------------------*/
+    /*-------------------------------------------------------------*/
     float Tcmp1 = 0.0f;
     float Tcmp2 = 0.0f;
     float Tcmp3 = 0.0f;
@@ -141,24 +139,21 @@ duty_t _svpwm(float ualpha,float ubeta)
         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
     }
 
-    /*-----------------------����ռ�ձ�-----------------------------*/
+    /*----------------------------------------------------*/
     float duty_a,duty_b,duty_c;
-    // duty_a =(T_PWM - Tcmp1*2.0f )*F_PWM;
-    // duty_b =(T_PWM - Tcmp2*2.0f )*F_PWM;
-    // duty_c =(T_PWM - Tcmp3*2.0f )*F_PWM;
+    duty_a =(T_PWM - Tcmp1*2.0f )*F_PWM;
+    duty_b =(T_PWM - Tcmp2*2.0f )*F_PWM;
+    duty_c =(T_PWM - Tcmp3*2.0f )*F_PWM;
 
-    duty_a =(Tcmp1)/T_PWM;
-    duty_b =(Tcmp2)/T_PWM;
-    duty_c =(Tcmp3)/T_PWM;
+    // duty_a =(Tcmp1)/T_PWM;
+    // duty_b =(Tcmp2)/T_PWM;
+    // duty_c =(Tcmp3)/T_PWM;
 
     duty_t sg_duty;
     sg_duty._a = duty_a;
     sg_duty._b = duty_b;
     sg_duty._c = duty_c;
 
-    // ipc_write_data(PUBLIC_DATA_IA,Tcmp1 * 10000.0f);
-    // ipc_write_data(PUBLIC_DATA_IB,Tcmp2);
-    // ipc_write_data(PUBLIC_DATA_IC,sg_duty._a);
     return sg_duty;
 }
 
@@ -205,15 +200,7 @@ static dq_t _3s_2r(abc_t i_abc, float theta)
     return i_dq;
 }
 #endif
-/*-------------------�Ƕȹ�һ��-------------------------------
-��Ŀ���������ʽ��condition ? expr1 : expr2 
-���У�condition ��Ҫ��ֵ����������ʽ����������������򷵻� expr1 ��ֵ�����򷵻� expr2 ��ֵ��
-���Խ���Ŀ�������Ϊ if-else ���ļ���ʽ��
-fmod �����������ķ����������ͬ����ˣ��� angle ��ֵΪ����ʱ�������ķ��Ž��� _2PI �ķ����෴��
-Ҳ����˵����� angle ��ֵС�� 0 �� _2PI ��ֵΪ�������� fmod(angle, _2PI) ��������Ϊ������
-���磬�� angle ��ֵΪ -PI/2��_2PI ��ֵΪ 2PI ʱ��fmod(angle, _2PI) ������һ��������
-����������£�����ͨ������������������ _2PI �����Ƕȹ�һ���� [0, 2PI] �ķ�Χ�ڣ���ȷ���Ƕȵ�ֵʼ��Ϊ������
-*/
+
 float _normalize_angle(float angle)
 {
   float a = fmod(angle, 2.0f*PI);   //ȡ������������ڹ�һ�����г�����ֵ�������֪
