@@ -1,6 +1,6 @@
 #include "ipc.h"
-
-
+#include "heap.h"
+#include "debuglog.h"
 
 #undef NULL 
 #define NULL 0
@@ -67,25 +67,21 @@ void ipc_msgpool_del(node_item_t *msg)
     list_delete_node(_01_head,pdel_node);
 }
 
-
+extern void _list_printf(_list_t *pthis);
 void ipc_msg_printf(void)
 {
     _list_printf(_01_head);
 }
 
-void ipc_msg_printf_number(void)
-{
-    _list_printf_number(_01_head);
-}
 
 
 
-/*IPCÏûÏ¢·â°ü*/
+/*IPCï¿½ï¿½Ï¢ï¿½ï¿½ï¿½*/
 node_item_t* ipc_mesg_packet(unsigned short id,unsigned short len)
 {
     unsigned char* pbuf;
     pbuf = (unsigned char*)heap_malloc(len);
-    /*¿ªÊ¼·â°ü*/
+    /*ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½*/
     node_item_t *pMsg;
     pMsg = (node_item_t *)&pbuf[0];
     pMsg->len = len-sizeof(node_item_t);

@@ -35,12 +35,12 @@ _node_t *list_creatnode(void *pdata,unsigned short len)
 }
 
 /*
-**  Í·²å·¨
+**  Í·ï¿½å·¨
 */
 void list_insert_node(_list_t *pthis, _node_t *node)
 {
     _node_t *tail_node;
-    /*µ±Ç°Á´±íÊÇ·ñÎª¿Õ*/
+    /*ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½*/
     if (pthis->head == 0)
     {
         /* code */
@@ -49,13 +49,13 @@ void list_insert_node(_list_t *pthis, _node_t *node)
     }else{
         tail_node = pthis->tail;
         tail_node->next = node;
-        pthis->tail = tail_node->next;//¸üÐÂÎ²½Úµã
+        pthis->tail = tail_node->next;//ï¿½ï¿½ï¿½ï¿½Î²ï¿½Úµï¿½
     }
     pthis->node_numb++;
 }
 
 
-/*--------------¸ù¾Ý½ÚµãID/½Úµã±¾ÉíÉ¾³ý½Úµã-----------------------------------*/
+/*--------------ï¿½ï¿½ï¿½Ý½Úµï¿½ID/ï¿½Úµã±¾ï¿½ï¿½É¾ï¿½ï¿½ï¿½Úµï¿½-----------------------------------*/
 void list_delete_node(_list_t *pthis,_node_t *node)
 {
     _node_t *cur_node,*pre_node = NULL;
@@ -140,14 +140,13 @@ void list_free(_list_t *pthis, _node_t *node)
 
     while (cur_node !=0 )
     {
-        /*¼ÇÂ¼ÏÂÒ»¸ö½Úµã*/
+        /*ï¿½ï¿½Â¼ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Úµï¿½*/
         next_node = cur_node->next;
         heap_free(cur_node);
         cur_node = next_node;
     }
     heap_free(pthis);
 }
-
 
 void _list_printf(_list_t *pthis)
 {

@@ -145,7 +145,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 
     dq_t udq = {0.0f,1.00f};
     alpbet_t uab;
-    #if 1//强拖
+    #if 0//强拖
         {
             static float theta = 0.0f;
             if (theta >= _2PI)

@@ -35,8 +35,7 @@ build/sensor.o: ../Sensor/sensor.c ../Sensor/sensor.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h \
  ../Public/debuglog/debuglog.h ../Public/debuglog/./debuglog_cfg.h \
- ../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
- ../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h
+ Inc/usart.h
 ../Sensor/sensor.h:
 ../Sensor/sensor_cfg.h:
 ../Public/pubilc.h:
@@ -84,5 +83,4 @@ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h:
 ../Public/debuglog/debuglog.h:
 ../Public/debuglog/./debuglog_cfg.h:
-../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
-../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
+Inc/usart.h:

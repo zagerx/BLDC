@@ -1,39 +1,39 @@
-ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 1
 
 
    1              		.cpu cortex-m4
-   2              		.arch armv7e-m
-   3              		.fpu fpv4-sp-d16
-   4              		.eabi_attribute 27, 1
-   5              		.eabi_attribute 28, 1
-   6              		.eabi_attribute 20, 1
-   7              		.eabi_attribute 21, 1
-   8              		.eabi_attribute 23, 3
-   9              		.eabi_attribute 24, 1
-  10              		.eabi_attribute 25, 1
-  11              		.eabi_attribute 26, 1
-  12              		.eabi_attribute 30, 1
-  13              		.eabi_attribute 34, 1
-  14              		.eabi_attribute 18, 4
-  15              		.file	"sensor.c"
-  16              		.text
-  17              	.Ltext0:
-  18              		.cfi_sections	.debug_frame
-  19              		.section	.rodata.sensor_process.str1.4,"aMS",%progbits,1
-  20              		.align	2
-  21              	.LC0:
-  22 0000 64617461 		.ascii	"data %d %d\015\012\000"
-  22      20256420 
-  22      25640D0A 
-  22      00
-  23              		.section	.text.sensor_process,"ax",%progbits
-  24              		.align	1
-  25              		.global	sensor_process
-  26              		.syntax unified
-  27              		.thumb
-  28              		.thumb_func
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"sensor.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.rodata.sensor_process.str1.4,"aMS",%progbits,1
+  18              		.align	2
+  19              	.LC0:
+  20 0000 64617461 		.ascii	"data %d %d\015\012\000"
+  20      20256420 
+  20      25640D0A 
+  20      00
+  21              		.section	.text.sensor_process,"ax",%progbits
+  22              		.align	1
+  23              		.global	sensor_process
+  24              		.arch armv7e-m
+  25              		.syntax unified
+  26              		.thumb
+  27              		.thumb_func
+  28              		.fpu fpv4-sp-d16
   30              	sensor_process:
-  31              	.LFB329:
+  31              	.LFB332:
   32              		.file 1 "../Sensor/sensor.c"
    1:../Sensor/sensor.c **** #include "sensor.h"
    2:../Sensor/sensor.c **** #include "debuglog.h"
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
   21:../Sensor/sensor.c ****         [SENSOR_TLE5012B] = {
   22:../Sensor/sensor.c ****             .pf_read = tle5012b_read,
   23:../Sensor/sensor.c ****             .pf_write = NULL,
-ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 2
 
 
   24:../Sensor/sensor.c ****             .cycle = 0x00
@@ -102,7 +102,7 @@ ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
   41              		.loc 1 53 5 view .LVU3
   42 0004 13B1     		cbz	r3, .L2
   43 0006 032B     		cmp	r3, #3
-  44 0008 2FD0     		beq	.L7
+  44 0008 2ED0     		beq	.L7
   45 000a 7047     		bx	lr
   46              	.L2:
   54:../Sensor/sensor.c ****     {
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
   53 0012 7047     		bx	lr
   54              	.LVL0:
   55              	.L6:
-ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 3
 
 
   56              	.LCFI0:
@@ -139,13 +139,13 @@ ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
   67 001a 02EB8303 		add	r3, r2, r3, lsl #2
   68 001e 5968     		ldr	r1, [r3, #4]
   69              		.loc 1 61 16 view .LVU9
-  70 0020 01B3     		cbz	r1, .L5
+  70 0020 F9B1     		cbz	r1, .L5
   71              		.loc 1 61 79 discriminator 1 view .LVU10
   72 0022 04EB4403 		add	r3, r4, r4, lsl #1
   73 0026 02EB8303 		add	r3, r2, r3, lsl #2
   74 002a 5B88     		ldrh	r3, [r3, #2]
   75              		.loc 1 61 51 discriminator 1 view .LVU11
-  76 002c D3B1     		cbz	r3, .L5
+  76 002c CBB1     		cbz	r3, .L5
   62:../Sensor/sensor.c ****             {
   63:../Sensor/sensor.c ****                 continue;
   64:../Sensor/sensor.c ****             }
@@ -174,62 +174,61 @@ ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
   90 0048 67EE877A 		vmul.f32	s15, s15, s14
   91 004c 04EB4405 		add	r5, r4, r4, lsl #1
   92 0050 FDEEE77A 		vcvt.s32.f32	s15, s15
-  93 0054 17EE903A 		vmov	r3, s15	@ int
-  94 0058 56F82520 		ldr	r2, [r6, r5, lsl #2]
-  95 005c 0949     		ldr	r1, .L11+16
-  96 005e 0020     		movs	r0, #0
-ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 4
+  93 0054 17EE902A 		vmov	r2, s15	@ int
+  94 0058 56F82510 		ldr	r1, [r6, r5, lsl #2]
+  95 005c 0948     		ldr	r0, .L11+16
+  96 005e FFF7FEFF 		bl	printf
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 4
 
 
-  97 0060 FFF7FEFF 		bl	SEGGER_RTT_printf
-  98              	.LVL2:
-  99              	.L5:
+  97              	.LVL2:
+  98              	.L5:
   59:../Sensor/sensor.c ****         {
- 100              		.loc 1 59 68 discriminator 2 view .LVU16
+  99              		.loc 1 59 68 discriminator 2 view .LVU16
   59:../Sensor/sensor.c ****         {
- 101              		.loc 1 59 77 is_stmt 0 discriminator 2 view .LVU17
- 102 0064 0134     		adds	r4, r4, #1
- 103              	.LVL3:
+ 100              		.loc 1 59 77 is_stmt 0 discriminator 2 view .LVU17
+ 101 0062 0134     		adds	r4, r4, #1
+ 102              	.LVL3:
   59:../Sensor/sensor.c ****         {
- 104              		.loc 1 59 77 discriminator 2 view .LVU18
- 105 0066 64B2     		sxtb	r4, r4
- 106              	.LVL4:
+ 103              		.loc 1 59 77 discriminator 2 view .LVU18
+ 104 0064 64B2     		sxtb	r4, r4
+ 105              	.LVL4:
   59:../Sensor/sensor.c ****         {
- 107              		.loc 1 59 77 discriminator 2 view .LVU19
- 108 0068 01E0     		b	.L3
- 109              	.LVL5:
- 110              	.L7:
- 111              	.LCFI1:
- 112              		.cfi_def_cfa_offset 0
- 113              		.cfi_restore 4
- 114              		.cfi_restore 5
- 115              		.cfi_restore 6
- 116              		.cfi_restore 14
+ 106              		.loc 1 59 77 discriminator 2 view .LVU19
+ 107 0066 01E0     		b	.L3
+ 108              	.LVL5:
+ 109              	.L7:
+ 110              	.LCFI1:
+ 111              		.cfi_def_cfa_offset 0
+ 112              		.cfi_restore 4
+ 113              		.cfi_restore 5
+ 114              		.cfi_restore 6
+ 115              		.cfi_restore 14
   59:../Sensor/sensor.c ****         {
- 117              		.loc 1 59 77 discriminator 2 view .LVU20
- 118              	.LBE2:
+ 116              		.loc 1 59 77 discriminator 2 view .LVU20
+ 117              	.LBE2:
   52:../Sensor/sensor.c ****     switch (g_sensor.state)
- 119              		.loc 1 52 1 view .LVU21
- 120 006a 70B5     		push	{r4, r5, r6, lr}
- 121              	.LCFI2:
- 122              		.cfi_def_cfa_offset 16
- 123              		.cfi_offset 4, -16
- 124              		.cfi_offset 5, -12
- 125              		.cfi_offset 6, -8
- 126              		.cfi_offset 14, -4
+ 118              		.loc 1 52 1 view .LVU21
+ 119 0068 70B5     		push	{r4, r5, r6, lr}
+ 120              	.LCFI2:
+ 121              		.cfi_def_cfa_offset 16
+ 122              		.cfi_offset 4, -16
+ 123              		.cfi_offset 5, -12
+ 124              		.cfi_offset 6, -8
+ 125              		.cfi_offset 14, -4
   53:../Sensor/sensor.c ****     {
- 127              		.loc 1 53 5 view .LVU22
- 128 006c 0024     		movs	r4, #0
- 129              	.L3:
- 130              	.LVL6:
- 131              	.LBB3:
+ 126              		.loc 1 53 5 view .LVU22
+ 127 006a 0024     		movs	r4, #0
+ 128              	.L3:
+ 129              	.LVL6:
+ 130              	.LBB3:
   59:../Sensor/sensor.c ****         {
- 132              		.loc 1 59 41 is_stmt 1 discriminator 1 view .LVU23
+ 131              		.loc 1 59 41 is_stmt 1 discriminator 1 view .LVU23
   59:../Sensor/sensor.c ****         {
- 133              		.loc 1 59 9 is_stmt 0 discriminator 1 view .LVU24
- 134 006e 002C     		cmp	r4, #0
- 135 0070 D0DD     		ble	.L6
- 136              	.LBE3:
+ 132              		.loc 1 59 9 is_stmt 0 discriminator 1 view .LVU24
+ 133 006c 002C     		cmp	r4, #0
+ 134 006e D1DD     		ble	.L6
+ 135              	.LBE3:
   74:../Sensor/sensor.c ****                                                     (int)(g_data_arry[sensor_id].cov_data * 1000));
   75:../Sensor/sensor.c **** 
   76:../Sensor/sensor.c ****         }
@@ -238,32 +237,33 @@ ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
   79:../Sensor/sensor.c ****         break;
   80:../Sensor/sensor.c ****     }
   81:../Sensor/sensor.c **** }
-ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 5
+ 136              		.loc 1 81 1 view .LVU25
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 5
 
 
- 137              		.loc 1 81 1 view .LVU25
- 138 0072 70BD     		pop	{r4, r5, r6, pc}
- 139              	.LVL7:
- 140              	.L12:
- 141              		.loc 1 81 1 view .LVU26
- 142              		.align	2
- 143              	.L11:
- 144 0074 00000000 		.word	.LANCHOR0
- 145 0078 00000000 		.word	.LANCHOR1
- 146 007c 00000000 		.word	.LANCHOR2
- 147 0080 00007A44 		.word	1148846080
- 148 0084 00000000 		.word	.LC0
- 149              		.cfi_endproc
- 150              	.LFE329:
- 152              		.section	.text.sensor_user_read,"ax",%progbits
- 153              		.align	1
- 154              		.global	sensor_user_read
- 155              		.syntax unified
- 156              		.thumb
- 157              		.thumb_func
+ 137 0070 70BD     		pop	{r4, r5, r6, pc}
+ 138              	.LVL7:
+ 139              	.L12:
+ 140              		.loc 1 81 1 view .LVU26
+ 141 0072 00BF     		.align	2
+ 142              	.L11:
+ 143 0074 00000000 		.word	.LANCHOR0
+ 144 0078 00000000 		.word	.LANCHOR1
+ 145 007c 00000000 		.word	.LANCHOR2
+ 146 0080 00007A44 		.word	1148846080
+ 147 0084 00000000 		.word	.LC0
+ 148              		.cfi_endproc
+ 149              	.LFE332:
+ 151              		.section	.text.sensor_user_read,"ax",%progbits
+ 152              		.align	1
+ 153              		.global	sensor_user_read
+ 154              		.syntax unified
+ 155              		.thumb
+ 156              		.thumb_func
+ 157              		.fpu fpv4-sp-d16
  159              	sensor_user_read:
  160              	.LVL8:
- 161              	.LFB330:
+ 161              	.LFB333:
   82:../Sensor/sensor.c **** 
   83:../Sensor/sensor.c **** /*-------------用户读取指定传感器-----------*/
   84:../Sensor/sensor.c **** void* sensor_user_read(ENUM_SENSOR sensor_id)
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
  181              	.LVL9:
   94:../Sensor/sensor.c **** 
   95:../Sensor/sensor.c ****     if (pcursensor->flag)
-ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 6
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 6
 
 
  182              		.loc 1 95 5 view .LVU35
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
  222 0040 1846     		mov	r0, r3
  223 0042 F1E7     		b	.L13
  224              	.LVL14:
-ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 7
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 7
 
 
  225              	.L16:
@@ -376,7 +376,7 @@ ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
  235 004c 00000000 		.word	.LANCHOR3
  236 0050 00000000 		.word	.LANCHOR2
  237              		.cfi_endproc
- 238              	.LFE330:
+ 238              	.LFE333:
  240              		.global	g_sensor
  241              		.section	.bss.g_data_arry,"aw",%nobits
  242              		.align	2
@@ -415,28 +415,28 @@ ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 1
  277              	.Letext0:
  278              		.file 2 "../Sensor/sensor.h"
  279              		.file 3 "../Sensor/sensor_cfg.h"
- 280              		.file 4 "../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h"
-ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s 			page 8
+ 280              		.file 4 "d:\\program files (x86)\\gcc-arm-none-eabi-10-2020-q4-major-win32\\tool\\arm-none-eabi\\i
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 8
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 sensor.c
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:20     .rodata.sensor_process.str1.4:00000000 $d
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:24     .text.sensor_process:00000000 $t
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:30     .text.sensor_process:00000000 sensor_process
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:144    .text.sensor_process:00000074 $d
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:153    .text.sensor_user_read:00000000 $t
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:159    .text.sensor_user_read:00000000 sensor_user_read
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:234    .text.sensor_user_read:00000048 $d
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:253    .bss.g_sensor:00000000 g_sensor
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:242    .bss.g_data_arry:00000000 $d
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:246    .bss.g_data_arry:00000000 g_data_arry
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:249    .bss.g_sensor:00000000 $d
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:256    .bss.rawdata.0:00000000 $d
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:260    .bss.rawdata.0:00000000 rawdata.0
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:263    .rodata.g_sensor_arry:00000000 $d
-C:\Users\zhangge\AppData\Local\Temp\ccbWtjx8.s:267    .rodata.g_sensor_arry:00000000 g_sensor_arry
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:18     .rodata.sensor_process.str1.4:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:22     .text.sensor_process:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:30     .text.sensor_process:00000000 sensor_process
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:143    .text.sensor_process:00000074 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:152    .text.sensor_user_read:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:159    .text.sensor_user_read:00000000 sensor_user_read
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:234    .text.sensor_user_read:00000048 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:253    .bss.g_sensor:00000000 g_sensor
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:242    .bss.g_data_arry:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:246    .bss.g_data_arry:00000000 g_data_arry
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:249    .bss.g_sensor:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:256    .bss.rawdata.0:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:260    .bss.rawdata.0:00000000 rawdata.0
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:263    .rodata.g_sensor_arry:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:267    .rodata.g_sensor_arry:00000000 g_sensor_arry
 
 UNDEFINED SYMBOLS
-SEGGER_RTT_printf
+printf
 mt6816_read

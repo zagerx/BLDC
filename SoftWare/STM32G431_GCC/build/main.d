@@ -39,9 +39,7 @@ build/main.o: Src/main.c Inc/main.h \
  Hardware/./hardware_cfg.h ../Sensor/../Protocol/protocol.h \
  Src/../../BLDCMotor/motorctrl.h Src/../../BLDCMotor/./bldcmotor_cfg.h \
  ../Sensor/../Public/pubilc.h ../Public/debuglog/debuglog.h \
- ../Public/debuglog/./debuglog_cfg.h \
- ../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
- ../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h
+ ../Public/debuglog/./debuglog_cfg.h
 Inc/main.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
 Inc/stm32g4xx_hal_conf.h:
@@ -102,5 +100,3 @@ Src/../../BLDCMotor/./bldcmotor_cfg.h:
 ../Sensor/../Public/pubilc.h:
 ../Public/debuglog/debuglog.h:
 ../Public/debuglog/./debuglog_cfg.h:
-../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
-../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:

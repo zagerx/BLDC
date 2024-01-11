@@ -81,6 +81,7 @@ C_SOURCES += $(wildcard ../Public/*.c)
 C_SOURCES += $(wildcard ../Public/IPC/*.c)
 C_SOURCES += $(wildcard ../Public/Fsm/*.c)
 C_SOURCES += $(wildcard ../Public/debuglog/SEGGER_RTT_V792h/RTT/*.c)
+C_SOURCES += $(wildcard ../Public/debuglog/*.c)
 C_SOURCES += $(wildcard ../Public/method/*.c)
 
 # ASM sources
