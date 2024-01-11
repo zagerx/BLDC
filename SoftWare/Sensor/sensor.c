@@ -1,4 +1,5 @@
 #include "sensor.h"
+#include "debuglog.h"
 
 #undef NULL
 #define NULL 0

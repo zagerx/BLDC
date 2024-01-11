@@ -40,19 +40,6 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-Public/Fsm/fsm.c \
-Public/list.c \
-Public/crc.c \
-Public/fifo.c \
-Public/heap.c \
-Public/_assert.c \
-Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.c \
-Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT_printf.c \
-Public/debuglog/printf_log.c \
-Public/IPC/ipc_comdata.c \
-Public/IPC/ipc_event.c \
-Public/method/filter.c \
-Public/method/pid.c \
 Src/main.c \
 Src/gpio.c \
 Src/stm32g4xx_it.c \
@@ -86,16 +73,20 @@ Src/usart.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart_ex.c
 
+C_SOURCES += $(wildcard ./Hardware/mt6816.c)
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
 C_SOURCES += $(wildcard ../Protocol/*.c)
 C_SOURCES += $(wildcard ../Sensor/*.c)
-C_SOURCES += $(wildcard ../Hardware/mt6816.c)
-
+C_SOURCES += $(wildcard ../Public/*.c)
+C_SOURCES += $(wildcard ../Public/IPC/*.c)
+C_SOURCES += $(wildcard ../Public/Fsm/*.c)
+C_SOURCES += $(wildcard ../Public/debuglog/SEGGER_RTT_V792h/RTT/*.c)
+C_SOURCES += $(wildcard ../Public/method/*.c)
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32g431xx.s \
-Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT_ASM_ARMv7M.s
+startup_stm32g431xx.s 
+#Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT_ASM_ARMv7M.s
 
 
 #######################################
@@ -148,18 +139,17 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
+-I./Hardware \
 -I../Sensor \
--I../Hardware \
 -I../BLDCMotor \
 -I../protocol \
--IPublic/debuglog/SEGGER_RTT_V792h/Config \
--IPublic/debuglog/SEGGER_RTT_V792h/RTT \
--IPublic/debuglog \
--IPublic/method \
--IPublic/IPC \
--IPublic \
--IPublic/Fsm \
--Iuser \
+-I../Public/debuglog/SEGGER_RTT_V792h/Config \
+-I../Public/debuglog/SEGGER_RTT_V792h/RTT \
+-I../Public/debuglog \
+-I../Public/method \
+-I../Public/IPC \
+-I../Public/Fsm \
+-I../Public \
 -IInc \
 -IDrivers/STM32G4xx_HAL_Driver/Inc \
 -IDrivers/STM32G4xx_HAL_Driver/Inc/Legacy \
@@ -168,8 +158,6 @@ C_INCLUDES =  \
 
 # C_INCLUDES += -I../Sensor -I../BLDCMotor -I../protocol -I../Hardware
 
-# -ISimulink/Motor_Control_ert_rtw \
-# -ISimulink/Motor_Control_ert_rtw \# -ISimulink/Motor_Control_ert_rtw \# -ISimulink/Motor_Control_ert_rtw \# -ISimulink/Motor_Control_ert_rtw \# -ISimulink/Motor_Control_ert_rtw \
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
@@ -247,8 +235,6 @@ ocd:
 	openocd -f stlink-v2.cfg -f stm32g4x.cfg
 reset:
 	openocd -c reset halt
-
-
 
 sjlinkgdbs:
 	$(Q)JLinkGDBServer -select USB -device $(CHIP) \

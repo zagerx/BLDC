@@ -1,0 +1,1044 @@
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"adc.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.MX_ADC1_Init,"ax",%progbits
+  20              		.align	1
+  21              		.global	MX_ADC1_Init
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	MX_ADC1_Init:
+  27              	.LFB329:
+  28              		.file 1 "Src/adc.c"
+   1:Src/adc.c     **** /* USER CODE BEGIN Header */
+   2:Src/adc.c     **** /**
+   3:Src/adc.c     ****   ******************************************************************************
+   4:Src/adc.c     ****   * @file    adc.c
+   5:Src/adc.c     ****   * @brief   This file provides code for the configuration
+   6:Src/adc.c     ****   *          of the ADC instances.
+   7:Src/adc.c     ****   ******************************************************************************
+   8:Src/adc.c     ****   * @attention
+   9:Src/adc.c     ****   *
+  10:Src/adc.c     ****   * Copyright (c) 2023 STMicroelectronics.
+  11:Src/adc.c     ****   * All rights reserved.
+  12:Src/adc.c     ****   *
+  13:Src/adc.c     ****   * This software is licensed under terms that can be found in the LICENSE file
+  14:Src/adc.c     ****   * in the root directory of this software component.
+  15:Src/adc.c     ****   * If no LICENSE file comes with this software, it is provided AS-IS.
+  16:Src/adc.c     ****   *
+  17:Src/adc.c     ****   ******************************************************************************
+  18:Src/adc.c     ****   */
+  19:Src/adc.c     **** /* USER CODE END Header */
+  20:Src/adc.c     **** /* Includes ------------------------------------------------------------------*/
+  21:Src/adc.c     **** #include "adc.h"
+  22:Src/adc.c     **** 
+  23:Src/adc.c     **** /* USER CODE BEGIN 0 */
+  24:Src/adc.c     **** // #include "main.h"
+  25:Src/adc.c     **** 
+  26:Src/adc.c     **** /* USER CODE END 0 */
+  27:Src/adc.c     **** 
+  28:Src/adc.c     **** ADC_HandleTypeDef hadc1;
+  29:Src/adc.c     **** 
+  30:Src/adc.c     **** /* ADC1 init function */
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 2
+
+
+  31:Src/adc.c     **** void MX_ADC1_Init(void)
+  32:Src/adc.c     **** {
+  29              		.loc 1 32 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 104
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 10B5     		push	{r4, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 4, -8
+  37              		.cfi_offset 14, -4
+  38 0002 9AB0     		sub	sp, sp, #104
+  39              	.LCFI1:
+  40              		.cfi_def_cfa_offset 112
+  33:Src/adc.c     **** 
+  34:Src/adc.c     ****   /* USER CODE BEGIN ADC1_Init 0 */
+  35:Src/adc.c     **** 
+  36:Src/adc.c     ****   /* USER CODE END ADC1_Init 0 */
+  37:Src/adc.c     **** 
+  38:Src/adc.c     ****   ADC_MultiModeTypeDef multimode = {0};
+  41              		.loc 1 38 3 view .LVU1
+  42              		.loc 1 38 24 is_stmt 0 view .LVU2
+  43 0004 0024     		movs	r4, #0
+  44 0006 1794     		str	r4, [sp, #92]
+  45 0008 1894     		str	r4, [sp, #96]
+  46 000a 1994     		str	r4, [sp, #100]
+  39:Src/adc.c     ****   ADC_ChannelConfTypeDef sConfig = {0};
+  47              		.loc 1 39 3 is_stmt 1 view .LVU3
+  48              		.loc 1 39 26 is_stmt 0 view .LVU4
+  49 000c 2022     		movs	r2, #32
+  50 000e 2146     		mov	r1, r4
+  51 0010 0FA8     		add	r0, sp, #60
+  52 0012 FFF7FEFF 		bl	memset
+  53              	.LVL0:
+  40:Src/adc.c     ****   ADC_InjectionConfTypeDef sConfigInjected = {0};
+  54              		.loc 1 40 3 is_stmt 1 view .LVU5
+  55              		.loc 1 40 28 is_stmt 0 view .LVU6
+  56 0016 3C22     		movs	r2, #60
+  57 0018 2146     		mov	r1, r4
+  58 001a 6846     		mov	r0, sp
+  59 001c FFF7FEFF 		bl	memset
+  60              	.LVL1:
+  41:Src/adc.c     **** 
+  42:Src/adc.c     ****   /* USER CODE BEGIN ADC1_Init 1 */
+  43:Src/adc.c     **** 
+  44:Src/adc.c     ****   /* USER CODE END ADC1_Init 1 */
+  45:Src/adc.c     **** 
+  46:Src/adc.c     ****   /** Common config
+  47:Src/adc.c     ****   */
+  48:Src/adc.c     ****   hadc1.Instance = ADC1;
+  61              		.loc 1 48 3 is_stmt 1 view .LVU7
+  62              		.loc 1 48 18 is_stmt 0 view .LVU8
+  63 0020 4548     		ldr	r0, .L17
+  64 0022 4FF0A043 		mov	r3, #1342177280
+  65 0026 0360     		str	r3, [r0]
+  49:Src/adc.c     ****   hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV4;
+  66              		.loc 1 49 3 is_stmt 1 view .LVU9
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 3
+
+
+  67              		.loc 1 49 29 is_stmt 0 view .LVU10
+  68 0028 4FF40023 		mov	r3, #524288
+  69 002c 4360     		str	r3, [r0, #4]
+  50:Src/adc.c     ****   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  70              		.loc 1 50 3 is_stmt 1 view .LVU11
+  71              		.loc 1 50 25 is_stmt 0 view .LVU12
+  72 002e 8460     		str	r4, [r0, #8]
+  51:Src/adc.c     ****   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  73              		.loc 1 51 3 is_stmt 1 view .LVU13
+  74              		.loc 1 51 24 is_stmt 0 view .LVU14
+  75 0030 C460     		str	r4, [r0, #12]
+  52:Src/adc.c     ****   hadc1.Init.GainCompensation = 0;
+  76              		.loc 1 52 3 is_stmt 1 view .LVU15
+  77              		.loc 1 52 31 is_stmt 0 view .LVU16
+  78 0032 0461     		str	r4, [r0, #16]
+  53:Src/adc.c     ****   hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
+  79              		.loc 1 53 3 is_stmt 1 view .LVU17
+  80              		.loc 1 53 27 is_stmt 0 view .LVU18
+  81 0034 0123     		movs	r3, #1
+  82 0036 4361     		str	r3, [r0, #20]
+  54:Src/adc.c     ****   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  83              		.loc 1 54 3 is_stmt 1 view .LVU19
+  84              		.loc 1 54 27 is_stmt 0 view .LVU20
+  85 0038 0423     		movs	r3, #4
+  86 003a 8361     		str	r3, [r0, #24]
+  55:Src/adc.c     ****   hadc1.Init.LowPowerAutoWait = DISABLE;
+  87              		.loc 1 55 3 is_stmt 1 view .LVU21
+  88              		.loc 1 55 31 is_stmt 0 view .LVU22
+  89 003c 0477     		strb	r4, [r0, #28]
+  56:Src/adc.c     ****   hadc1.Init.ContinuousConvMode = DISABLE;
+  90              		.loc 1 56 3 is_stmt 1 view .LVU23
+  91              		.loc 1 56 33 is_stmt 0 view .LVU24
+  92 003e 4477     		strb	r4, [r0, #29]
+  57:Src/adc.c     ****   hadc1.Init.NbrOfConversion = 2;
+  93              		.loc 1 57 3 is_stmt 1 view .LVU25
+  94              		.loc 1 57 30 is_stmt 0 view .LVU26
+  95 0040 0223     		movs	r3, #2
+  96 0042 0362     		str	r3, [r0, #32]
+  58:Src/adc.c     ****   hadc1.Init.DiscontinuousConvMode = DISABLE;
+  97              		.loc 1 58 3 is_stmt 1 view .LVU27
+  98              		.loc 1 58 36 is_stmt 0 view .LVU28
+  99 0044 80F82440 		strb	r4, [r0, #36]
+  59:Src/adc.c     ****   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+ 100              		.loc 1 59 3 is_stmt 1 view .LVU29
+ 101              		.loc 1 59 31 is_stmt 0 view .LVU30
+ 102 0048 C462     		str	r4, [r0, #44]
+  60:Src/adc.c     ****   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+ 103              		.loc 1 60 3 is_stmt 1 view .LVU31
+ 104              		.loc 1 60 35 is_stmt 0 view .LVU32
+ 105 004a 0463     		str	r4, [r0, #48]
+  61:Src/adc.c     ****   hadc1.Init.DMAContinuousRequests = DISABLE;
+ 106              		.loc 1 61 3 is_stmt 1 view .LVU33
+ 107              		.loc 1 61 36 is_stmt 0 view .LVU34
+ 108 004c 80F83840 		strb	r4, [r0, #56]
+  62:Src/adc.c     ****   hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+ 109              		.loc 1 62 3 is_stmt 1 view .LVU35
+ 110              		.loc 1 62 22 is_stmt 0 view .LVU36
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 4
+
+
+ 111 0050 C463     		str	r4, [r0, #60]
+  63:Src/adc.c     ****   hadc1.Init.OversamplingMode = DISABLE;
+ 112              		.loc 1 63 3 is_stmt 1 view .LVU37
+ 113              		.loc 1 63 31 is_stmt 0 view .LVU38
+ 114 0052 80F84040 		strb	r4, [r0, #64]
+  64:Src/adc.c     ****   if (HAL_ADC_Init(&hadc1) != HAL_OK)
+ 115              		.loc 1 64 3 is_stmt 1 view .LVU39
+ 116              		.loc 1 64 7 is_stmt 0 view .LVU40
+ 117 0056 FFF7FEFF 		bl	HAL_ADC_Init
+ 118              	.LVL2:
+ 119              		.loc 1 64 6 view .LVU41
+ 120 005a 0028     		cmp	r0, #0
+ 121 005c 57D1     		bne	.L10
+ 122              	.L2:
+  65:Src/adc.c     ****   {
+  66:Src/adc.c     ****     Error_Handler();
+  67:Src/adc.c     ****   }
+  68:Src/adc.c     **** 
+  69:Src/adc.c     ****   /** Configure the ADC multi-mode
+  70:Src/adc.c     ****   */
+  71:Src/adc.c     ****   multimode.Mode = ADC_MODE_INDEPENDENT;
+ 123              		.loc 1 71 3 is_stmt 1 view .LVU42
+ 124              		.loc 1 71 18 is_stmt 0 view .LVU43
+ 125 005e 0023     		movs	r3, #0
+ 126 0060 1793     		str	r3, [sp, #92]
+  72:Src/adc.c     ****   if (HAL_ADCEx_MultiModeConfigChannel(&hadc1, &multimode) != HAL_OK)
+ 127              		.loc 1 72 3 is_stmt 1 view .LVU44
+ 128              		.loc 1 72 7 is_stmt 0 view .LVU45
+ 129 0062 17A9     		add	r1, sp, #92
+ 130 0064 3448     		ldr	r0, .L17
+ 131 0066 FFF7FEFF 		bl	HAL_ADCEx_MultiModeConfigChannel
+ 132              	.LVL3:
+ 133              		.loc 1 72 6 view .LVU46
+ 134 006a 0028     		cmp	r0, #0
+ 135 006c 52D1     		bne	.L11
+ 136              	.L3:
+  73:Src/adc.c     ****   {
+  74:Src/adc.c     ****     Error_Handler();
+  75:Src/adc.c     ****   }
+  76:Src/adc.c     **** 
+  77:Src/adc.c     ****   /** Configure Regular Channel
+  78:Src/adc.c     ****   */
+  79:Src/adc.c     ****   sConfig.Channel = ADC_CHANNEL_12;
+ 137              		.loc 1 79 3 is_stmt 1 view .LVU47
+ 138              		.loc 1 79 19 is_stmt 0 view .LVU48
+ 139 006e 334B     		ldr	r3, .L17+4
+ 140 0070 0F93     		str	r3, [sp, #60]
+  80:Src/adc.c     ****   sConfig.Rank = ADC_REGULAR_RANK_1;
+ 141              		.loc 1 80 3 is_stmt 1 view .LVU49
+ 142              		.loc 1 80 16 is_stmt 0 view .LVU50
+ 143 0072 0623     		movs	r3, #6
+ 144 0074 1093     		str	r3, [sp, #64]
+  81:Src/adc.c     ****   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+ 145              		.loc 1 81 3 is_stmt 1 view .LVU51
+ 146              		.loc 1 81 24 is_stmt 0 view .LVU52
+ 147 0076 0023     		movs	r3, #0
+ 148 0078 1193     		str	r3, [sp, #68]
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 5
+
+
+  82:Src/adc.c     ****   sConfig.SingleDiff = ADC_SINGLE_ENDED;
+ 149              		.loc 1 82 3 is_stmt 1 view .LVU53
+ 150              		.loc 1 82 22 is_stmt 0 view .LVU54
+ 151 007a 7F22     		movs	r2, #127
+ 152 007c 1292     		str	r2, [sp, #72]
+  83:Src/adc.c     ****   sConfig.OffsetNumber = ADC_OFFSET_NONE;
+ 153              		.loc 1 83 3 is_stmt 1 view .LVU55
+ 154              		.loc 1 83 24 is_stmt 0 view .LVU56
+ 155 007e 0422     		movs	r2, #4
+ 156 0080 1392     		str	r2, [sp, #76]
+  84:Src/adc.c     ****   sConfig.Offset = 0;
+ 157              		.loc 1 84 3 is_stmt 1 view .LVU57
+ 158              		.loc 1 84 18 is_stmt 0 view .LVU58
+ 159 0082 1493     		str	r3, [sp, #80]
+  85:Src/adc.c     ****   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+ 160              		.loc 1 85 3 is_stmt 1 view .LVU59
+ 161              		.loc 1 85 7 is_stmt 0 view .LVU60
+ 162 0084 0FA9     		add	r1, sp, #60
+ 163 0086 2C48     		ldr	r0, .L17
+ 164 0088 FFF7FEFF 		bl	HAL_ADC_ConfigChannel
+ 165              	.LVL4:
+ 166              		.loc 1 85 6 view .LVU61
+ 167 008c 0028     		cmp	r0, #0
+ 168 008e 44D1     		bne	.L12
+ 169              	.L4:
+  86:Src/adc.c     ****   {
+  87:Src/adc.c     ****     Error_Handler();
+  88:Src/adc.c     ****   }
+  89:Src/adc.c     **** 
+  90:Src/adc.c     ****   /** Configure Regular Channel
+  91:Src/adc.c     ****   */
+  92:Src/adc.c     ****   sConfig.Channel = ADC_CHANNEL_15;
+ 170              		.loc 1 92 3 is_stmt 1 view .LVU62
+ 171              		.loc 1 92 19 is_stmt 0 view .LVU63
+ 172 0090 2B4B     		ldr	r3, .L17+8
+ 173 0092 0F93     		str	r3, [sp, #60]
+  93:Src/adc.c     ****   sConfig.Rank = ADC_REGULAR_RANK_2;
+ 174              		.loc 1 93 3 is_stmt 1 view .LVU64
+ 175              		.loc 1 93 16 is_stmt 0 view .LVU65
+ 176 0094 0C23     		movs	r3, #12
+ 177 0096 1093     		str	r3, [sp, #64]
+  94:Src/adc.c     ****   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+ 178              		.loc 1 94 3 is_stmt 1 view .LVU66
+ 179              		.loc 1 94 7 is_stmt 0 view .LVU67
+ 180 0098 0FA9     		add	r1, sp, #60
+ 181 009a 2748     		ldr	r0, .L17
+ 182 009c FFF7FEFF 		bl	HAL_ADC_ConfigChannel
+ 183              	.LVL5:
+ 184              		.loc 1 94 6 view .LVU68
+ 185 00a0 0028     		cmp	r0, #0
+ 186 00a2 3DD1     		bne	.L13
+ 187              	.L5:
+  95:Src/adc.c     ****   {
+  96:Src/adc.c     ****     Error_Handler();
+  97:Src/adc.c     ****   }
+  98:Src/adc.c     **** 
+  99:Src/adc.c     ****   /** Configure Injected Channel
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 6
+
+
+ 100:Src/adc.c     ****   */
+ 101:Src/adc.c     ****   sConfigInjected.InjectedChannel = ADC_CHANNEL_2;
+ 188              		.loc 1 101 3 is_stmt 1 view .LVU69
+ 189              		.loc 1 101 35 is_stmt 0 view .LVU70
+ 190 00a4 274B     		ldr	r3, .L17+12
+ 191 00a6 0093     		str	r3, [sp]
+ 102:Src/adc.c     ****   sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
+ 192              		.loc 1 102 3 is_stmt 1 view .LVU71
+ 193              		.loc 1 102 32 is_stmt 0 view .LVU72
+ 194 00a8 0923     		movs	r3, #9
+ 195 00aa 0193     		str	r3, [sp, #4]
+ 103:Src/adc.c     ****   sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+ 196              		.loc 1 103 3 is_stmt 1 view .LVU73
+ 197              		.loc 1 103 40 is_stmt 0 view .LVU74
+ 198 00ac 0023     		movs	r3, #0
+ 199 00ae 0293     		str	r3, [sp, #8]
+ 104:Src/adc.c     ****   sConfigInjected.InjectedSingleDiff = ADC_SINGLE_ENDED;
+ 200              		.loc 1 104 3 is_stmt 1 view .LVU75
+ 201              		.loc 1 104 38 is_stmt 0 view .LVU76
+ 202 00b0 7F22     		movs	r2, #127
+ 203 00b2 0392     		str	r2, [sp, #12]
+ 105:Src/adc.c     ****   sConfigInjected.InjectedOffsetNumber = ADC_OFFSET_NONE;
+ 204              		.loc 1 105 3 is_stmt 1 view .LVU77
+ 205              		.loc 1 105 40 is_stmt 0 view .LVU78
+ 206 00b4 0422     		movs	r2, #4
+ 207 00b6 0492     		str	r2, [sp, #16]
+ 106:Src/adc.c     ****   sConfigInjected.InjectedOffset = 0;
+ 208              		.loc 1 106 3 is_stmt 1 view .LVU79
+ 209              		.loc 1 106 34 is_stmt 0 view .LVU80
+ 210 00b8 0593     		str	r3, [sp, #20]
+ 107:Src/adc.c     ****   sConfigInjected.InjectedNbrOfConversion = 3;
+ 211              		.loc 1 107 3 is_stmt 1 view .LVU81
+ 212              		.loc 1 107 43 is_stmt 0 view .LVU82
+ 213 00ba 0322     		movs	r2, #3
+ 214 00bc 0892     		str	r2, [sp, #32]
+ 108:Src/adc.c     ****   sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+ 215              		.loc 1 108 3 is_stmt 1 view .LVU83
+ 216              		.loc 1 108 49 is_stmt 0 view .LVU84
+ 217 00be 8DF82430 		strb	r3, [sp, #36]
+ 109:Src/adc.c     ****   sConfigInjected.AutoInjectedConv = DISABLE;
+ 218              		.loc 1 109 3 is_stmt 1 view .LVU85
+ 219              		.loc 1 109 36 is_stmt 0 view .LVU86
+ 220 00c2 8DF82530 		strb	r3, [sp, #37]
+ 110:Src/adc.c     ****   sConfigInjected.QueueInjectedContext = DISABLE;
+ 221              		.loc 1 110 3 is_stmt 1 view .LVU87
+ 222              		.loc 1 110 40 is_stmt 0 view .LVU88
+ 223 00c6 8DF82630 		strb	r3, [sp, #38]
+ 111:Src/adc.c     ****   sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_T1_CC4;
+ 224              		.loc 1 111 3 is_stmt 1 view .LVU89
+ 225              		.loc 1 111 41 is_stmt 0 view .LVU90
+ 226 00ca 8422     		movs	r2, #132
+ 227 00cc 0A92     		str	r2, [sp, #40]
+ 112:Src/adc.c     ****   sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_FALLING;
+ 228              		.loc 1 112 3 is_stmt 1 view .LVU91
+ 229              		.loc 1 112 45 is_stmt 0 view .LVU92
+ 230 00ce 4FF48072 		mov	r2, #256
+ 231 00d2 0B92     		str	r2, [sp, #44]
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 7
+
+
+ 113:Src/adc.c     ****   sConfigInjected.InjecOversamplingMode = DISABLE;
+ 232              		.loc 1 113 3 is_stmt 1 view .LVU93
+ 233              		.loc 1 113 41 is_stmt 0 view .LVU94
+ 234 00d4 8DF83030 		strb	r3, [sp, #48]
+ 114:Src/adc.c     ****   if (HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected) != HAL_OK)
+ 235              		.loc 1 114 3 is_stmt 1 view .LVU95
+ 236              		.loc 1 114 7 is_stmt 0 view .LVU96
+ 237 00d8 6946     		mov	r1, sp
+ 238 00da 1748     		ldr	r0, .L17
+ 239 00dc FFF7FEFF 		bl	HAL_ADCEx_InjectedConfigChannel
+ 240              	.LVL6:
+ 241              		.loc 1 114 6 view .LVU97
+ 242 00e0 08BB     		cbnz	r0, .L14
+ 243              	.L6:
+ 115:Src/adc.c     ****   {
+ 116:Src/adc.c     ****     Error_Handler();
+ 117:Src/adc.c     ****   }
+ 118:Src/adc.c     **** 
+ 119:Src/adc.c     ****   /** Configure Injected Channel
+ 120:Src/adc.c     ****   */
+ 121:Src/adc.c     ****   sConfigInjected.InjectedChannel = ADC_CHANNEL_3;
+ 244              		.loc 1 121 3 is_stmt 1 view .LVU98
+ 245              		.loc 1 121 35 is_stmt 0 view .LVU99
+ 246 00e2 194B     		ldr	r3, .L17+16
+ 247 00e4 0093     		str	r3, [sp]
+ 122:Src/adc.c     ****   sConfigInjected.InjectedRank = ADC_INJECTED_RANK_2;
+ 248              		.loc 1 122 3 is_stmt 1 view .LVU100
+ 249              		.loc 1 122 32 is_stmt 0 view .LVU101
+ 250 00e6 40F20F13 		movw	r3, #271
+ 251 00ea 0193     		str	r3, [sp, #4]
+ 123:Src/adc.c     ****   if (HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected) != HAL_OK)
+ 252              		.loc 1 123 3 is_stmt 1 view .LVU102
+ 253              		.loc 1 123 7 is_stmt 0 view .LVU103
+ 254 00ec 6946     		mov	r1, sp
+ 255 00ee 1248     		ldr	r0, .L17
+ 256 00f0 FFF7FEFF 		bl	HAL_ADCEx_InjectedConfigChannel
+ 257              	.LVL7:
+ 258              		.loc 1 123 6 view .LVU104
+ 259 00f4 D0B9     		cbnz	r0, .L15
+ 260              	.L7:
+ 124:Src/adc.c     ****   {
+ 125:Src/adc.c     ****     Error_Handler();
+ 126:Src/adc.c     ****   }
+ 127:Src/adc.c     **** 
+ 128:Src/adc.c     ****   /** Configure Injected Channel
+ 129:Src/adc.c     ****   */
+ 130:Src/adc.c     ****   sConfigInjected.InjectedChannel = ADC_CHANNEL_4;
+ 261              		.loc 1 130 3 is_stmt 1 view .LVU105
+ 262              		.loc 1 130 35 is_stmt 0 view .LVU106
+ 263 00f6 154B     		ldr	r3, .L17+20
+ 264 00f8 0093     		str	r3, [sp]
+ 131:Src/adc.c     ****   sConfigInjected.InjectedRank = ADC_INJECTED_RANK_3;
+ 265              		.loc 1 131 3 is_stmt 1 view .LVU107
+ 266              		.loc 1 131 32 is_stmt 0 view .LVU108
+ 267 00fa 40F21523 		movw	r3, #533
+ 268 00fe 0193     		str	r3, [sp, #4]
+ 132:Src/adc.c     ****   if (HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected) != HAL_OK)
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 8
+
+
+ 269              		.loc 1 132 3 is_stmt 1 view .LVU109
+ 270              		.loc 1 132 7 is_stmt 0 view .LVU110
+ 271 0100 6946     		mov	r1, sp
+ 272 0102 0D48     		ldr	r0, .L17
+ 273 0104 FFF7FEFF 		bl	HAL_ADCEx_InjectedConfigChannel
+ 274              	.LVL8:
+ 275              		.loc 1 132 6 view .LVU111
+ 276 0108 98B9     		cbnz	r0, .L16
+ 277              	.L1:
+ 133:Src/adc.c     ****   {
+ 134:Src/adc.c     ****     Error_Handler();
+ 135:Src/adc.c     ****   }
+ 136:Src/adc.c     ****   /* USER CODE BEGIN ADC1_Init 2 */
+ 137:Src/adc.c     **** 
+ 138:Src/adc.c     ****   /* USER CODE END ADC1_Init 2 */
+ 139:Src/adc.c     **** 
+ 140:Src/adc.c     **** }
+ 278              		.loc 1 140 1 view .LVU112
+ 279 010a 1AB0     		add	sp, sp, #104
+ 280              	.LCFI2:
+ 281              		.cfi_remember_state
+ 282              		.cfi_def_cfa_offset 8
+ 283              		@ sp needed
+ 284 010c 10BD     		pop	{r4, pc}
+ 285              	.L10:
+ 286              	.LCFI3:
+ 287              		.cfi_restore_state
+  66:Src/adc.c     ****   }
+ 288              		.loc 1 66 5 is_stmt 1 view .LVU113
+ 289 010e FFF7FEFF 		bl	Error_Handler
+ 290              	.LVL9:
+ 291 0112 A4E7     		b	.L2
+ 292              	.L11:
+  74:Src/adc.c     ****   }
+ 293              		.loc 1 74 5 view .LVU114
+ 294 0114 FFF7FEFF 		bl	Error_Handler
+ 295              	.LVL10:
+ 296 0118 A9E7     		b	.L3
+ 297              	.L12:
+  87:Src/adc.c     ****   }
+ 298              		.loc 1 87 5 view .LVU115
+ 299 011a FFF7FEFF 		bl	Error_Handler
+ 300              	.LVL11:
+ 301 011e B7E7     		b	.L4
+ 302              	.L13:
+  96:Src/adc.c     ****   }
+ 303              		.loc 1 96 5 view .LVU116
+ 304 0120 FFF7FEFF 		bl	Error_Handler
+ 305              	.LVL12:
+ 306 0124 BEE7     		b	.L5
+ 307              	.L14:
+ 116:Src/adc.c     ****   }
+ 308              		.loc 1 116 5 view .LVU117
+ 309 0126 FFF7FEFF 		bl	Error_Handler
+ 310              	.LVL13:
+ 311 012a DAE7     		b	.L6
+ 312              	.L15:
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 9
+
+
+ 125:Src/adc.c     ****   }
+ 313              		.loc 1 125 5 view .LVU118
+ 314 012c FFF7FEFF 		bl	Error_Handler
+ 315              	.LVL14:
+ 316 0130 E1E7     		b	.L7
+ 317              	.L16:
+ 134:Src/adc.c     ****   }
+ 318              		.loc 1 134 5 view .LVU119
+ 319 0132 FFF7FEFF 		bl	Error_Handler
+ 320              	.LVL15:
+ 321              		.loc 1 140 1 is_stmt 0 view .LVU120
+ 322 0136 E8E7     		b	.L1
+ 323              	.L18:
+ 324              		.align	2
+ 325              	.L17:
+ 326 0138 00000000 		.word	.LANCHOR0
+ 327 013c 00106032 		.word	845156352
+ 328 0140 0080F03E 		.word	1055948800
+ 329 0144 04006008 		.word	140509188
+ 330 0148 0800900C 		.word	210763784
+ 331 014c 1000C010 		.word	281018384
+ 332              		.cfi_endproc
+ 333              	.LFE329:
+ 335              		.section	.text.HAL_ADC_MspInit,"ax",%progbits
+ 336              		.align	1
+ 337              		.global	HAL_ADC_MspInit
+ 338              		.syntax unified
+ 339              		.thumb
+ 340              		.thumb_func
+ 342              	HAL_ADC_MspInit:
+ 343              	.LVL16:
+ 344              	.LFB330:
+ 141:Src/adc.c     **** 
+ 142:Src/adc.c     **** void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
+ 143:Src/adc.c     **** {
+ 345              		.loc 1 143 1 is_stmt 1 view -0
+ 346              		.cfi_startproc
+ 347              		@ args = 0, pretend = 0, frame = 104
+ 348              		@ frame_needed = 0, uses_anonymous_args = 0
+ 349              		.loc 1 143 1 is_stmt 0 view .LVU122
+ 350 0000 30B5     		push	{r4, r5, lr}
+ 351              	.LCFI4:
+ 352              		.cfi_def_cfa_offset 12
+ 353              		.cfi_offset 4, -12
+ 354              		.cfi_offset 5, -8
+ 355              		.cfi_offset 14, -4
+ 356 0002 9BB0     		sub	sp, sp, #108
+ 357              	.LCFI5:
+ 358              		.cfi_def_cfa_offset 120
+ 359 0004 0446     		mov	r4, r0
+ 144:Src/adc.c     **** 
+ 145:Src/adc.c     ****   GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 360              		.loc 1 145 3 is_stmt 1 view .LVU123
+ 361              		.loc 1 145 20 is_stmt 0 view .LVU124
+ 362 0006 0021     		movs	r1, #0
+ 363 0008 1591     		str	r1, [sp, #84]
+ 364 000a 1691     		str	r1, [sp, #88]
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 10
+
+
+ 365 000c 1791     		str	r1, [sp, #92]
+ 366 000e 1891     		str	r1, [sp, #96]
+ 367 0010 1991     		str	r1, [sp, #100]
+ 146:Src/adc.c     ****   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+ 368              		.loc 1 146 3 is_stmt 1 view .LVU125
+ 369              		.loc 1 146 28 is_stmt 0 view .LVU126
+ 370 0012 4422     		movs	r2, #68
+ 371 0014 04A8     		add	r0, sp, #16
+ 372              	.LVL17:
+ 373              		.loc 1 146 28 view .LVU127
+ 374 0016 FFF7FEFF 		bl	memset
+ 375              	.LVL18:
+ 147:Src/adc.c     ****   if(adcHandle->Instance==ADC1)
+ 376              		.loc 1 147 3 is_stmt 1 view .LVU128
+ 377              		.loc 1 147 15 is_stmt 0 view .LVU129
+ 378 001a 2368     		ldr	r3, [r4]
+ 379              		.loc 1 147 5 view .LVU130
+ 380 001c B3F1A04F 		cmp	r3, #1342177280
+ 381 0020 01D0     		beq	.L23
+ 382              	.LVL19:
+ 383              	.L19:
+ 148:Src/adc.c     ****   {
+ 149:Src/adc.c     ****   /* USER CODE BEGIN ADC1_MspInit 0 */
+ 150:Src/adc.c     **** 
+ 151:Src/adc.c     ****   /* USER CODE END ADC1_MspInit 0 */
+ 152:Src/adc.c     **** 
+ 153:Src/adc.c     ****   /** Initializes the peripherals clocks
+ 154:Src/adc.c     ****   */
+ 155:Src/adc.c     ****     PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC12;
+ 156:Src/adc.c     ****     PeriphClkInit.Adc12ClockSelection = RCC_ADC12CLKSOURCE_SYSCLK;
+ 157:Src/adc.c     ****     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+ 158:Src/adc.c     ****     {
+ 159:Src/adc.c     ****       Error_Handler();
+ 160:Src/adc.c     ****     }
+ 161:Src/adc.c     **** 
+ 162:Src/adc.c     ****     /* ADC1 clock enable */
+ 163:Src/adc.c     ****     __HAL_RCC_ADC12_CLK_ENABLE();
+ 164:Src/adc.c     **** 
+ 165:Src/adc.c     ****     __HAL_RCC_GPIOA_CLK_ENABLE();
+ 166:Src/adc.c     ****     __HAL_RCC_GPIOB_CLK_ENABLE();
+ 167:Src/adc.c     ****     /**ADC1 GPIO Configuration
+ 168:Src/adc.c     ****     PA1     ------> ADC1_IN2
+ 169:Src/adc.c     ****     PA2     ------> ADC1_IN3
+ 170:Src/adc.c     ****     PA3     ------> ADC1_IN4
+ 171:Src/adc.c     ****     PB0     ------> ADC1_IN15
+ 172:Src/adc.c     ****     PB1     ------> ADC1_IN12
+ 173:Src/adc.c     ****     */
+ 174:Src/adc.c     ****     GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
+ 175:Src/adc.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+ 176:Src/adc.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 177:Src/adc.c     ****     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 178:Src/adc.c     **** 
+ 179:Src/adc.c     ****     GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+ 180:Src/adc.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+ 181:Src/adc.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 182:Src/adc.c     ****     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+ 183:Src/adc.c     **** 
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 11
+
+
+ 184:Src/adc.c     ****     /* ADC1 interrupt Init */
+ 185:Src/adc.c     ****     HAL_NVIC_SetPriority(ADC1_2_IRQn, 0, 0);
+ 186:Src/adc.c     ****     HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
+ 187:Src/adc.c     ****   /* USER CODE BEGIN ADC1_MspInit 1 */
+ 188:Src/adc.c     **** 
+ 189:Src/adc.c     ****   /* USER CODE END ADC1_MspInit 1 */
+ 190:Src/adc.c     ****   }
+ 191:Src/adc.c     **** }
+ 384              		.loc 1 191 1 view .LVU131
+ 385 0022 1BB0     		add	sp, sp, #108
+ 386              	.LCFI6:
+ 387              		.cfi_remember_state
+ 388              		.cfi_def_cfa_offset 12
+ 389              		@ sp needed
+ 390 0024 30BD     		pop	{r4, r5, pc}
+ 391              	.LVL20:
+ 392              	.L23:
+ 393              	.LCFI7:
+ 394              		.cfi_restore_state
+ 155:Src/adc.c     ****     PeriphClkInit.Adc12ClockSelection = RCC_ADC12CLKSOURCE_SYSCLK;
+ 395              		.loc 1 155 5 is_stmt 1 view .LVU132
+ 155:Src/adc.c     ****     PeriphClkInit.Adc12ClockSelection = RCC_ADC12CLKSOURCE_SYSCLK;
+ 396              		.loc 1 155 40 is_stmt 0 view .LVU133
+ 397 0026 4FF40043 		mov	r3, #32768
+ 398 002a 0493     		str	r3, [sp, #16]
+ 156:Src/adc.c     ****     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+ 399              		.loc 1 156 5 is_stmt 1 view .LVU134
+ 156:Src/adc.c     ****     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+ 400              		.loc 1 156 39 is_stmt 0 view .LVU135
+ 401 002c 4FF00053 		mov	r3, #536870912
+ 402 0030 1393     		str	r3, [sp, #76]
+ 157:Src/adc.c     ****     {
+ 403              		.loc 1 157 5 is_stmt 1 view .LVU136
+ 157:Src/adc.c     ****     {
+ 404              		.loc 1 157 9 is_stmt 0 view .LVU137
+ 405 0032 04A8     		add	r0, sp, #16
+ 406 0034 FFF7FEFF 		bl	HAL_RCCEx_PeriphCLKConfig
+ 407              	.LVL21:
+ 157:Src/adc.c     ****     {
+ 408              		.loc 1 157 8 view .LVU138
+ 409 0038 0028     		cmp	r0, #0
+ 410 003a 36D1     		bne	.L24
+ 411              	.L21:
+ 163:Src/adc.c     **** 
+ 412              		.loc 1 163 5 is_stmt 1 view .LVU139
+ 413              	.LBB2:
+ 163:Src/adc.c     **** 
+ 414              		.loc 1 163 5 view .LVU140
+ 163:Src/adc.c     **** 
+ 415              		.loc 1 163 5 view .LVU141
+ 416 003c 1C4B     		ldr	r3, .L25
+ 417 003e DA6C     		ldr	r2, [r3, #76]
+ 418 0040 42F40052 		orr	r2, r2, #8192
+ 419 0044 DA64     		str	r2, [r3, #76]
+ 163:Src/adc.c     **** 
+ 420              		.loc 1 163 5 view .LVU142
+ 421 0046 DA6C     		ldr	r2, [r3, #76]
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 12
+
+
+ 422 0048 02F40052 		and	r2, r2, #8192
+ 423 004c 0192     		str	r2, [sp, #4]
+ 163:Src/adc.c     **** 
+ 424              		.loc 1 163 5 view .LVU143
+ 425 004e 019A     		ldr	r2, [sp, #4]
+ 426              	.LBE2:
+ 163:Src/adc.c     **** 
+ 427              		.loc 1 163 5 view .LVU144
+ 165:Src/adc.c     ****     __HAL_RCC_GPIOB_CLK_ENABLE();
+ 428              		.loc 1 165 5 view .LVU145
+ 429              	.LBB3:
+ 165:Src/adc.c     ****     __HAL_RCC_GPIOB_CLK_ENABLE();
+ 430              		.loc 1 165 5 view .LVU146
+ 165:Src/adc.c     ****     __HAL_RCC_GPIOB_CLK_ENABLE();
+ 431              		.loc 1 165 5 view .LVU147
+ 432 0050 DA6C     		ldr	r2, [r3, #76]
+ 433 0052 42F00102 		orr	r2, r2, #1
+ 434 0056 DA64     		str	r2, [r3, #76]
+ 165:Src/adc.c     ****     __HAL_RCC_GPIOB_CLK_ENABLE();
+ 435              		.loc 1 165 5 view .LVU148
+ 436 0058 DA6C     		ldr	r2, [r3, #76]
+ 437 005a 02F00102 		and	r2, r2, #1
+ 438 005e 0292     		str	r2, [sp, #8]
+ 165:Src/adc.c     ****     __HAL_RCC_GPIOB_CLK_ENABLE();
+ 439              		.loc 1 165 5 view .LVU149
+ 440 0060 029A     		ldr	r2, [sp, #8]
+ 441              	.LBE3:
+ 165:Src/adc.c     ****     __HAL_RCC_GPIOB_CLK_ENABLE();
+ 442              		.loc 1 165 5 view .LVU150
+ 166:Src/adc.c     ****     /**ADC1 GPIO Configuration
+ 443              		.loc 1 166 5 view .LVU151
+ 444              	.LBB4:
+ 166:Src/adc.c     ****     /**ADC1 GPIO Configuration
+ 445              		.loc 1 166 5 view .LVU152
+ 166:Src/adc.c     ****     /**ADC1 GPIO Configuration
+ 446              		.loc 1 166 5 view .LVU153
+ 447 0062 DA6C     		ldr	r2, [r3, #76]
+ 448 0064 42F00202 		orr	r2, r2, #2
+ 449 0068 DA64     		str	r2, [r3, #76]
+ 166:Src/adc.c     ****     /**ADC1 GPIO Configuration
+ 450              		.loc 1 166 5 view .LVU154
+ 451 006a DB6C     		ldr	r3, [r3, #76]
+ 452 006c 03F00203 		and	r3, r3, #2
+ 453 0070 0393     		str	r3, [sp, #12]
+ 166:Src/adc.c     ****     /**ADC1 GPIO Configuration
+ 454              		.loc 1 166 5 view .LVU155
+ 455 0072 039B     		ldr	r3, [sp, #12]
+ 456              	.LBE4:
+ 166:Src/adc.c     ****     /**ADC1 GPIO Configuration
+ 457              		.loc 1 166 5 view .LVU156
+ 174:Src/adc.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+ 458              		.loc 1 174 5 view .LVU157
+ 174:Src/adc.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+ 459              		.loc 1 174 25 is_stmt 0 view .LVU158
+ 460 0074 0E23     		movs	r3, #14
+ 461 0076 1593     		str	r3, [sp, #84]
+ 175:Src/adc.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 13
+
+
+ 462              		.loc 1 175 5 is_stmt 1 view .LVU159
+ 175:Src/adc.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 463              		.loc 1 175 26 is_stmt 0 view .LVU160
+ 464 0078 0325     		movs	r5, #3
+ 465 007a 1695     		str	r5, [sp, #88]
+ 176:Src/adc.c     ****     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 466              		.loc 1 176 5 is_stmt 1 view .LVU161
+ 176:Src/adc.c     ****     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 467              		.loc 1 176 26 is_stmt 0 view .LVU162
+ 468 007c 0024     		movs	r4, #0
+ 469              	.LVL22:
+ 176:Src/adc.c     ****     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+ 470              		.loc 1 176 26 view .LVU163
+ 471 007e 1794     		str	r4, [sp, #92]
+ 177:Src/adc.c     **** 
+ 472              		.loc 1 177 5 is_stmt 1 view .LVU164
+ 473 0080 15A9     		add	r1, sp, #84
+ 474 0082 4FF09040 		mov	r0, #1207959552
+ 475 0086 FFF7FEFF 		bl	HAL_GPIO_Init
+ 476              	.LVL23:
+ 179:Src/adc.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+ 477              		.loc 1 179 5 view .LVU165
+ 179:Src/adc.c     ****     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+ 478              		.loc 1 179 25 is_stmt 0 view .LVU166
+ 479 008a 1595     		str	r5, [sp, #84]
+ 180:Src/adc.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 480              		.loc 1 180 5 is_stmt 1 view .LVU167
+ 180:Src/adc.c     ****     GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 481              		.loc 1 180 26 is_stmt 0 view .LVU168
+ 482 008c 1695     		str	r5, [sp, #88]
+ 181:Src/adc.c     ****     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+ 483              		.loc 1 181 5 is_stmt 1 view .LVU169
+ 181:Src/adc.c     ****     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+ 484              		.loc 1 181 26 is_stmt 0 view .LVU170
+ 485 008e 1794     		str	r4, [sp, #92]
+ 182:Src/adc.c     **** 
+ 486              		.loc 1 182 5 is_stmt 1 view .LVU171
+ 487 0090 15A9     		add	r1, sp, #84
+ 488 0092 0848     		ldr	r0, .L25+4
+ 489 0094 FFF7FEFF 		bl	HAL_GPIO_Init
+ 490              	.LVL24:
+ 185:Src/adc.c     ****     HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
+ 491              		.loc 1 185 5 view .LVU172
+ 492 0098 2246     		mov	r2, r4
+ 493 009a 2146     		mov	r1, r4
+ 494 009c 1220     		movs	r0, #18
+ 495 009e FFF7FEFF 		bl	HAL_NVIC_SetPriority
+ 496              	.LVL25:
+ 186:Src/adc.c     ****   /* USER CODE BEGIN ADC1_MspInit 1 */
+ 497              		.loc 1 186 5 view .LVU173
+ 498 00a2 1220     		movs	r0, #18
+ 499 00a4 FFF7FEFF 		bl	HAL_NVIC_EnableIRQ
+ 500              	.LVL26:
+ 501              		.loc 1 191 1 is_stmt 0 view .LVU174
+ 502 00a8 BBE7     		b	.L19
+ 503              	.LVL27:
+ 504              	.L24:
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 14
+
+
+ 159:Src/adc.c     ****     }
+ 505              		.loc 1 159 7 is_stmt 1 view .LVU175
+ 506 00aa FFF7FEFF 		bl	Error_Handler
+ 507              	.LVL28:
+ 508 00ae C5E7     		b	.L21
+ 509              	.L26:
+ 510              		.align	2
+ 511              	.L25:
+ 512 00b0 00100240 		.word	1073876992
+ 513 00b4 00040048 		.word	1207960576
+ 514              		.cfi_endproc
+ 515              	.LFE330:
+ 517              		.section	.text.HAL_ADC_MspDeInit,"ax",%progbits
+ 518              		.align	1
+ 519              		.global	HAL_ADC_MspDeInit
+ 520              		.syntax unified
+ 521              		.thumb
+ 522              		.thumb_func
+ 524              	HAL_ADC_MspDeInit:
+ 525              	.LVL29:
+ 526              	.LFB331:
+ 192:Src/adc.c     **** 
+ 193:Src/adc.c     **** void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
+ 194:Src/adc.c     **** {
+ 527              		.loc 1 194 1 view -0
+ 528              		.cfi_startproc
+ 529              		@ args = 0, pretend = 0, frame = 0
+ 530              		@ frame_needed = 0, uses_anonymous_args = 0
+ 531              		.loc 1 194 1 is_stmt 0 view .LVU177
+ 532 0000 08B5     		push	{r3, lr}
+ 533              	.LCFI8:
+ 534              		.cfi_def_cfa_offset 8
+ 535              		.cfi_offset 3, -8
+ 536              		.cfi_offset 14, -4
+ 195:Src/adc.c     **** 
+ 196:Src/adc.c     ****   if(adcHandle->Instance==ADC1)
+ 537              		.loc 1 196 3 is_stmt 1 view .LVU178
+ 538              		.loc 1 196 15 is_stmt 0 view .LVU179
+ 539 0002 0368     		ldr	r3, [r0]
+ 540              		.loc 1 196 5 view .LVU180
+ 541 0004 B3F1A04F 		cmp	r3, #1342177280
+ 542 0008 00D0     		beq	.L30
+ 543              	.LVL30:
+ 544              	.L27:
+ 197:Src/adc.c     ****   {
+ 198:Src/adc.c     ****   /* USER CODE BEGIN ADC1_MspDeInit 0 */
+ 199:Src/adc.c     **** 
+ 200:Src/adc.c     ****   /* USER CODE END ADC1_MspDeInit 0 */
+ 201:Src/adc.c     ****     /* Peripheral clock disable */
+ 202:Src/adc.c     ****     __HAL_RCC_ADC12_CLK_DISABLE();
+ 203:Src/adc.c     **** 
+ 204:Src/adc.c     ****     /**ADC1 GPIO Configuration
+ 205:Src/adc.c     ****     PA1     ------> ADC1_IN2
+ 206:Src/adc.c     ****     PA2     ------> ADC1_IN3
+ 207:Src/adc.c     ****     PA3     ------> ADC1_IN4
+ 208:Src/adc.c     ****     PB0     ------> ADC1_IN15
+ 209:Src/adc.c     ****     PB1     ------> ADC1_IN12
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 15
+
+
+ 210:Src/adc.c     ****     */
+ 211:Src/adc.c     ****     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
+ 212:Src/adc.c     **** 
+ 213:Src/adc.c     ****     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_0|GPIO_PIN_1);
+ 214:Src/adc.c     **** 
+ 215:Src/adc.c     ****     /* ADC1 interrupt Deinit */
+ 216:Src/adc.c     ****     HAL_NVIC_DisableIRQ(ADC1_2_IRQn);
+ 217:Src/adc.c     ****   /* USER CODE BEGIN ADC1_MspDeInit 1 */
+ 218:Src/adc.c     **** 
+ 219:Src/adc.c     ****   /* USER CODE END ADC1_MspDeInit 1 */
+ 220:Src/adc.c     ****   }
+ 221:Src/adc.c     **** }
+ 545              		.loc 1 221 1 view .LVU181
+ 546 000a 08BD     		pop	{r3, pc}
+ 547              	.LVL31:
+ 548              	.L30:
+ 202:Src/adc.c     **** 
+ 549              		.loc 1 202 5 is_stmt 1 view .LVU182
+ 550 000c 084A     		ldr	r2, .L31
+ 551 000e D36C     		ldr	r3, [r2, #76]
+ 552 0010 23F40053 		bic	r3, r3, #8192
+ 553 0014 D364     		str	r3, [r2, #76]
+ 211:Src/adc.c     **** 
+ 554              		.loc 1 211 5 view .LVU183
+ 555 0016 0E21     		movs	r1, #14
+ 556 0018 4FF09040 		mov	r0, #1207959552
+ 557              	.LVL32:
+ 211:Src/adc.c     **** 
+ 558              		.loc 1 211 5 is_stmt 0 view .LVU184
+ 559 001c FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 560              	.LVL33:
+ 213:Src/adc.c     **** 
+ 561              		.loc 1 213 5 is_stmt 1 view .LVU185
+ 562 0020 0321     		movs	r1, #3
+ 563 0022 0448     		ldr	r0, .L31+4
+ 564 0024 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 565              	.LVL34:
+ 216:Src/adc.c     ****   /* USER CODE BEGIN ADC1_MspDeInit 1 */
+ 566              		.loc 1 216 5 view .LVU186
+ 567 0028 1220     		movs	r0, #18
+ 568 002a FFF7FEFF 		bl	HAL_NVIC_DisableIRQ
+ 569              	.LVL35:
+ 570              		.loc 1 221 1 is_stmt 0 view .LVU187
+ 571 002e ECE7     		b	.L27
+ 572              	.L32:
+ 573              		.align	2
+ 574              	.L31:
+ 575 0030 00100240 		.word	1073876992
+ 576 0034 00040048 		.word	1207960576
+ 577              		.cfi_endproc
+ 578              	.LFE331:
+ 580              		.section	.text.HAL_ADCEx_InjectedConvCpltCallback,"ax",%progbits
+ 581              		.align	1
+ 582              		.global	HAL_ADCEx_InjectedConvCpltCallback
+ 583              		.syntax unified
+ 584              		.thumb
+ 585              		.thumb_func
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 16
+
+
+ 587              	HAL_ADCEx_InjectedConvCpltCallback:
+ 588              	.LVL36:
+ 589              	.LFB332:
+ 222:Src/adc.c     **** 
+ 223:Src/adc.c     **** /* USER CODE BEGIN 1 */
+ 224:Src/adc.c     **** #include "bldcmotor.h"
+ 225:Src/adc.c     **** /*----------------------------------------ADC�ж�----------------------------------------------
+ 226:Src/adc.c     **** ** ÿ100usִ��һ�� pwmƵ��10KHz
+ 227:Src/adc.c     **** */
+ 228:Src/adc.c     **** void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
+ 229:Src/adc.c     **** {
+ 590              		.loc 1 229 1 is_stmt 1 view -0
+ 591              		.cfi_startproc
+ 592              		@ args = 0, pretend = 0, frame = 16
+ 593              		@ frame_needed = 0, uses_anonymous_args = 0
+ 594              		.loc 1 229 1 is_stmt 0 view .LVU189
+ 595 0000 10B5     		push	{r4, lr}
+ 596              	.LCFI9:
+ 597              		.cfi_def_cfa_offset 8
+ 598              		.cfi_offset 4, -8
+ 599              		.cfi_offset 14, -4
+ 600 0002 84B0     		sub	sp, sp, #16
+ 601              	.LCFI10:
+ 602              		.cfi_def_cfa_offset 24
+ 230:Src/adc.c     ****     unsigned int adc_vale[3];
+ 603              		.loc 1 230 5 is_stmt 1 view .LVU190
+ 231:Src/adc.c     ****     adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+ 604              		.loc 1 231 5 view .LVU191
+ 605              		.loc 1 231 19 is_stmt 0 view .LVU192
+ 606 0004 0C4C     		ldr	r4, .L35
+ 607 0006 0921     		movs	r1, #9
+ 608 0008 2046     		mov	r0, r4
+ 609              	.LVL37:
+ 610              		.loc 1 231 19 view .LVU193
+ 611 000a FFF7FEFF 		bl	HAL_ADCEx_InjectedGetValue
+ 612              	.LVL38:
+ 613              		.loc 1 231 17 view .LVU194
+ 614 000e 0190     		str	r0, [sp, #4]
+ 232:Src/adc.c     ****     adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_2);
+ 615              		.loc 1 232 5 is_stmt 1 view .LVU195
+ 616              		.loc 1 232 19 is_stmt 0 view .LVU196
+ 617 0010 40F20F11 		movw	r1, #271
+ 618 0014 2046     		mov	r0, r4
+ 619 0016 FFF7FEFF 		bl	HAL_ADCEx_InjectedGetValue
+ 620              	.LVL39:
+ 621              		.loc 1 232 17 view .LVU197
+ 622 001a 0290     		str	r0, [sp, #8]
+ 233:Src/adc.c     ****     adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_3);
+ 623              		.loc 1 233 5 is_stmt 1 view .LVU198
+ 624              		.loc 1 233 19 is_stmt 0 view .LVU199
+ 625 001c 40F21521 		movw	r1, #533
+ 626 0020 2046     		mov	r0, r4
+ 627 0022 FFF7FEFF 		bl	HAL_ADCEx_InjectedGetValue
+ 628              	.LVL40:
+ 629              		.loc 1 233 17 view .LVU200
+ 630 0026 0390     		str	r0, [sp, #12]
+ 234:Src/adc.c     ****     motorctrl_foccalc(adc_vale,0.0f);
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 17
+
+
+ 631              		.loc 1 234 5 is_stmt 1 view .LVU201
+ 632 0028 9FED040A 		vldr.32	s0, .L35+4
+ 633 002c 01A8     		add	r0, sp, #4
+ 634 002e FFF7FEFF 		bl	motorctrl_foccalc
+ 635              	.LVL41:
+ 235:Src/adc.c     **** }
+ 636              		.loc 1 235 1 is_stmt 0 view .LVU202
+ 637 0032 04B0     		add	sp, sp, #16
+ 638              	.LCFI11:
+ 639              		.cfi_def_cfa_offset 8
+ 640              		@ sp needed
+ 641 0034 10BD     		pop	{r4, pc}
+ 642              	.L36:
+ 643 0036 00BF     		.align	2
+ 644              	.L35:
+ 645 0038 00000000 		.word	.LANCHOR0
+ 646 003c 00000000 		.word	0
+ 647              		.cfi_endproc
+ 648              	.LFE332:
+ 650              		.global	hadc1
+ 651              		.section	.bss.hadc1,"aw",%nobits
+ 652              		.align	2
+ 653              		.set	.LANCHOR0,. + 0
+ 656              	hadc1:
+ 657 0000 00000000 		.space	108
+ 657      00000000 
+ 657      00000000 
+ 657      00000000 
+ 657      00000000 
+ 658              		.text
+ 659              	.Letext0:
+ 660              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+ 661              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+ 662              		.file 4 "Drivers/CMSIS/Device/ST/STM32G4xx/Include/stm32g431xx.h"
+ 663              		.file 5 "Drivers/CMSIS/Device/ST/STM32G4xx/Include/stm32g4xx.h"
+ 664              		.file 6 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_def.h"
+ 665              		.file 7 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_rcc_ex.h"
+ 666              		.file 8 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_gpio.h"
+ 667              		.file 9 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_dma.h"
+ 668              		.file 10 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_adc.h"
+ 669              		.file 11 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_adc_ex.h"
+ 670              		.file 12 "../BLDCMotor/./motorctrl.h"
+ 671              		.file 13 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_cortex.h"
+ 672              		.file 14 "Inc/main.h"
+ 673              		.file 15 "Inc/adc.h"
+ 674              		.file 16 "<built-in>"
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s 			page 18
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 adc.c
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:20     .text.MX_ADC1_Init:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:26     .text.MX_ADC1_Init:00000000 MX_ADC1_Init
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:326    .text.MX_ADC1_Init:00000138 $d
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:336    .text.HAL_ADC_MspInit:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:342    .text.HAL_ADC_MspInit:00000000 HAL_ADC_MspInit
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:512    .text.HAL_ADC_MspInit:000000b0 $d
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:518    .text.HAL_ADC_MspDeInit:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:524    .text.HAL_ADC_MspDeInit:00000000 HAL_ADC_MspDeInit
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:575    .text.HAL_ADC_MspDeInit:00000030 $d
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:581    .text.HAL_ADCEx_InjectedConvCpltCallback:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:587    .text.HAL_ADCEx_InjectedConvCpltCallback:00000000 HAL_ADCEx_InjectedConvCpltCallback
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:645    .text.HAL_ADCEx_InjectedConvCpltCallback:00000038 $d
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:656    .bss.hadc1:00000000 hadc1
+C:\Users\zhangge\AppData\Local\Temp\ccy58cUN.s:652    .bss.hadc1:00000000 $d
+
+UNDEFINED SYMBOLS
+memset
+HAL_ADC_Init
+HAL_ADCEx_MultiModeConfigChannel
+HAL_ADC_ConfigChannel
+HAL_ADCEx_InjectedConfigChannel
+Error_Handler
+HAL_RCCEx_PeriphCLKConfig
+HAL_GPIO_Init
+HAL_NVIC_SetPriority
+HAL_NVIC_EnableIRQ
+HAL_GPIO_DeInit
+HAL_NVIC_DisableIRQ
+HAL_ADCEx_InjectedGetValue
+motorctrl_foccalc

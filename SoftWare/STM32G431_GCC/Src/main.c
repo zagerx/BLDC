@@ -30,6 +30,7 @@
 #include "../../BLDCMotor/motorctrl.h"
 // #include "motorctrl.h"
 #include "../Public/pubilc.h"
+#include "debuglog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

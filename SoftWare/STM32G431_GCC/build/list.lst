@@ -1,0 +1,795 @@
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"list.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.list_creat,"ax",%progbits
+  20              		.align	1
+  21              		.global	list_creat
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	list_creat:
+  27              	.LFB0:
+  28              		.file 1 "../Public/list.c"
+   1:../Public/list.c **** 
+   2:../Public/list.c **** #include "list.h"
+   3:../Public/list.c **** #include "heap.h"
+   4:../Public/list.c **** #include "debuglog.h"
+   5:../Public/list.c **** #undef NULL
+   6:../Public/list.c **** #define NULL 0
+   7:../Public/list.c **** 
+   8:../Public/list.c **** _list_t* list_creat(void)
+   9:../Public/list.c **** {
+  29              		.loc 1 9 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  10:../Public/list.c ****     _list_t *phead;
+  38              		.loc 1 10 5 view .LVU1
+  11:../Public/list.c ****     phead = heap_malloc(sizeof(_list_t));
+  39              		.loc 1 11 5 view .LVU2
+  40              		.loc 1 11 13 is_stmt 0 view .LVU3
+  41 0002 0C20     		movs	r0, #12
+  42 0004 FFF7FEFF 		bl	heap_malloc
+  43              	.LVL0:
+  12:../Public/list.c ****     phead->head = 0;
+  44              		.loc 1 12 5 is_stmt 1 view .LVU4
+  45              		.loc 1 12 17 is_stmt 0 view .LVU5
+  46 0008 0022     		movs	r2, #0
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 2
+
+
+  47 000a 0260     		str	r2, [r0]
+  13:../Public/list.c ****     phead->tail = 0;
+  48              		.loc 1 13 5 is_stmt 1 view .LVU6
+  49              		.loc 1 13 17 is_stmt 0 view .LVU7
+  50 000c 4260     		str	r2, [r0, #4]
+  14:../Public/list.c ****     phead->node_numb = 0;
+  51              		.loc 1 14 5 is_stmt 1 view .LVU8
+  52              		.loc 1 14 22 is_stmt 0 view .LVU9
+  53 000e 0281     		strh	r2, [r0, #8]	@ movhi
+  15:../Public/list.c ****     return phead;
+  54              		.loc 1 15 5 is_stmt 1 view .LVU10
+  16:../Public/list.c **** }
+  55              		.loc 1 16 1 is_stmt 0 view .LVU11
+  56 0010 08BD     		pop	{r3, pc}
+  57              		.cfi_endproc
+  58              	.LFE0:
+  60              		.section	.text.list_creat_nodeitem,"ax",%progbits
+  61              		.align	1
+  62              		.global	list_creat_nodeitem
+  63              		.syntax unified
+  64              		.thumb
+  65              		.thumb_func
+  67              	list_creat_nodeitem:
+  68              	.LVL1:
+  69              	.LFB1:
+  17:../Public/list.c **** 
+  18:../Public/list.c **** node_item_t *list_creat_nodeitem(void *pdata,unsigned short len)
+  19:../Public/list.c **** {
+  70              		.loc 1 19 1 is_stmt 1 view -0
+  71              		.cfi_startproc
+  72              		@ args = 0, pretend = 0, frame = 0
+  73              		@ frame_needed = 0, uses_anonymous_args = 0
+  74              		.loc 1 19 1 is_stmt 0 view .LVU13
+  75 0000 38B5     		push	{r3, r4, r5, lr}
+  76              	.LCFI1:
+  77              		.cfi_def_cfa_offset 16
+  78              		.cfi_offset 3, -16
+  79              		.cfi_offset 4, -12
+  80              		.cfi_offset 5, -8
+  81              		.cfi_offset 14, -4
+  82 0002 0546     		mov	r5, r0
+  83 0004 0C46     		mov	r4, r1
+  20:../Public/list.c ****     node_item_t *pitem;
+  84              		.loc 1 20 5 is_stmt 1 view .LVU14
+  21:../Public/list.c ****     pitem = heap_malloc(sizeof(node_item_t));
+  85              		.loc 1 21 5 view .LVU15
+  86              		.loc 1 21 13 is_stmt 0 view .LVU16
+  87 0006 0820     		movs	r0, #8
+  88              	.LVL2:
+  89              		.loc 1 21 13 view .LVU17
+  90 0008 FFF7FEFF 		bl	heap_malloc
+  91              	.LVL3:
+  22:../Public/list.c ****     pitem->pdata = pdata;
+  92              		.loc 1 22 5 is_stmt 1 view .LVU18
+  93              		.loc 1 22 18 is_stmt 0 view .LVU19
+  94 000c 4560     		str	r5, [r0, #4]
+  23:../Public/list.c ****     pitem->len = len;
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 3
+
+
+  95              		.loc 1 23 5 is_stmt 1 view .LVU20
+  96              		.loc 1 23 16 is_stmt 0 view .LVU21
+  97 000e 0480     		strh	r4, [r0]	@ movhi
+  24:../Public/list.c ****     return pitem;
+  98              		.loc 1 24 5 is_stmt 1 view .LVU22
+  25:../Public/list.c **** }
+  99              		.loc 1 25 1 is_stmt 0 view .LVU23
+ 100 0010 38BD     		pop	{r3, r4, r5, pc}
+ 101              		.loc 1 25 1 view .LVU24
+ 102              		.cfi_endproc
+ 103              	.LFE1:
+ 105              		.section	.text.list_creatnode,"ax",%progbits
+ 106              		.align	1
+ 107              		.global	list_creatnode
+ 108              		.syntax unified
+ 109              		.thumb
+ 110              		.thumb_func
+ 112              	list_creatnode:
+ 113              	.LVL4:
+ 114              	.LFB2:
+  26:../Public/list.c **** _node_t *list_creatnode(void *pdata,unsigned short len)
+  27:../Public/list.c **** {
+ 115              		.loc 1 27 1 is_stmt 1 view -0
+ 116              		.cfi_startproc
+ 117              		@ args = 0, pretend = 0, frame = 0
+ 118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119              		.loc 1 27 1 is_stmt 0 view .LVU26
+ 120 0000 70B5     		push	{r4, r5, r6, lr}
+ 121              	.LCFI2:
+ 122              		.cfi_def_cfa_offset 16
+ 123              		.cfi_offset 4, -16
+ 124              		.cfi_offset 5, -12
+ 125              		.cfi_offset 6, -8
+ 126              		.cfi_offset 14, -4
+ 127 0002 0546     		mov	r5, r0
+ 128 0004 0E46     		mov	r6, r1
+  28:../Public/list.c ****     _node_t *pnode;
+ 129              		.loc 1 28 5 is_stmt 1 view .LVU27
+  29:../Public/list.c ****     node_item_t *pitem;
+ 130              		.loc 1 29 5 view .LVU28
+  30:../Public/list.c ****     pnode = heap_malloc(sizeof(_node_t));
+ 131              		.loc 1 30 5 view .LVU29
+ 132              		.loc 1 30 13 is_stmt 0 view .LVU30
+ 133 0006 1020     		movs	r0, #16
+ 134              	.LVL5:
+ 135              		.loc 1 30 13 view .LVU31
+ 136 0008 FFF7FEFF 		bl	heap_malloc
+ 137              	.LVL6:
+ 138              		.loc 1 30 13 view .LVU32
+ 139 000c 0446     		mov	r4, r0
+ 140              	.LVL7:
+  31:../Public/list.c ****     pitem = list_creat_nodeitem(pdata,len);
+ 141              		.loc 1 31 5 is_stmt 1 view .LVU33
+ 142              		.loc 1 31 13 is_stmt 0 view .LVU34
+ 143 000e 3146     		mov	r1, r6
+ 144 0010 2846     		mov	r0, r5
+ 145              	.LVL8:
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 4
+
+
+ 146              		.loc 1 31 13 view .LVU35
+ 147 0012 FFF7FEFF 		bl	list_creat_nodeitem
+ 148              	.LVL9:
+  32:../Public/list.c ****     pnode->next = 0;
+ 149              		.loc 1 32 5 is_stmt 1 view .LVU36
+ 150              		.loc 1 32 17 is_stmt 0 view .LVU37
+ 151 0016 0023     		movs	r3, #0
+ 152 0018 2360     		str	r3, [r4]
+  33:../Public/list.c ****     pnode->pitem = pitem;
+ 153              		.loc 1 33 5 is_stmt 1 view .LVU38
+ 154              		.loc 1 33 18 is_stmt 0 view .LVU39
+ 155 001a E060     		str	r0, [r4, #12]
+  34:../Public/list.c ****     return pnode;
+ 156              		.loc 1 34 5 is_stmt 1 view .LVU40
+  35:../Public/list.c **** }
+ 157              		.loc 1 35 1 is_stmt 0 view .LVU41
+ 158 001c 2046     		mov	r0, r4
+ 159              	.LVL10:
+ 160              		.loc 1 35 1 view .LVU42
+ 161 001e 70BD     		pop	{r4, r5, r6, pc}
+ 162              		.loc 1 35 1 view .LVU43
+ 163              		.cfi_endproc
+ 164              	.LFE2:
+ 166              		.section	.text.list_insert_node,"ax",%progbits
+ 167              		.align	1
+ 168              		.global	list_insert_node
+ 169              		.syntax unified
+ 170              		.thumb
+ 171              		.thumb_func
+ 173              	list_insert_node:
+ 174              	.LVL11:
+ 175              	.LFB3:
+  36:../Public/list.c **** 
+  37:../Public/list.c **** /*
+  38:../Public/list.c **** **  头插法
+  39:../Public/list.c **** */
+  40:../Public/list.c **** void list_insert_node(_list_t *pthis, _node_t *node)
+  41:../Public/list.c **** {
+ 176              		.loc 1 41 1 is_stmt 1 view -0
+ 177              		.cfi_startproc
+ 178              		@ args = 0, pretend = 0, frame = 0
+ 179              		@ frame_needed = 0, uses_anonymous_args = 0
+ 180              		@ link register save eliminated.
+  42:../Public/list.c ****     _node_t *tail_node;
+ 181              		.loc 1 42 5 view .LVU45
+  43:../Public/list.c ****     /*当前链表是否为空*/
+  44:../Public/list.c ****     if (pthis->head == 0)
+ 182              		.loc 1 44 5 view .LVU46
+ 183              		.loc 1 44 14 is_stmt 0 view .LVU47
+ 184 0000 0368     		ldr	r3, [r0]
+ 185              		.loc 1 44 8 view .LVU48
+ 186 0002 33B1     		cbz	r3, .L10
+  45:../Public/list.c ****     {
+  46:../Public/list.c ****         /* code */
+  47:../Public/list.c ****         pthis->head = node;
+  48:../Public/list.c ****         pthis->tail = node;
+  49:../Public/list.c ****     }else{
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 5
+
+
+  50:../Public/list.c ****         tail_node = pthis->tail;
+ 187              		.loc 1 50 9 is_stmt 1 view .LVU49
+ 188              		.loc 1 50 19 is_stmt 0 view .LVU50
+ 189 0004 4368     		ldr	r3, [r0, #4]
+ 190              	.LVL12:
+  51:../Public/list.c ****         tail_node->next = node;
+ 191              		.loc 1 51 9 is_stmt 1 view .LVU51
+ 192              		.loc 1 51 25 is_stmt 0 view .LVU52
+ 193 0006 1960     		str	r1, [r3]
+  52:../Public/list.c ****         pthis->tail = tail_node->next;//更新尾节点
+ 194              		.loc 1 52 9 is_stmt 1 view .LVU53
+ 195              		.loc 1 52 21 is_stmt 0 view .LVU54
+ 196 0008 4160     		str	r1, [r0, #4]
+ 197              	.LVL13:
+ 198              	.L9:
+  53:../Public/list.c ****     }
+  54:../Public/list.c ****     pthis->node_numb++;
+ 199              		.loc 1 54 5 is_stmt 1 view .LVU55
+ 200              		.loc 1 54 10 is_stmt 0 view .LVU56
+ 201 000a 0389     		ldrh	r3, [r0, #8]
+ 202              		.loc 1 54 21 view .LVU57
+ 203 000c 0133     		adds	r3, r3, #1
+ 204 000e 0381     		strh	r3, [r0, #8]	@ movhi
+  55:../Public/list.c **** }
+ 205              		.loc 1 55 1 view .LVU58
+ 206 0010 7047     		bx	lr
+ 207              	.L10:
+  47:../Public/list.c ****         pthis->tail = node;
+ 208              		.loc 1 47 9 is_stmt 1 view .LVU59
+  47:../Public/list.c ****         pthis->tail = node;
+ 209              		.loc 1 47 21 is_stmt 0 view .LVU60
+ 210 0012 0160     		str	r1, [r0]
+  48:../Public/list.c ****     }else{
+ 211              		.loc 1 48 9 is_stmt 1 view .LVU61
+  48:../Public/list.c ****     }else{
+ 212              		.loc 1 48 21 is_stmt 0 view .LVU62
+ 213 0014 4160     		str	r1, [r0, #4]
+ 214 0016 F8E7     		b	.L9
+ 215              		.cfi_endproc
+ 216              	.LFE3:
+ 218              		.section	.text.list_delete_node,"ax",%progbits
+ 219              		.align	1
+ 220              		.global	list_delete_node
+ 221              		.syntax unified
+ 222              		.thumb
+ 223              		.thumb_func
+ 225              	list_delete_node:
+ 226              	.LVL14:
+ 227              	.LFB4:
+  56:../Public/list.c **** 
+  57:../Public/list.c **** 
+  58:../Public/list.c **** /*--------------根据节点ID/节点本身删除节点-----------------------------------*/
+  59:../Public/list.c **** void list_delete_node(_list_t *pthis,_node_t *node)
+  60:../Public/list.c **** {
+ 228              		.loc 1 60 1 is_stmt 1 view -0
+ 229              		.cfi_startproc
+ 230              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 6
+
+
+ 231              		@ frame_needed = 0, uses_anonymous_args = 0
+ 232              		.loc 1 60 1 is_stmt 0 view .LVU64
+ 233 0000 38B5     		push	{r3, r4, r5, lr}
+ 234              	.LCFI3:
+ 235              		.cfi_def_cfa_offset 16
+ 236              		.cfi_offset 3, -16
+ 237              		.cfi_offset 4, -12
+ 238              		.cfi_offset 5, -8
+ 239              		.cfi_offset 14, -4
+  61:../Public/list.c ****     _node_t *cur_node,*pre_node = NULL;
+ 240              		.loc 1 61 5 is_stmt 1 view .LVU65
+ 241              	.LVL15:
+  62:../Public/list.c ****     cur_node = pthis->head;
+ 242              		.loc 1 62 5 view .LVU66
+ 243              		.loc 1 62 14 is_stmt 0 view .LVU67
+ 244 0002 0468     		ldr	r4, [r0]
+ 245              	.LVL16:
+  63:../Public/list.c ****     pre_node = pthis->head;
+ 246              		.loc 1 63 5 is_stmt 1 view .LVU68
+  64:../Public/list.c ****     if (cur_node == NULL)
+ 247              		.loc 1 64 5 view .LVU69
+ 248              		.loc 1 64 8 is_stmt 0 view .LVU70
+ 249 0004 FCB1     		cbz	r4, .L11
+  65:../Public/list.c ****     {
+  66:../Public/list.c ****         /* code */
+  67:../Public/list.c ****         return;
+  68:../Public/list.c ****     }
+  69:../Public/list.c ****     if (node->pitem == NULL)
+ 250              		.loc 1 69 5 is_stmt 1 view .LVU71
+ 251              		.loc 1 69 13 is_stmt 0 view .LVU72
+ 252 0006 CB68     		ldr	r3, [r1, #12]
+ 253              		.loc 1 69 8 view .LVU73
+ 254 0008 EBB1     		cbz	r3, .L11
+  63:../Public/list.c ****     if (cur_node == NULL)
+ 255              		.loc 1 63 14 view .LVU74
+ 256 000a 2546     		mov	r5, r4
+ 257              	.LVL17:
+ 258              	.L13:
+  70:../Public/list.c ****     {
+  71:../Public/list.c ****         return;
+  72:../Public/list.c ****     }
+  73:../Public/list.c **** 
+  74:../Public/list.c ****     while (cur_node != NULL)
+ 259              		.loc 1 74 11 is_stmt 1 view .LVU75
+ 260 000c 8CB1     		cbz	r4, .L18
+  75:../Public/list.c ****     {
+  76:../Public/list.c ****         if ((cur_node->id == node->id) || (cur_node == node))
+ 261              		.loc 1 76 9 view .LVU76
+ 262              		.loc 1 76 22 is_stmt 0 view .LVU77
+ 263 000e A288     		ldrh	r2, [r4, #4]
+ 264              		.loc 1 76 34 view .LVU78
+ 265 0010 8B88     		ldrh	r3, [r1, #4]
+ 266              		.loc 1 76 12 view .LVU79
+ 267 0012 9A42     		cmp	r2, r3
+ 268 0014 04D0     		beq	.L14
+ 269              		.loc 1 76 40 discriminator 1 view .LVU80
+ 270 0016 8C42     		cmp	r4, r1
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 7
+
+
+ 271 0018 02D0     		beq	.L14
+  77:../Public/list.c ****         {
+  78:../Public/list.c ****             /* code */
+  79:../Public/list.c ****             pre_node->next = cur_node->next;
+  80:../Public/list.c **** 
+  81:../Public/list.c ****             if (pre_node == cur_node)//
+  82:../Public/list.c ****             {
+  83:../Public/list.c ****                 /* code */
+  84:../Public/list.c ****                 pthis->head = cur_node->next;
+  85:../Public/list.c ****             }
+  86:../Public/list.c ****             if (cur_node->next == NULL)
+  87:../Public/list.c ****             {
+  88:../Public/list.c ****                 /* code */
+  89:../Public/list.c ****                 pthis->tail = pre_node;
+  90:../Public/list.c ****             }
+  91:../Public/list.c ****             pthis->node_numb--;    
+  92:../Public/list.c ****             break;
+  93:../Public/list.c ****         }
+  94:../Public/list.c ****         pre_node = cur_node;
+ 272              		.loc 1 94 9 is_stmt 1 view .LVU81
+ 273              	.LVL18:
+  95:../Public/list.c ****         cur_node = cur_node->next;
+ 274              		.loc 1 95 9 view .LVU82
+  94:../Public/list.c ****         cur_node = cur_node->next;
+ 275              		.loc 1 94 18 is_stmt 0 view .LVU83
+ 276 001a 2546     		mov	r5, r4
+ 277              		.loc 1 95 18 view .LVU84
+ 278 001c 2468     		ldr	r4, [r4]
+ 279              	.LVL19:
+ 280              		.loc 1 95 18 view .LVU85
+ 281 001e F5E7     		b	.L13
+ 282              	.L14:
+  79:../Public/list.c **** 
+ 283              		.loc 1 79 13 is_stmt 1 view .LVU86
+  79:../Public/list.c **** 
+ 284              		.loc 1 79 38 is_stmt 0 view .LVU87
+ 285 0020 2368     		ldr	r3, [r4]
+  79:../Public/list.c **** 
+ 286              		.loc 1 79 28 view .LVU88
+ 287 0022 2B60     		str	r3, [r5]
+  81:../Public/list.c ****             {
+ 288              		.loc 1 81 13 is_stmt 1 view .LVU89
+  81:../Public/list.c ****             {
+ 289              		.loc 1 81 16 is_stmt 0 view .LVU90
+ 290 0024 AC42     		cmp	r4, r5
+ 291 0026 0FD0     		beq	.L21
+ 292              	.L16:
+  86:../Public/list.c ****             {
+ 293              		.loc 1 86 13 is_stmt 1 view .LVU91
+  86:../Public/list.c ****             {
+ 294              		.loc 1 86 25 is_stmt 0 view .LVU92
+ 295 0028 2368     		ldr	r3, [r4]
+  86:../Public/list.c ****             {
+ 296              		.loc 1 86 16 view .LVU93
+ 297 002a 7BB1     		cbz	r3, .L22
+ 298              	.L17:
+  91:../Public/list.c ****             break;
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 8
+
+
+ 299              		.loc 1 91 13 is_stmt 1 view .LVU94
+  91:../Public/list.c ****             break;
+ 300              		.loc 1 91 18 is_stmt 0 view .LVU95
+ 301 002c 0389     		ldrh	r3, [r0, #8]
+  91:../Public/list.c ****             break;
+ 302              		.loc 1 91 29 view .LVU96
+ 303 002e 013B     		subs	r3, r3, #1
+ 304 0030 0381     		strh	r3, [r0, #8]	@ movhi
+  92:../Public/list.c ****         }
+ 305              		.loc 1 92 13 is_stmt 1 view .LVU97
+ 306              	.L18:
+  96:../Public/list.c ****     }
+  97:../Public/list.c ****     heap_free(cur_node->pitem->pdata);
+ 307              		.loc 1 97 5 view .LVU98
+ 308              		.loc 1 97 23 is_stmt 0 view .LVU99
+ 309 0032 E368     		ldr	r3, [r4, #12]
+ 310              		.loc 1 97 5 view .LVU100
+ 311 0034 5868     		ldr	r0, [r3, #4]
+ 312              	.LVL20:
+ 313              		.loc 1 97 5 view .LVU101
+ 314 0036 FFF7FEFF 		bl	heap_free
+ 315              	.LVL21:
+  98:../Public/list.c ****     heap_free(cur_node->pitem);
+ 316              		.loc 1 98 5 is_stmt 1 view .LVU102
+ 317 003a E068     		ldr	r0, [r4, #12]
+ 318 003c FFF7FEFF 		bl	heap_free
+ 319              	.LVL22:
+  99:../Public/list.c ****     heap_free(cur_node);
+ 320              		.loc 1 99 5 view .LVU103
+ 321 0040 2046     		mov	r0, r4
+ 322 0042 FFF7FEFF 		bl	heap_free
+ 323              	.LVL23:
+ 324              	.L11:
+ 100:../Public/list.c **** }
+ 325              		.loc 1 100 1 is_stmt 0 view .LVU104
+ 326 0046 38BD     		pop	{r3, r4, r5, pc}
+ 327              	.LVL24:
+ 328              	.L21:
+  84:../Public/list.c ****             }
+ 329              		.loc 1 84 17 is_stmt 1 view .LVU105
+  84:../Public/list.c ****             }
+ 330              		.loc 1 84 29 is_stmt 0 view .LVU106
+ 331 0048 0360     		str	r3, [r0]
+ 332 004a EDE7     		b	.L16
+ 333              	.L22:
+  89:../Public/list.c ****             }
+ 334              		.loc 1 89 17 is_stmt 1 view .LVU107
+  89:../Public/list.c ****             }
+ 335              		.loc 1 89 29 is_stmt 0 view .LVU108
+ 336 004c 4560     		str	r5, [r0, #4]
+ 337 004e EDE7     		b	.L17
+ 338              		.cfi_endproc
+ 339              	.LFE4:
+ 341              		.section	.text.list_read_node_vale,"ax",%progbits
+ 342              		.align	1
+ 343              		.global	list_read_node_vale
+ 344              		.syntax unified
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 9
+
+
+ 345              		.thumb
+ 346              		.thumb_func
+ 348              	list_read_node_vale:
+ 349              	.LVL25:
+ 350              	.LFB5:
+ 101:../Public/list.c **** _node_t* list_read_node_vale(_list_t *pthis,_node_t *node)
+ 102:../Public/list.c **** {
+ 351              		.loc 1 102 1 is_stmt 1 view -0
+ 352              		.cfi_startproc
+ 353              		@ args = 0, pretend = 0, frame = 0
+ 354              		@ frame_needed = 0, uses_anonymous_args = 0
+ 355              		@ link register save eliminated.
+ 103:../Public/list.c ****     _node_t *p_curnode;
+ 356              		.loc 1 103 5 view .LVU110
+ 104:../Public/list.c ****     if (pthis->node_numb == 0)
+ 357              		.loc 1 104 5 view .LVU111
+ 358              		.loc 1 104 14 is_stmt 0 view .LVU112
+ 359 0000 0389     		ldrh	r3, [r0, #8]
+ 360              		.loc 1 104 8 view .LVU113
+ 361 0002 43B1     		cbz	r3, .L27
+ 105:../Public/list.c ****     {
+ 106:../Public/list.c ****         return (_node_t *)NULL;
+ 107:../Public/list.c ****     }
+ 108:../Public/list.c ****     p_curnode = pthis->head;
+ 362              		.loc 1 108 5 is_stmt 1 view .LVU114
+ 363              		.loc 1 108 15 is_stmt 0 view .LVU115
+ 364 0004 0068     		ldr	r0, [r0]
+ 365              	.LVL26:
+ 109:../Public/list.c **** 
+ 110:../Public/list.c ****     while (p_curnode != NULL)
+ 366              		.loc 1 110 5 is_stmt 1 view .LVU116
+ 367              	.L25:
+ 368              		.loc 1 110 11 view .LVU117
+ 369 0006 28B1     		cbz	r0, .L28
+ 111:../Public/list.c ****     {
+ 112:../Public/list.c ****         if (p_curnode->id == node->id)
+ 370              		.loc 1 112 9 view .LVU118
+ 371              		.loc 1 112 22 is_stmt 0 view .LVU119
+ 372 0008 8288     		ldrh	r2, [r0, #4]
+ 373              		.loc 1 112 34 view .LVU120
+ 374 000a 8B88     		ldrh	r3, [r1, #4]
+ 375              		.loc 1 112 12 view .LVU121
+ 376 000c 9A42     		cmp	r2, r3
+ 377 000e 03D0     		beq	.L23
+ 113:../Public/list.c ****         {
+ 114:../Public/list.c ****             /* code */
+ 115:../Public/list.c ****             break;
+ 116:../Public/list.c ****         }
+ 117:../Public/list.c ****         p_curnode = p_curnode->next;
+ 378              		.loc 1 117 9 is_stmt 1 view .LVU122
+ 379              		.loc 1 117 19 is_stmt 0 view .LVU123
+ 380 0010 0068     		ldr	r0, [r0]
+ 381              	.LVL27:
+ 382              		.loc 1 117 19 view .LVU124
+ 383 0012 F8E7     		b	.L25
+ 384              	.L28:
+ 385              		.loc 1 117 19 view .LVU125
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 10
+
+
+ 386 0014 7047     		bx	lr
+ 387              	.LVL28:
+ 388              	.L27:
+ 106:../Public/list.c ****     }
+ 389              		.loc 1 106 16 view .LVU126
+ 390 0016 0020     		movs	r0, #0
+ 391              	.LVL29:
+ 392              	.L23:
+ 118:../Public/list.c ****     }
+ 119:../Public/list.c ****     return p_curnode;
+ 120:../Public/list.c **** }
+ 393              		.loc 1 120 1 view .LVU127
+ 394 0018 7047     		bx	lr
+ 395              		.cfi_endproc
+ 396              	.LFE5:
+ 398              		.section	.text.list_read_node,"ax",%progbits
+ 399              		.align	1
+ 400              		.global	list_read_node
+ 401              		.syntax unified
+ 402              		.thumb
+ 403              		.thumb_func
+ 405              	list_read_node:
+ 406              	.LVL30:
+ 407              	.LFB6:
+ 121:../Public/list.c **** 
+ 122:../Public/list.c **** _node_t* list_read_node(_list_t *pthis)
+ 123:../Public/list.c **** {
+ 408              		.loc 1 123 1 is_stmt 1 view -0
+ 409              		.cfi_startproc
+ 410              		@ args = 0, pretend = 0, frame = 0
+ 411              		@ frame_needed = 0, uses_anonymous_args = 0
+ 412              		@ link register save eliminated.
+ 124:../Public/list.c ****     _node_t *p_rnode;
+ 413              		.loc 1 124 5 view .LVU129
+ 125:../Public/list.c ****     if (pthis->node_numb == 0)
+ 414              		.loc 1 125 5 view .LVU130
+ 415              		.loc 1 125 14 is_stmt 0 view .LVU131
+ 416 0000 0389     		ldrh	r3, [r0, #8]
+ 417              		.loc 1 125 8 view .LVU132
+ 418 0002 0BB1     		cbz	r3, .L31
+ 126:../Public/list.c ****     {
+ 127:../Public/list.c ****         return (_node_t *)NULL;
+ 128:../Public/list.c ****     }
+ 129:../Public/list.c ****     p_rnode = pthis->head;
+ 419              		.loc 1 129 5 is_stmt 1 view .LVU133
+ 420              		.loc 1 129 13 is_stmt 0 view .LVU134
+ 421 0004 0068     		ldr	r0, [r0]
+ 422              	.LVL31:
+ 130:../Public/list.c ****     return (_node_t *)p_rnode;
+ 423              		.loc 1 130 5 is_stmt 1 view .LVU135
+ 424              		.loc 1 130 12 is_stmt 0 view .LVU136
+ 425 0006 7047     		bx	lr
+ 426              	.LVL32:
+ 427              	.L31:
+ 127:../Public/list.c ****     }
+ 428              		.loc 1 127 16 view .LVU137
+ 429 0008 0020     		movs	r0, #0
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 11
+
+
+ 430              	.LVL33:
+ 131:../Public/list.c **** }
+ 431              		.loc 1 131 1 view .LVU138
+ 432 000a 7047     		bx	lr
+ 433              		.cfi_endproc
+ 434              	.LFE6:
+ 436              		.section	.text.list_free,"ax",%progbits
+ 437              		.align	1
+ 438              		.global	list_free
+ 439              		.syntax unified
+ 440              		.thumb
+ 441              		.thumb_func
+ 443              	list_free:
+ 444              	.LVL34:
+ 445              	.LFB7:
+ 132:../Public/list.c **** 
+ 133:../Public/list.c **** 
+ 134:../Public/list.c **** 
+ 135:../Public/list.c **** 
+ 136:../Public/list.c **** void list_free(_list_t *pthis, _node_t *node)
+ 137:../Public/list.c **** {
+ 446              		.loc 1 137 1 is_stmt 1 view -0
+ 447              		.cfi_startproc
+ 448              		@ args = 0, pretend = 0, frame = 0
+ 449              		@ frame_needed = 0, uses_anonymous_args = 0
+ 450              		.loc 1 137 1 is_stmt 0 view .LVU140
+ 451 0000 38B5     		push	{r3, r4, r5, lr}
+ 452              	.LCFI4:
+ 453              		.cfi_def_cfa_offset 16
+ 454              		.cfi_offset 3, -16
+ 455              		.cfi_offset 4, -12
+ 456              		.cfi_offset 5, -8
+ 457              		.cfi_offset 14, -4
+ 458 0002 0546     		mov	r5, r0
+ 138:../Public/list.c ****     _node_t *cur_node,*next_node;
+ 459              		.loc 1 138 5 is_stmt 1 view .LVU141
+ 139:../Public/list.c ****     cur_node = pthis->head;
+ 460              		.loc 1 139 5 view .LVU142
+ 461              		.loc 1 139 14 is_stmt 0 view .LVU143
+ 462 0004 0068     		ldr	r0, [r0]
+ 463              	.LVL35:
+ 140:../Public/list.c **** 
+ 141:../Public/list.c ****     while (cur_node !=0 )
+ 464              		.loc 1 141 5 is_stmt 1 view .LVU144
+ 465              		.loc 1 141 11 is_stmt 0 view .LVU145
+ 466 0006 03E0     		b	.L33
+ 467              	.LVL36:
+ 468              	.L34:
+ 142:../Public/list.c ****     {
+ 143:../Public/list.c ****         /*记录下一个节点*/
+ 144:../Public/list.c ****         next_node = cur_node->next;
+ 469              		.loc 1 144 9 is_stmt 1 view .LVU146
+ 470              		.loc 1 144 19 is_stmt 0 view .LVU147
+ 471 0008 0468     		ldr	r4, [r0]
+ 472              	.LVL37:
+ 145:../Public/list.c ****         heap_free(cur_node);
+ 473              		.loc 1 145 9 is_stmt 1 view .LVU148
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 12
+
+
+ 474 000a FFF7FEFF 		bl	heap_free
+ 475              	.LVL38:
+ 146:../Public/list.c ****         cur_node = next_node;
+ 476              		.loc 1 146 9 view .LVU149
+ 477              		.loc 1 146 18 is_stmt 0 view .LVU150
+ 478 000e 2046     		mov	r0, r4
+ 479              	.LVL39:
+ 480              	.L33:
+ 141:../Public/list.c ****     {
+ 481              		.loc 1 141 11 is_stmt 1 view .LVU151
+ 482 0010 0028     		cmp	r0, #0
+ 483 0012 F9D1     		bne	.L34
+ 147:../Public/list.c ****     }
+ 148:../Public/list.c ****     heap_free(pthis);
+ 484              		.loc 1 148 5 view .LVU152
+ 485 0014 2846     		mov	r0, r5
+ 486              	.LVL40:
+ 487              		.loc 1 148 5 is_stmt 0 view .LVU153
+ 488 0016 FFF7FEFF 		bl	heap_free
+ 489              	.LVL41:
+ 149:../Public/list.c **** }
+ 490              		.loc 1 149 1 view .LVU154
+ 491 001a 38BD     		pop	{r3, r4, r5, pc}
+ 492              		.loc 1 149 1 view .LVU155
+ 493              		.cfi_endproc
+ 494              	.LFE7:
+ 496              		.section	.text._list_printf,"ax",%progbits
+ 497              		.align	1
+ 498              		.global	_list_printf
+ 499              		.syntax unified
+ 500              		.thumb
+ 501              		.thumb_func
+ 503              	_list_printf:
+ 504              	.LVL42:
+ 505              	.LFB8:
+ 150:../Public/list.c **** 
+ 151:../Public/list.c **** 
+ 152:../Public/list.c **** void _list_printf(_list_t *pthis)
+ 153:../Public/list.c **** {
+ 506              		.loc 1 153 1 is_stmt 1 view -0
+ 507              		.cfi_startproc
+ 508              		@ args = 0, pretend = 0, frame = 0
+ 509              		@ frame_needed = 0, uses_anonymous_args = 0
+ 510              		@ link register save eliminated.
+ 154:../Public/list.c ****     unsigned short len;
+ 511              		.loc 1 154 5 view .LVU157
+ 155:../Public/list.c ****     unsigned char* pdata;    
+ 512              		.loc 1 155 5 view .LVU158
+ 156:../Public/list.c ****     if (pthis->node_numb==0)
+ 513              		.loc 1 156 5 view .LVU159
+ 514              		.loc 1 156 14 is_stmt 0 view .LVU160
+ 515 0000 0389     		ldrh	r3, [r0, #8]
+ 516              		.loc 1 156 8 view .LVU161
+ 517 0002 23B1     		cbz	r3, .L36
+ 157:../Public/list.c ****     {
+ 158:../Public/list.c ****         return;
+ 159:../Public/list.c ****     }
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 13
+
+
+ 160:../Public/list.c ****     _node_t *cur_node;
+ 518              		.loc 1 160 5 is_stmt 1 view .LVU162
+ 161:../Public/list.c ****     cur_node = pthis->head;
+ 519              		.loc 1 161 5 view .LVU163
+ 520              		.loc 1 161 14 is_stmt 0 view .LVU164
+ 521 0004 0368     		ldr	r3, [r0]
+ 522              	.LVL43:
+ 162:../Public/list.c ****     unsigned short id;
+ 523              		.loc 1 162 5 is_stmt 1 view .LVU165
+ 163:../Public/list.c ****     
+ 164:../Public/list.c ****     while (cur_node != NULL)
+ 524              		.loc 1 164 5 view .LVU166
+ 525              		.loc 1 164 11 is_stmt 0 view .LVU167
+ 526 0006 00E0     		b	.L38
+ 527              	.L39:
+ 165:../Public/list.c ****     {
+ 166:../Public/list.c ****         id = cur_node->id;
+ 528              		.loc 1 166 9 is_stmt 1 view .LVU168
+ 529              	.LVL44:
+ 167:../Public/list.c ****         len = cur_node->pitem->len;
+ 530              		.loc 1 167 9 view .LVU169
+ 168:../Public/list.c ****         pdata = cur_node->pitem->pdata;
+ 531              		.loc 1 168 9 view .LVU170
+ 169:../Public/list.c ****         cur_node = cur_node->next;
+ 532              		.loc 1 169 9 view .LVU171
+ 533              		.loc 1 169 18 is_stmt 0 view .LVU172
+ 534 0008 1B68     		ldr	r3, [r3]
+ 535              	.LVL45:
+ 536              	.L38:
+ 164:../Public/list.c ****     {
+ 537              		.loc 1 164 11 is_stmt 1 view .LVU173
+ 538 000a 002B     		cmp	r3, #0
+ 539 000c FCD1     		bne	.L39
+ 540              	.LVL46:
+ 541              	.L36:
+ 170:../Public/list.c ****     }
+ 171:../Public/list.c **** }
+ 542              		.loc 1 171 1 is_stmt 0 view .LVU174
+ 543 000e 7047     		bx	lr
+ 544              		.cfi_endproc
+ 545              	.LFE8:
+ 547              		.text
+ 548              	.Letext0:
+ 549              		.file 2 "../Public/list.h"
+ 550              		.file 3 "../Public/heap.h"
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s 			page 14
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 list.c
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:20     .text.list_creat:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:26     .text.list_creat:00000000 list_creat
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:61     .text.list_creat_nodeitem:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:67     .text.list_creat_nodeitem:00000000 list_creat_nodeitem
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:106    .text.list_creatnode:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:112    .text.list_creatnode:00000000 list_creatnode
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:167    .text.list_insert_node:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:173    .text.list_insert_node:00000000 list_insert_node
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:219    .text.list_delete_node:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:225    .text.list_delete_node:00000000 list_delete_node
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:342    .text.list_read_node_vale:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:348    .text.list_read_node_vale:00000000 list_read_node_vale
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:399    .text.list_read_node:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:405    .text.list_read_node:00000000 list_read_node
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:437    .text.list_free:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:443    .text.list_free:00000000 list_free
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:497    .text._list_printf:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccabEtN3.s:503    .text._list_printf:00000000 _list_printf
+
+UNDEFINED SYMBOLS
+heap_malloc
+heap_free

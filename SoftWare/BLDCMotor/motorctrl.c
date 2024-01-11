@@ -1,5 +1,5 @@
 #include "./motorctrl.h"
-
+#include "debuglog.h"
 #include "focmethod.h"
 #include "sensor.h"
 #define MOTORCTRL_PERCI            (1)
