@@ -5,8 +5,8 @@
     #include "pubilc.h"   //Debug打印
 #endif
 /*---------------------------角度传感器---------------------------------*/
-    #define ANGLE_SENSOR_TLE5012B_EN        (1)    //TLE5012B使能
-    #define ANGLE_SENSORT_MT6016_EN         (0)    //MT6016使能
+    #define ANGLE_SENSOR_TLE5012B_EN        (0)    //TLE5012B使能
+    #define ANGLE_SENSORT_MT6016_EN         (1)    //MT6016使能
 
     #define ANGLE_SENSOR_01                 (1)
     #define ANGLE_SENSOR_02                 (1)

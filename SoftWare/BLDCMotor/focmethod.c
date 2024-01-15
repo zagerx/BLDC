@@ -1,5 +1,5 @@
 #include "./focmethod.h"
-
+#include "debuglog.h"
 alpbet_t _2r_2s(dq_t i_dq,float theta);
  void _2s_2r(alpbet_t i_alphabeta,float theta,dq_t *dq);
  void _3s_2s(abc_t i_abc,alpbet_t *alp_bet);
@@ -36,7 +36,7 @@ duty_t foc_curloopcale(abc_t i_abc,float theta)
     // real_iq = udq_limt.q;
     real_id = i_dq.d;
     real_iq = i_dq.q;
-    /*------------������PI---------------*/
+    /*---------------------------*/
     
     float target_uq = 8.0f;  
     dq_t u_dq;  
@@ -113,6 +113,8 @@ duty_t _svpwm(float ualpha,float ubeta)
             s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
         break;
     }
+    USER_DEBUG_NORMAL("section Tm Ts =%d  %.3f  %.3f\r\n",sector,m_vector*1000000,m_vector*1000000,m_vector*1000000);
+
     /*------------------------------------------------------------*/
     if (m_vector + s_vector > T_PWM) 
     {
@@ -125,6 +127,10 @@ duty_t _svpwm(float ualpha,float ubeta)
     Ta = (T_PWM - (m_vector + s_vector)) / 4.0F;  
     Tb = Ta + m_vector/2.0f;
     Tc = Tb + s_vector/2.0f;
+    // USER_DEBUG_NORMAL("Ta Tb Tc = %.3f  %.3f  %.3f\r\n",Ta*1000000,Tb*1000000,Tc*1000000);
+
+    static float AAA1,AAA2,AAA3;
+    AAA1 = Ta*1000000;AAA2 = Tb*1000000;AAA3 = Tc*1000000;
 
     /*------------------------换相点-------------------------------------*/
     float Tcmp1 = 0.0f;
@@ -138,7 +144,8 @@ duty_t _svpwm(float ualpha,float ubeta)
         case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
     }
-
+static float BBB1,BBB2,BBB3;
+BBB1 = Tcmp1*1000000;BBB2 = Tcmp2*1000000;BBB3 = Tcmp3*1000000;
     /*-------------------------占空比---------------------------*/
     float duty_a,duty_b,duty_c;
     duty_a =(T_PWM - Tcmp1*2.0f )/T_PWM;

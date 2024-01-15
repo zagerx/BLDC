@@ -36,7 +36,8 @@ build/focmethod.o: ../BLDCMotor/focmethod.c ../BLDCMotor/./focmethod.h \
  ../Sensor/sensor.h ../Sensor/sensor_cfg.h ../Public/pubilc.h \
  ../Public/./method/method.h ../Public/./method/filter.h \
  ../Public/./method/pid.h ../Public/./method/crc.h Hardware/mt6816.h \
- Hardware/./hardware_cfg.h Inc/spi.h
+ Hardware/./hardware_cfg.h Inc/spi.h ../Public/debuglog/debuglog.h \
+ ../Public/debuglog/./debuglog_cfg.h Inc/usart.h
 ../BLDCMotor/./focmethod.h:
 ../BLDCMotor/././bldcmotor_cfg.h:
 ../Public/IPC/ipc.h:
@@ -88,3 +89,6 @@ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h:
 Hardware/mt6816.h:
 Hardware/./hardware_cfg.h:
 Inc/spi.h:
+../Public/debuglog/debuglog.h:
+../Public/debuglog/./debuglog_cfg.h:
+Inc/usart.h:

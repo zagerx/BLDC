@@ -164,9 +164,9 @@ int main(void)
   while (1)
   {
     sysrunning_process();
-    sensor_process();
+    // sensor_process();
     motortctrl_process();
-    protocol_process();
+    // protocol_process();
 
     HAL_Delay(1);
     /* USER CODE END WHILE */

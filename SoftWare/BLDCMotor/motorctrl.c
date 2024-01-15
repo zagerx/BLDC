@@ -37,16 +37,15 @@ static lowfilter_t sg_elefilter[3];
 static float _get_angleoffset(void);
 void motortctrl_process(void)
 {
-    float theta = 100.0f;
-
+    // float theta = 100.0f;
     switch (g_Motor1.state)
     {
     case MOTOR_INIT:
         for (unsigned char  i = 0; i < 10; i++)
         {
-            theta = (*(sensor_data_t*)sensor_user_read(SENSOR_02)).cov_data;            
+            // theta = (*(sensor_data_t*)sensor_user_read(SENSOR_02)).cov_data;            
         }
-        sg_MecThetaOffset = _get_angleoffset();
+        // sg_MecThetaOffset = _get_angleoffset();
         /*-----电流滤波器初始化-------*/
         lowfilter_init(&sg_elefilter[0],80);
         lowfilter_init(&sg_elefilter[1],80);
@@ -54,9 +53,32 @@ void motortctrl_process(void)
 
         /*------PID参数初始化---------*/
         foc_paraminit();
-        motor_enable();
-        g_Motor1.state = MOTOR_RUNING;           
+        // motor_enable();
+        g_Motor1.state = MOTOR_TEST;           
         break;
+
+    case MOTOR_TEST:
+        {
+            static float theta = 0.0f;
+            float U_out = 2.0f;
+            float alp,beta;
+            float Rad_theta;
+            Rad_theta = theta / 57.29577951f;
+            alp = U_out*cosf(Rad_theta);
+            beta = U_out*sinf(Rad_theta);
+            // USER_DEBUG_NORMAL("alp beta =   %.3f  %.3f\r\n",alp,beta);
+            _svpwm(alp,beta);
+            theta += 15.0f;
+            if (theta>=360.0f)
+            {
+                /* code */
+                theta = 0.0f;
+                g_Motor1.state = MOTOR_STOP; 
+                break;
+            }            
+        }
+        break;
+
     case MOTOR_RUNING:
         {
             if (!(++g_Motor1.cnt % 5000))
@@ -64,7 +86,6 @@ void motortctrl_process(void)
                 /* code */
                 g_Motor1.state = MOTOR_STOP;
             }
-            
         }
         break;
     case MOTOR_STOP:
@@ -153,7 +174,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 
     dq_t udq = {0.0f,0.80f};
     alpbet_t uab;
-    #if 0//强拖
+    #if 1//强拖
         {
             static float theta = 0.0f;
             if (theta >= _2PI)

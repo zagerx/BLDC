@@ -10,7 +10,7 @@
 #define DEBUG_RTT      (1)
 #define DEBUG_UART     (2)
 
-#define DEBUG_SW   DEBUG_RTT
+#define DEBUG_SW   DEBUG_UART
 
     #if (DEBUG_SW == DEBUG_UART)
         #include "usart.h"

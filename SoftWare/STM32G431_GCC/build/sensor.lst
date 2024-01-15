@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -48,79 +48,80 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 1
   11:../Sensor/sensor.c **** /*-------------------注册传感器------------------------*/
   12:../Sensor/sensor.c **** static sensor_t g_sensor_arry[SENSOR_NUMBER + 1] = \
   13:../Sensor/sensor.c **** {
-  14:../Sensor/sensor.c **** #if(ANGLE_SENSOR == ANGLE_SENSOR_MT6818)
-  15:../Sensor/sensor.c ****         [SENSOR_MT6818] = {
+  14:../Sensor/sensor.c **** #if(ANGLE_SENSOR_01 && ANGLE_SENSORT_MT6016_EN)
+  15:../Sensor/sensor.c ****         [SENSOR_01] = {
   16:../Sensor/sensor.c ****             .pf_read = mt6816_read,
   17:../Sensor/sensor.c ****             .pf_write = NULL,
   18:../Sensor/sensor.c ****             .cycle = 0x00
   19:../Sensor/sensor.c ****         },
-  20:../Sensor/sensor.c **** #elif(ANGLE_SENSOR == ANGLE_SENSOR_TLE5012B)
-  21:../Sensor/sensor.c ****         [SENSOR_TLE5012B] = {
-  22:../Sensor/sensor.c ****             .pf_read = tle5012b_read,
-  23:../Sensor/sensor.c ****             .pf_write = NULL,
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 2
+  20:../Sensor/sensor.c **** #endif
+  21:../Sensor/sensor.c **** #if(ANGLE_SENSOR_02 && ANGLE_SENSOR_TLE5012B_EN)
+  22:../Sensor/sensor.c ****         [SENSOR_02] = {
+  23:../Sensor/sensor.c ****             .pf_read = tle5012b_read,
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s 			page 2
 
 
-  24:../Sensor/sensor.c ****             .cycle = 0x00
-  25:../Sensor/sensor.c ****         },
-  26:../Sensor/sensor.c **** #endif
-  27:../Sensor/sensor.c ****     [SENSOR_NUMBER] = {
-  28:../Sensor/sensor.c ****         .pf_read = NULL,
-  29:../Sensor/sensor.c ****         .pf_write = NULL,
-  30:../Sensor/sensor.c ****         .cycle = 0
-  31:../Sensor/sensor.c ****     },
-  32:../Sensor/sensor.c **** };          //传感器数组
-  33:../Sensor/sensor.c **** 
+  24:../Sensor/sensor.c ****             .pf_write = NULL,
+  25:../Sensor/sensor.c ****             .cycle = 0x00
+  26:../Sensor/sensor.c ****         },
+  27:../Sensor/sensor.c **** #endif
+  28:../Sensor/sensor.c ****     [SENSOR_NUMBER] = {
+  29:../Sensor/sensor.c ****         .pf_read = NULL,
+  30:../Sensor/sensor.c ****         .pf_write = NULL,
+  31:../Sensor/sensor.c ****         .cycle = 0
+  32:../Sensor/sensor.c ****     },
+  33:../Sensor/sensor.c **** };          //传感器数组
   34:../Sensor/sensor.c **** 
-  35:../Sensor/sensor.c **** enum{
-  36:../Sensor/sensor.c ****     SENSOR_INIT,
-  37:../Sensor/sensor.c ****     SENSOR_IDLE,
-  38:../Sensor/sensor.c ****     SENSOR_OPEN,
-  39:../Sensor/sensor.c ****     SENSOR_UPDATE,
-  40:../Sensor/sensor.c ****     SENSOR_CLOSE,
-  41:../Sensor/sensor.c **** };
-  42:../Sensor/sensor.c **** typedef struct
-  43:../Sensor/sensor.c **** {
-  44:../Sensor/sensor.c ****     unsigned char state;
-  45:../Sensor/sensor.c **** }sensor_arry_t;
-  46:../Sensor/sensor.c **** 
-  47:../Sensor/sensor.c **** sensor_arry_t g_sensor = {
-  48:../Sensor/sensor.c ****     .state = SENSOR_INIT,
-  49:../Sensor/sensor.c **** };
-  50:../Sensor/sensor.c **** /*-------------初始化、更新传感器组----------------*/
-  51:../Sensor/sensor.c **** void sensor_process(void)
-  52:../Sensor/sensor.c **** {
-  33              		.loc 1 52 1 view -0
+  35:../Sensor/sensor.c **** 
+  36:../Sensor/sensor.c **** enum{
+  37:../Sensor/sensor.c ****     SENSOR_INIT,
+  38:../Sensor/sensor.c ****     SENSOR_IDLE,
+  39:../Sensor/sensor.c ****     SENSOR_OPEN,
+  40:../Sensor/sensor.c ****     SENSOR_UPDATE,
+  41:../Sensor/sensor.c ****     SENSOR_CLOSE,
+  42:../Sensor/sensor.c **** };
+  43:../Sensor/sensor.c **** typedef struct
+  44:../Sensor/sensor.c **** {
+  45:../Sensor/sensor.c ****     unsigned char state;
+  46:../Sensor/sensor.c **** }sensor_arry_t;
+  47:../Sensor/sensor.c **** 
+  48:../Sensor/sensor.c **** sensor_arry_t g_sensor = {
+  49:../Sensor/sensor.c ****     .state = SENSOR_INIT,
+  50:../Sensor/sensor.c **** };
+  51:../Sensor/sensor.c **** /*-------------初始化、更新传感器组----------------*/
+  52:../Sensor/sensor.c **** void sensor_process(void)
+  53:../Sensor/sensor.c **** {
+  33              		.loc 1 53 1 view -0
   34              		.cfi_startproc
   35              		@ args = 0, pretend = 0, frame = 0
   36              		@ frame_needed = 0, uses_anonymous_args = 0
-  53:../Sensor/sensor.c ****     switch (g_sensor.state)
-  37              		.loc 1 53 5 view .LVU1
-  38              		.loc 1 53 21 is_stmt 0 view .LVU2
-  39 0000 1C4B     		ldr	r3, .L11
+  54:../Sensor/sensor.c ****     switch (g_sensor.state)
+  37              		.loc 1 54 5 view .LVU1
+  38              		.loc 1 54 21 is_stmt 0 view .LVU2
+  39 0000 1D4B     		ldr	r3, .L12
   40 0002 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
-  41              		.loc 1 53 5 view .LVU3
+  41              		.loc 1 54 5 view .LVU3
   42 0004 13B1     		cbz	r3, .L2
   43 0006 032B     		cmp	r3, #3
-  44 0008 2ED0     		beq	.L7
+  44 0008 32D0     		beq	.L7
   45 000a 7047     		bx	lr
   46              	.L2:
-  54:../Sensor/sensor.c ****     {
-  55:../Sensor/sensor.c ****     case SENSOR_INIT:
-  56:../Sensor/sensor.c ****         g_sensor.state = SENSOR_UPDATE;
-  47              		.loc 1 56 9 is_stmt 1 view .LVU4
-  48              		.loc 1 56 24 is_stmt 0 view .LVU5
-  49 000c 194B     		ldr	r3, .L11
+  55:../Sensor/sensor.c ****     {
+  56:../Sensor/sensor.c ****     case SENSOR_INIT:
+  57:../Sensor/sensor.c ****         g_sensor.state = SENSOR_UPDATE;
+  47              		.loc 1 57 9 is_stmt 1 view .LVU4
+  48              		.loc 1 57 24 is_stmt 0 view .LVU5
+  49 000c 1A4B     		ldr	r3, .L12
   50 000e 0322     		movs	r2, #3
   51 0010 1A70     		strb	r2, [r3]
-  57:../Sensor/sensor.c ****         break;
-  52              		.loc 1 57 9 is_stmt 1 view .LVU6
+  58:../Sensor/sensor.c ****         break;
+  52              		.loc 1 58 9 is_stmt 1 view .LVU6
   53 0012 7047     		bx	lr
   54              	.LVL0:
-  55              	.L6:
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s 			page 3
 
 
+  55              	.L5:
   56              	.LCFI0:
   57              		.cfi_def_cfa_offset 16
   58              		.cfi_offset 4, -16
@@ -128,130 +129,123 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 1
   60              		.cfi_offset 6, -8
   61              		.cfi_offset 14, -4
   62              	.LBB2:
-  58:../Sensor/sensor.c ****     case SENSOR_UPDATE:
-  59:../Sensor/sensor.c ****         for (ENUM_SENSOR sensor_id = 0; sensor_id < SENSOR_NUMBER; sensor_id++) //遍历整个传�
-  60:../Sensor/sensor.c ****         {
-  61:../Sensor/sensor.c ****             if (!g_sensor_arry[sensor_id].pf_read || !g_sensor_arry[sensor_id].cycle)
-  63              		.loc 1 61 13 view .LVU7
-  64              		.loc 1 61 42 is_stmt 0 view .LVU8
-  65 0014 04EB4403 		add	r3, r4, r4, lsl #1
-  66 0018 174A     		ldr	r2, .L11+4
-  67 001a 02EB8303 		add	r3, r2, r3, lsl #2
-  68 001e 5968     		ldr	r1, [r3, #4]
-  69              		.loc 1 61 16 view .LVU9
-  70 0020 F9B1     		cbz	r1, .L5
-  71              		.loc 1 61 79 discriminator 1 view .LVU10
-  72 0022 04EB4403 		add	r3, r4, r4, lsl #1
-  73 0026 02EB8303 		add	r3, r2, r3, lsl #2
-  74 002a 5B88     		ldrh	r3, [r3, #2]
-  75              		.loc 1 61 51 discriminator 1 view .LVU11
-  76 002c CBB1     		cbz	r3, .L5
-  62:../Sensor/sensor.c ****             {
-  63:../Sensor/sensor.c ****                 continue;
-  64:../Sensor/sensor.c ****             }
-  65:../Sensor/sensor.c **** 
-  66:../Sensor/sensor.c ****             /*----更新周期是否满足---*/
-  67:../Sensor/sensor.c ****             // if (g_sensor_arry[sensor_id].cycle)
-  68:../Sensor/sensor.c ****             // {
-  69:../Sensor/sensor.c ****             //     /* code */
-  70:../Sensor/sensor.c ****             // }
-  71:../Sensor/sensor.c **** 
-  72:../Sensor/sensor.c ****             g_data_arry[sensor_id] = *(sensor_data_t *)g_sensor_arry[sensor_id].pf_read();
-  77              		.loc 1 72 13 is_stmt 1 view .LVU12
-  78              		.loc 1 72 56 is_stmt 0 view .LVU13
-  79 002e 8847     		blx	r1
-  80              	.LVL1:
-  81              		.loc 1 72 36 view .LVU14
-  82 0030 124E     		ldr	r6, .L11+8
-  83 0032 04EB4403 		add	r3, r4, r4, lsl #1
-  84 0036 06EB8303 		add	r3, r6, r3, lsl #2
-  85 003a 07C8     		ldm	r0, {r0, r1, r2}
-  86 003c 83E80700 		stm	r3, {r0, r1, r2}
-  73:../Sensor/sensor.c ****             USER_DEBUG_NORMAL("data %d %d\r\n",g_data_arry[sensor_id].raw,\
-  87              		.loc 1 73 13 is_stmt 1 view .LVU15
-  88 0040 D3ED017A 		vldr.32	s15, [r3, #4]
-  89 0044 9FED0E7A 		vldr.32	s14, .L11+12
-  90 0048 67EE877A 		vmul.f32	s15, s15, s14
-  91 004c 04EB4405 		add	r5, r4, r4, lsl #1
-  92 0050 FDEEE77A 		vcvt.s32.f32	s15, s15
-  93 0054 17EE902A 		vmov	r2, s15	@ int
-  94 0058 56F82510 		ldr	r1, [r6, r5, lsl #2]
-  95 005c 0948     		ldr	r0, .L11+16
-  96 005e FFF7FEFF 		bl	printf
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 4
+  59:../Sensor/sensor.c ****     case SENSOR_UPDATE:
+  60:../Sensor/sensor.c ****         for (ENUM_SENSOR sensor_id = 0; sensor_id < SENSOR_NUMBER; sensor_id++) //遍历整个传�
+  63              		.loc 1 60 68 discriminator 2 view .LVU7
+  64              		.loc 1 60 77 is_stmt 0 discriminator 2 view .LVU8
+  65 0014 0134     		adds	r4, r4, #1
+  66              	.LVL1:
+  67              		.loc 1 60 77 discriminator 2 view .LVU9
+  68 0016 64B2     		sxtb	r4, r4
+  69              	.LVL2:
+  70              	.L3:
+  71              		.loc 1 60 41 is_stmt 1 discriminator 1 view .LVU10
+  72              		.loc 1 60 9 is_stmt 0 discriminator 1 view .LVU11
+  73 0018 012C     		cmp	r4, #1
+  74 001a 2CDC     		bgt	.L11
+  61:../Sensor/sensor.c ****         {
+  62:../Sensor/sensor.c ****             if (!g_sensor_arry[sensor_id].pf_read || !g_sensor_arry[sensor_id].cycle)
+  75              		.loc 1 62 13 is_stmt 1 view .LVU12
+  76              		.loc 1 62 42 is_stmt 0 view .LVU13
+  77 001c 04EB4403 		add	r3, r4, r4, lsl #1
+  78 0020 164A     		ldr	r2, .L12+4
+  79 0022 02EB8303 		add	r3, r2, r3, lsl #2
+  80 0026 5968     		ldr	r1, [r3, #4]
+  81              		.loc 1 62 16 view .LVU14
+  82 0028 0029     		cmp	r1, #0
+  83 002a F3D0     		beq	.L5
+  84              		.loc 1 62 79 discriminator 1 view .LVU15
+  85 002c 04EB4403 		add	r3, r4, r4, lsl #1
+  86 0030 02EB8303 		add	r3, r2, r3, lsl #2
+  87 0034 5B88     		ldrh	r3, [r3, #2]
+  88              		.loc 1 62 51 discriminator 1 view .LVU16
+  89 0036 002B     		cmp	r3, #0
+  90 0038 ECD0     		beq	.L5
+  63:../Sensor/sensor.c ****             {
+  64:../Sensor/sensor.c ****                 continue;
+  65:../Sensor/sensor.c ****             }
+  66:../Sensor/sensor.c **** 
+  67:../Sensor/sensor.c ****             /*----更新周期是否满足---*/
+  68:../Sensor/sensor.c ****             // if (g_sensor_arry[sensor_id].cycle)
+  69:../Sensor/sensor.c ****             // {
+  70:../Sensor/sensor.c ****             //     /* code */
+  71:../Sensor/sensor.c ****             // }
+  72:../Sensor/sensor.c **** 
+  73:../Sensor/sensor.c ****             g_data_arry[sensor_id] = *(sensor_data_t *)g_sensor_arry[sensor_id].pf_read();
+  91              		.loc 1 73 13 is_stmt 1 view .LVU17
+  92              		.loc 1 73 56 is_stmt 0 view .LVU18
+  93 003a 8847     		blx	r1
+  94              	.LVL3:
+  95              		.loc 1 73 36 view .LVU19
+  96 003c 104E     		ldr	r6, .L12+8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s 			page 4
 
 
-  97              	.LVL2:
-  98              	.L5:
-  59:../Sensor/sensor.c ****         {
-  99              		.loc 1 59 68 discriminator 2 view .LVU16
-  59:../Sensor/sensor.c ****         {
- 100              		.loc 1 59 77 is_stmt 0 discriminator 2 view .LVU17
- 101 0062 0134     		adds	r4, r4, #1
- 102              	.LVL3:
-  59:../Sensor/sensor.c ****         {
- 103              		.loc 1 59 77 discriminator 2 view .LVU18
- 104 0064 64B2     		sxtb	r4, r4
- 105              	.LVL4:
-  59:../Sensor/sensor.c ****         {
- 106              		.loc 1 59 77 discriminator 2 view .LVU19
- 107 0066 01E0     		b	.L3
- 108              	.LVL5:
- 109              	.L7:
- 110              	.LCFI1:
- 111              		.cfi_def_cfa_offset 0
- 112              		.cfi_restore 4
- 113              		.cfi_restore 5
- 114              		.cfi_restore 6
- 115              		.cfi_restore 14
-  59:../Sensor/sensor.c ****         {
- 116              		.loc 1 59 77 discriminator 2 view .LVU20
- 117              	.LBE2:
-  52:../Sensor/sensor.c ****     switch (g_sensor.state)
- 118              		.loc 1 52 1 view .LVU21
- 119 0068 70B5     		push	{r4, r5, r6, lr}
- 120              	.LCFI2:
- 121              		.cfi_def_cfa_offset 16
- 122              		.cfi_offset 4, -16
- 123              		.cfi_offset 5, -12
- 124              		.cfi_offset 6, -8
- 125              		.cfi_offset 14, -4
-  53:../Sensor/sensor.c ****     {
- 126              		.loc 1 53 5 view .LVU22
- 127 006a 0024     		movs	r4, #0
- 128              	.L3:
- 129              	.LVL6:
- 130              	.LBB3:
-  59:../Sensor/sensor.c ****         {
- 131              		.loc 1 59 41 is_stmt 1 discriminator 1 view .LVU23
-  59:../Sensor/sensor.c ****         {
- 132              		.loc 1 59 9 is_stmt 0 discriminator 1 view .LVU24
- 133 006c 002C     		cmp	r4, #0
- 134 006e D1DD     		ble	.L6
- 135              	.LBE3:
-  74:../Sensor/sensor.c ****                                                     (int)(g_data_arry[sensor_id].cov_data * 1000));
-  75:../Sensor/sensor.c **** 
-  76:../Sensor/sensor.c ****         }
-  77:../Sensor/sensor.c ****         break;    
-  78:../Sensor/sensor.c ****     default:
-  79:../Sensor/sensor.c ****         break;
-  80:../Sensor/sensor.c ****     }
-  81:../Sensor/sensor.c **** }
- 136              		.loc 1 81 1 view .LVU25
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 5
-
-
- 137 0070 70BD     		pop	{r4, r5, r6, pc}
+  97 003e 04EB4403 		add	r3, r4, r4, lsl #1
+  98 0042 06EB8303 		add	r3, r6, r3, lsl #2
+  99 0046 07C8     		ldm	r0, {r0, r1, r2}
+ 100 0048 83E80700 		stm	r3, {r0, r1, r2}
+  74:../Sensor/sensor.c ****             USER_DEBUG_NORMAL("data %d %d\r\n",g_data_arry[sensor_id].raw,\
+ 101              		.loc 1 74 13 is_stmt 1 view .LVU20
+ 102 004c D3ED017A 		vldr.32	s15, [r3, #4]
+ 103 0050 9FED0C7A 		vldr.32	s14, .L12+12
+ 104 0054 67EE877A 		vmul.f32	s15, s15, s14
+ 105 0058 04EB4405 		add	r5, r4, r4, lsl #1
+ 106 005c FDEEE77A 		vcvt.s32.f32	s15, s15
+ 107 0060 17EE902A 		vmov	r2, s15	@ int
+ 108 0064 56F82510 		ldr	r1, [r6, r5, lsl #2]
+ 109 0068 0748     		ldr	r0, .L12+16
+ 110 006a FFF7FEFF 		bl	printf
+ 111              	.LVL4:
+ 112 006e D1E7     		b	.L5
+ 113              	.LVL5:
+ 114              	.L7:
+ 115              	.LCFI1:
+ 116              		.cfi_def_cfa_offset 0
+ 117              		.cfi_restore 4
+ 118              		.cfi_restore 5
+ 119              		.cfi_restore 6
+ 120              		.cfi_restore 14
+ 121              		.loc 1 74 13 is_stmt 0 view .LVU21
+ 122              	.LBE2:
+  53:../Sensor/sensor.c ****     switch (g_sensor.state)
+ 123              		.loc 1 53 1 view .LVU22
+ 124 0070 70B5     		push	{r4, r5, r6, lr}
+ 125              	.LCFI2:
+ 126              		.cfi_def_cfa_offset 16
+ 127              		.cfi_offset 4, -16
+ 128              		.cfi_offset 5, -12
+ 129              		.cfi_offset 6, -8
+ 130              		.cfi_offset 14, -4
+  54:../Sensor/sensor.c ****     {
+ 131              		.loc 1 54 5 view .LVU23
+ 132 0072 0024     		movs	r4, #0
+ 133 0074 D0E7     		b	.L3
+ 134              	.LVL6:
+ 135              	.L11:
+  75:../Sensor/sensor.c ****                                                     (int)(g_data_arry[sensor_id].cov_data * 1000));
+  76:../Sensor/sensor.c **** 
+  77:../Sensor/sensor.c ****         }
+  78:../Sensor/sensor.c ****         break;    
+  79:../Sensor/sensor.c ****     default:
+  80:../Sensor/sensor.c ****         break;
+  81:../Sensor/sensor.c ****     }
+  82:../Sensor/sensor.c **** }
+ 136              		.loc 1 82 1 view .LVU24
+ 137 0076 70BD     		pop	{r4, r5, r6, pc}
  138              	.LVL7:
- 139              	.L12:
- 140              		.loc 1 81 1 view .LVU26
- 141 0072 00BF     		.align	2
- 142              	.L11:
- 143 0074 00000000 		.word	.LANCHOR0
- 144 0078 00000000 		.word	.LANCHOR1
- 145 007c 00000000 		.word	.LANCHOR2
- 146 0080 00007A44 		.word	1148846080
- 147 0084 00000000 		.word	.LC0
+ 139              	.L13:
+ 140              		.loc 1 82 1 view .LVU25
+ 141              		.align	2
+ 142              	.L12:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s 			page 5
+
+
+ 143 0078 00000000 		.word	.LANCHOR0
+ 144 007c 00000000 		.word	.LANCHOR1
+ 145 0080 00000000 		.word	.LANCHOR2
+ 146 0084 00007A44 		.word	1148846080
+ 147 0088 00000000 		.word	.LC0
  148              		.cfi_endproc
  149              	.LFE332:
  151              		.section	.text.sensor_user_read,"ax",%progbits
@@ -264,114 +258,114 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 1
  159              	sensor_user_read:
  160              	.LVL8:
  161              	.LFB333:
-  82:../Sensor/sensor.c **** 
-  83:../Sensor/sensor.c **** /*-------------用户读取指定传感器-----------*/
-  84:../Sensor/sensor.c **** void* sensor_user_read(ENUM_SENSOR sensor_id)
-  85:../Sensor/sensor.c **** {
- 162              		.loc 1 85 1 is_stmt 1 view -0
+  83:../Sensor/sensor.c **** 
+  84:../Sensor/sensor.c **** /*-------------用户读取指定传感器-----------*/
+  85:../Sensor/sensor.c **** void* sensor_user_read(ENUM_SENSOR sensor_id)
+  86:../Sensor/sensor.c **** {
+ 162              		.loc 1 86 1 is_stmt 1 view -0
  163              		.cfi_startproc
  164              		@ args = 0, pretend = 0, frame = 0
  165              		@ frame_needed = 0, uses_anonymous_args = 0
- 166              		.loc 1 85 1 is_stmt 0 view .LVU28
+ 166              		.loc 1 86 1 is_stmt 0 view .LVU27
  167 0000 08B5     		push	{r3, lr}
  168              	.LCFI3:
  169              		.cfi_def_cfa_offset 8
  170              		.cfi_offset 3, -8
  171              		.cfi_offset 14, -4
-  86:../Sensor/sensor.c ****     static volatile sensor_data_t rawdata;
- 172              		.loc 1 86 5 is_stmt 1 view .LVU29
-  87:../Sensor/sensor.c ****     if (sensor_id <= SENSOR_NONE || sensor_id > SENSOR_NUMBER)
- 173              		.loc 1 87 5 view .LVU30
- 174              		.loc 1 87 34 is_stmt 0 view .LVU31
+  87:../Sensor/sensor.c ****     static volatile sensor_data_t rawdata;
+ 172              		.loc 1 87 5 is_stmt 1 view .LVU28
+  88:../Sensor/sensor.c ****     if (sensor_id <= SENSOR_NONE || sensor_id > SENSOR_NUMBER)
+ 173              		.loc 1 88 5 view .LVU29
+ 174              		.loc 1 88 34 is_stmt 0 view .LVU30
  175 0002 C3B2     		uxtb	r3, r0
- 176              		.loc 1 87 8 view .LVU32
- 177 0004 012B     		cmp	r3, #1
- 178 0006 1DD8     		bhi	.L16
-  88:../Sensor/sensor.c ****     {
-  89:../Sensor/sensor.c ****         /* err state */
-  90:../Sensor/sensor.c ****         return 0;
-  91:../Sensor/sensor.c ****     }
-  92:../Sensor/sensor.c ****     sensor_t *pcursensor;
- 179              		.loc 1 92 5 is_stmt 1 view .LVU33
-  93:../Sensor/sensor.c ****     pcursensor = &g_sensor_arry[sensor_id];
- 180              		.loc 1 93 5 view .LVU34
+ 176              		.loc 1 88 8 view .LVU31
+ 177 0004 022B     		cmp	r3, #2
+ 178 0006 1DD8     		bhi	.L17
+  89:../Sensor/sensor.c ****     {
+  90:../Sensor/sensor.c ****         /* err state */
+  91:../Sensor/sensor.c ****         return 0;
+  92:../Sensor/sensor.c ****     }
+  93:../Sensor/sensor.c ****     sensor_t *pcursensor;
+ 179              		.loc 1 93 5 is_stmt 1 view .LVU32
+  94:../Sensor/sensor.c ****     pcursensor = &g_sensor_arry[sensor_id];
+ 180              		.loc 1 94 5 view .LVU33
  181              	.LVL9:
-  94:../Sensor/sensor.c **** 
-  95:../Sensor/sensor.c ****     if (pcursensor->flag)
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 6
-
-
- 182              		.loc 1 95 5 view .LVU35
- 183              		.loc 1 95 19 is_stmt 0 view .LVU36
+  95:../Sensor/sensor.c **** 
+  96:../Sensor/sensor.c ****     if (pcursensor->flag)
+ 182              		.loc 1 96 5 view .LVU34
+ 183              		.loc 1 96 19 is_stmt 0 view .LVU35
  184 0008 00EB4003 		add	r3, r0, r0, lsl #1
- 185 000c 0E4A     		ldr	r2, .L18
+ 185 000c 0E4A     		ldr	r2, .L19
  186 000e 12F82330 		ldrb	r3, [r2, r3, lsl #2]	@ zero_extendqisi2
- 187              		.loc 1 95 8 view .LVU37
- 188 0012 53B1     		cbz	r3, .L15
-  96:../Sensor/sensor.c ****     {
-  97:../Sensor/sensor.c ****         /* code */
-  98:../Sensor/sensor.c ****         rawdata = g_data_arry[sensor_id];
- 189              		.loc 1 98 9 is_stmt 1 view .LVU38
- 190              		.loc 1 98 17 is_stmt 0 view .LVU39
- 191 0014 0D4B     		ldr	r3, .L18+4
+ 187              		.loc 1 96 8 view .LVU36
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s 			page 6
+
+
+ 188 0012 53B1     		cbz	r3, .L16
+  97:../Sensor/sensor.c ****     {
+  98:../Sensor/sensor.c ****         /* code */
+  99:../Sensor/sensor.c ****         rawdata = g_data_arry[sensor_id];
+ 189              		.loc 1 99 9 is_stmt 1 view .LVU37
+ 190              		.loc 1 99 17 is_stmt 0 view .LVU38
+ 191 0014 0D4B     		ldr	r3, .L19+4
  192 0016 00EB4000 		add	r0, r0, r0, lsl #1
  193              	.LVL10:
- 194              		.loc 1 98 17 view .LVU40
- 195 001a 0D4A     		ldr	r2, .L18+8
+ 194              		.loc 1 99 17 view .LVU39
+ 195 001a 0D4A     		ldr	r2, .L19+8
  196 001c 02EB8000 		add	r0, r2, r0, lsl #2
  197 0020 07C8     		ldm	r0, {r0, r1, r2}
  198 0022 83E80700 		stm	r3, {r0, r1, r2}
-  99:../Sensor/sensor.c ****     }else{
- 100:../Sensor/sensor.c ****         rawdata = *(sensor_data_t *)pcursensor->pf_read();
- 101:../Sensor/sensor.c ****     }
- 102:../Sensor/sensor.c ****     return &rawdata;
- 199              		.loc 1 102 12 view .LVU41
+ 100:../Sensor/sensor.c ****     }else{
+ 101:../Sensor/sensor.c ****         rawdata = *(sensor_data_t *)pcursensor->pf_read();
+ 102:../Sensor/sensor.c ****     }
+ 103:../Sensor/sensor.c ****     return &rawdata;
+ 199              		.loc 1 103 12 view .LVU40
  200 0026 1846     		mov	r0, r3
- 201              	.L13:
- 103:../Sensor/sensor.c **** }
- 202              		.loc 1 103 1 view .LVU42
+ 201              	.L14:
+ 104:../Sensor/sensor.c **** }
+ 202              		.loc 1 104 1 view .LVU41
  203 0028 08BD     		pop	{r3, pc}
  204              	.LVL11:
- 205              	.L15:
- 100:../Sensor/sensor.c ****     }
- 206              		.loc 1 100 9 is_stmt 1 view .LVU43
- 100:../Sensor/sensor.c ****     }
- 207              		.loc 1 100 47 is_stmt 0 view .LVU44
+ 205              	.L16:
+ 101:../Sensor/sensor.c ****     }
+ 206              		.loc 1 101 9 is_stmt 1 view .LVU42
+ 101:../Sensor/sensor.c ****     }
+ 207              		.loc 1 101 47 is_stmt 0 view .LVU43
  208 002a 00EB4000 		add	r0, r0, r0, lsl #1
  209              	.LVL12:
- 100:../Sensor/sensor.c ****     }
- 210              		.loc 1 100 47 view .LVU45
- 211 002e 064B     		ldr	r3, .L18
+ 101:../Sensor/sensor.c ****     }
+ 210              		.loc 1 101 47 view .LVU44
+ 211 002e 064B     		ldr	r3, .L19
  212 0030 03EB8000 		add	r0, r3, r0, lsl #2
  213 0034 4368     		ldr	r3, [r0, #4]
- 100:../Sensor/sensor.c ****     }
- 214              		.loc 1 100 37 view .LVU46
+ 101:../Sensor/sensor.c ****     }
+ 214              		.loc 1 101 37 view .LVU45
  215 0036 9847     		blx	r3
  216              	.LVL13:
- 100:../Sensor/sensor.c ****     }
- 217              		.loc 1 100 17 view .LVU47
- 218 0038 044B     		ldr	r3, .L18+4
+ 101:../Sensor/sensor.c ****     }
+ 217              		.loc 1 101 17 view .LVU46
+ 218 0038 044B     		ldr	r3, .L19+4
  219 003a 07C8     		ldm	r0, {r0, r1, r2}
  220 003c 83E80700 		stm	r3, {r0, r1, r2}
- 102:../Sensor/sensor.c **** }
- 221              		.loc 1 102 12 view .LVU48
+ 103:../Sensor/sensor.c **** }
+ 221              		.loc 1 103 12 view .LVU47
  222 0040 1846     		mov	r0, r3
- 223 0042 F1E7     		b	.L13
+ 223 0042 F1E7     		b	.L14
  224              	.LVL14:
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 7
-
-
- 225              	.L16:
-  90:../Sensor/sensor.c ****     }
- 226              		.loc 1 90 16 view .LVU49
+ 225              	.L17:
+  91:../Sensor/sensor.c ****     }
+ 226              		.loc 1 91 16 view .LVU48
  227 0044 0020     		movs	r0, #0
  228              	.LVL15:
-  90:../Sensor/sensor.c ****     }
- 229              		.loc 1 90 16 view .LVU50
- 230 0046 EFE7     		b	.L13
- 231              	.L19:
+  91:../Sensor/sensor.c ****     }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s 			page 7
+
+
+ 229              		.loc 1 91 16 view .LVU49
+ 230 0046 EFE7     		b	.L14
+ 231              	.L20:
  232              		.align	2
- 233              	.L18:
+ 233              	.L19:
  234 0048 00000000 		.word	.LANCHOR1
  235 004c 00000000 		.word	.LANCHOR3
  236 0050 00000000 		.word	.LANCHOR2
@@ -382,7 +376,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 1
  242              		.align	2
  243              		.set	.LANCHOR2,. + 0
  246              	g_data_arry:
- 247 0000 00000000 		.space	24
+ 247 0000 00000000 		.space	36
  247      00000000 
  247      00000000 
  247      00000000 
@@ -407,35 +401,38 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 1
  269 0002 0000     		.short	0
  270 0004 00000000 		.word	mt6816_read
  271 0008 00000000 		.word	0
- 272 000c 0000     		.space	2
- 273 000e 0000     		.short	0
- 274 0010 00000000 		.word	0
- 275 0014 00000000 		.word	0
- 276              		.text
- 277              	.Letext0:
- 278              		.file 2 "../Sensor/sensor.h"
- 279              		.file 3 "../Sensor/sensor_cfg.h"
- 280              		.file 4 "d:\\program files (x86)\\gcc-arm-none-eabi-10-2020-q4-major-win32\\tool\\arm-none-eabi\\i
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s 			page 8
+ 272 000c 00000000 		.space	12
+ 272      00000000 
+ 272      00000000 
+ 273 0018 0000     		.space	2
+ 274 001a 0000     		.short	0
+ 275 001c 00000000 		.word	0
+ 276 0020 00000000 		.word	0
+ 277              		.text
+ 278              	.Letext0:
+ 279              		.file 2 "../Sensor/sensor.h"
+ 280              		.file 3 "../Sensor/sensor_cfg.h"
+ 281              		.file 4 "d:\\program files (x86)\\gcc-arm-none-eabi-10-2020-q4-major-win32\\tool\\arm-none-eabi\\i
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s 			page 8
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 sensor.c
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:18     .rodata.sensor_process.str1.4:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:22     .text.sensor_process:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:30     .text.sensor_process:00000000 sensor_process
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:143    .text.sensor_process:00000074 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:152    .text.sensor_user_read:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:159    .text.sensor_user_read:00000000 sensor_user_read
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:234    .text.sensor_user_read:00000048 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:253    .bss.g_sensor:00000000 g_sensor
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:242    .bss.g_data_arry:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:246    .bss.g_data_arry:00000000 g_data_arry
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:249    .bss.g_sensor:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:256    .bss.rawdata.0:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:260    .bss.rawdata.0:00000000 rawdata.0
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:263    .rodata.g_sensor_arry:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccnjrWtz.s:267    .rodata.g_sensor_arry:00000000 g_sensor_arry
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:18     .rodata.sensor_process.str1.4:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:22     .text.sensor_process:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:30     .text.sensor_process:00000000 sensor_process
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:143    .text.sensor_process:00000078 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:152    .text.sensor_user_read:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:159    .text.sensor_user_read:00000000 sensor_user_read
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:234    .text.sensor_user_read:00000048 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:253    .bss.g_sensor:00000000 g_sensor
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:242    .bss.g_data_arry:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:246    .bss.g_data_arry:00000000 g_data_arry
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:249    .bss.g_sensor:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:256    .bss.rawdata.0:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:260    .bss.rawdata.0:00000000 rawdata.0
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:263    .rodata.g_sensor_arry:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrQHt9B.s:267    .rodata.g_sensor_arry:00000000 g_sensor_arry
 
 UNDEFINED SYMBOLS
 printf
