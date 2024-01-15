@@ -17,15 +17,16 @@ enum{
     MOTOR_STOP,
     MOTOR_TEST,
     MOTOR_OFFSET,
-
 };
 
 typedef struct
 {
     unsigned char state;
+    unsigned short cnt;
 }motorctrl_t;
 motorctrl_t g_Motor1 = {
     .state = MOTOR_INIT,
+    .cnt = 0,
 };
 static float sg_MecThetaOffset = 0.0f;
 
@@ -43,9 +44,8 @@ void motortctrl_process(void)
     case MOTOR_INIT:
         for (unsigned char  i = 0; i < 10; i++)
         {
-            theta = (*(sensor_data_t*)sensor_user_read(SENSOR_MT6818)).cov_data;            
+            theta = (*(sensor_data_t*)sensor_user_read(SENSOR_02)).cov_data;            
         }
-        USER_DEBUG_NORMAL("theta %f\r\n",theta);
         sg_MecThetaOffset = _get_angleoffset();
         /*-----电流滤波器初始化-------*/
         lowfilter_init(&sg_elefilter[0],80);
@@ -59,11 +59,16 @@ void motortctrl_process(void)
         break;
     case MOTOR_RUNING:
         {
+            if (!(++g_Motor1.cnt % 5000))
+            {
+                /* code */
+                g_Motor1.state = MOTOR_STOP;
+            }
+            
         }
         break;
     case MOTOR_STOP:
         motor_disable();
-        g_Motor1.state = MOTOR_INIT;
         break;
     default:
         break;
@@ -80,7 +85,7 @@ static float _get_angleoffset(void)
     dut01 = _svpwm(uab.alpha,uab.beta);
     motor_set_pwm(dut01._a,dut01._b,dut01._c);
     HAL_Delay(200);
-    theta = (*(sensor_data_t*)sensor_user_read(SENSOR_MT6818)).cov_data;
+    theta = (*(sensor_data_t*)sensor_user_read(SENSOR_02)).cov_data;
     motor_disable();
     return theta;
 }
@@ -113,8 +118,8 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 
 /*---------------------获取当前转子角度-------------------------*/
     float mech_theta,elec_theta;
-    mech_theta = (*(sensor_data_t*)sensor_user_read(SENSOR_MT6818)).cov_data - sg_MecThetaOffset;
-    elec_theta = mech_theta * MOTOR_PAIR;    
+    mech_theta = (*(sensor_data_t*)sensor_user_read(SENSOR_02)).cov_data - sg_MecThetaOffset;
+    elec_theta = mech_theta * MOTOR_02_PAIR;    
 
     /*--------------对电流进行反park变化-----------------------*/
     // i_abc.a = cosf(elec_theta);
@@ -140,10 +145,13 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 #else
 /*------------------------
 开环控制
-100us调用匹配参数  42BLDC  theta += 0.004f;  uq = 1.0f
+100us调用匹配参数  
+    42BLDC  theta += 0.004f;  uq = 1.0f
+    yateng  theta += 0.004f;  uq = 1.0f    
+    qita    theta += 0.004f;  uq = 1.0f
 ---------------------------*/
 
-    dq_t udq = {0.0f,1.00f};
+    dq_t udq = {0.0f,0.80f};
     alpbet_t uab;
     #if 0//强拖
         {
@@ -153,10 +161,10 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
                 /* code */
                 theta = 0.0f;
             }
-            theta += 0.004f;
+            theta += 0.001f;
             uab = _2r_2s(udq, theta);
         }        
-    #else
+    #else //使用传感器
         uab = _2r_2s(udq, elec_theta);    
     #endif
     

@@ -66,7 +66,7 @@ void* tle5012b_read(void)
 	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port,SPI3_CS_Pin,GPIO_PIN_SET);
 
     data.raw = (unsigned int)pData - 32768;
-    data.cov_data = pData * 0.00038349f;
+    data.cov_data = data.raw * 6.2831853f/32768;
 
     return (void *)&data; 
 }

@@ -11,14 +11,15 @@ static sensor_data_t g_data_arry[SENSOR_NUMBER + 1];        //传感器滤波的
 /*-------------------注册传感器------------------------*/
 static sensor_t g_sensor_arry[SENSOR_NUMBER + 1] = \
 {
-#if(ANGLE_SENSOR == ANGLE_SENSOR_MT6818)
-        [SENSOR_MT6818] = {
+#if(ANGLE_SENSOR_01 && ANGLE_SENSORT_MT6016_EN)
+        [SENSOR_01] = {
             .pf_read = mt6816_read,
             .pf_write = NULL,
             .cycle = 0x00
         },
-#elif(ANGLE_SENSOR == ANGLE_SENSOR_TLE5012B)
-        [SENSOR_TLE5012B] = {
+#endif
+#if(ANGLE_SENSOR_02 && ANGLE_SENSOR_TLE5012B_EN)
+        [SENSOR_02] = {
             .pf_read = tle5012b_read,
             .pf_write = NULL,
             .cycle = 0x00

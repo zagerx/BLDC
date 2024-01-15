@@ -13,6 +13,7 @@
 #define RB_S                        0.1F
 #define RC_S                        0.1F
 #define MOTOR_PAIR                  2.0f
+#define MOTOR_02_PAIR               7.0f
 #define BETA_                       5.7F
 
 #define FACTOR                      (1.0f)

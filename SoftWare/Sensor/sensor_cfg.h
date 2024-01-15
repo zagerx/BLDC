@@ -5,28 +5,28 @@
     #include "pubilc.h"   //Debug打印
 #endif
 /*---------------------------角度传感器---------------------------------*/
-    #define ANGLE_SENSOR_NONE               (0)
-    #define ANGLE_SENSOR_MT6818             (1)
-    #define ANGLE_SENSOR_TLE5012B           (2)
-    #define ANGLE_SENSOR                    ANGLE_SENSOR_MT6818
-    #if(ANGLE_SENSOR == ANGLE_SENSOR_MT6818)
+    #define ANGLE_SENSOR_TLE5012B_EN        (1)    //TLE5012B使能
+    #define ANGLE_SENSORT_MT6016_EN         (0)    //MT6016使能
+
+    #define ANGLE_SENSOR_01                 (1)
+    #define ANGLE_SENSOR_02                 (1)
+
+    #if(ANGLE_SENSOR_01 && ANGLE_SENSORT_MT6016_EN)
         #include "mt6816.h"
-    #elif(ANGLE_SENSOR == ANGLE_SENSOR_TLE5012B)
+    #elif(ANGLE_SENSOR_02 && ANGLE_SENSOR_TLE5012B_EN)
         #include "tle5012b.h"
     #endif
 /*---------------------------温湿度传感器---------------------------------*/
 
 
-
-
-
 /*----------------------------传感器列表--------------------------------*/
 typedef enum{
     SENSOR_NONE = -1,
-#if(ANGLE_SENSOR == ANGLE_SENSOR_MT6818)
-    SENSOR_MT6818,
-#elif(ANGLE_SENSOR == ANGLE_SENSOR_TLE5012B)
-    SENSOR_TLE5012B,
+#if (ANGLE_SENSOR_01)
+    SENSOR_01, 
+#endif 
+#if (ANGLE_SENSOR_02)
+    SENSOR_02, 
 #endif
     SENSOR_NUMBER
 }ENUM_SENSOR;

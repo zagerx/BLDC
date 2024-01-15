@@ -66,7 +66,7 @@ void MX_ADC4_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Channel = ADC_CHANNEL_11;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -90,7 +90,7 @@ void MX_ADC4_Init(void)
   sConfigInjected.AutoInjectedConv = DISABLE;
   sConfigInjected.QueueInjectedContext = DISABLE;
   sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_T1_CC4;
-  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
+  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_FALLING;
   sConfigInjected.InjecOversamplingMode = DISABLE;
   if (HAL_ADCEx_InjectedConfigChannel(&hadc4, &sConfigInjected) != HAL_OK)
   {
@@ -144,15 +144,22 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_ADC345_CLK_ENABLE();
 
     __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
     /**ADC4 GPIO Configuration
     PB12     ------> ADC4_IN3
     PB14     ------> ADC4_IN4
     PB15     ------> ADC4_IN5
+    PD14     ------> ADC4_IN11
     */
     GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_14|GPIO_PIN_15;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_14;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
     /* ADC4 interrupt Init */
     HAL_NVIC_SetPriority(ADC4_IRQn, 0, 0);
@@ -178,8 +185,11 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     PB12     ------> ADC4_IN3
     PB14     ------> ADC4_IN4
     PB15     ------> ADC4_IN5
+    PD14     ------> ADC4_IN11
     */
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_12|GPIO_PIN_14|GPIO_PIN_15);
+
+    HAL_GPIO_DeInit(GPIOD, GPIO_PIN_14);
 
     /* ADC4 interrupt Deinit */
     HAL_NVIC_DisableIRQ(ADC4_IRQn);
@@ -190,5 +200,17 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
+#include "bldcmotor.h"
+/*----------------------------------------ADC�ж�----------------------------------------------------
+** ÿ100usִ��һ�� pwmƵ��10KHz
+*/
+static unsigned int adc_vale[3];
+void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+    
+    adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_1);
+    adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_2);
+    adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_3);
+    motorctrl_foccalc(adc_vale,0.0f);
+}
 /* USER CODE END 1 */

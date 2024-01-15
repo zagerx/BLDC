@@ -84,12 +84,8 @@ typedef struct
 static sys_run_t sg_SYSRuning = {0,SYS_IDLE};
 void sysrunning_process(void)
 {
-
     /*----------1ms计时-----------*/
 
-
-
-    unsigned short temp_val = 0;
     /*-----------------------*/
     sg_SYSRuning.time_cnt++;
     switch (sg_SYSRuning.state)
@@ -100,13 +96,15 @@ void sysrunning_process(void)
                 break;
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
-                // sensor_data_t data;
-                // data = *(sensor_data_t *)sensor_user_read(SENSOR_TLE5012B);
-                // USER_DEBUG_NORMAL("cur theta %d\r\n",data.raw);
+
+                // USER_DEBUG_NORMAL("MCB_V06 SYS Runing\r\n");
                 break;
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
             {
+                // sensor_data_t data;
+                // data = *(sensor_data_t *)sensor_user_read(SENSOR_02);
+                // USER_DEBUG_NORMAL("cur theta %d\r\n",(unsigned short)(data.cov_data*1000));              
                 HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);                
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
@@ -165,7 +163,7 @@ int main(void)
     sensor_process();
     sysrunning_process();
     motortctrl_process();
-
+    HAL_Delay(1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

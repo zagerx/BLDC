@@ -126,7 +126,7 @@ duty_t _svpwm(float ualpha,float ubeta)
     Tb = Ta + m_vector/2.0f;
     Tc = Tb + s_vector/2.0f;
 
-    /*-------------------------------------------------------------*/
+    /*------------------------换相点-------------------------------------*/
     float Tcmp1 = 0.0f;
     float Tcmp2 = 0.0f;
     float Tcmp3 = 0.0f;
@@ -139,15 +139,11 @@ duty_t _svpwm(float ualpha,float ubeta)
         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
     }
 
-    /*----------------------------------------------------*/
+    /*-------------------------占空比---------------------------*/
     float duty_a,duty_b,duty_c;
-    duty_a =(T_PWM - Tcmp1*2.0f )*F_PWM;
-    duty_b =(T_PWM - Tcmp2*2.0f )*F_PWM;
-    duty_c =(T_PWM - Tcmp3*2.0f )*F_PWM;
-
-    // duty_a =(Tcmp1)/T_PWM;
-    // duty_b =(Tcmp2)/T_PWM;
-    // duty_c =(Tcmp3)/T_PWM;
+    duty_a =(T_PWM - Tcmp1*2.0f )/T_PWM;
+    duty_b =(T_PWM - Tcmp2*2.0f )/T_PWM;
+    duty_c =(T_PWM - Tcmp3*2.0f )/T_PWM;
 
     duty_t sg_duty;
     sg_duty._a = duty_a;

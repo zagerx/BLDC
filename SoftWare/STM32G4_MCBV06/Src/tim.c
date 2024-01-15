@@ -254,7 +254,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
-// #include "adc.h"
+#include "adc.h"
 #include "pubilc.h"
 static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned short c)
 {
@@ -275,9 +275,14 @@ void motor_set_pwm(float _a,float _b,float _c)
 {
 
     uint16_t  a,b,c;
-    a = (((float)_a)*_ARR);
-    b = (((float)_b)*_ARR);
-    c = (((float)_c)*_ARR);
+    // a = (((float)_a)*_ARR);
+    // b = (((float)_b)*_ARR);
+    // c = (((float)_c)*_ARR);
+
+    a = ((1.0f-(float)_a)*_ARR);
+    b = ((1.0f-(float)_b)*_ARR);
+    c = ((1.0f-(float)_c)*_ARR);   
+
     unsigned short max = 0;
     max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)a);
@@ -285,7 +290,7 @@ void motor_set_pwm(float _a,float _b,float _c)
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)c);
 
     /*触发ADC采样*/
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 100));	
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 10));	
 }
 void motor_enable_noirq(void)
 {
@@ -310,9 +315,9 @@ void motor_enable(void)
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3); 
 
     /*----------启动ADC采样--------------*/
-    // HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
-    // HAL_ADCEx_InjectedStart_IT(&hadc1);
-    // HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);  
+    HAL_ADCEx_Calibration_Start(&hadc4,ADC_SINGLE_ENDED);
+    HAL_ADCEx_InjectedStart_IT(&hadc4);
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);  
 }
 void motor_disable(void)
 {
