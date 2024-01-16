@@ -79,7 +79,7 @@ duty_t _svpwm(float ualpha,float ubeta)
     if((-sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
         sector += 4;
     }
-
+    USER_DEBUG_NORMAL("alp beta =   %.3f  %.3f\r\n",ualpha,ubeta);
     /*----------------------------------------------------*/
     float s_vector = 0.0f,m_vector = 0.0f;
     switch (sector) {
@@ -113,7 +113,7 @@ duty_t _svpwm(float ualpha,float ubeta)
             s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
         break;
     }
-    USER_DEBUG_NORMAL("section Tm Ts =%d  %.3f  %.3f\r\n",sector,m_vector*1000000,m_vector*1000000,m_vector*1000000);
+    // USER_DEBUG_NORMAL("section Tm Ts =%d  %.3f  %.3f\r\n",sector,m_vector*1000000,s_vector*1000000);
 
     /*------------------------------------------------------------*/
     if (m_vector + s_vector > T_PWM) 

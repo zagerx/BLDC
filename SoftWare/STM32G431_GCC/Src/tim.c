@@ -239,27 +239,23 @@ static unsigned short min_val_01(unsigned short a,unsigned short b,unsigned shor
   }
   return min;
 }
-#include "ipc.h"
-float AAAAA;
 void motor_set_pwm(float _a,float _b,float _c)
 {
     float a,b,c;
-    a = ((1.0f-(float)_a)*_ARR);
-    b = ((1.0f-(float)_b)*_ARR);
-    c = ((1.0f-(float)_c)*_ARR);
-    AAAAA = a;
-    // a = (((float)_a)*_ARR);
-    // b = (((float)_b)*_ARR);
-    // c = (((float)_c)*_ARR);
-    ipc_write_data(PUBLIC_DATA_TEMP0,a);
+    // a = ((1.0f-(float)_a)*_ARR);
+    // b = ((1.0f-(float)_b)*_ARR);
+    // c = ((1.0f-(float)_c)*_ARR);
+    a = (((float)_a)*_ARR);
+    b = (((float)_b)*_ARR);
+    c = (((float)_c)*_ARR);
 
-    // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)a);
-    // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)b);
-    // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)c);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)a);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)b);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)c);
 
     unsigned short max = 0;
     max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 100));	    
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 1));	    
     // unsigned short min = 0;
     // min = min_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);  
     // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(min + 20));	

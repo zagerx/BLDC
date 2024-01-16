@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
   43              		.loc 1 13 5 view .LVU1
   44              		.loc 1 13 23 is_stmt 0 view .LVU2
   45 0006 1248     		ldr	r0, .L3
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 2
 
 
   46 0008 124B     		ldr	r3, .L3+4
@@ -112,13 +112,13 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
   91              		.section	.rodata._svpwm.str1.4,"aMS",%progbits,1
   92              		.align	2
   93              	.LC0:
-  94 0000 73656374 		.ascii	"section Tm Ts =%d %.3f  %.3f\015\012\000"
-  94      696F6E20 
-  94      546D2054 
-  94      73203D25 
-  94      6420252E 
+  94 0000 616C7020 		.ascii	"alp beta =   %.3f  %.3f\015\012\000"
+  94      62657461 
+  94      203D2020 
+  94      20252E33 
+  94      66202025 
   95              		.section	.text._svpwm,"ax",%progbits
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 3
 
 
   96              		.align	1
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
   63:../BLDCMotor/focmethod.c ****     u_alphabeta = _2r_2s(u_dq,(theta));// + PI/2.0f); 
   64:../BLDCMotor/focmethod.c ****     duty_t duty;
   65:../BLDCMotor/focmethod.c ****     duty = _svpwm(u_alphabeta.alpha,u_alphabeta.beta);
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 4
 
 
   66:../BLDCMotor/focmethod.c ****     return duty;
@@ -190,147 +190,164 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  108              		@ args = 0, pretend = 0, frame = 40
  109              		@ frame_needed = 0, uses_anonymous_args = 0
  110              		.loc 1 69 1 is_stmt 0 view .LVU9
- 111 0000 30B5     		push	{r4, r5, lr}
+ 111 0000 D0B5     		push	{r4, r6, r7, lr}
  112              	.LCFI3:
- 113              		.cfi_def_cfa_offset 12
- 114              		.cfi_offset 4, -12
- 115              		.cfi_offset 5, -8
- 116              		.cfi_offset 14, -4
- 117 0002 2DED028B 		vpush.64	{d8}
- 118              	.LCFI4:
- 119              		.cfi_def_cfa_offset 20
- 120              		.cfi_offset 80, -20
- 121              		.cfi_offset 81, -16
- 122 0006 8FB0     		sub	sp, sp, #60
- 123              	.LCFI5:
- 124              		.cfi_def_cfa_offset 80
+ 113              		.cfi_def_cfa_offset 16
+ 114              		.cfi_offset 4, -16
+ 115              		.cfi_offset 6, -12
+ 116              		.cfi_offset 7, -8
+ 117              		.cfi_offset 14, -4
+ 118 0002 2DED028B 		vpush.64	{d8}
+ 119              	.LCFI4:
+ 120              		.cfi_def_cfa_offset 24
+ 121              		.cfi_offset 80, -24
+ 122              		.cfi_offset 81, -20
+ 123 0006 8CB0     		sub	sp, sp, #48
+ 124              	.LCFI5:
+ 125              		.cfi_def_cfa_offset 72
+ 126 0008 F0EE408A 		vmov.f32	s17, s0
+ 127 000c B0EE608A 		vmov.f32	s16, s1
   70:../BLDCMotor/focmethod.c ****     unsigned char sector;    
- 125              		.loc 1 70 5 is_stmt 1 view .LVU10
+ 128              		.loc 1 70 5 is_stmt 1 view .LVU10
   71:../BLDCMotor/focmethod.c ****     sector = 0;
- 126              		.loc 1 71 5 view .LVU11
- 127              	.LVL3:
+ 129              		.loc 1 71 5 view .LVU11
+ 130              	.LVL3:
   72:../BLDCMotor/focmethod.c ****     /*-------------------------------*/
   73:../BLDCMotor/focmethod.c ****     if(ubeta > 0.0F) {
- 128              		.loc 1 73 5 view .LVU12
- 129              		.loc 1 73 7 is_stmt 0 view .LVU13
- 130 0008 F5EEC00A 		vcmpe.f32	s1, #0
- 131 000c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 132 0010 2CDD     		ble	.L34
+ 131              		.loc 1 73 5 view .LVU12
+ 132              		.loc 1 73 7 is_stmt 0 view .LVU13
+ 133 0010 F5EEC00A 		vcmpe.f32	s1, #0
+ 134 0014 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 135 0018 3CDD     		ble	.L34
   74:../BLDCMotor/focmethod.c ****         sector = 1;
- 133              		.loc 1 74 16 view .LVU14
- 134 0012 0124     		movs	r4, #1
- 135              	.L6:
- 136              	.LVL4:
+ 136              		.loc 1 74 16 view .LVU14
+ 137 001a 0124     		movs	r4, #1
+ 138              	.L6:
+ 139              	.LVL4:
   75:../BLDCMotor/focmethod.c ****     }
   76:../BLDCMotor/focmethod.c ****     if((sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
- 137              		.loc 1 76 5 is_stmt 1 view .LVU15
- 138              		.loc 1 76 15 is_stmt 0 view .LVU16
- 139 0014 9FEDB17A 		vldr.32	s14, .L35
- 140 0018 20EE077A 		vmul.f32	s14, s0, s14
- 141              		.loc 1 76 24 view .LVU17
- 142 001c 37EE607A 		vsub.f32	s14, s14, s1
- 143              		.loc 1 76 33 view .LVU18
- 144 0020 F6EE007A 		vmov.f32	s15, #5.0e-1
- 145 0024 27EE277A 		vmul.f32	s14, s14, s15
- 146              		.loc 1 76 7 view .LVU19
- 147 0028 B5EEC07A 		vcmpe.f32	s14, #0
- 148 002c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 149 0030 01DD     		ble	.L7
+ 140              		.loc 1 76 5 is_stmt 1 view .LVU15
+ 141              		.loc 1 76 15 is_stmt 0 view .LVU16
+ 142 001c 9FEDB07A 		vldr.32	s14, .L35
+ 143 0020 28EE877A 		vmul.f32	s14, s17, s14
+ 144              		.loc 1 76 24 view .LVU17
+ 145 0024 37EE487A 		vsub.f32	s14, s14, s16
+ 146              		.loc 1 76 33 view .LVU18
+ 147 0028 F6EE007A 		vmov.f32	s15, #5.0e-1
+ 148 002c 27EE277A 		vmul.f32	s14, s14, s15
+ 149              		.loc 1 76 7 view .LVU19
+ 150 0030 B5EEC07A 		vcmpe.f32	s14, #0
+ 151 0034 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 5
+
+
+ 152 0038 01DD     		ble	.L7
   77:../BLDCMotor/focmethod.c ****         sector += 2;
- 150              		.loc 1 77 9 is_stmt 1 view .LVU20
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 5
-
-
- 151              		.loc 1 77 16 is_stmt 0 view .LVU21
- 152 0032 0234     		adds	r4, r4, #2
- 153              	.LVL5:
- 154              		.loc 1 77 16 view .LVU22
- 155 0034 E4B2     		uxtb	r4, r4
- 156              	.LVL6:
- 157              	.L7:
+ 153              		.loc 1 77 9 is_stmt 1 view .LVU20
+ 154              		.loc 1 77 16 is_stmt 0 view .LVU21
+ 155 003a 0234     		adds	r4, r4, #2
+ 156              	.LVL5:
+ 157              		.loc 1 77 16 view .LVU22
+ 158 003c E4B2     		uxtb	r4, r4
+ 159              	.LVL6:
+ 160              	.L7:
   78:../BLDCMotor/focmethod.c ****     }
   79:../BLDCMotor/focmethod.c ****     if((-sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
- 158              		.loc 1 79 5 is_stmt 1 view .LVU23
- 159              		.loc 1 79 16 is_stmt 0 view .LVU24
- 160 0036 9FEDAA7A 		vldr.32	s14, .L35+4
- 161 003a 20EE077A 		vmul.f32	s14, s0, s14
- 162              		.loc 1 79 25 view .LVU25
- 163 003e 37EE607A 		vsub.f32	s14, s14, s1
- 164              		.loc 1 79 34 view .LVU26
- 165 0042 F6EE007A 		vmov.f32	s15, #5.0e-1
- 166 0046 27EE277A 		vmul.f32	s14, s14, s15
- 167              		.loc 1 79 7 view .LVU27
- 168 004a B5EEC07A 		vcmpe.f32	s14, #0
- 169 004e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 170 0052 01DD     		ble	.L9
+ 161              		.loc 1 79 5 is_stmt 1 view .LVU23
+ 162              		.loc 1 79 16 is_stmt 0 view .LVU24
+ 163 003e 9FEDA97A 		vldr.32	s14, .L35+4
+ 164 0042 28EE877A 		vmul.f32	s14, s17, s14
+ 165              		.loc 1 79 25 view .LVU25
+ 166 0046 37EE487A 		vsub.f32	s14, s14, s16
+ 167              		.loc 1 79 34 view .LVU26
+ 168 004a F6EE007A 		vmov.f32	s15, #5.0e-1
+ 169 004e 27EE277A 		vmul.f32	s14, s14, s15
+ 170              		.loc 1 79 7 view .LVU27
+ 171 0052 B5EEC07A 		vcmpe.f32	s14, #0
+ 172 0056 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 173 005a 01DD     		ble	.L9
   80:../BLDCMotor/focmethod.c ****         sector += 4;
- 171              		.loc 1 80 9 is_stmt 1 view .LVU28
- 172              		.loc 1 80 16 is_stmt 0 view .LVU29
- 173 0054 0434     		adds	r4, r4, #4
- 174              	.LVL7:
- 175              		.loc 1 80 16 view .LVU30
- 176 0056 E4B2     		uxtb	r4, r4
- 177              	.LVL8:
- 178              	.L9:
+ 174              		.loc 1 80 9 is_stmt 1 view .LVU28
+ 175              		.loc 1 80 16 is_stmt 0 view .LVU29
+ 176 005c 0434     		adds	r4, r4, #4
+ 177              	.LVL7:
+ 178              		.loc 1 80 16 view .LVU30
+ 179 005e E4B2     		uxtb	r4, r4
+ 180              	.LVL8:
+ 181              	.L9:
   81:../BLDCMotor/focmethod.c ****     }
-  82:../BLDCMotor/focmethod.c **** 
+  82:../BLDCMotor/focmethod.c ****     USER_DEBUG_NORMAL("alp beta =   %.3f  %.3f\r\n",ualpha,ubeta);
+ 182              		.loc 1 82 5 is_stmt 1 view .LVU31
+ 183 0060 18EE900A 		vmov	r0, s17
+ 184 0064 FFF7FEFF 		bl	__aeabi_f2d
+ 185              	.LVL9:
+ 186              		.loc 1 82 5 is_stmt 0 view .LVU32
+ 187 0068 0646     		mov	r6, r0
+ 188 006a 0F46     		mov	r7, r1
+ 189 006c 18EE100A 		vmov	r0, s16
+ 190 0070 FFF7FEFF 		bl	__aeabi_f2d
+ 191              	.LVL10:
+ 192 0074 CDE90001 		strd	r0, [sp]
+ 193 0078 3246     		mov	r2, r6
+ 194 007a 3B46     		mov	r3, r7
+ 195 007c 9A48     		ldr	r0, .L35+8
+ 196 007e FFF7FEFF 		bl	printf
+ 197              	.LVL11:
   83:../BLDCMotor/focmethod.c ****     /*----------------------------------------------------*/
   84:../BLDCMotor/focmethod.c ****     float s_vector = 0.0f,m_vector = 0.0f;
- 179              		.loc 1 84 5 is_stmt 1 view .LVU31
+ 198              		.loc 1 84 5 is_stmt 1 view .LVU33
   85:../BLDCMotor/focmethod.c ****     switch (sector) {
- 180              		.loc 1 85 5 view .LVU32
- 181 0058 2546     		mov	r5, r4
- 182 005a 631E     		subs	r3, r4, #1
- 183 005c 042B     		cmp	r3, #4
- 184 005e 00F2BF80 		bhi	.L11
- 185 0062 DFE803F0 		tbb	[pc, r3]
- 186              	.L13:
- 187 0066 05       		.byte	(.L17-.L13)/2
- 188 0067 69       		.byte	(.L16-.L13)/2
- 189 0068 7E       		.byte	(.L15-.L13)/2
- 190 0069 93       		.byte	(.L14-.L13)/2
- 191 006a A8       		.byte	(.L12-.L13)/2
- 192              	.LVL9:
- 193 006b 00       		.p2align 1
- 194              	.L34:
+ 199              		.loc 1 85 5 view .LVU34
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 6
+
+
+ 200 0082 631E     		subs	r3, r4, #1
+ 201 0084 042B     		cmp	r3, #4
+ 202 0086 00F2AD80 		bhi	.L11
+ 203 008a DFE803F0 		tbb	[pc, r3]
+ 204              	.L13:
+ 205 008e 05       		.byte	(.L17-.L13)/2
+ 206 008f 57       		.byte	(.L16-.L13)/2
+ 207 0090 6C       		.byte	(.L15-.L13)/2
+ 208 0091 81       		.byte	(.L14-.L13)/2
+ 209 0092 96       		.byte	(.L12-.L13)/2
+ 210              	.LVL12:
+ 211 0093 00       		.p2align 1
+ 212              	.L34:
   71:../BLDCMotor/focmethod.c ****     /*-------------------------------*/
- 195              		.loc 1 71 12 is_stmt 0 view .LVU33
- 196 006c 0024     		movs	r4, #0
- 197 006e D1E7     		b	.L6
- 198              	.LVL10:
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 6
-
-
- 199              	.L17:
+ 213              		.loc 1 71 12 is_stmt 0 view .LVU35
+ 214 0094 0024     		movs	r4, #0
+ 215 0096 C1E7     		b	.L6
+ 216              	.LVL13:
+ 217              	.L17:
   86:../BLDCMotor/focmethod.c ****         case 1:
   87:../BLDCMotor/focmethod.c ****             m_vector = (-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
- 200              		.loc 1 87 13 is_stmt 1 view .LVU34
- 201              		.loc 1 87 31 is_stmt 0 view .LVU35
- 202 0070 FFEE088A 		vmov.f32	s17, #-1.5e+0
- 203 0074 60EE288A 		vmul.f32	s17, s0, s17
- 204              		.loc 1 87 53 view .LVU36
- 205 0078 9FED9A7A 		vldr.32	s14, .L35+8
- 206 007c 60EE870A 		vmul.f32	s1, s1, s14
- 207              	.LVL11:
- 208              		.loc 1 87 40 view .LVU37
- 209 0080 78EEA08A 		vadd.f32	s17, s17, s1
- 210              		.loc 1 87 22 view .LVU38
- 211 0084 DFED987A 		vldr.32	s15, .L35+12
- 212 0088 68EEA78A 		vmul.f32	s17, s17, s15
- 213              	.LVL12:
+ 218              		.loc 1 87 13 is_stmt 1 view .LVU36
+ 219              		.loc 1 87 31 is_stmt 0 view .LVU37
+ 220 0098 FFEE086A 		vmov.f32	s13, #-1.5e+0
+ 221 009c 68EEA66A 		vmul.f32	s13, s17, s13
+ 222              		.loc 1 87 53 view .LVU38
+ 223 00a0 9FED927A 		vldr.32	s14, .L35+12
+ 224 00a4 68EE070A 		vmul.f32	s1, s16, s14
+ 225              		.loc 1 87 40 view .LVU39
+ 226 00a8 76EEA06A 		vadd.f32	s13, s13, s1
+ 227              		.loc 1 87 22 view .LVU40
+ 228 00ac 9FED907A 		vldr.32	s14, .L35+16
+ 229 00b0 66EE876A 		vmul.f32	s13, s13, s14
+ 230              	.LVL14:
   88:../BLDCMotor/focmethod.c ****             s_vector = (1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
- 214              		.loc 1 88 13 is_stmt 1 view .LVU39
- 215              		.loc 1 88 30 is_stmt 0 view .LVU40
- 216 008c B7EE088A 		vmov.f32	s16, #1.5e+0
- 217 0090 20EE088A 		vmul.f32	s16, s0, s16
- 218              		.loc 1 88 39 view .LVU41
- 219 0094 30EE888A 		vadd.f32	s16, s1, s16
- 220              		.loc 1 88 22 view .LVU42
- 221 0098 28EE278A 		vmul.f32	s16, s16, s15
- 222              	.LVL13:
+ 231              		.loc 1 88 13 is_stmt 1 view .LVU41
+ 232              		.loc 1 88 30 is_stmt 0 view .LVU42
+ 233 00b4 F7EE087A 		vmov.f32	s15, #1.5e+0
+ 234 00b8 68EEA77A 		vmul.f32	s15, s17, s15
+ 235              		.loc 1 88 39 view .LVU43
+ 236 00bc 70EEA77A 		vadd.f32	s15, s1, s15
+ 237              		.loc 1 88 22 view .LVU44
+ 238 00c0 67EE877A 		vmul.f32	s15, s15, s14
+ 239              	.LVL15:
   89:../BLDCMotor/focmethod.c ****         break;
- 223              		.loc 1 89 9 is_stmt 1 view .LVU43
- 224              	.L18:
+ 240              		.loc 1 89 9 is_stmt 1 view .LVU45
+ 241              	.L18:
   90:../BLDCMotor/focmethod.c **** 
   91:../BLDCMotor/focmethod.c ****         case 2:
   92:../BLDCMotor/focmethod.c ****             m_vector = (1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
@@ -341,6 +358,9 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
   97:../BLDCMotor/focmethod.c ****             m_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
   98:../BLDCMotor/focmethod.c ****             s_vector = sqrt3 * ubeta * T_UDC;
   99:../BLDCMotor/focmethod.c ****         break;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 7
+
+
  100:../BLDCMotor/focmethod.c **** 
  101:../BLDCMotor/focmethod.c ****         case 4:
  102:../BLDCMotor/focmethod.c ****             m_vector = -(sqrt3 * ubeta * T_UDC);
@@ -357,467 +377,446 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  113:../BLDCMotor/focmethod.c ****             s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
  114:../BLDCMotor/focmethod.c ****         break;
  115:../BLDCMotor/focmethod.c ****     }
- 116:../BLDCMotor/focmethod.c ****     USER_DEBUG_NORMAL("section Tm Ts =%d %.3f  %.3f\r\n",sector,m_vector*1000000,m_vector*1000000,m
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 7
-
-
- 225              		.loc 1 116 5 view .LVU44
- 226 009c DFED937A 		vldr.32	s15, .L35+16
- 227 00a0 68EEA77A 		vmul.f32	s15, s17, s15
- 228 00a4 17EE900A 		vmov	r0, s15
- 229 00a8 FFF7FEFF 		bl	__aeabi_f2d
- 230              	.LVL14:
- 231 00ac 0246     		mov	r2, r0
- 232 00ae 0B46     		mov	r3, r1
- 233 00b0 CDE90223 		strd	r2, [sp, #8]
- 234 00b4 CDE90023 		strd	r2, [sp]
- 235 00b8 2946     		mov	r1, r5
- 236 00ba 8D48     		ldr	r0, .L35+20
- 237 00bc FFF7FEFF 		bl	printf
- 238              	.LVL15:
+ 116:../BLDCMotor/focmethod.c ****     // USER_DEBUG_NORMAL("section Tm Ts =%d  %.3f  %.3f\r\n",sector,m_vector*1000000,s_vector*10000
  117:../BLDCMotor/focmethod.c **** 
  118:../BLDCMotor/focmethod.c ****     /*------------------------------------------------------------*/
  119:../BLDCMotor/focmethod.c ****     if (m_vector + s_vector > T_PWM) 
- 239              		.loc 1 119 5 view .LVU45
- 240              		.loc 1 119 18 is_stmt 0 view .LVU46
- 241 00c0 78EE287A 		vadd.f32	s15, s16, s17
- 242              		.loc 1 119 8 view .LVU47
- 243 00c4 9FED8B7A 		vldr.32	s14, .L35+24
- 244 00c8 F4EEC77A 		vcmpe.f32	s15, s14
- 245 00cc F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 246 00d0 05DD     		ble	.L19
+ 242              		.loc 1 119 5 view .LVU46
+ 243              		.loc 1 119 18 is_stmt 0 view .LVU47
+ 244 00c4 37EEA67A 		vadd.f32	s14, s15, s13
+ 245              		.loc 1 119 8 view .LVU48
+ 246 00c8 9FED8A6A 		vldr.32	s12, .L35+20
+ 247 00cc B4EEC67A 		vcmpe.f32	s14, s12
+ 248 00d0 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 249 00d4 05DD     		ble	.L19
  120:../BLDCMotor/focmethod.c ****     {
  121:../BLDCMotor/focmethod.c ****         m_vector /= (m_vector + s_vector);
- 247              		.loc 1 121 9 is_stmt 1 view .LVU48
- 248              		.loc 1 121 18 is_stmt 0 view .LVU49
- 249 00d2 C8EEA78A 		vdiv.f32	s17, s17, s15
- 250              	.LVL16:
+ 250              		.loc 1 121 9 is_stmt 1 view .LVU49
+ 251              		.loc 1 121 18 is_stmt 0 view .LVU50
+ 252 00d6 C6EE876A 		vdiv.f32	s13, s13, s14
+ 253              	.LVL16:
  122:../BLDCMotor/focmethod.c ****         s_vector /= m_vector + s_vector;
- 251              		.loc 1 122 9 is_stmt 1 view .LVU50
- 252              		.loc 1 122 30 is_stmt 0 view .LVU51
- 253 00d6 78EE287A 		vadd.f32	s15, s16, s17
- 254              		.loc 1 122 18 view .LVU52
- 255 00da 88EE278A 		vdiv.f32	s16, s16, s15
- 256              	.LVL17:
- 257              	.L19:
+ 254              		.loc 1 122 9 is_stmt 1 view .LVU51
+ 255              		.loc 1 122 30 is_stmt 0 view .LVU52
+ 256 00da 37EEA67A 		vadd.f32	s14, s15, s13
+ 257              		.loc 1 122 18 view .LVU53
+ 258 00de C7EE877A 		vdiv.f32	s15, s15, s14
+ 259              	.LVL17:
+ 260              	.L19:
  123:../BLDCMotor/focmethod.c ****     }
  124:../BLDCMotor/focmethod.c **** 
  125:../BLDCMotor/focmethod.c ****     /*---------------------------------------------------*/
  126:../BLDCMotor/focmethod.c ****     float Ta,Tb,Tc;
- 258              		.loc 1 126 5 is_stmt 1 view .LVU53
+ 261              		.loc 1 126 5 is_stmt 1 view .LVU54
  127:../BLDCMotor/focmethod.c ****     Ta = (T_PWM - (m_vector + s_vector)) / 4.0F;  
- 259              		.loc 1 127 5 view .LVU54
- 260              		.loc 1 127 29 is_stmt 0 view .LVU55
- 261 00de 78EE287A 		vadd.f32	s15, s16, s17
- 262              		.loc 1 127 17 view .LVU56
- 263 00e2 DFED846A 		vldr.32	s13, .L35+24
- 264 00e6 76EEE76A 		vsub.f32	s13, s13, s15
- 265              		.loc 1 127 8 view .LVU57
- 266 00ea F5EE007A 		vmov.f32	s15, #2.5e-1
- 267 00ee 66EEA76A 		vmul.f32	s13, s13, s15
- 268              	.LVL18:
+ 262              		.loc 1 127 5 view .LVU55
+ 263              		.loc 1 127 29 is_stmt 0 view .LVU56
+ 264 00e2 37EEA67A 		vadd.f32	s14, s15, s13
+ 265              		.loc 1 127 17 view .LVU57
+ 266 00e6 9FED836A 		vldr.32	s12, .L35+20
+ 267 00ea 36EE476A 		vsub.f32	s12, s12, s14
+ 268              		.loc 1 127 8 view .LVU58
+ 269 00ee B5EE007A 		vmov.f32	s14, #2.5e-1
+ 270 00f2 26EE076A 		vmul.f32	s12, s12, s14
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 8
+
+
+ 271              	.LVL18:
  128:../BLDCMotor/focmethod.c ****     Tb = Ta + m_vector/2.0f;
- 269              		.loc 1 128 5 is_stmt 1 view .LVU58
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 8
-
-
- 270              		.loc 1 128 23 is_stmt 0 view .LVU59
- 271 00f2 F6EE007A 		vmov.f32	s15, #5.0e-1
- 272 00f6 28EEA77A 		vmul.f32	s14, s17, s15
- 273              		.loc 1 128 8 view .LVU60
- 274 00fa 37EE267A 		vadd.f32	s14, s14, s13
- 275              	.LVL19:
+ 272              		.loc 1 128 5 is_stmt 1 view .LVU59
+ 273              		.loc 1 128 23 is_stmt 0 view .LVU60
+ 274 00f6 F6EE005A 		vmov.f32	s11, #5.0e-1
+ 275 00fa 26EEA57A 		vmul.f32	s14, s13, s11
+ 276              		.loc 1 128 8 view .LVU61
+ 277 00fe 37EE067A 		vadd.f32	s14, s14, s12
+ 278              	.LVL19:
  129:../BLDCMotor/focmethod.c ****     Tc = Tb + s_vector/2.0f;
- 276              		.loc 1 129 5 is_stmt 1 view .LVU61
- 277              		.loc 1 129 23 is_stmt 0 view .LVU62
- 278 00fe 68EE277A 		vmul.f32	s15, s16, s15
- 279              		.loc 1 129 8 view .LVU63
- 280 0102 77EE877A 		vadd.f32	s15, s15, s14
- 281              	.LVL20:
+ 279              		.loc 1 129 5 is_stmt 1 view .LVU62
+ 280              		.loc 1 129 23 is_stmt 0 view .LVU63
+ 281 0102 67EEA57A 		vmul.f32	s15, s15, s11
+ 282              	.LVL20:
+ 283              		.loc 1 129 8 view .LVU64
+ 284 0106 77EE877A 		vadd.f32	s15, s15, s14
+ 285              	.LVL21:
  130:../BLDCMotor/focmethod.c ****     // USER_DEBUG_NORMAL("Ta Tb Tc = %.3f  %.3f  %.3f\r\n",Ta*1000000,Tb*1000000,Tc*1000000);
  131:../BLDCMotor/focmethod.c **** 
  132:../BLDCMotor/focmethod.c ****     static float AAA1,AAA2,AAA3;
- 282              		.loc 1 132 5 is_stmt 1 view .LVU64
+ 286              		.loc 1 132 5 is_stmt 1 view .LVU65
  133:../BLDCMotor/focmethod.c ****     AAA1 = Ta*1000000;AAA2 = Tb*1000000;AAA3 = Tc*1000000;
- 283              		.loc 1 133 5 view .LVU65
- 284              		.loc 1 133 14 is_stmt 0 view .LVU66
- 285 0106 9FED796A 		vldr.32	s12, .L35+16
- 286 010a 66EE865A 		vmul.f32	s11, s13, s12
- 287              		.loc 1 133 10 view .LVU67
- 288 010e 7A4B     		ldr	r3, .L35+28
- 289 0110 C3ED005A 		vstr.32	s11, [r3]
- 290              		.loc 1 133 23 is_stmt 1 view .LVU68
- 291              		.loc 1 133 32 is_stmt 0 view .LVU69
- 292 0114 67EE065A 		vmul.f32	s11, s14, s12
- 293              		.loc 1 133 28 view .LVU70
- 294 0118 784B     		ldr	r3, .L35+32
- 295 011a C3ED005A 		vstr.32	s11, [r3]
- 296              		.loc 1 133 41 is_stmt 1 view .LVU71
- 297              		.loc 1 133 50 is_stmt 0 view .LVU72
- 298 011e 27EE866A 		vmul.f32	s12, s15, s12
- 299              		.loc 1 133 46 view .LVU73
- 300 0122 774B     		ldr	r3, .L35+36
- 301 0124 83ED006A 		vstr.32	s12, [r3]
+ 287              		.loc 1 133 5 view .LVU66
+ 288              		.loc 1 133 14 is_stmt 0 view .LVU67
+ 289 010a DFED7B6A 		vldr.32	s13, .L35+24
+ 290              	.LVL22:
+ 291              		.loc 1 133 14 view .LVU68
+ 292 010e 66EE265A 		vmul.f32	s11, s12, s13
+ 293              		.loc 1 133 10 view .LVU69
+ 294 0112 7A4B     		ldr	r3, .L35+28
+ 295 0114 C3ED005A 		vstr.32	s11, [r3]
+ 296              		.loc 1 133 23 is_stmt 1 view .LVU70
+ 297              		.loc 1 133 32 is_stmt 0 view .LVU71
+ 298 0118 67EE265A 		vmul.f32	s11, s14, s13
+ 299              		.loc 1 133 28 view .LVU72
+ 300 011c 784B     		ldr	r3, .L35+32
+ 301 011e C3ED005A 		vstr.32	s11, [r3]
+ 302              		.loc 1 133 41 is_stmt 1 view .LVU73
+ 303              		.loc 1 133 50 is_stmt 0 view .LVU74
+ 304 0122 67EEA66A 		vmul.f32	s13, s15, s13
+ 305              		.loc 1 133 46 view .LVU75
+ 306 0126 774B     		ldr	r3, .L35+36
+ 307 0128 C3ED006A 		vstr.32	s13, [r3]
  134:../BLDCMotor/focmethod.c **** 
  135:../BLDCMotor/focmethod.c ****     /*------------------------换相点-------------------------------------*/
  136:../BLDCMotor/focmethod.c ****     float Tcmp1 = 0.0f;
- 302              		.loc 1 136 5 is_stmt 1 view .LVU74
- 303              	.LVL21:
+ 308              		.loc 1 136 5 is_stmt 1 view .LVU76
+ 309              	.LVL23:
  137:../BLDCMotor/focmethod.c ****     float Tcmp2 = 0.0f;
- 304              		.loc 1 137 5 view .LVU75
+ 310              		.loc 1 137 5 view .LVU77
  138:../BLDCMotor/focmethod.c ****     float Tcmp3 = 0.0f;
- 305              		.loc 1 138 5 view .LVU76
+ 311              		.loc 1 138 5 view .LVU78
  139:../BLDCMotor/focmethod.c ****     switch (sector) {
- 306              		.loc 1 139 5 view .LVU77
- 307 0128 013C     		subs	r4, r4, #1
- 308              	.LVL22:
- 309              		.loc 1 139 5 is_stmt 0 view .LVU78
- 310 012a 052C     		cmp	r4, #5
- 311 012c 6DD8     		bhi	.L21
- 312 012e DFE804F0 		tbb	[pc, r4]
- 313              	.L23:
- 314 0132 7B       		.byte	(.L28-.L23)/2
- 315 0133 73       		.byte	(.L27-.L23)/2
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 9
+ 312              		.loc 1 139 5 view .LVU79
+ 313 012c 013C     		subs	r4, r4, #1
+ 314              	.LVL24:
+ 315              		.loc 1 139 5 is_stmt 0 view .LVU80
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 9
 
 
- 316 0134 B6       		.byte	(.L26-.L23)/2
- 317 0135 BD       		.byte	(.L25-.L23)/2
- 318 0136 C6       		.byte	(.L24-.L23)/2
- 319 0137 CD       		.byte	(.L22-.L23)/2
- 320              	.LVL23:
- 321              		.p2align 1
- 322              	.L16:
+ 316 012e 052C     		cmp	r4, #5
+ 317 0130 6DD8     		bhi	.L21
+ 318 0132 DFE804F0 		tbb	[pc, r4]
+ 319              	.L23:
+ 320 0136 7B       		.byte	(.L28-.L23)/2
+ 321 0137 73       		.byte	(.L27-.L23)/2
+ 322 0138 B6       		.byte	(.L26-.L23)/2
+ 323 0139 BD       		.byte	(.L25-.L23)/2
+ 324 013a C6       		.byte	(.L24-.L23)/2
+ 325 013b CD       		.byte	(.L22-.L23)/2
+ 326              	.LVL25:
+ 327              		.p2align 1
+ 328              	.L16:
   92:../BLDCMotor/focmethod.c ****             s_vector = -(sqrt3 * ubeta * T_UDC);
- 323              		.loc 1 92 13 is_stmt 1 view .LVU79
+ 329              		.loc 1 92 13 is_stmt 1 view .LVU81
   92:../BLDCMotor/focmethod.c ****             s_vector = -(sqrt3 * ubeta * T_UDC);
- 324              		.loc 1 92 30 is_stmt 0 view .LVU80
- 325 0138 F7EE088A 		vmov.f32	s17, #1.5e+0
- 326 013c 20EE288A 		vmul.f32	s16, s0, s17
+ 330              		.loc 1 92 30 is_stmt 0 view .LVU82
+ 331 013c F7EE086A 		vmov.f32	s13, #1.5e+0
+ 332 0140 68EEA67A 		vmul.f32	s15, s17, s13
   92:../BLDCMotor/focmethod.c ****             s_vector = -(sqrt3 * ubeta * T_UDC);
- 327              		.loc 1 92 52 view .LVU81
- 328 0140 DFED688A 		vldr.32	s17, .L35+8
- 329 0144 60EEA88A 		vmul.f32	s17, s1, s17
+ 333              		.loc 1 92 52 view .LVU83
+ 334 0144 DFED696A 		vldr.32	s13, .L35+12
+ 335 0148 68EE266A 		vmul.f32	s13, s16, s13
   92:../BLDCMotor/focmethod.c ****             s_vector = -(sqrt3 * ubeta * T_UDC);
- 330              		.loc 1 92 39 view .LVU82
- 331 0148 78EE288A 		vadd.f32	s17, s16, s17
+ 336              		.loc 1 92 39 view .LVU84
+ 337 014c 77EEA66A 		vadd.f32	s13, s15, s13
   92:../BLDCMotor/focmethod.c ****             s_vector = -(sqrt3 * ubeta * T_UDC);
- 332              		.loc 1 92 22 view .LVU83
- 333 014c DFED667A 		vldr.32	s15, .L35+12
- 334 0150 68EEA78A 		vmul.f32	s17, s17, s15
- 335              	.LVL24:
+ 338              		.loc 1 92 22 view .LVU85
+ 339 0150 DFED677A 		vldr.32	s15, .L35+16
+ 340 0154 66EEA76A 		vmul.f32	s13, s13, s15
+ 341              	.LVL26:
   93:../BLDCMotor/focmethod.c ****         break;
- 336              		.loc 1 93 13 is_stmt 1 view .LVU84
+ 342              		.loc 1 93 13 is_stmt 1 view .LVU86
   93:../BLDCMotor/focmethod.c ****         break;
- 337              		.loc 1 93 32 is_stmt 0 view .LVU85
- 338 0154 9FED618A 		vldr.32	s16, .L35
- 339 0158 20EE888A 		vmul.f32	s16, s1, s16
+ 343              		.loc 1 93 32 is_stmt 0 view .LVU87
+ 344 0158 DFED610A 		vldr.32	s1, .L35
+ 345 015c 68EE200A 		vmul.f32	s1, s16, s1
   93:../BLDCMotor/focmethod.c ****         break;
- 340              		.loc 1 93 22 view .LVU86
- 341 015c 27EEC88A 		vnmul.f32	s16, s15, s16
- 342              	.LVL25:
+ 346              		.loc 1 93 22 view .LVU88
+ 347 0160 67EEE07A 		vnmul.f32	s15, s15, s1
+ 348              	.LVL27:
   94:../BLDCMotor/focmethod.c **** 
- 343              		.loc 1 94 9 is_stmt 1 view .LVU87
- 344 0160 9CE7     		b	.L18
- 345              	.LVL26:
- 346              	.L15:
+ 349              		.loc 1 94 9 is_stmt 1 view .LVU89
+ 350 0164 AEE7     		b	.L18
+ 351              	.LVL28:
+ 352              	.L15:
   97:../BLDCMotor/focmethod.c ****             s_vector = sqrt3 * ubeta * T_UDC;
- 347              		.loc 1 97 13 view .LVU88
+ 353              		.loc 1 97 13 view .LVU90
   97:../BLDCMotor/focmethod.c ****             s_vector = sqrt3 * ubeta * T_UDC;
- 348              		.loc 1 97 33 is_stmt 0 view .LVU89
- 349 0162 FFEE088A 		vmov.f32	s17, #-1.5e+0
- 350 0166 20EE288A 		vmul.f32	s16, s0, s17
+ 354              		.loc 1 97 33 is_stmt 0 view .LVU91
+ 355 0166 FFEE086A 		vmov.f32	s13, #-1.5e+0
+ 356 016a 68EEA67A 		vmul.f32	s15, s17, s13
   97:../BLDCMotor/focmethod.c ****             s_vector = sqrt3 * ubeta * T_UDC;
- 351              		.loc 1 97 55 view .LVU90
- 352 016a DFED5E8A 		vldr.32	s17, .L35+8
- 353 016e 60EEA88A 		vmul.f32	s17, s1, s17
+ 357              		.loc 1 97 55 view .LVU92
+ 358 016e DFED5F6A 		vldr.32	s13, .L35+12
+ 359 0172 68EE266A 		vmul.f32	s13, s16, s13
   97:../BLDCMotor/focmethod.c ****             s_vector = sqrt3 * ubeta * T_UDC;
- 354              		.loc 1 97 42 view .LVU91
- 355 0172 78EE288A 		vadd.f32	s17, s16, s17
-  97:../BLDCMotor/focmethod.c ****             s_vector = sqrt3 * ubeta * T_UDC;
- 356              		.loc 1 97 66 view .LVU92
- 357 0176 DFED5C7A 		vldr.32	s15, .L35+12
-  97:../BLDCMotor/focmethod.c ****             s_vector = sqrt3 * ubeta * T_UDC;
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 10
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 10
 
 
- 358              		.loc 1 97 22 view .LVU93
- 359 017a 67EEE88A 		vnmul.f32	s17, s15, s17
- 360              	.LVL27:
+ 360              		.loc 1 97 42 view .LVU93
+ 361 0176 77EEA66A 		vadd.f32	s13, s15, s13
+  97:../BLDCMotor/focmethod.c ****             s_vector = sqrt3 * ubeta * T_UDC;
+ 362              		.loc 1 97 66 view .LVU94
+ 363 017a 9FED5D6A 		vldr.32	s12, .L35+16
+  97:../BLDCMotor/focmethod.c ****             s_vector = sqrt3 * ubeta * T_UDC;
+ 364              		.loc 1 97 22 view .LVU95
+ 365 017e 66EE666A 		vnmul.f32	s13, s12, s13
+ 366              	.LVL29:
   98:../BLDCMotor/focmethod.c ****         break;
- 361              		.loc 1 98 13 is_stmt 1 view .LVU94
+ 367              		.loc 1 98 13 is_stmt 1 view .LVU96
   98:../BLDCMotor/focmethod.c ****         break;
- 362              		.loc 1 98 30 is_stmt 0 view .LVU95
- 363 017e 9FED577A 		vldr.32	s14, .L35
- 364 0182 20EE878A 		vmul.f32	s16, s1, s14
+ 368              		.loc 1 98 30 is_stmt 0 view .LVU97
+ 369 0182 9FED577A 		vldr.32	s14, .L35
+ 370 0186 68EE077A 		vmul.f32	s15, s16, s14
   98:../BLDCMotor/focmethod.c ****         break;
- 365              		.loc 1 98 22 view .LVU96
- 366 0186 28EE278A 		vmul.f32	s16, s16, s15
- 367              	.LVL28:
+ 371              		.loc 1 98 22 view .LVU98
+ 372 018a 67EE867A 		vmul.f32	s15, s15, s12
+ 373              	.LVL30:
   99:../BLDCMotor/focmethod.c **** 
- 368              		.loc 1 99 9 is_stmt 1 view .LVU97
- 369 018a 87E7     		b	.L18
- 370              	.LVL29:
- 371              	.L14:
+ 374              		.loc 1 99 9 is_stmt 1 view .LVU99
+ 375 018e 99E7     		b	.L18
+ 376              	.LVL31:
+ 377              	.L14:
  102:../BLDCMotor/focmethod.c ****             s_vector = (-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
- 372              		.loc 1 102 13 view .LVU98
+ 378              		.loc 1 102 13 view .LVU100
  102:../BLDCMotor/focmethod.c ****             s_vector = (-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
- 373              		.loc 1 102 32 is_stmt 0 view .LVU99
- 374 018c DFED538A 		vldr.32	s17, .L35
- 375 0190 60EEA88A 		vmul.f32	s17, s1, s17
+ 379              		.loc 1 102 32 is_stmt 0 view .LVU101
+ 380 0190 DFED536A 		vldr.32	s13, .L35
+ 381 0194 68EE266A 		vmul.f32	s13, s16, s13
  102:../BLDCMotor/focmethod.c ****             s_vector = (-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
- 376              		.loc 1 102 42 view .LVU100
- 377 0194 DFED547A 		vldr.32	s15, .L35+12
+ 382              		.loc 1 102 42 view .LVU102
+ 383 0198 9FED556A 		vldr.32	s12, .L35+16
  102:../BLDCMotor/focmethod.c ****             s_vector = (-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
- 378              		.loc 1 102 22 view .LVU101
- 379 0198 67EEE88A 		vnmul.f32	s17, s15, s17
- 380              	.LVL30:
+ 384              		.loc 1 102 22 view .LVU103
+ 385 019c 66EE666A 		vnmul.f32	s13, s12, s13
+ 386              	.LVL32:
  103:../BLDCMotor/focmethod.c ****         break;
- 381              		.loc 1 103 13 is_stmt 1 view .LVU102
+ 387              		.loc 1 103 13 is_stmt 1 view .LVU104
  103:../BLDCMotor/focmethod.c ****         break;
- 382              		.loc 1 103 31 is_stmt 0 view .LVU103
- 383 019c BFEE087A 		vmov.f32	s14, #-1.5e+0
- 384 01a0 20EE078A 		vmul.f32	s16, s0, s14
+ 388              		.loc 1 103 31 is_stmt 0 view .LVU105
+ 389 01a0 BFEE087A 		vmov.f32	s14, #-1.5e+0
+ 390 01a4 68EE877A 		vmul.f32	s15, s17, s14
  103:../BLDCMotor/focmethod.c ****         break;
- 385              		.loc 1 103 53 view .LVU104
- 386 01a4 9FED4F7A 		vldr.32	s14, .L35+8
- 387 01a8 60EE870A 		vmul.f32	s1, s1, s14
- 388              	.LVL31:
+ 391              		.loc 1 103 53 view .LVU106
+ 392 01a8 DFED500A 		vldr.32	s1, .L35+12
+ 393 01ac 68EE200A 		vmul.f32	s1, s16, s1
  103:../BLDCMotor/focmethod.c ****         break;
- 389              		.loc 1 103 40 view .LVU105
- 390 01ac 38EE208A 		vadd.f32	s16, s16, s1
+ 394              		.loc 1 103 40 view .LVU107
+ 395 01b0 77EEA07A 		vadd.f32	s15, s15, s1
  103:../BLDCMotor/focmethod.c ****         break;
- 391              		.loc 1 103 22 view .LVU106
- 392 01b0 28EE278A 		vmul.f32	s16, s16, s15
- 393              	.LVL32:
+ 396              		.loc 1 103 22 view .LVU108
+ 397 01b4 67EE867A 		vmul.f32	s15, s15, s12
+ 398              	.LVL33:
  104:../BLDCMotor/focmethod.c **** 
- 394              		.loc 1 104 9 is_stmt 1 view .LVU107
- 395 01b4 72E7     		b	.L18
- 396              	.LVL33:
- 397              	.L12:
- 107:../BLDCMotor/focmethod.c ****             s_vector = -((1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
- 398              		.loc 1 107 13 view .LVU108
- 107:../BLDCMotor/focmethod.c ****             s_vector = -((1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 11
+ 399              		.loc 1 104 9 is_stmt 1 view .LVU109
+ 400 01b8 84E7     		b	.L18
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 11
 
 
- 399              		.loc 1 107 30 is_stmt 0 view .LVU109
- 400 01b6 DFED498A 		vldr.32	s17, .L35
- 401 01ba 60EEA88A 		vmul.f32	s17, s1, s17
+ 401              	.LVL34:
+ 402              	.L12:
  107:../BLDCMotor/focmethod.c ****             s_vector = -((1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
- 402              		.loc 1 107 22 view .LVU110
- 403 01be DFED4A7A 		vldr.32	s15, .L35+12
- 404 01c2 68EEA78A 		vmul.f32	s17, s17, s15
- 405              	.LVL34:
+ 403              		.loc 1 107 13 view .LVU110
+ 107:../BLDCMotor/focmethod.c ****             s_vector = -((1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
+ 404              		.loc 1 107 30 is_stmt 0 view .LVU111
+ 405 01ba DFED496A 		vldr.32	s13, .L35
+ 406 01be 68EE266A 		vmul.f32	s13, s16, s13
+ 107:../BLDCMotor/focmethod.c ****             s_vector = -((1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
+ 407              		.loc 1 107 22 view .LVU112
+ 408 01c2 DFED4B7A 		vldr.32	s15, .L35+16
+ 409 01c6 66EEA76A 		vmul.f32	s13, s13, s15
+ 410              	.LVL35:
  108:../BLDCMotor/focmethod.c ****         break;
- 406              		.loc 1 108 13 is_stmt 1 view .LVU111
+ 411              		.loc 1 108 13 is_stmt 1 view .LVU113
  108:../BLDCMotor/focmethod.c ****         break;
- 407              		.loc 1 108 32 is_stmt 0 view .LVU112
- 408 01c6 B7EE088A 		vmov.f32	s16, #1.5e+0
- 409 01ca 20EE088A 		vmul.f32	s16, s0, s16
- 108:../BLDCMotor/focmethod.c ****         break;
- 410              		.loc 1 108 54 view .LVU113
- 411 01ce 9FED450A 		vldr.32	s0, .L35+8
- 412              	.LVL35:
- 108:../BLDCMotor/focmethod.c ****         break;
- 413              		.loc 1 108 54 view .LVU114
- 414 01d2 60EE800A 		vmul.f32	s1, s1, s0
+ 412              		.loc 1 108 32 is_stmt 0 view .LVU114
+ 413 01ca B7EE080A 		vmov.f32	s0, #1.5e+0
+ 414 01ce 68EE808A 		vmul.f32	s17, s17, s0
  415              	.LVL36:
  108:../BLDCMotor/focmethod.c ****         break;
- 416              		.loc 1 108 41 view .LVU115
- 417 01d6 38EE208A 		vadd.f32	s16, s16, s1
+ 416              		.loc 1 108 54 view .LVU115
+ 417 01d2 DFED460A 		vldr.32	s1, .L35+12
+ 418 01d6 28EE208A 		vmul.f32	s16, s16, s1
+ 419              	.LVL37:
  108:../BLDCMotor/focmethod.c ****         break;
- 418              		.loc 1 108 22 view .LVU116
- 419 01da 27EEC88A 		vnmul.f32	s16, s15, s16
- 420              	.LVL37:
+ 420              		.loc 1 108 41 view .LVU116
+ 421 01da 38EE888A 		vadd.f32	s16, s17, s16
+ 108:../BLDCMotor/focmethod.c ****         break;
+ 422              		.loc 1 108 22 view .LVU117
+ 423 01de 67EEC87A 		vnmul.f32	s15, s15, s16
+ 424              	.LVL38:
  109:../BLDCMotor/focmethod.c **** 
- 421              		.loc 1 109 9 is_stmt 1 view .LVU117
- 422 01de 5DE7     		b	.L18
- 423              	.LVL38:
- 424              	.L11:
+ 425              		.loc 1 109 9 is_stmt 1 view .LVU118
+ 426 01e2 6FE7     		b	.L18
+ 427              	.LVL39:
+ 428              	.L11:
  112:../BLDCMotor/focmethod.c ****             s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
- 425              		.loc 1 112 13 view .LVU118
+ 429              		.loc 1 112 13 view .LVU119
  112:../BLDCMotor/focmethod.c ****             s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
- 426              		.loc 1 112 54 is_stmt 0 view .LVU119
- 427 01e0 DFED407A 		vldr.32	s15, .L35+8
- 428 01e4 60EEA70A 		vmul.f32	s1, s1, s15
- 429              	.LVL39:
+ 430              		.loc 1 112 54 is_stmt 0 view .LVU120
+ 431 01e4 DFED417A 		vldr.32	s15, .L35+12
+ 432 01e8 68EE277A 		vmul.f32	s15, s16, s15
  112:../BLDCMotor/focmethod.c ****             s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
- 430              		.loc 1 112 41 view .LVU120
- 431 01e8 F7EE087A 		vmov.f32	s15, #1.5e+0
- 432 01ec F0EE608A 		vmov.f32	s17, s1
- 433 01f0 40EE278A 		vmla.f32	s17, s0, s15
+ 433              		.loc 1 112 41 view .LVU121
+ 434 01ec B7EE087A 		vmov.f32	s14, #1.5e+0
+ 435 01f0 F0EE676A 		vmov.f32	s13, s15
+ 436 01f4 48EE876A 		vmla.f32	s13, s17, s14
  112:../BLDCMotor/focmethod.c ****             s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
- 434              		.loc 1 112 65 view .LVU121
- 435 01f4 DFED3C7A 		vldr.32	s15, .L35+12
+ 437              		.loc 1 112 65 view .LVU122
+ 438 01f8 9FED3D7A 		vldr.32	s14, .L35+16
  112:../BLDCMotor/focmethod.c ****             s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
- 436              		.loc 1 112 22 view .LVU122
- 437 01f8 67EEE88A 		vnmul.f32	s17, s15, s17
- 438              	.LVL40:
+ 439              		.loc 1 112 22 view .LVU123
+ 440 01fc 67EE666A 		vnmul.f32	s13, s14, s13
+ 441              	.LVL40:
  113:../BLDCMotor/focmethod.c ****         break;
- 439              		.loc 1 113 13 is_stmt 1 view .LVU123
- 113:../BLDCMotor/focmethod.c ****         break;
- 440              		.loc 1 113 42 is_stmt 0 view .LVU124
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 12
+ 442              		.loc 1 113 13 is_stmt 1 view .LVU124
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 12
 
 
- 441 01fc BFEE087A 		vmov.f32	s14, #-1.5e+0
- 442 0200 40EE070A 		vmla.f32	s1, s0, s14
  113:../BLDCMotor/focmethod.c ****         break;
- 443              		.loc 1 113 22 view .LVU125
- 444 0204 27EEE08A 		vnmul.f32	s16, s15, s1
- 445              	.LVL41:
+ 443              		.loc 1 113 42 is_stmt 0 view .LVU125
+ 444 0200 BFEE086A 		vmov.f32	s12, #-1.5e+0
+ 445 0204 48EE867A 		vmla.f32	s15, s17, s12
+ 113:../BLDCMotor/focmethod.c ****         break;
+ 446              		.loc 1 113 22 view .LVU126
+ 447 0208 67EE677A 		vnmul.f32	s15, s14, s15
+ 448              	.LVL41:
  114:../BLDCMotor/focmethod.c ****     }
- 446              		.loc 1 114 9 is_stmt 1 view .LVU126
- 447 0208 48E7     		b	.L18
- 448              	.LVL42:
- 449              	.L21:
+ 449              		.loc 1 114 9 is_stmt 1 view .LVU127
+ 450 020c 5AE7     		b	.L18
+ 451              	.LVL42:
+ 452              	.L21:
  133:../BLDCMotor/focmethod.c **** 
- 450              		.loc 1 133 46 is_stmt 0 view .LVU127
- 451 020a DFED3E7A 		vldr.32	s15, .L35+40
- 452              	.LVL43:
- 133:../BLDCMotor/focmethod.c **** 
- 453              		.loc 1 133 46 view .LVU128
- 454 020e F0EE676A 		vmov.f32	s13, s15
- 455              	.LVL44:
+ 453              		.loc 1 133 46 is_stmt 0 view .LVU128
+ 454 020e DFED3E7A 		vldr.32	s15, .L35+40
+ 455              	.LVL43:
  133:../BLDCMotor/focmethod.c **** 
  456              		.loc 1 133 46 view .LVU129
- 457 0212 B0EE677A 		vmov.f32	s14, s15
- 458              	.LVL45:
+ 457 0212 B0EE676A 		vmov.f32	s12, s15
+ 458              	.LVL44:
  133:../BLDCMotor/focmethod.c **** 
  459              		.loc 1 133 46 view .LVU130
- 460 0216 07E0     		b	.L28
- 461              	.LVL46:
- 462              	.L27:
+ 460 0216 B0EE677A 		vmov.f32	s14, s15
+ 461              	.LVL45:
+ 133:../BLDCMotor/focmethod.c **** 
+ 462              		.loc 1 133 46 view .LVU131
+ 463 021a 07E0     		b	.L28
+ 464              	.LVL46:
+ 465              	.L27:
  140:../BLDCMotor/focmethod.c ****         case 1:Tcmp1 = Tb;Tcmp2 = Ta;Tcmp3 = Tc;break;
  141:../BLDCMotor/focmethod.c ****         case 2:Tcmp1 = Ta;Tcmp2 = Tc;Tcmp3 = Tb;break;
- 463              		.loc 1 141 16 is_stmt 1 view .LVU131
- 464              		.loc 1 141 27 view .LVU132
- 465              		.loc 1 141 38 view .LVU133
- 466              		.loc 1 141 49 view .LVU134
- 467              		.loc 1 141 9 is_stmt 0 view .LVU135
- 468 0218 17EE103A 		vmov	r3, s14
- 469              		.loc 1 141 22 view .LVU136
- 470 021c B0EE667A 		vmov.f32	s14, s13
- 471              	.LVL47:
- 472              		.loc 1 141 33 view .LVU137
- 473 0220 F0EE676A 		vmov.f32	s13, s15
- 474              	.LVL48:
- 475              		.loc 1 141 44 view .LVU138
- 476 0224 07EE903A 		vmov	s15, r3
- 477              	.LVL49:
- 478              	.L28:
+ 466              		.loc 1 141 16 is_stmt 1 view .LVU132
+ 467              		.loc 1 141 27 view .LVU133
+ 468              		.loc 1 141 38 view .LVU134
+ 469              		.loc 1 141 49 view .LVU135
+ 470              		.loc 1 141 9 is_stmt 0 view .LVU136
+ 471 021c 17EE103A 		vmov	r3, s14
+ 472              		.loc 1 141 22 view .LVU137
+ 473 0220 B0EE467A 		vmov.f32	s14, s12
+ 474              	.LVL47:
+ 475              		.loc 1 141 33 view .LVU138
+ 476 0224 B0EE676A 		vmov.f32	s12, s15
+ 477              	.LVL48:
+ 478              		.loc 1 141 44 view .LVU139
+ 479 0228 07EE903A 		vmov	s15, r3
+ 480              	.LVL49:
+ 481              	.L28:
  142:../BLDCMotor/focmethod.c ****         case 3:Tcmp1 = Ta;Tcmp2 = Tb;Tcmp3 = Tc;break;
  143:../BLDCMotor/focmethod.c ****         case 4:Tcmp1 = Tc;Tcmp2 = Tb;Tcmp3 = Ta;break;
  144:../BLDCMotor/focmethod.c ****         case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
  145:../BLDCMotor/focmethod.c ****         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
  146:../BLDCMotor/focmethod.c ****     }
  147:../BLDCMotor/focmethod.c **** static float BBB1,BBB2,BBB3;
- 479              		.loc 1 147 1 is_stmt 1 view .LVU139
+ 482              		.loc 1 147 1 is_stmt 1 view .LVU140
  148:../BLDCMotor/focmethod.c **** BBB1 = Tcmp1*1000000;BBB2 = Tcmp2*1000000;BBB3 = Tcmp3*1000000;
- 480              		.loc 1 148 1 view .LVU140
- 481              		.loc 1 148 13 is_stmt 0 view .LVU141
- 482 0228 9FED306A 		vldr.32	s12, .L35+16
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 13
+ 483              		.loc 1 148 1 view .LVU141
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 13
 
 
- 483 022c 67EE065A 		vmul.f32	s11, s14, s12
- 484              		.loc 1 148 6 view .LVU142
- 485 0230 354B     		ldr	r3, .L35+44
- 486 0232 C3ED005A 		vstr.32	s11, [r3]
- 487              		.loc 1 148 22 is_stmt 1 view .LVU143
- 488              		.loc 1 148 34 is_stmt 0 view .LVU144
- 489 0236 66EE865A 		vmul.f32	s11, s13, s12
- 490              		.loc 1 148 27 view .LVU145
- 491 023a 344B     		ldr	r3, .L35+48
- 492 023c C3ED005A 		vstr.32	s11, [r3]
- 493              		.loc 1 148 43 is_stmt 1 view .LVU146
- 494              		.loc 1 148 55 is_stmt 0 view .LVU147
- 495 0240 27EE866A 		vmul.f32	s12, s15, s12
- 496              		.loc 1 148 48 view .LVU148
- 497 0244 324B     		ldr	r3, .L35+52
- 498 0246 83ED006A 		vstr.32	s12, [r3]
+ 484              		.loc 1 148 13 is_stmt 0 view .LVU142
+ 485 022c DFED326A 		vldr.32	s13, .L35+24
+ 486 0230 67EE265A 		vmul.f32	s11, s14, s13
+ 487              		.loc 1 148 6 view .LVU143
+ 488 0234 354B     		ldr	r3, .L35+44
+ 489 0236 C3ED005A 		vstr.32	s11, [r3]
+ 490              		.loc 1 148 22 is_stmt 1 view .LVU144
+ 491              		.loc 1 148 34 is_stmt 0 view .LVU145
+ 492 023a 66EE265A 		vmul.f32	s11, s12, s13
+ 493              		.loc 1 148 27 view .LVU146
+ 494 023e 344B     		ldr	r3, .L35+48
+ 495 0240 C3ED005A 		vstr.32	s11, [r3]
+ 496              		.loc 1 148 43 is_stmt 1 view .LVU147
+ 497              		.loc 1 148 55 is_stmt 0 view .LVU148
+ 498 0244 67EEA66A 		vmul.f32	s13, s15, s13
+ 499              		.loc 1 148 48 view .LVU149
+ 500 0248 324B     		ldr	r3, .L35+52
+ 501 024a C3ED006A 		vstr.32	s13, [r3]
  149:../BLDCMotor/focmethod.c ****     /*-------------------------占空比---------------------------*/
  150:../BLDCMotor/focmethod.c ****     float duty_a,duty_b,duty_c;
- 499              		.loc 1 150 5 is_stmt 1 view .LVU149
+ 502              		.loc 1 150 5 is_stmt 1 view .LVU150
  151:../BLDCMotor/focmethod.c ****     duty_a =(T_PWM - Tcmp1*2.0f )/T_PWM;
- 500              		.loc 1 151 5 view .LVU150
- 501              		.loc 1 151 27 is_stmt 0 view .LVU151
- 502 024a 37EE077A 		vadd.f32	s14, s14, s14
- 503              	.LVL50:
- 504              		.loc 1 151 20 view .LVU152
- 505 024e 9FED296A 		vldr.32	s12, .L35+24
- 506              	.LVL51:
+ 503              		.loc 1 151 5 view .LVU151
+ 504              		.loc 1 151 27 is_stmt 0 view .LVU152
+ 505 024e 37EE077A 		vadd.f32	s14, s14, s14
+ 506              	.LVL50:
  507              		.loc 1 151 20 view .LVU153
- 508 0252 36EE477A 		vsub.f32	s14, s12, s14
- 509              		.loc 1 151 12 view .LVU154
- 510 0256 87EE065A 		vdiv.f32	s10, s14, s12
- 511              	.LVL52:
+ 508 0252 DFED286A 		vldr.32	s13, .L35+20
+ 509              		.loc 1 151 20 view .LVU154
+ 510 0256 36EEC77A 		vsub.f32	s14, s13, s14
+ 511              		.loc 1 151 12 view .LVU155
+ 512 025a 87EE265A 		vdiv.f32	s10, s14, s13
+ 513              	.LVL51:
  152:../BLDCMotor/focmethod.c ****     duty_b =(T_PWM - Tcmp2*2.0f )/T_PWM;
- 512              		.loc 1 152 5 is_stmt 1 view .LVU155
- 513              		.loc 1 152 27 is_stmt 0 view .LVU156
- 514 025a 76EEA66A 		vadd.f32	s13, s13, s13
- 515              	.LVL53:
- 516              		.loc 1 152 20 view .LVU157
- 517 025e 76EE666A 		vsub.f32	s13, s12, s13
- 518              		.loc 1 152 12 view .LVU158
- 519 0262 C6EE865A 		vdiv.f32	s11, s13, s12
- 520              	.LVL54:
+ 514              		.loc 1 152 5 is_stmt 1 view .LVU156
+ 515              		.loc 1 152 27 is_stmt 0 view .LVU157
+ 516 025e 36EE066A 		vadd.f32	s12, s12, s12
+ 517              	.LVL52:
+ 518              		.loc 1 152 20 view .LVU158
+ 519 0262 36EEC66A 		vsub.f32	s12, s13, s12
+ 520              		.loc 1 152 12 view .LVU159
+ 521 0266 C6EE265A 		vdiv.f32	s11, s12, s13
+ 522              	.LVL53:
  153:../BLDCMotor/focmethod.c ****     duty_c =(T_PWM - Tcmp3*2.0f )/T_PWM;
- 521              		.loc 1 153 5 is_stmt 1 view .LVU159
- 522              		.loc 1 153 27 is_stmt 0 view .LVU160
- 523 0266 77EEA77A 		vadd.f32	s15, s15, s15
- 524              	.LVL55:
- 525              		.loc 1 153 20 view .LVU161
- 526 026a 76EE677A 		vsub.f32	s15, s12, s15
- 527              		.loc 1 153 12 view .LVU162
- 528 026e 87EE867A 		vdiv.f32	s14, s15, s12
- 529              	.LVL56:
+ 523              		.loc 1 153 5 is_stmt 1 view .LVU160
+ 524              		.loc 1 153 27 is_stmt 0 view .LVU161
+ 525 026a 77EEA77A 		vadd.f32	s15, s15, s15
+ 526              	.LVL54:
+ 527              		.loc 1 153 20 view .LVU162
+ 528 026e 76EEE77A 		vsub.f32	s15, s13, s15
+ 529              		.loc 1 153 12 view .LVU163
+ 530 0272 87EEA67A 		vdiv.f32	s14, s15, s13
+ 531              	.LVL55:
  154:../BLDCMotor/focmethod.c **** 
  155:../BLDCMotor/focmethod.c ****     duty_t sg_duty;
- 530              		.loc 1 155 5 is_stmt 1 view .LVU163
+ 532              		.loc 1 155 5 is_stmt 1 view .LVU164
  156:../BLDCMotor/focmethod.c ****     sg_duty._a = duty_a;
- 531              		.loc 1 156 5 view .LVU164
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 14
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 14
 
 
- 532              		.loc 1 156 16 is_stmt 0 view .LVU165
- 533 0272 8DED085A 		vstr.32	s10, [sp, #32]
+ 533              		.loc 1 156 5 view .LVU165
+ 534              		.loc 1 156 16 is_stmt 0 view .LVU166
+ 535 0276 8DED065A 		vstr.32	s10, [sp, #24]
  157:../BLDCMotor/focmethod.c ****     sg_duty._b = duty_b;
- 534              		.loc 1 157 5 is_stmt 1 view .LVU166
- 535              		.loc 1 157 16 is_stmt 0 view .LVU167
- 536 0276 CDED095A 		vstr.32	s11, [sp, #36]
+ 536              		.loc 1 157 5 is_stmt 1 view .LVU167
+ 537              		.loc 1 157 16 is_stmt 0 view .LVU168
+ 538 027a CDED075A 		vstr.32	s11, [sp, #28]
  158:../BLDCMotor/focmethod.c ****     sg_duty._c = duty_c;
- 537              		.loc 1 158 5 is_stmt 1 view .LVU168
- 538              		.loc 1 158 16 is_stmt 0 view .LVU169
- 539 027a 8DED0A7A 		vstr.32	s14, [sp, #40]
+ 539              		.loc 1 158 5 is_stmt 1 view .LVU169
+ 540              		.loc 1 158 16 is_stmt 0 view .LVU170
+ 541 027e 8DED087A 		vstr.32	s14, [sp, #32]
  159:../BLDCMotor/focmethod.c **** 
  160:../BLDCMotor/focmethod.c ****     return sg_duty;
- 540              		.loc 1 160 5 is_stmt 1 view .LVU170
- 541              		.loc 1 160 12 is_stmt 0 view .LVU171
- 542 027e 08AB     		add	r3, sp, #32
- 543 0280 93E80700 		ldm	r3, {r0, r1, r2}
- 544 0284 0EAB     		add	r3, sp, #56
- 545 0286 03E90700 		stmdb	r3, {r0, r1, r2}
+ 542              		.loc 1 160 5 is_stmt 1 view .LVU171
+ 543              		.loc 1 160 12 is_stmt 0 view .LVU172
+ 544 0282 06AB     		add	r3, sp, #24
+ 545 0284 93E80700 		ldm	r3, {r0, r1, r2}
+ 546 0288 0CAB     		add	r3, sp, #48
+ 547 028a 03E90700 		stmdb	r3, {r0, r1, r2}
  161:../BLDCMotor/focmethod.c **** }
- 546              		.loc 1 161 1 view .LVU172
- 547 028a 9DED0B0A 		vldr.32	s0, [sp, #44]
- 548 028e DDED0C0A 		vldr.32	s1, [sp, #48]
- 549 0292 9DED0D1A 		vldr.32	s2, [sp, #52]
- 550 0296 0FB0     		add	sp, sp, #60
- 551              	.LCFI6:
- 552              		.cfi_remember_state
- 553              		.cfi_def_cfa_offset 20
- 554              		@ sp needed
- 555 0298 BDEC028B 		vldm	sp!, {d8}
- 556              	.LCFI7:
- 557              		.cfi_restore 80
- 558              		.cfi_restore 81
- 559              		.cfi_def_cfa_offset 12
- 560              	.LVL57:
- 561              		.loc 1 161 1 view .LVU173
- 562 029c 30BD     		pop	{r4, r5, pc}
- 563              	.LVL58:
+ 548              		.loc 1 161 1 view .LVU173
+ 549 028e 9DED090A 		vldr.32	s0, [sp, #36]
+ 550 0292 DDED0A0A 		vldr.32	s1, [sp, #40]
+ 551 0296 9DED0B1A 		vldr.32	s2, [sp, #44]
+ 552 029a 0CB0     		add	sp, sp, #48
+ 553              	.LCFI6:
+ 554              		.cfi_remember_state
+ 555              		.cfi_def_cfa_offset 24
+ 556              		@ sp needed
+ 557 029c BDEC028B 		vldm	sp!, {d8}
+ 558              	.LCFI7:
+ 559              		.cfi_restore 80
+ 560              		.cfi_restore 81
+ 561              		.cfi_def_cfa_offset 16
+ 562 02a0 D0BD     		pop	{r4, r6, r7, pc}
+ 563              	.LVL56:
  564              	.L26:
  565              	.LCFI8:
  566              		.cfi_restore_state
@@ -831,22 +830,22 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  570              		.loc 1 142 49 view .LVU177
  142:../BLDCMotor/focmethod.c ****         case 4:Tcmp1 = Tc;Tcmp2 = Tb;Tcmp3 = Ta;break;
  571              		.loc 1 142 9 is_stmt 0 view .LVU178
- 572 029e 17EE103A 		vmov	r3, s14
+ 572 02a2 17EE103A 		vmov	r3, s14
  142:../BLDCMotor/focmethod.c ****         case 4:Tcmp1 = Tc;Tcmp2 = Tb;Tcmp3 = Ta;break;
  573              		.loc 1 142 22 view .LVU179
- 574 02a2 B0EE667A 		vmov.f32	s14, s13
- 575              	.LVL59:
+ 574 02a6 B0EE467A 		vmov.f32	s14, s12
+ 575              	.LVL57:
  142:../BLDCMotor/focmethod.c ****         case 4:Tcmp1 = Tc;Tcmp2 = Tb;Tcmp3 = Ta;break;
  576              		.loc 1 142 33 view .LVU180
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 15
+ 577 02aa 06EE103A 		vmov	s12, r3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 15
 
 
- 577 02a6 06EE903A 		vmov	s13, r3
- 578              	.LVL60:
+ 578              	.LVL58:
  142:../BLDCMotor/focmethod.c ****         case 4:Tcmp1 = Tc;Tcmp2 = Tb;Tcmp3 = Ta;break;
  579              		.loc 1 142 9 view .LVU181
- 580 02aa BDE7     		b	.L28
- 581              	.LVL61:
+ 580 02ae BDE7     		b	.L28
+ 581              	.LVL59:
  582              	.L25:
  143:../BLDCMotor/focmethod.c ****         case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
  583              		.loc 1 143 16 is_stmt 1 view .LVU182
@@ -858,23 +857,23 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  586              		.loc 1 143 49 view .LVU185
  143:../BLDCMotor/focmethod.c ****         case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
  587              		.loc 1 143 9 is_stmt 0 view .LVU186
- 588 02ac 17EE103A 		vmov	r3, s14
+ 588 02b0 17EE103A 		vmov	r3, s14
  143:../BLDCMotor/focmethod.c ****         case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
  589              		.loc 1 143 22 view .LVU187
- 590 02b0 B0EE677A 		vmov.f32	s14, s15
- 591              	.LVL62:
+ 590 02b4 B0EE677A 		vmov.f32	s14, s15
+ 591              	.LVL60:
  143:../BLDCMotor/focmethod.c ****         case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
  592              		.loc 1 143 44 view .LVU188
- 593 02b4 F0EE667A 		vmov.f32	s15, s13
- 594              	.LVL63:
+ 593 02b8 F0EE467A 		vmov.f32	s15, s12
+ 594              	.LVL61:
  143:../BLDCMotor/focmethod.c ****         case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
  595              		.loc 1 143 33 view .LVU189
- 596 02b8 06EE903A 		vmov	s13, r3
- 597              	.LVL64:
+ 596 02bc 06EE103A 		vmov	s12, r3
+ 597              	.LVL62:
  143:../BLDCMotor/focmethod.c ****         case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
  598              		.loc 1 143 9 view .LVU190
- 599 02bc B4E7     		b	.L28
- 600              	.LVL65:
+ 599 02c0 B4E7     		b	.L28
+ 600              	.LVL63:
  601              	.L24:
  144:../BLDCMotor/focmethod.c ****         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
  602              		.loc 1 144 16 is_stmt 1 view .LVU191
@@ -886,22 +885,22 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  605              		.loc 1 144 49 view .LVU194
  144:../BLDCMotor/focmethod.c ****         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
  606              		.loc 1 144 9 is_stmt 0 view .LVU195
- 607 02be 17EE103A 		vmov	r3, s14
+ 607 02c2 17EE103A 		vmov	r3, s14
  144:../BLDCMotor/focmethod.c ****         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
  608              		.loc 1 144 22 view .LVU196
- 609 02c2 B0EE677A 		vmov.f32	s14, s15
- 610              	.LVL66:
+ 609 02c6 B0EE677A 		vmov.f32	s14, s15
+ 610              	.LVL64:
  144:../BLDCMotor/focmethod.c ****         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
  611              		.loc 1 144 44 view .LVU197
- 612 02c6 07EE903A 		vmov	s15, r3
- 613              	.LVL67:
+ 612 02ca 07EE903A 		vmov	s15, r3
+ 613              	.LVL65:
  144:../BLDCMotor/focmethod.c ****         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
  614              		.loc 1 144 9 view .LVU198
- 615 02ca ADE7     		b	.L28
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 16
+ 615 02ce ADE7     		b	.L28
+ 616              	.LVL66:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 16
 
 
- 616              	.LVL68:
  617              	.L22:
  145:../BLDCMotor/focmethod.c ****     }
  618              		.loc 1 145 16 is_stmt 1 view .LVU199
@@ -913,35 +912,35 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  621              		.loc 1 145 49 view .LVU202
  145:../BLDCMotor/focmethod.c ****     }
  622              		.loc 1 145 9 is_stmt 0 view .LVU203
- 623 02cc 16EE903A 		vmov	r3, s13
+ 623 02d0 16EE103A 		vmov	r3, s12
  145:../BLDCMotor/focmethod.c ****     }
  624              		.loc 1 145 33 view .LVU204
- 625 02d0 F0EE676A 		vmov.f32	s13, s15
- 626              	.LVL69:
+ 625 02d4 B0EE676A 		vmov.f32	s12, s15
+ 626              	.LVL67:
  145:../BLDCMotor/focmethod.c ****     }
  627              		.loc 1 145 44 view .LVU205
- 628 02d4 07EE903A 		vmov	s15, r3
- 629              	.LVL70:
+ 628 02d8 07EE903A 		vmov	s15, r3
+ 629              	.LVL68:
  145:../BLDCMotor/focmethod.c ****     }
  630              		.loc 1 145 9 view .LVU206
- 631 02d8 A6E7     		b	.L28
+ 631 02dc A6E7     		b	.L28
  632              	.L36:
- 633 02da 00BF     		.align	2
+ 633 02de 00BF     		.align	2
  634              	.L35:
- 635 02dc D0B3DD3F 		.word	1071494096
- 636 02e0 D0B3DDBF 		.word	-1075989552
- 637 02e4 D0B35D3F 		.word	1063105488
- 638 02e8 65CF8B36 		.word	915132261
- 639 02ec 00247449 		.word	1232348160
- 640 02f0 00000000 		.word	.LC0
- 641 02f4 17B7D138 		.word	953267991
- 642 02f8 00000000 		.word	.LANCHOR3
- 643 02fc 00000000 		.word	.LANCHOR4
- 644 0300 00000000 		.word	.LANCHOR5
- 645 0304 00000000 		.word	0
- 646 0308 00000000 		.word	.LANCHOR6
- 647 030c 00000000 		.word	.LANCHOR7
- 648 0310 00000000 		.word	.LANCHOR8
+ 635 02e0 D0B3DD3F 		.word	1071494096
+ 636 02e4 D0B3DDBF 		.word	-1075989552
+ 637 02e8 00000000 		.word	.LC0
+ 638 02ec D0B35D3F 		.word	1063105488
+ 639 02f0 65CF8B36 		.word	915132261
+ 640 02f4 17B7D138 		.word	953267991
+ 641 02f8 00247449 		.word	1232348160
+ 642 02fc 00000000 		.word	.LANCHOR3
+ 643 0300 00000000 		.word	.LANCHOR4
+ 644 0304 00000000 		.word	.LANCHOR5
+ 645 0308 00000000 		.word	0
+ 646 030c 00000000 		.word	.LANCHOR6
+ 647 0310 00000000 		.word	.LANCHOR7
+ 648 0314 00000000 		.word	.LANCHOR8
  649              		.cfi_endproc
  650              	.LFE334:
  652              		.section	.text._3s_2s,"ax",%progbits
@@ -952,16 +951,16 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  657              		.thumb_func
  658              		.fpu fpv4-sp-d16
  660              	_3s_2s:
- 661              	.LVL71:
+ 661              	.LVL69:
  662              	.LFB335:
  162:../BLDCMotor/focmethod.c **** 
  163:../BLDCMotor/focmethod.c **** 
  164:../BLDCMotor/focmethod.c **** /*---------------Clark�任------------------------*/
  165:../BLDCMotor/focmethod.c ****  void _3s_2s(abc_t i_abc,alpbet_t *alp_bet)
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 17
-
-
  166:../BLDCMotor/focmethod.c **** {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 17
+
+
  663              		.loc 1 166 1 is_stmt 1 view -0
  664              		.cfi_startproc
  665              		@ args = 0, pretend = 0, frame = 16
@@ -1011,17 +1010,17 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  704              		.thumb_func
  705              		.fpu fpv4-sp-d16
  707              	_2s_2r:
- 708              	.LVL72:
+ 708              	.LVL70:
  709              	.LFB336:
  173:../BLDCMotor/focmethod.c **** /*-------------------Park�任--------------------------------*/
  174:../BLDCMotor/focmethod.c ****  void _2s_2r(alpbet_t i_alphabeta,float theta,dq_t *dq)
  175:../BLDCMotor/focmethod.c **** {
  710              		.loc 1 175 1 is_stmt 1 view -0
  711              		.cfi_startproc
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 18
-
-
  712              		@ args = 0, pretend = 0, frame = 16
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 18
+
+
  713              		@ frame_needed = 0, uses_anonymous_args = 0
  714              		.loc 1 175 1 is_stmt 0 view .LVU217
  715 0000 10B5     		push	{r4, lr}
@@ -1053,7 +1052,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  740              		.loc 1 176 14 is_stmt 0 view .LVU219
  741 0022 B0EE610A 		vmov.f32	s0, s3
  742 0026 FFF7FEFF 		bl	cosf
- 743              	.LVL73:
+ 743              	.LVL71:
  744              		.loc 1 176 14 view .LVU220
  745 002a B0EE408A 		vmov.f32	s16, s0
  746              		.loc 1 176 25 view .LVU221
@@ -1061,7 +1060,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  748              		.loc 1 176 46 view .LVU222
  749 0032 B0EE690A 		vmov.f32	s0, s19
  750 0036 FFF7FEFF 		bl	sinf
- 751              	.LVL74:
+ 751              	.LVL72:
  752              		.loc 1 176 57 view .LVU223
  753 003a 60EE287A 		vmul.f32	s15, s0, s17
  754              		.loc 1 176 44 view .LVU224
@@ -1078,10 +1077,10 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  764 004e 30EE080A 		vadd.f32	s0, s0, s16
  765              		.loc 1 177 11 view .LVU230
  766 0052 84ED010A 		vstr.32	s0, [r4, #4]
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 19
-
-
  178:../BLDCMotor/focmethod.c **** }
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 19
+
+
  767              		.loc 1 178 1 view .LVU231
  768 0056 04B0     		add	sp, sp, #16
  769              	.LCFI14:
@@ -1108,7 +1107,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  791              		.thumb_func
  792              		.fpu fpv4-sp-d16
  794              	_2r_2s:
- 795              	.LVL75:
+ 795              	.LVL73:
  796              	.LFB337:
  179:../BLDCMotor/focmethod.c **** /*--------------��PARK�任------------------*/
  180:../BLDCMotor/focmethod.c ****  alpbet_t _2r_2s(dq_t i_dq,float theta)
@@ -1138,10 +1137,10 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  819 000c B0EE609A 		vmov.f32	s18, s1
  820 0010 F0EE619A 		vmov.f32	s19, s3
  821 0014 8DED050A 		vstr.32	s0, [sp, #20]
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 20
-
-
  822 0018 CDED060A 		vstr.32	s1, [sp, #24]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 20
+
+
  823 001c 8DED071A 		vstr.32	s2, [sp, #28]
  182:../BLDCMotor/focmethod.c ****     alpbet_t i_alphabeta;
  824              		.loc 1 182 5 is_stmt 1 view .LVU235
@@ -1150,7 +1149,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  826              		.loc 1 183 34 is_stmt 0 view .LVU237
  827 0020 B0EE610A 		vmov.f32	s0, s3
  828 0024 FFF7FEFF 		bl	cosf
- 829              	.LVL76:
+ 829              	.LVL74:
  830              		.loc 1 183 34 view .LVU238
  831 0028 F0EE408A 		vmov.f32	s17, s0
  832              		.loc 1 183 32 view .LVU239
@@ -1158,7 +1157,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  834              		.loc 1 183 58 view .LVU240
  835 0030 B0EE690A 		vmov.f32	s0, s19
  836 0034 FFF7FEFF 		bl	sinf
- 837              	.LVL77:
+ 837              	.LVL75:
  838              		.loc 1 183 56 view .LVU241
  839 0038 69EE007A 		vmul.f32	s15, s18, s0
  840              		.loc 1 183 46 view .LVU242
@@ -1198,10 +1197,10 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  871              		.cfi_restore 82
  872              		.cfi_restore 83
  873              		.cfi_restore 80
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 21
-
-
  874              		.cfi_restore 81
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 21
+
+
  875              		.cfi_def_cfa_offset 4
  876 0072 5DF804FB 		ldr	pc, [sp], #4
  877              		.cfi_endproc
@@ -1215,7 +1214,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  886              		.thumb_func
  887              		.fpu fpv4-sp-d16
  889              	_normalize_angle:
- 890              	.LVL78:
+ 890              	.LVL76:
  891              	.LFB338:
  187:../BLDCMotor/focmethod.c **** 
  188:../BLDCMotor/focmethod.c **** /*-----------------------------------------*/
@@ -1254,21 +1253,21 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  903              		.loc 1 209 3 is_stmt 1 view .LVU254
  904              		.loc 1 209 13 is_stmt 0 view .LVU255
  905 0006 FFF7FEFF 		bl	__aeabi_f2d
- 906              	.LVL79:
+ 906              	.LVL77:
  907              		.loc 1 209 13 view .LVU256
  908 000a 9FED0B1B 		vldr.64	d1, .L49
  909 000e 41EC100B 		vmov	d0, r0, r1
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 22
-
-
  910 0012 FFF7FEFF 		bl	fmod
- 911              	.LVL80:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 22
+
+
+ 911              	.LVL78:
  912 0016 51EC100B 		vmov	r0, r1, d0
  913              		.loc 1 209 9 view .LVU257
  914 001a FFF7FEFF 		bl	__aeabi_d2f
- 915              	.LVL81:
+ 915              	.LVL79:
  916 001e 00EE100A 		vmov	s0, r0
- 917              	.LVL82:
+ 917              	.LVL80:
  210:../BLDCMotor/focmethod.c ****   return a >= 0 ? a : (a + 2.0f*PI);  
  918              		.loc 1 210 3 is_stmt 1 view .LVU258
  919              		.loc 1 210 21 is_stmt 0 view .LVU259
@@ -1301,7 +1300,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  945              		.thumb_func
  946              		.fpu fpv4-sp-d16
  948              	foc_curloopcale:
- 949              	.LVL83:
+ 949              	.LVL81:
  950              	.LFB333:
   23:../BLDCMotor/focmethod.c ****     dq_t i_dq;
  951              		.loc 1 23 1 is_stmt 1 view -0
@@ -1318,10 +1317,10 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  961              	.LCFI23:
  962              		.cfi_def_cfa_offset 20
  963              		.cfi_offset 80, -20
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 23
-
-
  964              		.cfi_offset 81, -16
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 23
+
+
  965              		.cfi_offset 82, -12
  966              		.cfi_offset 83, -8
  967 0006 9BB0     		sub	sp, sp, #108
@@ -1343,32 +1342,32 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  978              		.loc 1 32 5 view .LVU268
  979 0018 11A8     		add	r0, sp, #68
  980 001a FFF7FEFF 		bl	_3s_2s
- 981              	.LVL84:
+ 981              	.LVL82:
   33:../BLDCMotor/focmethod.c ****     // udq_limt = circle_limit(i_dq);
  982              		.loc 1 33 5 view .LVU269
  983 001e 9FED350A 		vldr.32	s0, .L53
  984 0022 38EE400A 		vsub.f32	s0, s16, s0
  985 0026 FFF7FEFF 		bl	_normalize_angle
- 986              	.LVL85:
+ 986              	.LVL83:
  987 002a F0EE401A 		vmov.f32	s3, s0
  988 002e 14A8     		add	r0, sp, #80
  989 0030 9DED110A 		vldr.32	s0, [sp, #68]
  990 0034 DDED120A 		vldr.32	s1, [sp, #72]
  991 0038 9DED131A 		vldr.32	s2, [sp, #76]
  992 003c FFF7FEFF 		bl	_2s_2r
- 993              	.LVL86:
+ 993              	.LVL84:
   37:../BLDCMotor/focmethod.c ****     real_iq = i_dq.q;
  994              		.loc 1 37 5 view .LVU270
   37:../BLDCMotor/focmethod.c ****     real_iq = i_dq.q;
  995              		.loc 1 37 13 is_stmt 0 view .LVU271
  996 0040 9DED149A 		vldr.32	s18, [sp, #80]
- 997              	.LVL87:
+ 997              	.LVL85:
   38:../BLDCMotor/focmethod.c ****     /*---------------------------*/
  998              		.loc 1 38 5 is_stmt 1 view .LVU272
   38:../BLDCMotor/focmethod.c ****     /*---------------------------*/
  999              		.loc 1 38 13 is_stmt 0 view .LVU273
  1000 0044 DDED158A 		vldr.32	s17, [sp, #84]
- 1001              	.LVL88:
+ 1001              	.LVL86:
   41:../BLDCMotor/focmethod.c ****     dq_t u_dq;  
  1002              		.loc 1 41 5 is_stmt 1 view .LVU274
   42:../BLDCMotor/focmethod.c ****     u_dq.d = 0.0f;
@@ -1378,10 +1377,10 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
   43:../BLDCMotor/focmethod.c ****     u_dq.q = 1.0f;
  1005              		.loc 1 43 12 is_stmt 0 view .LVU277
  1006 0048 0023     		movs	r3, #0
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 24
-
-
  1007 004a 0E93     		str	r3, [sp, #56]	@ float
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 24
+
+
   44:../BLDCMotor/focmethod.c ****     // u_dq.d = pid_contrl(sgp_curloop_d_pid,0.0f,real_id);
  1008              		.loc 1 44 5 is_stmt 1 view .LVU278
   44:../BLDCMotor/focmethod.c ****     // u_dq.d = pid_contrl(sgp_curloop_d_pid,0.0f,real_id);
@@ -1393,55 +1392,55 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  1013 0052 9DED050A 		vldr.32	s0, [sp, #20]
  1014 0056 0220     		movs	r0, #2
  1015 0058 FFF7FEFF 		bl	ipc_write_data
- 1016              	.LVL89:
+ 1016              	.LVL87:
   49:../BLDCMotor/focmethod.c ****     ipc_write_data(PUBLIC_DATA_IC,i_abc.c);
  1017              		.loc 1 49 5 view .LVU281
  1018 005c 9DED060A 		vldr.32	s0, [sp, #24]
  1019 0060 0320     		movs	r0, #3
  1020 0062 FFF7FEFF 		bl	ipc_write_data
- 1021              	.LVL90:
+ 1021              	.LVL88:
   50:../BLDCMotor/focmethod.c ****     ipc_write_data(PUBLIC_DATA_IALPHA,i_alphbeta.alpha);
  1022              		.loc 1 50 5 view .LVU282
  1023 0066 9DED070A 		vldr.32	s0, [sp, #28]
  1024 006a 0420     		movs	r0, #4
  1025 006c FFF7FEFF 		bl	ipc_write_data
- 1026              	.LVL91:
+ 1026              	.LVL89:
   51:../BLDCMotor/focmethod.c ****     ipc_write_data(PUBLIC_DATA_IBETA,i_alphbeta.beta);
  1027              		.loc 1 51 5 view .LVU283
  1028 0070 9DED110A 		vldr.32	s0, [sp, #68]
  1029 0074 0520     		movs	r0, #5
  1030 0076 FFF7FEFF 		bl	ipc_write_data
- 1031              	.LVL92:
+ 1031              	.LVL90:
   52:../BLDCMotor/focmethod.c ****     ipc_write_data(PUBLIC_DATA_ID,real_id);
  1032              		.loc 1 52 5 view .LVU284
  1033 007a 9DED120A 		vldr.32	s0, [sp, #72]
  1034 007e 0620     		movs	r0, #6
  1035 0080 FFF7FEFF 		bl	ipc_write_data
- 1036              	.LVL93:
+ 1036              	.LVL91:
   53:../BLDCMotor/focmethod.c ****     ipc_write_data(PUBLIC_DATA_IQ,real_iq);
  1037              		.loc 1 53 5 view .LVU285
  1038 0084 B0EE490A 		vmov.f32	s0, s18
  1039 0088 0720     		movs	r0, #7
  1040 008a FFF7FEFF 		bl	ipc_write_data
- 1041              	.LVL94:
+ 1041              	.LVL92:
   54:../BLDCMotor/focmethod.c ****     ipc_write_data(PUBLIC_DATA_TEMP0,theta);
  1042              		.loc 1 54 5 view .LVU286
  1043 008e B0EE680A 		vmov.f32	s0, s17
  1044 0092 0820     		movs	r0, #8
  1045 0094 FFF7FEFF 		bl	ipc_write_data
- 1046              	.LVL95:
+ 1046              	.LVL93:
   55:../BLDCMotor/focmethod.c **** #else
  1047              		.loc 1 55 5 view .LVU287
  1048 0098 B0EE480A 		vmov.f32	s0, s16
  1049 009c 0C20     		movs	r0, #12
  1050 009e FFF7FEFF 		bl	ipc_write_data
- 1051              	.LVL96:
+ 1051              	.LVL94:
   62:../BLDCMotor/focmethod.c ****     u_alphabeta = _2r_2s(u_dq,(theta));// + PI/2.0f); 
  1052              		.loc 1 62 5 view .LVU288
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 25
-
-
   63:../BLDCMotor/focmethod.c ****     duty_t duty;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 25
+
+
  1053              		.loc 1 63 5 view .LVU289
   63:../BLDCMotor/focmethod.c ****     duty_t duty;
  1054              		.loc 1 63 19 is_stmt 0 view .LVU290
@@ -1450,7 +1449,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  1057 00aa DDED0F0A 		vldr.32	s1, [sp, #60]
  1058 00ae 9DED101A 		vldr.32	s2, [sp, #64]
  1059 00b2 FFF7FEFF 		bl	_2r_2s
- 1060              	.LVL97:
+ 1060              	.LVL95:
  1061 00b6 8DED0B0A 		vstr.32	s0, [sp, #44]
  1062 00ba CDED0C0A 		vstr.32	s1, [sp, #48]
  1063 00be 8DED0D1A 		vstr.32	s2, [sp, #52]
@@ -1461,7 +1460,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
   65:../BLDCMotor/focmethod.c ****     return duty;
  1066              		.loc 1 65 12 is_stmt 0 view .LVU293
  1067 00c2 FFF7FEFF 		bl	_svpwm
- 1068              	.LVL98:
+ 1068              	.LVL96:
  1069 00c6 8DED080A 		vstr.32	s0, [sp, #32]
  1070 00ca CDED090A 		vstr.32	s1, [sp, #36]
  1071 00ce 8DED0A1A 		vstr.32	s2, [sp, #40]
@@ -1489,7 +1488,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  1090              		.cfi_restore 80
  1091              		.cfi_restore 81
  1092              		.cfi_def_cfa_offset 4
- 1093              	.LVL99:
+ 1093              	.LVL97:
   67:../BLDCMotor/focmethod.c **** duty_t _svpwm(float ualpha,float ubeta)
  1094              		.loc 1 67 1 view .LVU297
  1095 00f0 5DF804FB 		ldr	pc, [sp], #4
@@ -1498,10 +1497,10 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  1098              	.L53:
  1099 00f4 DA0FC93F 		.word	1070141402
  1100              		.cfi_endproc
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 26
-
-
  1101              	.LFE333:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 26
+
+
  1103              		.global	sgp_curloop_q_pid
  1104              		.global	sgp_curloop_d_pid
  1105              		.section	.bss.AAA1.5,"aw",%nobits
@@ -1558,59 +1557,59 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 1
  1170              		.file 2 "../Public/./method/pid.h"
  1171              		.file 3 "../BLDCMotor/./focmethod.h"
  1172              		.file 4 "d:\\program files (x86)\\gcc-arm-none-eabi-10-2020-q4-major-win32\\tool\\arm-none-eabi\\i
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 27
-
-
  1173              		.file 5 "d:\\program files (x86)\\gcc-arm-none-eabi-10-2020-q4-major-win32\\tool\\arm-none-eabi\\i
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 27
+
+
  1174              		.file 6 "../Public/IPC/ipc.h"
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s 			page 28
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s 			page 28
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 focmethod.c
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:18     .text.foc_paraminit:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:26     .text.foc_paraminit:00000000 foc_paraminit
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:81     .text.foc_paraminit:00000050 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:92     .rodata._svpwm.str1.4:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:96     .text._svpwm:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:103    .text._svpwm:00000000 _svpwm
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:187    .text._svpwm:00000066 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:314    .text._svpwm:00000132 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:321    .text._svpwm:00000138 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:635    .text._svpwm:000002dc $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:653    .text._3s_2s:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:660    .text._3s_2s:00000000 _3s_2s
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:695    .text._3s_2s:00000028 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:700    .text._2s_2r:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:707    .text._2s_2r:00000000 _2s_2r
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:787    .text._2r_2s:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:794    .text._2r_2s:00000000 _2r_2s
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:882    .text._normalize_angle:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:889    .text._normalize_angle:00000000 _normalize_angle
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:934    .text._normalize_angle:00000038 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:941    .text.foc_curloopcale:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:948    .text.foc_curloopcale:00000000 foc_curloopcale
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1099   .text.foc_curloopcale:000000f4 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1166   .bss.sgp_curloop_q_pid:00000000 sgp_curloop_q_pid
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1159   .bss.sgp_curloop_d_pid:00000000 sgp_curloop_d_pid
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1106   .bss.AAA1.5:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1110   .bss.AAA1.5:00000000 AAA1.5
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1113   .bss.AAA2.4:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1117   .bss.AAA2.4:00000000 AAA2.4
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1120   .bss.AAA3.3:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1124   .bss.AAA3.3:00000000 AAA3.3
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1127   .bss.BBB1.2:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1131   .bss.BBB1.2:00000000 BBB1.2
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1134   .bss.BBB2.1:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1138   .bss.BBB2.1:00000000 BBB2.1
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1141   .bss.BBB3.0:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1145   .bss.BBB3.0:00000000 BBB3.0
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1148   .bss.sg_curloop_param:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1152   .bss.sg_curloop_param:00000000 sg_curloop_param
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1155   .bss.sgp_curloop_d_pid:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:1162   .bss.sgp_curloop_q_pid:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:193    .text._svpwm:0000006b $d
-C:\Users\ADMINI~1\AppData\Local\Temp\cce906ye.s:193    .text._svpwm:0000006c $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:18     .text.foc_paraminit:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:26     .text.foc_paraminit:00000000 foc_paraminit
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:81     .text.foc_paraminit:00000050 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:92     .rodata._svpwm.str1.4:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:96     .text._svpwm:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:103    .text._svpwm:00000000 _svpwm
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:205    .text._svpwm:0000008e $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:320    .text._svpwm:00000136 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:327    .text._svpwm:0000013c $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:635    .text._svpwm:000002e0 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:653    .text._3s_2s:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:660    .text._3s_2s:00000000 _3s_2s
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:695    .text._3s_2s:00000028 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:700    .text._2s_2r:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:707    .text._2s_2r:00000000 _2s_2r
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:787    .text._2r_2s:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:794    .text._2r_2s:00000000 _2r_2s
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:882    .text._normalize_angle:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:889    .text._normalize_angle:00000000 _normalize_angle
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:934    .text._normalize_angle:00000038 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:941    .text.foc_curloopcale:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:948    .text.foc_curloopcale:00000000 foc_curloopcale
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1099   .text.foc_curloopcale:000000f4 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1166   .bss.sgp_curloop_q_pid:00000000 sgp_curloop_q_pid
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1159   .bss.sgp_curloop_d_pid:00000000 sgp_curloop_d_pid
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1106   .bss.AAA1.5:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1110   .bss.AAA1.5:00000000 AAA1.5
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1113   .bss.AAA2.4:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1117   .bss.AAA2.4:00000000 AAA2.4
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1120   .bss.AAA3.3:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1124   .bss.AAA3.3:00000000 AAA3.3
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1127   .bss.BBB1.2:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1131   .bss.BBB1.2:00000000 BBB1.2
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1134   .bss.BBB2.1:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1138   .bss.BBB2.1:00000000 BBB2.1
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1141   .bss.BBB3.0:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1145   .bss.BBB3.0:00000000 BBB3.0
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1148   .bss.sg_curloop_param:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1152   .bss.sg_curloop_param:00000000 sg_curloop_param
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1155   .bss.sgp_curloop_d_pid:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:1162   .bss.sgp_curloop_q_pid:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:211    .text._svpwm:00000093 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cc0fbUkR.s:211    .text._svpwm:00000094 $t
 
 UNDEFINED SYMBOLS
 pid_init
