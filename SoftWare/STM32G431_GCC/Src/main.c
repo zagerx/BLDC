@@ -104,11 +104,11 @@ void sysrunning_process(void)
             }            
             if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
             {
-                // USER_DEBUG_NORMAL("theta %f\r\n",(*(sensor_data_t*)sensor_user_read(SENSOR_MT6818)).cov_data);
+                // USER_DEBUG_NORMAL("theta %f\r\n",(*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data);
                 HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
-                // protocol02_process();
+                protocol02_process();
             }
         default:
             break;
@@ -166,7 +166,7 @@ int main(void)
     sysrunning_process();
     // sensor_process();
     motortctrl_process();
-    // protocol_process();
+    protocol_process();
 
     HAL_Delay(1);
     /* USER CODE END WHILE */

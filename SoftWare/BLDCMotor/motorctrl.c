@@ -37,15 +37,16 @@ static lowfilter_t sg_elefilter[3];
 static float _get_angleoffset(void);
 void motortctrl_process(void)
 {
-    // float theta = 100.0f;
+    
     switch (g_Motor1.state)
     {
     case MOTOR_INIT:
         for (unsigned char  i = 0; i < 10; i++)
         {
-            // theta = (*(sensor_data_t*)sensor_user_read(SENSOR_02)).cov_data;            
+            float theta = 100.0f;
+            theta = (*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data;            
         }
-        // sg_MecThetaOffset = _get_angleoffset();
+        sg_MecThetaOffset = _get_angleoffset();
         /*-----电流滤波器初始化-------*/
         lowfilter_init(&sg_elefilter[0],80);
         lowfilter_init(&sg_elefilter[1],80);
@@ -88,7 +89,7 @@ static float _get_angleoffset(void)
     dut01 = _svpwm(uab.alpha,uab.beta);
     motor_set_pwm(dut01._a,dut01._b,dut01._c);
     HAL_Delay(200);
-    theta = (*(sensor_data_t*)sensor_user_read(SENSOR_02)).cov_data;
+    theta = (*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data;
     motor_disable();
     return theta;
 }
@@ -121,8 +122,8 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 
 /*---------------------获取当前转子角度-------------------------*/
     float mech_theta,elec_theta;
-    // mech_theta = (*(sensor_data_t*)sensor_user_read(SENSOR_02)).cov_data - sg_MecThetaOffset;
-    elec_theta = mech_theta * MOTOR_02_PAIR;    
+    mech_theta = (*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data - sg_MecThetaOffset;
+    elec_theta = mech_theta * MOTOR_PAIR;    
 
     /*--------------对电流进行反park变化-----------------------*/
     // i_abc.a = cosf(elec_theta);
@@ -154,9 +155,9 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     qita    theta += 0.004f;  uq = 1.0f
 ---------------------------*/
 
-    dq_t udq = {0.0f,1.00f};
+    dq_t udq = {0.0f,1.40f};
     alpbet_t uab;
-    #if 1//强拖
+    #if 0//强拖
         {
             static float theta = 0.0f;
             if (theta >= _2PI)
@@ -164,32 +165,32 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
                 /* code */
                 theta = 0.0f;
             }
-            theta += 0.004f;
+            theta += 0.001f;
             uab = _2r_2s(udq, theta);
-        }        
-    #else //使用传感器
-        // uab = _2r_2s(udq, elec_theta);    
-        {
-            static float theta = 0.0f;
-            float U_out = 1.00f;
-            float alp,beta;
-            float Rad_theta;
-            theta = 30;
-            Rad_theta = theta / 57.29577951f;
-            alp = U_out*cosf(Rad_theta);
-            beta = U_out*sinf(Rad_theta);
-            // USER_DEBUG_NORMAL("alp beta =   %.3f  %.3f\r\n",alp,beta);
-            duty_t dut;
-            dut = _svpwm(alp,beta);
-            motor_set_pwm(dut._a,dut._b,dut._c);
-            theta += 15.0f;
-            
-            if (theta >= 360.0f)
-            {
-                /* code */
-                theta = 0.0f;
-            }
         }
+    #else //使用传感器
+        uab = _2r_2s(udq, elec_theta);    
+        // {
+        //     static float theta = 0.0f;
+        //     float U_out = 1.00f;
+        //     float alp,beta;
+        //     float Rad_theta;
+        //     theta = 30;
+        //     Rad_theta = theta / 57.29577951f;
+        //     alp = U_out*cosf(Rad_theta);
+        //     beta = U_out*sinf(Rad_theta);
+        //     // USER_DEBUG_NORMAL("alp beta =   %.3f  %.3f\r\n",alp,beta);
+        //     duty_t dut;
+        //     dut = _svpwm(alp,beta);
+        //     motor_set_pwm(dut._a,dut._b,dut._c);
+        //     theta += 15.0f;
+            
+        //     if (theta >= 360.0f)
+        //     {
+        //         /* code */
+        //         theta = 0.0f;
+        //     }
+        // }
     #endif
     
     duty_t dut01;

@@ -17,7 +17,7 @@
 #define BETA_                       5.7F
 
 #define FACTOR                      (1.0f)
-#define T_PWM                       (0.0001f)*FACTOR
+#define T_PWM                       (100.0f)*FACTOR
 #define U_DC                        (24.0f)*FACTOR
 #define F_PWM                       (float)(1.0f/T_PWM)*FACTOR
 #define T_UDC                       (float)(T_PWM/U_DC)*FACTOR

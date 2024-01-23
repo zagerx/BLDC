@@ -79,7 +79,6 @@ duty_t _svpwm(float ualpha,float ubeta)
     if((-sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
         sector += 4;
     }
-    USER_DEBUG_NORMAL("alp beta =   %.3f  %.3f\r\n",ualpha,ubeta);
     /*----------------------------------------------------*/
     float s_vector = 0.0f,m_vector = 0.0f;
     switch (sector) {
@@ -113,7 +112,6 @@ duty_t _svpwm(float ualpha,float ubeta)
             s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
         break;
     }
-    // USER_DEBUG_NORMAL("section Tm Ts =%d  %.3f  %.3f\r\n",sector,m_vector*1000000,s_vector*1000000);
 
     /*------------------------------------------------------------*/
     if (m_vector + s_vector > T_PWM) 
@@ -127,10 +125,6 @@ duty_t _svpwm(float ualpha,float ubeta)
     Ta = (T_PWM - (m_vector + s_vector)) / 4.0F;  
     Tb = Ta + m_vector/2.0f;
     Tc = Tb + s_vector/2.0f;
-    // USER_DEBUG_NORMAL("Ta Tb Tc = %.3f  %.3f  %.3f\r\n",Ta*1000000,Tb*1000000,Tc*1000000);
-
-    static float AAA1,AAA2,AAA3;
-    AAA1 = Ta*1000000;AAA2 = Tb*1000000;AAA3 = Tc*1000000;
 
     /*------------------------换相点-------------------------------------*/
     float Tcmp1 = 0.0f;
@@ -144,8 +138,6 @@ duty_t _svpwm(float ualpha,float ubeta)
         case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
     }
-static float BBB1,BBB2,BBB3;
-BBB1 = Tcmp1*1000000;BBB2 = Tcmp2*1000000;BBB3 = Tcmp3*1000000;
     /*-------------------------占空比---------------------------*/
     float duty_a,duty_b,duty_c;
     duty_a =(T_PWM - Tcmp1*2.0f )/T_PWM;

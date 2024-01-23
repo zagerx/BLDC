@@ -255,7 +255,7 @@ void motor_set_pwm(float _a,float _b,float _c)
 
     unsigned short max = 0;
     max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 1));	    
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 60));	    
     // unsigned short min = 0;
     // min = min_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);  
     // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(min + 20));	
