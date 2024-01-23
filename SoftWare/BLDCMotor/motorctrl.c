@@ -192,7 +192,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
         //     }
         // }
     #endif
-    
+
     duty_t dut01;
     dut01 = _svpwm(uab.alpha,uab.beta);
     motor_set_pwm(dut01._a,dut01._b,dut01._c);

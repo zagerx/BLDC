@@ -37,7 +37,9 @@ build/focmethod.o: ../BLDCMotor/focmethod.c ../BLDCMotor/./focmethod.h \
  ../Public/./method/method.h ../Public/./method/filter.h \
  ../Public/./method/pid.h ../Public/./method/crc.h Hardware/mt6816.h \
  Hardware/./hardware_cfg.h Inc/spi.h ../Public/debuglog/debuglog.h \
- ../Public/debuglog/./debuglog_cfg.h Inc/usart.h
+ ../Public/debuglog/./debuglog_cfg.h \
+ ../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
+ ../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h
 ../BLDCMotor/./focmethod.h:
 ../BLDCMotor/././bldcmotor_cfg.h:
 ../Public/IPC/ipc.h:
@@ -91,4 +93,5 @@ Hardware/./hardware_cfg.h:
 Inc/spi.h:
 ../Public/debuglog/debuglog.h:
 ../Public/debuglog/./debuglog_cfg.h:
-Inc/usart.h:
+../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
+../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:

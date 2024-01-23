@@ -13,7 +13,6 @@ typedef struct sensor_data
 typedef struct sensor
 {
     /*------属性-----*/
-    unsigned char flag;  //传感器数据，0:用户由缓冲区获取数据。1：由用户实时获取数据
     unsigned short cycle;//更新周期，单位ms 0代表不更新数据到缓存区
     /*------方法-----*/
     void* (*pf_read)(void);

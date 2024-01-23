@@ -34,8 +34,10 @@ build/usart.o: Src/usart.c Inc/usart.h Inc/main.h \
  ../protocol/protocol_cfg.h ../Public/macro_defined.h \
  ../Public/method/crc.h ../Public/fifo.h ../Public/IPC/ipc.h \
  ../Public/list.h ../Public/Fsm/fsm.h ../Public/debuglog/debuglog.h \
- ../Public/debuglog/./debuglog_cfg.h ../Public/_assert.h ../Public/heap.h \
- ../protocol/protocol.h
+ ../Public/debuglog/./debuglog_cfg.h \
+ ../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
+ ../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
+ ../Public/_assert.h ../Public/heap.h ../protocol/protocol.h
 Inc/usart.h:
 Inc/main.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
@@ -81,6 +83,8 @@ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h:
 ../Public/Fsm/fsm.h:
 ../Public/debuglog/debuglog.h:
 ../Public/debuglog/./debuglog_cfg.h:
+../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
+../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
 ../Public/_assert.h:
 ../Public/heap.h:
 ../protocol/protocol.h:
