@@ -2,7 +2,7 @@
 ** Modified by:			
 ** Modified date:		2023-08-17
 ** Version:
-** Descriptions:	ÏÈ½øÏÈ³ö¶ÓÁÐ
+** Descriptions:	
 **
 ********************************************************************************************************/
 #include "fifo.h"
@@ -14,36 +14,36 @@ static char bytefifo_isfull(byte_fifo_t *pfifo)
 {
 	if((pfifo->head+1)%pfifo->buflen == pfifo->tail)
 	{
-		return 0;//ÒÑÂú
+		return 0;
 	}
 	return 1;
 }
-/*FIFO¿Õ£¬²»ÄÜ¶ÁÊý¾Ý*/
+/*FIFOï¿½Õ£ï¿½ï¿½ï¿½ï¿½Ü¶ï¿½ï¿½ï¿½ï¿½ï¿½*/
 static char bytefifo_isempty(byte_fifo_t *pfifo)
 {
 	if(pfifo->head == pfifo->tail)
 	{
-		return 0;//¿Õ
+		return 0;//ï¿½ï¿½
 	}
 	return 1;
 }
-/*FIFOÂú²»ÄÜÐ´Êý¾Ý*/
+/*FIFOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½*/
 static char bytefifo_writebyte(byte_fifo_t *pfifo,byte_t data)
 {
     if(bytefifo_isfull(pfifo) == 0)
     {
-        return 1;//Âú
+        return 1;//ï¿½ï¿½
     }
     pfifo->pbuf[pfifo->head] = data;
     pfifo->head = (pfifo->head + 1) % pfifo->buflen ;
 	pfifo->remain_byte--;
-    return 0;//Ð´Èë³É¹¦
+    return 0;//Ð´ï¿½ï¿½É¹ï¿½
 }
 static char bytefifo_readbyte(byte_fifo_t *pfifo,byte_t *pdata)
-{/*FIFOÎª¿Õ ²»ÄÜ¶Á*/
+{/*FIFOÎªï¿½ï¿½ ï¿½ï¿½ï¿½Ü¶ï¿½*/
     if (bytefifo_isempty(pfifo) == 0)
     {
-        return 1;//ÎÞ·¨¶ÁÈ¡
+        return 1;//ï¿½Þ·ï¿½ï¿½ï¿½È¡
     }
 	*pdata = pfifo->pbuf[pfifo->tail];
     pfifo->tail = (pfifo->tail + 1)%pfifo->buflen ;
@@ -51,7 +51,7 @@ static char bytefifo_readbyte(byte_fifo_t *pfifo,byte_t *pdata)
 	return 0;
 }
 
-/*»ñÈ¡FIFOÒÑÊ¹ÓÃµÄ×Ö½ÚÊý*/
+/*ï¿½ï¿½È¡FIFOï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½Ö½ï¿½ï¿½ï¿½*/
 static unsigned short bytefifo_usendbyte(byte_fifo_t *pfifo)
 {
 	if(pfifo->tail <= pfifo->head)
@@ -80,10 +80,10 @@ char bytefifo_writemulitebyge(byte_fifo_t *pfifo,byte_t *buf,unsigned short len)
     }
     pfifo->lockstate = FIFO_LOCK;
 
-	if(len > (pfifo->buflen  - bytefifo_usendbyte(pfifo)-1))//-1£¬ÒòÎªÓÐÒ»¸ö×Ö½ÚÊ¼ÖÕÃ»ÓÐÓÃµ½
+	if(len > (pfifo->buflen  - bytefifo_usendbyte(pfifo)-1))//-1ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö½ï¿½Ê¼ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ãµï¿½
 	{
         pfifo->lockstate = FIFO_UNLOCK;
-		return 1;//Ð´ÈëÊ§°Ü
+		return 1;//Ð´ï¿½ï¿½Ê§ï¿½ï¿½
 	}
 	while(len--)
 	{
@@ -105,7 +105,7 @@ char bytefifo_readmulintebyte(byte_fifo_t *pfifo,byte_t *buf,unsigned short len)
 	if(len > bytefifo_usendbyte(pfifo))//
 	{
         pfifo->lockstate = FIFO_UNLOCK;
-		return 1;//¶ÁÈ¡Ê§°Ü
+		return 1;//ï¿½ï¿½È¡Ê§ï¿½ï¿½
 	}
 	while(len--)
 	{

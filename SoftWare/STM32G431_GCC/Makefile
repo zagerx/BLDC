@@ -83,7 +83,7 @@ C_SOURCES += $(wildcard ../Public/Fsm/*.c)
 C_SOURCES += $(wildcard ../Public/debuglog/SEGGER_RTT_V792h/RTT/*.c)
 C_SOURCES += $(wildcard ../Public/debuglog/*.c)
 C_SOURCES += $(wildcard ../Public/method/*.c)
-
+C_SOURCES += $(wildcard ../Public/IQMath/ti/*.c)
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32g431xx.s 
@@ -144,6 +144,8 @@ C_INCLUDES =  \
 -I../Sensor \
 -I../BLDCMotor \
 -I../protocol \
+-I../Public/IQMath/support \
+-I../Public/IQMath/ti \
 -I../Public/debuglog/SEGGER_RTT_V792h/Config \
 -I../Public/debuglog/SEGGER_RTT_V792h/RTT \
 -I../Public/debuglog \

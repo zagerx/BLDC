@@ -12,8 +12,8 @@ void foc_paraminit(void)
 {
     sgp_curloop_d_pid = &sg_curloop_param.d_pid;
     sgp_curloop_q_pid = &sg_curloop_param.q_pid;
-    pid_init(sgp_curloop_d_pid,0.010f,0.0001f,1.0f,D_MAX_VAL,D_MIN_VAL);
-    pid_init(sgp_curloop_q_pid,0.050f,0.01f,1.0f,Q_MAX_VAL,Q_MIN_VAL);
+    pid_init(sgp_curloop_d_pid,3.00f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(sgp_curloop_q_pid,0.010f,0.001f,1.0f,4,-4);
 }
 
 /*-----------------------------------------

@@ -6,7 +6,7 @@
 #define SENSORE_PERCI            (1)
 
 static float g_filtedata_arry[SENSOR_NUMBER + 1];        //传感器滤波的数据
-static sensor_data_t g_data_arry[SENSOR_NUMBER + 1];        //传感器滤波的数据
+static sensor_data_t g_data_arry[SENSOR_NUMBER + 1];     //传感器数据
 
 /*-------------------注册传感器------------------------*/
 static sensor_t g_sensor_arry[SENSOR_NUMBER + 1] = \
@@ -15,7 +15,9 @@ static sensor_t g_sensor_arry[SENSOR_NUMBER + 1] = \
         [SENSOR_01] = {
             .pf_read = mt6816_read,
             .pf_write = NULL,
-            .cycle = 0x00
+            .pf_init = NULL,
+            .cycle = 0x00,
+            .status = EN_SENSOR_NORMAL
         },
 #endif
 #if(ANGLE_SENSOR_TLE5012B_EN)
@@ -66,14 +68,16 @@ void sensor_process(void)
             {
                 continue;
             }
-
-            /*----更新周期是否满足---*/
+            
+            /*----更新周期是否满足----*/
             if (!(g_sensor.tim % g_sensor_arry[sensor_id].cycle))
             {
                 g_data_arry[sensor_id] = *(sensor_data_t *)g_sensor_arry[sensor_id].pf_read();
-            }            
+            }
             // USER_DEBUG_NORMAL("data %d %d\r\n",g_data_arry[sensor_id].raw,\
             //                                         (int)(g_data_arry[sensor_id].cov_data * 1000));
+
+            /*----滤波处理是否需要----*/
         }
         break;    
     default:
@@ -97,7 +101,6 @@ void* sensor_user_read(ENUM_SENSOR sensor_id)
     {
         rawdata = *(sensor_data_t *)pcursensor->pf_read();
     }else{
-        /* code */
         rawdata = g_data_arry[sensor_id];        
     }
     return &rawdata;

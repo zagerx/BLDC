@@ -18,9 +18,8 @@ void pid_reset(pid_cb_t *pid)
     pid->satErr = 0.0f;
 }
 
-/*PID积分抗饱和*/
-float pid_contrl(pid_cb_t *pid,float tar,float cur){
-
+float pid_contrl(pid_cb_t *pid,float tar,float cur)
+{
     float err,u_p,v_out,presat;
     err = tar - cur;
     u_p = pid->kp*err;
@@ -36,8 +35,6 @@ float pid_contrl(pid_cb_t *pid,float tar,float cur){
         v_out = presat;
     }
     pid->satErr = v_out - presat;
-    
-    /*添加微分控制,未测试*/
 #if 0
         u_p1 = u_p;
         ud = kd*(u_p-u_p1);

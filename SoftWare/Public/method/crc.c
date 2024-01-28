@@ -87,7 +87,6 @@ uint8_t CalcCRC8(unsigned char *ptr, unsigned int len)
     return (crc);
 }    
 	
-/* 分段计算CRC16 */
 uint16_t CRC16_Subsection(uint8_t *puchMsg, uint16_t value, uint32_t usDataLen)
 {
     unsigned short wCRCin = value;
@@ -143,7 +142,6 @@ unsigned long CalcCRC32(const unsigned char *s, unsigned int len)
 }
 
 	
-/* 分段计算CRC32 */
 uint32_t CRC32_Subsection(const unsigned char *s, uint32_t value, uint32_t len)
 {
 	unsigned int i;
