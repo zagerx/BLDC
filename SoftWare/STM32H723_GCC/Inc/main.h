@@ -57,6 +57,11 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LED_01_Pin GPIO_PIN_3
+#define LED_01_GPIO_Port GPIOE
+#define WATCHDOG_IN_Pin GPIO_PIN_3
+#define WATCHDOG_IN_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
