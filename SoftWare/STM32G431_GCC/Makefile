@@ -77,17 +77,19 @@ C_SOURCES += $(wildcard ./Hardware/mt6816.c)
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
 C_SOURCES += $(wildcard ../Protocol/*.c)
 C_SOURCES += $(wildcard ../Sensor/*.c)
-C_SOURCES += $(wildcard ../Public/*.c)
-C_SOURCES += $(wildcard ../Public/IPC/*.c)
-C_SOURCES += $(wildcard ../Public/Fsm/*.c)
-C_SOURCES += $(wildcard ../Public/debuglog/SEGGER_RTT_V792h/RTT/*.c)
-C_SOURCES += $(wildcard ../Public/debuglog/*.c)
-C_SOURCES += $(wildcard ../Public/method/*.c)
-C_SOURCES += $(wildcard ../Public/IQMath/ti/*.c)
+C_SOURCES += $(wildcard ../Common/*.c)
+C_SOURCES += $(wildcard ../Common/IPC/*.c)
+C_SOURCES += $(wildcard ../Common/Fsm/*.c)
+C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
+C_SOURCES += $(wildcard ../Common/debuglog/*.c)
+C_SOURCES += $(wildcard ../Common/method/*.c)
+C_SOURCES += $(wildcard ../Common/IQMath/ti/*.c)
+C_SOURCES += $(wildcard ../Common/_assert/*.c)
+C_SOURCES += $(wildcard ../Common/data_structures/*.c)
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32g431xx.s 
-#Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT_ASM_ARMv7M.s
+#Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT_ASM_ARMv7M.s
 
 
 #######################################
@@ -144,15 +146,16 @@ C_INCLUDES =  \
 -I../Sensor \
 -I../BLDCMotor \
 -I../protocol \
--I../Public/IQMath/support \
--I../Public/IQMath/ti \
--I../Public/debuglog/SEGGER_RTT_V792h/Config \
--I../Public/debuglog/SEGGER_RTT_V792h/RTT \
--I../Public/debuglog \
--I../Public/method \
--I../Public/IPC \
--I../Public/Fsm \
--I../Public \
+-I../Common/IQMath/support \
+-I../Common/IQMath/ti \
+-I../Common/debuglog/SEGGER_RTT_V792h/Config \
+-I../Common/debuglog/SEGGER_RTT_V792h/RTT \
+-I../Common/debuglog \
+-I../Common/method \
+-I../Common/IPC \
+-I../Common/Fsm \
+-I../Common/data_structures \
+-I../Common \
 -IInc \
 -IDrivers/STM32G4xx_HAL_Driver/Inc \
 -IDrivers/STM32G4xx_HAL_Driver/Inc/Legacy \

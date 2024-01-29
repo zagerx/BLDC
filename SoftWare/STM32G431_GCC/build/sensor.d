@@ -1,8 +1,13 @@
 build/sensor.o: ../Sensor/sensor.c ../Sensor/sensor.h \
- ../Sensor/sensor_cfg.h ../Public/pubilc.h ../Public/./method/method.h \
- ../Public/./method/filter.h ../Public/./method/pid.h \
- ../Public/./method/crc.h Hardware/mt6816.h Hardware/./hardware_cfg.h \
- Inc/spi.h Inc/main.h Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
+ ../Sensor/sensor_cfg.h ../Common/_common.h ../Common/./_assert/_assert.h \
+ ../Common/method/method.h ../Common/method/filter.h \
+ ../Common/method/pid.h ../Common/method/crc.h \
+ ../Common/debuglog/debuglog.h ../Common/debuglog/./debuglog_cfg.h \
+ ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
+ ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
+ ../Common/data_structures/fifo.h ../Common/data_structures/heap.h \
+ Hardware/mt6816.h Hardware/./hardware_cfg.h Inc/spi.h Inc/main.h \
+ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
  Inc/stm32g4xx_hal_conf.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_rcc.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_def.h \
@@ -33,17 +38,21 @@ build/sensor.o: ../Sensor/sensor.c ../Sensor/sensor.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim_ex.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h \
- Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h \
- ../Public/debuglog/debuglog.h ../Public/debuglog/./debuglog_cfg.h \
- ../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
- ../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h
+ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h
 ../Sensor/sensor.h:
 ../Sensor/sensor_cfg.h:
-../Public/pubilc.h:
-../Public/./method/method.h:
-../Public/./method/filter.h:
-../Public/./method/pid.h:
-../Public/./method/crc.h:
+../Common/_common.h:
+../Common/./_assert/_assert.h:
+../Common/method/method.h:
+../Common/method/filter.h:
+../Common/method/pid.h:
+../Common/method/crc.h:
+../Common/debuglog/debuglog.h:
+../Common/debuglog/./debuglog_cfg.h:
+../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
+../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
+../Common/data_structures/fifo.h:
+../Common/data_structures/heap.h:
 Hardware/mt6816.h:
 Hardware/./hardware_cfg.h:
 Inc/spi.h:
@@ -82,7 +91,3 @@ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim_ex.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h:
-../Public/debuglog/debuglog.h:
-../Public/debuglog/./debuglog_cfg.h:
-../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
-../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:

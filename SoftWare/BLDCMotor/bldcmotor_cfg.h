@@ -5,7 +5,7 @@
 #include "ipc.h"
 #include "tim.h"
 #include "sensor.h"
-#include "pubilc.h"
+#include "_common.h"
 // #include "Motor_Control.h"
 
 #define AD_OFFSET                   2116.0f

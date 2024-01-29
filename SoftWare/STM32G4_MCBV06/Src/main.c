@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "pubilc.h"
+#include "_common.h"
 #include "debuglog.h"
 #include "hardware.h"
 #include "bldcmotor.h"

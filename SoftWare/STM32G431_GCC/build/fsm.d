@@ -1,3 +1,4 @@
-build/fsm.o: ../Public/Fsm/fsm.c ../Public/Fsm/fsm.h ../Public/heap.h
-../Public/Fsm/fsm.h:
-../Public/heap.h:
+build/fsm.o: ../Common/Fsm/fsm.c ../Common/Fsm/fsm.h \
+ ../Common/data_structures/heap.h
+../Common/Fsm/fsm.h:
+../Common/data_structures/heap.h:

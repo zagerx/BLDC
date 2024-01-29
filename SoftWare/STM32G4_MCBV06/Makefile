@@ -73,11 +73,11 @@ C_SOURCES += $(wildcard ../BLDCMotor/*.c)
 # C_SOURCES += $(wildcard ../Protocol/*.c)
 C_SOURCES += $(wildcard ../Sensor/*.c)
 C_SOURCES += $(wildcard ./Hardware/tle5012b.c)
-C_SOURCES += $(wildcard ../Public/IPC/*.c)
-C_SOURCES += $(wildcard ../Public/method/*.c)
-C_SOURCES += $(wildcard ../Public/debuglog/*.c)
-C_SOURCES += $(wildcard ../Public/debuglog/SEGGER_RTT_V792h/RTT/*.c)
-C_SOURCES += $(wildcard ../Public/debuglog/SEGGER_RTT_V792h/RTT/Syscalls/SEGGER_RTT_Syscalls_GCC.c)
+C_SOURCES += $(wildcard ../Common/IPC/*.c)
+C_SOURCES += $(wildcard ../Common/method/*.c)
+C_SOURCES += $(wildcard ../Common/debuglog/*.c)
+C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
+C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/Syscalls/SEGGER_RTT_Syscalls_GCC.c)
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32g473xx.s
@@ -136,12 +136,12 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--I../Public/method \
--I../Public/IPC \
--I../Public/debuglog/SEGGER_RTT_V792h/Config \
--I../Public/debuglog/SEGGER_RTT_V792h/RTT \
--I../Public/debuglog \
--I../Public \
+-I../Common/method \
+-I../Common/IPC \
+-I../Common/debuglog/SEGGER_RTT_V792h/Config \
+-I../Common/debuglog/SEGGER_RTT_V792h/RTT \
+-I../Common/debuglog \
+-I../Common \
 -I../Sensor \
 -I./Hardware \
 -I../BLDCMotor \

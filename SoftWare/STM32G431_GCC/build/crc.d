@@ -1,4 +1,4 @@
-build/crc.o: ../Public/method/crc.c ../Public/method/./crc.h \
- ../Public/method/./method_cfg.h
-../Public/method/./crc.h:
-../Public/method/./method_cfg.h:
+build/crc.o: ../Common/method/crc.c ../Common/method/./crc.h \
+ ../Common/method/./method_cfg.h
+../Common/method/./crc.h:
+../Common/method/./method_cfg.h:

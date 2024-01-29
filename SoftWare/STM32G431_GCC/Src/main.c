@@ -28,8 +28,7 @@
 #include "sensor.h"
 #include "../Protocol/protocol.h"
 #include "../../BLDCMotor/motorctrl.h"
-// #include "motorctrl.h"
-#include "../Public/pubilc.h"
+#include "_common.h"
 #include "debuglog.h"
 /* USER CODE END Includes */
 

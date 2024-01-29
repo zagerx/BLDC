@@ -1,5 +1,5 @@
 #include "mt6816.h"
-#include "pubilc.h"
+#include "_common.h"
 
 typedef struct mt6816_data
 {

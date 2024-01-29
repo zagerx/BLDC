@@ -32,16 +32,18 @@ build/main.o: Src/main.c Inc/main.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h Inc/adc.h \
  Inc/main.h Inc/dma.h Inc/spi.h Inc/tim.h Inc/usart.h Inc/gpio.h \
- ../Public/IPC/ipc.h ../Public/list.h ../Public/macro_defined.h \
- ../Sensor/sensor.h ../Sensor/sensor_cfg.h ../Public/pubilc.h \
- ../Public/./method/method.h ../Public/./method/filter.h \
- ../Public/./method/pid.h ../Public/./method/crc.h Hardware/mt6816.h \
- Hardware/./hardware_cfg.h ../Sensor/../Protocol/protocol.h \
- Src/../../BLDCMotor/motorctrl.h Src/../../BLDCMotor/./bldcmotor_cfg.h \
- ../Sensor/../Public/pubilc.h ../Public/debuglog/debuglog.h \
- ../Public/debuglog/./debuglog_cfg.h \
- ../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
- ../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h
+ ../Common/IPC/ipc.h ../Common/data_structures/list.h \
+ ../Common/macro_defined.h ../Sensor/sensor.h ../Sensor/sensor_cfg.h \
+ ../Common/_common.h ../Common/./_assert/_assert.h \
+ ../Common/method/method.h ../Common/method/filter.h \
+ ../Common/method/pid.h ../Common/method/crc.h \
+ ../Common/debuglog/debuglog.h ../Common/debuglog/./debuglog_cfg.h \
+ ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
+ ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
+ ../Common/data_structures/fifo.h ../Common/data_structures/heap.h \
+ Hardware/mt6816.h Hardware/./hardware_cfg.h \
+ ../Sensor/../Protocol/protocol.h Src/../../BLDCMotor/motorctrl.h \
+ Src/../../BLDCMotor/./bldcmotor_cfg.h
 Inc/main.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
 Inc/stm32g4xx_hal_conf.h:
@@ -84,23 +86,25 @@ Inc/spi.h:
 Inc/tim.h:
 Inc/usart.h:
 Inc/gpio.h:
-../Public/IPC/ipc.h:
-../Public/list.h:
-../Public/macro_defined.h:
+../Common/IPC/ipc.h:
+../Common/data_structures/list.h:
+../Common/macro_defined.h:
 ../Sensor/sensor.h:
 ../Sensor/sensor_cfg.h:
-../Public/pubilc.h:
-../Public/./method/method.h:
-../Public/./method/filter.h:
-../Public/./method/pid.h:
-../Public/./method/crc.h:
+../Common/_common.h:
+../Common/./_assert/_assert.h:
+../Common/method/method.h:
+../Common/method/filter.h:
+../Common/method/pid.h:
+../Common/method/crc.h:
+../Common/debuglog/debuglog.h:
+../Common/debuglog/./debuglog_cfg.h:
+../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
+../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
+../Common/data_structures/fifo.h:
+../Common/data_structures/heap.h:
 Hardware/mt6816.h:
 Hardware/./hardware_cfg.h:
 ../Sensor/../Protocol/protocol.h:
 Src/../../BLDCMotor/motorctrl.h:
 Src/../../BLDCMotor/./bldcmotor_cfg.h:
-../Sensor/../Public/pubilc.h:
-../Public/debuglog/debuglog.h:
-../Public/debuglog/./debuglog_cfg.h:
-../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
-../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:

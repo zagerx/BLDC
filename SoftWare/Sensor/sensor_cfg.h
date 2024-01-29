@@ -2,7 +2,7 @@
 #define __SENSORT_CFG__H
 
 #ifndef SENSOR_CLOSE_DEBUG
-    #include "pubilc.h"   //Debug打印
+    #include "_common.h"   //Debug打印
 #endif
 /*---------------------------角度传感器---------------------------------*/
     #define ANGLE_SENSOR_TLE5012B_EN        (0)    //TLE5012B使能

@@ -1,4 +1,4 @@
-build/pid.o: ../Public/method/pid.c ../Public/method/./pid.h \
- ../Public/method/../method/method_cfg.h
-../Public/method/./pid.h:
-../Public/method/../method/method_cfg.h:
+build/pid.o: ../Common/method/pid.c ../Common/method/./pid.h \
+ ../Common/method/../method/method_cfg.h
+../Common/method/./pid.h:
+../Common/method/../method/method_cfg.h:

@@ -1,10 +1,11 @@
-build/list.o: ../Public/list.c ../Public/list.h ../Public/heap.h \
- ../Public/debuglog/debuglog.h ../Public/debuglog/./debuglog_cfg.h \
- ../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
- ../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h
-../Public/list.h:
-../Public/heap.h:
-../Public/debuglog/debuglog.h:
-../Public/debuglog/./debuglog_cfg.h:
-../Public/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
-../Public/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
+build/list.o: ../Common/data_structures/list.c \
+ ../Common/data_structures/list.h ../Common/data_structures/heap.h \
+ ../Common/debuglog/debuglog.h ../Common/debuglog/./debuglog_cfg.h \
+ ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
+ ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h
+../Common/data_structures/list.h:
+../Common/data_structures/heap.h:
+../Common/debuglog/debuglog.h:
+../Common/debuglog/./debuglog_cfg.h:
+../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
+../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:

@@ -56,7 +56,6 @@ void encoder_angleupdate(void)
     if (!hall_section_update())
     {
         // encoder_01.pre_theta = hall_01.ref_hall_theta;
-
     }
     
     unsigned short cur_cnt;
