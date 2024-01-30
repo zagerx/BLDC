@@ -17,7 +17,6 @@ void foc_paraminit(void)
 }
 
 /*-----------------------------------------
-theta:��Ƕ�
 */
 duty_t foc_curloopcale(abc_t i_abc,float theta)
 {    
@@ -198,7 +197,7 @@ static dq_t _3s_2r(abc_t i_abc, float theta)
 
 float _normalize_angle(float angle)
 {
-  float a = fmod(angle, 2.0f*PI);   //ȡ������������ڹ�һ�����г�����ֵ�������֪
+  float a = fmod(angle, 2.0f*PI);   
   return a >= 0 ? a : (a + 2.0f*PI);  
 }
 

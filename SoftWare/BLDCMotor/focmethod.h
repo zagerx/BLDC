@@ -40,7 +40,7 @@ typedef struct _abc
     float c;
 }abc_t;
 
-/*------µçÁ÷»·²ÎÊý--------*/
+/*------ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½--------*/
 typedef struct curloop
 {
     pid_cb_t d_pid;
@@ -52,4 +52,6 @@ float _normalize_angle(float angle);
 duty_t _svpwm(float ualpha,float ubeta);
 duty_t foc_curloopcale(abc_t i_abc,float theta);
 void foc_paraminit(void);
+
+duty_t _svpwm_q15(uint64_t ualpha,uint64_t ubeta);
 #endif

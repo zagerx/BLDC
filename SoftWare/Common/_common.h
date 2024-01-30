@@ -5,7 +5,7 @@
 #define USE_FSM_ENABLE                 (0)
 #define USE_GPIO_ENABLE                (0)
 #define USE_ASSERT_ENABLE              (1)
-#define USE_IQMATH_ENABLE              (0)
+#define USE_IQMATH_ENABLE              (1)
 #define USE_METHOD_ENABLE              (1)
 #define USE_DEBUGLOG_ENABLE            (1)
 #define USE_ANALOGI2C_ENABLE           (0)

@@ -117,6 +117,7 @@ static float _get_angleoffset(void)
 extern  pid_cb_t *sgp_curloop_d_pid;
 extern pid_cb_t *sgp_curloop_q_pid;
 float AAAAAA;
+duty_t dut01,dut02;
 void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 {
 /*----------------三相电流处理------------------------------*/    
@@ -159,7 +160,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     sg_motordebug.id_real = i_dq.d *1000;
     sg_motordebug.iq_real = i_dq.q *1000;
 
-#if 1
+#if 0
 /*-------------------闭环控制-----------------------*/
     dq_t u_dq = {0.0f,2.0f};
     // u_dq.d = pid_contrl(sgp_curloop_d_pid,0.0f,i_dq.d);
@@ -183,7 +184,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 
     dq_t udq = {0.0f,1.40f};
     alpbet_t uab;
-    #if 0//强拖
+    #if 1//强拖
         {
             static float theta = 0.0f;
             AAAAAA = theta;
@@ -200,8 +201,10 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
         pre_elec_theta = elec_theta; 
     #endif
 
-    duty_t dut01;
+    
     dut01 = _svpwm(uab.alpha,uab.beta);
+    dut02 = _svpwm_q15(_IQ15(uab.alpha),_IQ15(uab.beta));
+
     motor_set_pwm(dut01._a,dut01._b,dut01._c);
 #endif
 
@@ -212,7 +215,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     ipc_write_data(PUBLIC_DATA_IALPHA,i_alphbeta.alpha);
     ipc_write_data(PUBLIC_DATA_IBETA,i_alphbeta.beta);    
     ipc_write_data(PUBLIC_DATA_ID,i_dq.d);
-    ipc_write_data(PUBLIC_DATA_IQ,i_dq.q);
+    // ipc_write_data(PUBLIC_DATA_IQ,i_dq.q);
     return;
 }
 
