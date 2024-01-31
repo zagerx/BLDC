@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define LED_01_Pin GPIO_PIN_3
 #define LED_01_GPIO_Port GPIOE
+#define EBAKE_PWM_EN_Pin GPIO_PIN_7
+#define EBAKE_PWM_EN_GPIO_Port GPIOE
 #define WATCHDOG_IN_Pin GPIO_PIN_3
 #define WATCHDOG_IN_GPIO_Port GPIOB
 

@@ -18,13 +18,17 @@ build/main.o: Src/main.c Inc/main.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mdma.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_exti.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_cortex.h \
+ Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc.h \
+ Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_adc.h \
+ Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc_ex.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash_ex.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h \
- Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h
+ Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h Inc/adc.h \
+ Inc/main.h Inc/dma.h Inc/gpio.h
 Inc/main.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 Inc/stm32h7xx_hal_conf.h:
@@ -47,6 +51,9 @@ Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma_ex.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mdma.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_exti.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_cortex.h:
+Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc.h:
+Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_adc.h:
+Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc_ex.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash_ex.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h:
@@ -54,3 +61,7 @@ Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h:
+Inc/adc.h:
+Inc/main.h:
+Inc/dma.h:
+Inc/gpio.h:
