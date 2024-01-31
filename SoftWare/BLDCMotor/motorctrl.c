@@ -182,12 +182,11 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     qita    theta += 0.004f;  uq = 1.0f
 ---------------------------*/
 
-    dq_t udq = {0.0f,1.40f};
+    dq_t udq = {0.0f,0.60f};
     alpbet_t uab;
     #if 1//强拖
         {
             static float theta = 0.0f;
-            AAAAAA = theta;
             if (theta >= _2PI)
             {
                 /* code */
@@ -201,9 +200,11 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
         pre_elec_theta = elec_theta; 
     #endif
 
+    dut02 = _svpwm_q15(_IQ15(uab.alpha),_IQ15(uab.beta));
     
     dut01 = _svpwm(uab.alpha,uab.beta);
-    dut02 = _svpwm_q15(_IQ15(uab.alpha),_IQ15(uab.beta));
+
+
 
     motor_set_pwm(dut01._a,dut01._b,dut01._c);
 #endif

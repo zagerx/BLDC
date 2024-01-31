@@ -64,6 +64,7 @@ duty_t foc_curloopcale(abc_t i_abc,float theta)
     duty = _svpwm(u_alphabeta.alpha,u_alphabeta.beta);
     return duty;
 }
+unsigned char test_sector_f;
 duty_t _svpwm(float ualpha,float ubeta)
 {
     unsigned char sector;    
@@ -78,6 +79,7 @@ duty_t _svpwm(float ualpha,float ubeta)
     if((-sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
         sector += 4;
     }
+    test_sector_f = sector;
     /*----------------------------------------------------*/
     float s_vector = 0.0f,m_vector = 0.0f;
     switch (sector) {

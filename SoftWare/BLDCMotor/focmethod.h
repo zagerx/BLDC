@@ -53,5 +53,5 @@ duty_t _svpwm(float ualpha,float ubeta);
 duty_t foc_curloopcale(abc_t i_abc,float theta);
 void foc_paraminit(void);
 
-duty_t _svpwm_q15(uint64_t ualpha,uint64_t ubeta);
+duty_t _svpwm_q15(int32_t ualpha,int32_t ubeta);
 #endif
