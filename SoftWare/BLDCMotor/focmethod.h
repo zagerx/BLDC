@@ -21,7 +21,8 @@ typedef struct _dq
     /* data */
     float d;
     float q;
-    float theta;
+    int32_t Q_d;
+    int32_t Q_q;
 }dq_t;
 
 typedef struct _alphabeta
@@ -30,6 +31,8 @@ typedef struct _alphabeta
     float alpha;
     float beta;
     float theta;
+    int32_t Q_alpha;
+    int32_t Q_beta;
 }alpbet_t;
 
 typedef struct _abc
@@ -38,6 +41,10 @@ typedef struct _abc
     float a;
     float b;
     float c;
+
+    int32_t Q_a;
+    int32_t Q_b;
+    int32_t Q_c;
 }abc_t;
 
 /*------����������--------*/
@@ -53,5 +60,5 @@ duty_t _svpwm(float ualpha,float ubeta);
 duty_t foc_curloopcale(abc_t i_abc,float theta);
 void foc_paraminit(void);
 
-duty_t _svpwm_q15(int32_t ualpha,int32_t ubeta);
+duty_t _svpwm_Q(int32_t ualpha,int32_t ubeta);
 #endif

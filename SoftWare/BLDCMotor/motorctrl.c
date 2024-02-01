@@ -51,6 +51,7 @@ static float sg_MecThetaOffset = 0.0f;
 extern alpbet_t _2r_2s(dq_t i_dq,float theta);
 extern void _3s_2s(abc_t i_abc,alpbet_t *alp_bet);
 extern void _2s_2r(alpbet_t i_alphabeta,float theta,dq_t *dq);
+extern alpbet_t _2r_2s_Q(dq_t i_dq,float theta);
 static lowfilter_t sg_elefilter[3];
 static float _get_angleoffset(void);
 void motortctrl_process(void)
@@ -182,8 +183,8 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     qita    theta += 0.004f;  uq = 1.0f
 ---------------------------*/
 
-    dq_t udq = {0.0f,0.60f};
-    alpbet_t uab;
+    dq_t udq = {0.0f,0.60f,0,_IQ15(0.6f)};
+    alpbet_t uab,uab_q15;
     #if 1//强拖
         {
             static float theta = 0.0f;
@@ -192,7 +193,8 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
                 /* code */
                 theta = 0.0f;
             }
-            uab = _2r_2s(udq, theta);
+            // uab = _2r_2s(udq, theta);
+            uab_q15 = _2r_2s_Q(udq, theta);
             theta += 0.001f;
         }
     #else //使用传感器
@@ -200,11 +202,9 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
         pre_elec_theta = elec_theta; 
     #endif
 
-    dut02 = _svpwm_q15(_IQ15(uab.alpha),_IQ15(uab.beta));
-    
-    dut01 = _svpwm(uab.alpha,uab.beta);
-
-
+    dut02 = _svpwm_Q(uab_q15.Q_alpha,(uab_q15.Q_beta));
+    dut01 = dut02;
+    // dut01 = _svpwm(uab.alpha,uab.beta);
 
     motor_set_pwm(dut01._a,dut01._b,dut01._c);
 #endif

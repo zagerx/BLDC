@@ -18,16 +18,18 @@ void foc_paraminit(void)
 
 /*-----------------------------------------
 */
+
 duty_t foc_curloopcale(abc_t i_abc,float theta)
 {    
-    dq_t i_dq;
+ dq_t i_dq;
+
     dq_t udq_limt;
     alpbet_t i_alphbeta;
     float real_id,real_iq;
 #if 1
-    // i_abc.a = cosf(theta);
-    // i_abc.b = cosf(theta - _2PI/3.0f);
-    // i_abc.c = cosf(theta + _2PI/3.0f);
+    i_abc.a = cosf(theta);
+    i_abc.b = cosf(theta - _2PI/3.0f);
+    i_abc.c = cosf(theta + _2PI/3.0f);
     _3s_2s(i_abc,&i_alphbeta);
     _2s_2r(i_alphbeta,_normalize_angle(theta - PI/2.0f),&i_dq);
     // udq_limt = circle_limit(i_dq);
