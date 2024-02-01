@@ -25,7 +25,6 @@
 /* USER CODE END 0 */
 
 ADC_HandleTypeDef hadc3;
-DMA_HandleTypeDef hdma_adc3;
 
 /* ADC3 init function */
 void MX_ADC3_Init(void)
@@ -55,10 +54,10 @@ void MX_ADC3_Init(void)
   hadc3.Init.DiscontinuousConvMode = DISABLE;
   hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc3.Init.DMAContinuousRequests = ENABLE;
+  hadc3.Init.DMAContinuousRequests = DISABLE;
   hadc3.Init.SamplingMode = ADC_SAMPLING_MODE_NORMAL;
-  hadc3.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DMA_ONESHOT;
-  hadc3.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
+  hadc3.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DR;
+  hadc3.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc3.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
   hadc3.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc3) != HAL_OK)
@@ -126,14 +125,14 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
   /** Initializes the peripherals clock
   */
     PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-    PeriphClkInitStruct.PLL2.PLL2M = 32;
-    PeriphClkInitStruct.PLL2.PLL2N = 130;
-    PeriphClkInitStruct.PLL2.PLL2P = 4;
+    PeriphClkInitStruct.PLL2.PLL2M = 4;
+    PeriphClkInitStruct.PLL2.PLL2N = 12;
+    PeriphClkInitStruct.PLL2.PLL2P = 3;
     PeriphClkInitStruct.PLL2.PLL2Q = 2;
     PeriphClkInitStruct.PLL2.PLL2R = 2;
-    PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_1;
+    PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3;
     PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
-    PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+    PeriphClkInitStruct.PLL2.PLL2FRACN = 0.0;
     PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {
@@ -158,25 +157,6 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     HAL_SYSCFG_AnalogSwitchConfig(SYSCFG_SWITCH_PC2, SYSCFG_SWITCH_PC2_OPEN);
 
     HAL_SYSCFG_AnalogSwitchConfig(SYSCFG_SWITCH_PC3, SYSCFG_SWITCH_PC3_OPEN);
-
-    /* ADC3 DMA Init */
-    /* ADC3 Init */
-    hdma_adc3.Instance = DMA2_Stream1;
-    hdma_adc3.Init.Request = DMA_REQUEST_ADC3;
-    hdma_adc3.Init.Direction = DMA_PERIPH_TO_MEMORY;
-    hdma_adc3.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_adc3.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_adc3.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
-    hdma_adc3.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
-    hdma_adc3.Init.Mode = DMA_NORMAL;
-    hdma_adc3.Init.Priority = DMA_PRIORITY_LOW;
-    hdma_adc3.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-    if (HAL_DMA_Init(&hdma_adc3) != HAL_OK)
-    {
-      Error_Handler();
-    }
-
-    __HAL_LINKDMA(adcHandle,DMA_Handle,hdma_adc3);
 
   /* USER CODE BEGIN ADC3_MspInit 1 */
 
@@ -203,8 +183,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     */
     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0|GPIO_PIN_1);
 
-    /* ADC3 DMA DeInit */
-    HAL_DMA_DeInit(adcHandle->DMA_Handle);
   /* USER CODE BEGIN ADC3_MspDeInit 1 */
 
   /* USER CODE END ADC3_MspDeInit 1 */
@@ -212,21 +190,34 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-uint32_t adc_buf_02[4];
+uint16_t adc_buf_02[4];
 void adc_pollvale(void)
 {
+    HAL_ADC_Start(&hadc3);
+
     for (uint8_t i = 0; i < 4; i++)
     {
-      HAL_ADC_Start(&hadc3);
       HAL_ADC_PollForConversion(&hadc3,0xFF);
       adc_buf_02[i] = HAL_ADC_GetValue(&hadc3);      
     }  
+
+    HAL_ADC_Stop(&hadc3);
 }
 void adc_dmavale(void)
 {
-  HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
-  HAL_ADC_Start_DMA(&hadc3,(uint32_t *)adc_buf_02,4);
-  HAL_Delay(20);
-  HAL_ADC_Stop_DMA(&hadc3);
+  // SCB_InvalidateDCache_by_Addr((uint32_t *)adc_buf_02,  sizeof(adc_buf_02 ));
+
+  // HAL_ADC_Start_DMA(&hadc3,(uint32_t *)adc_buf_02,4);
+
+
+  
+  // while (__HAL_DMA_GET_FLAG(&hdma_adc3,DMA_FLAG_TCIF0_4))
+  // {
+  //   /* code */
+  //   HAL_Delay(20);
+
+  // }
+  
+  // HAL_ADC_Stop_DMA(&hadc3);
 }
 /* USER CODE END 1 */

@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
-#include "dma.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -55,6 +54,8 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+
 /* USER CODE END 0 */
 
 /**
@@ -85,22 +86,23 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_ADC3_Init();
   /* USER CODE BEGIN 2 */
   HAL_ADCEx_Calibration_Start(&hadc3,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
   HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+   HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
 
     HAL_GPIO_TogglePin(WATCHDOG_IN_GPIO_Port,WATCHDOG_IN_Pin);
     HAL_Delay(100);
 
-    adc_dmavale();
+    adc_pollvale();
     
     /* USER CODE END WHILE */
 
