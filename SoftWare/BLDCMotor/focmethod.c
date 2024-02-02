@@ -1,8 +1,6 @@
-#include "./focmethod.h"
+#include "./motorctrl_common.h"
 #include "debuglog.h"
-alpbet_t _2r_2s(dq_t i_dq,float theta);
- void _2s_2r(alpbet_t i_alphabeta,float theta,dq_t *dq);
- void _3s_2s(abc_t i_abc,alpbet_t *alp_bet);
+
 static dq_t circle_limit(dq_t dq);
 
 static curloop_t sg_curloop_param;
@@ -12,60 +10,11 @@ void foc_paraminit(void)
 {
     sgp_curloop_d_pid = &sg_curloop_param.d_pid;
     sgp_curloop_q_pid = &sg_curloop_param.q_pid;
-    pid_init(sgp_curloop_d_pid,3.00f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
-    pid_init(sgp_curloop_q_pid,0.010f,0.001f,1.0f,4,-4);
+    pid_init(sgp_curloop_d_pid,0.08f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(sgp_curloop_q_pid,0.020f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
 }
 
-/*-----------------------------------------
-*/
 
-duty_t foc_curloopcale(abc_t i_abc,float theta)
-{    
- dq_t i_dq;
-
-    dq_t udq_limt;
-    alpbet_t i_alphbeta;
-    float real_id,real_iq;
-#if 1
-    i_abc.a = cosf(theta);
-    i_abc.b = cosf(theta - _2PI/3.0f);
-    i_abc.c = cosf(theta + _2PI/3.0f);
-    _3s_2s(i_abc,&i_alphbeta);
-    _2s_2r(i_alphbeta,_normalize_angle(theta - PI/2.0f),&i_dq);
-    // udq_limt = circle_limit(i_dq);
-    // real_id = udq_limt.d;
-    // real_iq = udq_limt.q;
-    real_id = i_dq.d;
-    real_iq = i_dq.q;
-    /*---------------------------*/
-    
-    float target_uq = 8.0f;  
-    dq_t u_dq;  
-    u_dq.d = 0.0f;
-    u_dq.q = 1.0f;
-    // u_dq.d = pid_contrl(sgp_curloop_d_pid,0.0f,real_id);
-    // u_dq.q = pid_contrl(sgp_curloop_q_pid,target_uq,real_iq);
-    /*------------IPC DATA--------------*/
-    ipc_write_data(PUBLIC_DATA_IA,i_abc.a);
-    ipc_write_data(PUBLIC_DATA_IB,i_abc.b);
-    ipc_write_data(PUBLIC_DATA_IC,i_abc.c);
-    ipc_write_data(PUBLIC_DATA_IALPHA,i_alphbeta.alpha);
-    ipc_write_data(PUBLIC_DATA_IBETA,i_alphbeta.beta);
-    ipc_write_data(PUBLIC_DATA_ID,real_id);
-    ipc_write_data(PUBLIC_DATA_IQ,real_iq);
-    ipc_write_data(PUBLIC_DATA_TEMP0,theta);
-#else
-    dq_t u_dq;  
-    u_dq.d = 0.0f;
-    u_dq.q = 1.0f;    
-#endif
-
-    alpbet_t u_alphabeta;
-    u_alphabeta = _2r_2s(u_dq,(theta));// + PI/2.0f); 
-    duty_t duty;
-    duty = _svpwm(u_alphabeta.alpha,u_alphabeta.beta);
-    return duty;
-}
 unsigned char test_sector_f;
 duty_t _svpwm(float ualpha,float ubeta)
 {

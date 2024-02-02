@@ -1,6 +1,6 @@
 #include "_common.h"
 #include "stdint.h"
-#include "focmethod.h"
+#include "motorctrl_common.h"
 
 #define SQRT3_Q15            (56756)
 #define T_PWM_Q15            (32768)
@@ -97,12 +97,12 @@ void _3s_2s_Q(abc_t i_abc,alpbet_t *alp_bet)
     alp_bet->Q_beta = _IQ15mpy(_IQ15div(SQRT3_Q15,_IQ15(3.0f)),(i_abc.Q_b - i_abc.Q_c));
 }
 
-alpbet_t _2r_2s_Q(dq_t i_dq,float theta)
+alpbet_t _2r_2s_Q(dq_t i_dq,int32_t theta)
 {
     alpbet_t i_alphabeta;
     int32_t cos_theta,sin_theta;
     int32_t theta_q15;
-    theta_q15 = _IQ15(theta);
+    theta_q15 = theta;
     sin_theta = _IQ15sin(theta_q15);
     cos_theta = _IQ15cos(theta_q15);
 
@@ -111,13 +111,13 @@ alpbet_t _2r_2s_Q(dq_t i_dq,float theta)
     return i_alphabeta;
 }
 
-void _2s_2r_Q(alpbet_t i_alphabeta,float theta,dq_t *dq)
+void _2s_2r_Q(alpbet_t i_alphabeta,int32_t theta,dq_t *dq)
 {
     int32_t cos_theta,sin_theta;
     int32_t theta_q15;
-    theta_q15 = _IQ15(theta);
+    theta_q15 = (theta);
     sin_theta = _IQ15sin(theta_q15);
-    cos_theta = _IQ15cos(theta_q15);    
+    cos_theta = _IQ15cos(theta_q15);
     dq->Q_d =  _IQ15mpy(cos_theta,i_alphabeta.Q_alpha) + _IQ15mpy(sin_theta,i_alphabeta.Q_beta);
     dq->Q_q = _IQ15mpy(-sin_theta,i_alphabeta.Q_alpha) + _IQ15mpy(cos_theta,i_alphabeta.Q_beta);    
 }

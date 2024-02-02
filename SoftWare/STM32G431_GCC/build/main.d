@@ -43,7 +43,7 @@ build/main.o: Src/main.c Inc/main.h \
  ../Common/data_structures/fifo.h ../Common/data_structures/heap.h \
  Hardware/mt6816.h Hardware/./hardware_cfg.h \
  ../Sensor/../Protocol/protocol.h Src/../../BLDCMotor/motorctrl.h \
- Src/../../BLDCMotor/./bldcmotor_cfg.h
+ Src/../../BLDCMotor/./motorctrl_cfg.h
 Inc/main.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
 Inc/stm32g4xx_hal_conf.h:
@@ -108,4 +108,4 @@ Hardware/mt6816.h:
 Hardware/./hardware_cfg.h:
 ../Sensor/../Protocol/protocol.h:
 Src/../../BLDCMotor/motorctrl.h:
-Src/../../BLDCMotor/./bldcmotor_cfg.h:
+Src/../../BLDCMotor/./motorctrl_cfg.h:

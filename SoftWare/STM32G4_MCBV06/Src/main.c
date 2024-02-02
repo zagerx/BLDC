@@ -28,7 +28,7 @@
 #include "_common.h"
 #include "debuglog.h"
 #include "hardware.h"
-#include "bldcmotor.h"
+#include "motorctrl.h"
 #include "sensor.h"
 /* USER CODE END Includes */
 

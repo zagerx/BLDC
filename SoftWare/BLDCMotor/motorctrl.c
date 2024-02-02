@@ -1,6 +1,6 @@
 #include "./motorctrl.h"
 #include "debuglog.h"
-#include "focmethod.h"
+#include "motorctrl_common.h"
 #include "sensor.h"
 #define MOTORCTRL_PERCI            (1)
 
@@ -28,6 +28,14 @@ typedef struct
     float i_d;
     float i_q;
 
+    int32_t Q_ia;
+    int32_t Q_ib;
+    int32_t Q_ic;
+    int32_t Q_ialpha;
+    int32_t Q_ibeta;
+    int32_t Q_id;
+    int32_t Q_iq;
+
     float id_real;
     float iq_targe;
     float iq_real;
@@ -47,11 +55,7 @@ motorctrl_t g_Motor1 = {
     .cnt = 0,
 };
 static float sg_MecThetaOffset = 0.0f;
-
-extern alpbet_t _2r_2s(dq_t i_dq,float theta);
-extern void _3s_2s(abc_t i_abc,alpbet_t *alp_bet);
-extern void _2s_2r(alpbet_t i_alphabeta,float theta,dq_t *dq);
-extern alpbet_t _2r_2s_Q(dq_t i_dq,float theta);
+static duty_t foc_curloopcale(abc_t i_abc,float theta);
 static lowfilter_t sg_elefilter[3];
 static float _get_angleoffset(void);
 void motortctrl_process(void)
@@ -122,10 +126,10 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 {
 /*----------------三相电流处理------------------------------*/    
     float Ia,Ib,Ic;    
-    float a1,a2,a3;
+    float a1 = 0,a2,a3 = 0;
     a1 = (float)abc_vale[0] - AD_OFFSET;
-    a2 = (float)abc_vale[2] - AD_OFFSET;
-    a3 = (float)abc_vale[1] - AD_OFFSET;  
+    a3 = (float)abc_vale[1] - AD_OFFSET - 15;
+    a2 = (float)abc_vale[2] - AD_OFFSET - 34;
     Ia = (float)a1*(float)(3.3f/4096.0f/RA_S/BETA_);
     Ib = (float)a2*(float)(3.3f/4096.0f/RB_S/BETA_);
     Ic = (float)a3*(float)(3.3f/4096.0f/RC_S/BETA_);
@@ -151,25 +155,40 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     sg_motordebug.ele_angle = elec_theta;
     /*--------------对电流进行反park变化-----------------------*/
     // i_abc.a = cosf(elec_theta);
-    // i_abc.b = cosf(elec_theta - 2.0/3.0f*PI);
-    // i_abc.c = cosf(elec_theta + 2.0/3.0f*PI);
+    // i_abc.b = cosf(elec_theta - _2PI/3.0f);
+    // i_abc.c = cosf(elec_theta + _2PI/3.0f);
+    alpbet_t i_alphbeta;
     dq_t i_dq;
-    alpbet_t i_alphbeta;    
-    _3s_2s(i_abc,&i_alphbeta);
-    _2s_2r(i_alphbeta,elec_theta - PI/2.0F,&i_dq);
-    sg_motordebug.id_real = i_dq.d *1000;
-    sg_motordebug.iq_real = i_dq.q *1000;
+    // _3s_2s(i_abc,&i_alphbeta);
+    // _2s_2r(i_alphbeta,_normalize_angle(theta - PI/2.0f),&i_dq);
+    i_abc.Q_a = _IQ15(i_abc.a);
+    i_abc.Q_b = _IQ15(i_abc.b);
+    i_abc.Q_c = _IQ15(i_abc.c);
+    sg_motordebug.Q_ia = i_abc.Q_a;
+    sg_motordebug.Q_ib = i_abc.Q_b;
+    sg_motordebug.Q_ic = i_abc.Q_c;
 
-#if 0
+    _3s_2s_Q(i_abc,&i_alphbeta);
+    sg_motordebug.Q_ialpha = i_alphbeta.Q_alpha;
+    sg_motordebug.Q_ibeta = i_alphbeta.Q_beta;
+    _2s_2r_Q(i_alphbeta,(uint32_t)_IQ15(_normalize_angle(elec_theta - PI/2.0f)),&i_dq);
+ 
+    sg_motordebug.Q_id = (i_dq.Q_d); 
+    sg_motordebug.Q_iq = (i_dq.Q_q);
+    // sg_motordebug.id_real = i_dq.d *1000;
+    // sg_motordebug.iq_real = i_dq.q *1000;
+
+#if 1
 /*-------------------闭环控制-----------------------*/
+    i_dq.d = _IQ15toF(i_dq.Q_d);
+    i_dq.q = _IQ15toF(i_dq.Q_q);
     dq_t u_dq = {0.0f,2.0f};
-    // u_dq.d = pid_contrl(sgp_curloop_d_pid,0.0f,i_dq.d);
-    // u_dq.q = pid_contrl(sgp_curloop_q_pid,sg_motordebug.iq_targe,i_dq.q);
+    u_dq.d = pid_contrl(sgp_curloop_d_pid,0.0f,i_dq.d);
+    u_dq.q = pid_contrl(sgp_curloop_q_pid,sg_motordebug.iq_targe,i_dq.q);
     sg_motordebug.pid_Q_out = u_dq.q;
     sg_motordebug.pid_D_out = u_dq.d;
     alpbet_t uab;
     uab = _2r_2s(u_dq, elec_theta);
-    pre_elec_theta = elec_theta;
     duty_t dut01;
     dut01 = _svpwm(uab.alpha,uab.beta);
     motor_set_pwm(dut01._a,dut01._b,dut01._c);
@@ -184,7 +203,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 
     dq_t udq = {0.0f,0.60f,0,_IQ15(0.6f)};
     alpbet_t uab,uab_q15;
-    #if 1//强拖
+    #if 0//强拖
         {
             static float theta = 0.0f;
             if (theta >= _2PI)
@@ -193,15 +212,16 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
                 theta = 0.0f;
             }
             // uab = _2r_2s(udq, theta);
-            uab_q15 = _2r_2s_Q(udq, theta);
+            uab_q15 = _2r_2s_Q(udq, _IQ15(theta));
             theta += 0.001f;
         }
     #else //使用传感器
-        uab = _2r_2s(udq, elec_theta);
+        // uab = _2r_2s(udq, elec_theta);
+        uab = _2r_2s_Q(udq, _IQ15(elec_theta));
         pre_elec_theta = elec_theta; 
     #endif
 
-    dut02 = _svpwm_Q(uab_q15.Q_alpha,(uab_q15.Q_beta));
+    dut02 = _svpwm_Q(uab.Q_alpha,(uab.Q_beta));
     dut01 = dut02;
     // dut01 = _svpwm(uab.alpha,uab.beta);
 
@@ -209,14 +229,65 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 #endif
 
 /*-------------------观测三相电流--------------------*/
-    ipc_write_data(PUBLIC_DATA_IA,i_abc.a);
-    ipc_write_data(PUBLIC_DATA_IB,i_abc.b);
-    ipc_write_data(PUBLIC_DATA_IC,i_abc.c);
-    ipc_write_data(PUBLIC_DATA_IALPHA,i_alphbeta.alpha);
-    ipc_write_data(PUBLIC_DATA_IBETA,i_alphbeta.beta);    
-    ipc_write_data(PUBLIC_DATA_ID,i_dq.d);
+    // ipc_write_data(PUBLIC_DATA_IA,i_abc.a);
+    // ipc_write_data(PUBLIC_DATA_IB,i_abc.b);
+    // ipc_write_data(PUBLIC_DATA_IC,i_abc.c);
+    // ipc_write_data(PUBLIC_DATA_IALPHA,i_alphbeta.alpha);
+    // ipc_write_data(PUBLIC_DATA_IBETA,i_alphbeta.beta);    
+    // ipc_write_data(PUBLIC_DATA_ID,i_dq.d);
     // ipc_write_data(PUBLIC_DATA_IQ,i_dq.q);
     return;
 }
 
 
+/*-----------------------------------------
+*/
+static duty_t foc_curloopcale(abc_t i_abc,float theta)
+{    
+ dq_t i_dq;
+
+    dq_t udq_limt;
+    alpbet_t i_alphbeta;
+    float real_id,real_iq;
+#if 1
+    i_abc.a = cosf(theta);
+    i_abc.b = cosf(theta - _2PI/3.0f);
+    i_abc.c = cosf(theta + _2PI/3.0f);
+    // _3s_2s(i_abc,&i_alphbeta);
+    // _2s_2r(i_alphbeta,_normalize_angle(theta - PI/2.0f),&i_dq);
+    i_abc.Q_a = _IQ15(i_abc.a);
+    i_abc.Q_b = _IQ15(i_abc.b);
+    i_abc.Q_c = _IQ15(i_abc.c);
+    _3s_2s_Q(i_abc,&i_alphbeta);
+    _2s_2r_Q(i_alphbeta,(uint32_t)_IQ15(_normalize_angle(theta - PI/2.0f)),&i_dq);
+    real_id = i_dq.d;
+    real_iq = i_dq.q;
+    /*---------------------------*/
+    
+    float target_uq = 8.0f;  
+    dq_t u_dq;  
+    u_dq.d = 0.0f;
+    u_dq.q = 1.0f;
+    // u_dq.d = pid_contrl(sgp_curloop_d_pid,0.0f,real_id);
+    // u_dq.q = pid_contrl(sgp_curloop_q_pid,target_uq,real_iq);
+    /*------------IPC DATA--------------*/
+    ipc_write_data(PUBLIC_DATA_IA,i_abc.a);
+    ipc_write_data(PUBLIC_DATA_IB,i_abc.b);
+    ipc_write_data(PUBLIC_DATA_IC,i_abc.c);
+    ipc_write_data(PUBLIC_DATA_IALPHA,i_alphbeta.alpha);
+    ipc_write_data(PUBLIC_DATA_IBETA,i_alphbeta.beta);
+    ipc_write_data(PUBLIC_DATA_ID,real_id);
+    ipc_write_data(PUBLIC_DATA_IQ,real_iq);
+    ipc_write_data(PUBLIC_DATA_TEMP0,theta);
+#else
+    dq_t u_dq;  
+    u_dq.d = 0.0f;
+    u_dq.q = 1.0f;    
+#endif
+
+    alpbet_t u_alphabeta;
+    u_alphabeta = _2r_2s(u_dq,(theta));// + PI/2.0f); 
+    duty_t duty;
+    duty = _svpwm(u_alphabeta.alpha,u_alphabeta.beta);
+    return duty;
+}

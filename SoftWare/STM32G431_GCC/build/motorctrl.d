@@ -1,5 +1,5 @@
 build/motorctrl.o: ../BLDCMotor/motorctrl.c ../BLDCMotor/./motorctrl.h \
- ../BLDCMotor/././bldcmotor_cfg.h ../Common/IPC/ipc.h \
+ ../BLDCMotor/././motorctrl_cfg.h ../Common/IPC/ipc.h \
  ../Common/data_structures/list.h ../Common/macro_defined.h Inc/tim.h \
  Inc/main.h Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
  Inc/stm32g4xx_hal_conf.h \
@@ -42,9 +42,9 @@ build/motorctrl.o: ../BLDCMotor/motorctrl.c ../BLDCMotor/./motorctrl.h \
  ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
  ../Common/data_structures/fifo.h ../Common/data_structures/heap.h \
  Hardware/mt6816.h Hardware/./hardware_cfg.h Inc/spi.h \
- ../BLDCMotor/focmethod.h ../BLDCMotor/./bldcmotor_cfg.h
+ ../BLDCMotor/motorctrl_common.h ../BLDCMotor/./motorctrl_cfg.h
 ../BLDCMotor/./motorctrl.h:
-../BLDCMotor/././bldcmotor_cfg.h:
+../BLDCMotor/././motorctrl_cfg.h:
 ../Common/IPC/ipc.h:
 ../Common/data_structures/list.h:
 ../Common/macro_defined.h:
@@ -102,5 +102,5 @@ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h:
 Hardware/mt6816.h:
 Hardware/./hardware_cfg.h:
 Inc/spi.h:
-../BLDCMotor/focmethod.h:
-../BLDCMotor/./bldcmotor_cfg.h:
+../BLDCMotor/motorctrl_common.h:
+../BLDCMotor/./motorctrl_cfg.h:

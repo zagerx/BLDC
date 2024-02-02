@@ -200,7 +200,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-#include "bldcmotor.h"
+#include "motorctrl.h"
 /*----------------------------------------ADC�ж�----------------------------------------------------
 ** ÿ100usִ��һ�� pwmƵ��10KHz
 */
