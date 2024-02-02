@@ -57,6 +57,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define _ARR 13499
 #define LED_01_Pin GPIO_PIN_3
 #define LED_01_GPIO_Port GPIOE
 #define EBAKE_PWM_EN_Pin GPIO_PIN_7

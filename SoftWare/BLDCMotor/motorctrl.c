@@ -56,7 +56,6 @@ static lowfilter_t sg_elefilter[3];
 static float _get_angleoffset(void);
 void motortctrl_process(void)
 {
-    
     switch (g_Motor1.state)
     {
     case MOTOR_INIT:
