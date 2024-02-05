@@ -9,7 +9,7 @@
     #define ANGLE_SENSORT_MT6016_EN         (1)    //MT6016使能
 
     #if(ANGLE_SENSORT_MT6016_EN)
-        #include "mt6816.h"
+        // #include "hardware.h"
     #elif(ANGLE_SENSOR_TLE5012B_EN)
         #include "tle5012b.h"
     #endif

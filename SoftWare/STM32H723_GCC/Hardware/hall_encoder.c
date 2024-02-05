@@ -69,3 +69,11 @@ void encoder_angleupdate(void)
     encoder_01.pre_theta = encoder_01.cur_theta;
 }
 
+
+
+
+void* mt6816_read(void)
+{
+
+    return 0;
+}

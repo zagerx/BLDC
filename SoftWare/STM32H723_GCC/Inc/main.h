@@ -57,13 +57,15 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define _ARR 13499
+#define _ARR 13749
 #define LED_01_Pin GPIO_PIN_3
 #define LED_01_GPIO_Port GPIOE
 #define EBAKE_PWM_EN_Pin GPIO_PIN_7
 #define EBAKE_PWM_EN_GPIO_Port GPIOE
 #define WATCHDOG_IN_Pin GPIO_PIN_3
 #define WATCHDOG_IN_GPIO_Port GPIOB
+#define TEST_IO_Pin GPIO_PIN_1
+#define TEST_IO_GPIO_Port GPIOE
 
 /* USER CODE BEGIN Private defines */
 

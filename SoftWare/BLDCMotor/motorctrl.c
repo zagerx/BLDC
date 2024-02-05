@@ -51,13 +51,16 @@ typedef struct
     unsigned short cnt;
 }motorctrl_t;
 motorctrl_t g_Motor1 = {
-    .state = MOTOR_INIT,
+    .state = MOTOR_TEST,
     .cnt = 0,
 };
 static float sg_MecThetaOffset = 0.0f;
 static duty_t foc_curloopcale(abc_t i_abc,float theta);
 static lowfilter_t sg_elefilter[3];
 static float _get_angleoffset(void);
+#include "main.h"
+#include "adc.h"
+
 void motortctrl_process(void)
 {
     switch (g_Motor1.state)
@@ -82,13 +85,27 @@ void motortctrl_process(void)
         break;
 
     case MOTOR_TEST:
-
+        motor_enable_noirq();
+         
+        uint16_t a,b,c,d;
+        a = (((float)0.5f)*_ARR);
+        b = (((float)0.2f)*_ARR);
+        c = (((float)0.4f)*_ARR);
+        d = (((float)0.7f)*_ARR);
+        __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,(uint16_t)a);
+        __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,(uint16_t)b);
+        __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,(uint16_t)c);
+       
+        HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_4);
+        __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,(uint16_t)d);
+        g_Motor1.state = MOTOR_RUNING;
         break;
 
     case MOTOR_RUNING:
         {
-            if (!(++g_Motor1.cnt % 5000))
+            if (!(++g_Motor1.cnt % 1000))
             {
+                USER_DEBUG_NORMAL("motor 1s\r\n");
                 /* code */
                 // g_Motor1.state = MOTOR_STOP;
             }
@@ -178,7 +195,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     // sg_motordebug.id_real = i_dq.d *1000;
     // sg_motordebug.iq_real = i_dq.q *1000;
 
-#if 1
+#if 0
 /*-------------------闭环控制-----------------------*/
     i_dq.d = _IQ15toF(i_dq.Q_d);
     i_dq.q = _IQ15toF(i_dq.Q_q);
@@ -203,7 +220,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
 
     dq_t udq = {0.0f,0.60f,0,_IQ15(0.6f)};
     alpbet_t uab,uab_q15;
-    #if 0//强拖
+    #if 1//强拖
         {
             static float theta = 0.0f;
             if (theta >= _2PI)

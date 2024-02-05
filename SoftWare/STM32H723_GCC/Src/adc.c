@@ -24,8 +24,117 @@
 
 /* USER CODE END 0 */
 
+ADC_HandleTypeDef hadc2;
 ADC_HandleTypeDef hadc3;
 
+/* ADC2 init function */
+void MX_ADC2_Init(void)
+{
+
+  /* USER CODE BEGIN ADC2_Init 0 */
+
+  /* USER CODE END ADC2_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+  ADC_InjectionConfTypeDef sConfigInjected = {0};
+
+  /* USER CODE BEGIN ADC2_Init 1 */
+
+  /* USER CODE END ADC2_Init 1 */
+
+  /** Common config
+  */
+  hadc2.Instance = ADC2;
+  hadc2.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV4;
+  hadc2.Init.Resolution = ADC_RESOLUTION_16B;
+  hadc2.Init.ScanConvMode = ADC_SCAN_ENABLE;
+  hadc2.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc2.Init.LowPowerAutoWait = DISABLE;
+  hadc2.Init.ContinuousConvMode = DISABLE;
+  hadc2.Init.NbrOfConversion = 2;
+  hadc2.Init.DiscontinuousConvMode = DISABLE;
+  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc2.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DR;
+  hadc2.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc2.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
+  hadc2.Init.OversamplingMode = DISABLE;
+  if (HAL_ADC_Init(&hadc2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Disable Injected Queue
+  */
+  HAL_ADCEx_DisableInjectedQueue(&hadc2);
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  sConfig.OffsetSignedSaturation = DISABLE;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_14;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Injected Channel
+  */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_8;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
+  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfigInjected.InjectedSingleDiff = ADC_SINGLE_ENDED;
+  sConfigInjected.InjectedOffsetNumber = ADC_OFFSET_NONE;
+  sConfigInjected.InjectedOffset = 0;
+  sConfigInjected.InjectedOffsetSignedSaturation = DISABLE;
+  sConfigInjected.InjectedNbrOfConversion = 3;
+  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+  sConfigInjected.AutoInjectedConv = DISABLE;
+  sConfigInjected.QueueInjectedContext = DISABLE;
+  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_T8_CC4;
+  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
+  sConfigInjected.InjecOversamplingMode = DISABLE;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Injected Channel
+  */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_9;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_2;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Injected Channel
+  */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_5;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_3;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC2_Init 2 */
+    HAL_ADCEx_Calibration_Start(&hadc2,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
+    HAL_ADCEx_InjectedStart_IT(&hadc2); 
+  /* USER CODE END ADC2_Init 2 */
+
+}
 /* ADC3 init function */
 void MX_ADC3_Init(void)
 {
@@ -49,9 +158,10 @@ void MX_ADC3_Init(void)
   hadc3.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc3.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc3.Init.LowPowerAutoWait = DISABLE;
-  hadc3.Init.ContinuousConvMode = ENABLE;
+  hadc3.Init.ContinuousConvMode = DISABLE;
   hadc3.Init.NbrOfConversion = 4;
-  hadc3.Init.DiscontinuousConvMode = DISABLE;
+  hadc3.Init.DiscontinuousConvMode = ENABLE;
+  hadc3.Init.NbrOfDiscConversion = 1;
   hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc3.Init.DMAContinuousRequests = DISABLE;
@@ -115,30 +225,51 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-  if(adcHandle->Instance==ADC3)
+  if(adcHandle->Instance==ADC2)
+  {
+  /* USER CODE BEGIN ADC2_MspInit 0 */
+
+  /* USER CODE END ADC2_MspInit 0 */
+    /* ADC2 clock enable */
+    __HAL_RCC_ADC12_CLK_ENABLE();
+
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    /**ADC2 GPIO Configuration
+    PA2     ------> ADC2_INP14
+    PC4     ------> ADC2_INP4
+    PC5     ------> ADC2_INP8
+    PB0     ------> ADC2_INP9
+    PB1     ------> ADC2_INP5
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_2;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /* ADC2 interrupt Init */
+    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(ADC_IRQn);
+  /* USER CODE BEGIN ADC2_MspInit 1 */
+
+  /* USER CODE END ADC2_MspInit 1 */
+  }
+  else if(adcHandle->Instance==ADC3)
   {
   /* USER CODE BEGIN ADC3_MspInit 0 */
 
   /* USER CODE END ADC3_MspInit 0 */
-
-  /** Initializes the peripherals clock
-  */
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-    PeriphClkInitStruct.PLL2.PLL2M = 4;
-    PeriphClkInitStruct.PLL2.PLL2N = 12;
-    PeriphClkInitStruct.PLL2.PLL2P = 3;
-    PeriphClkInitStruct.PLL2.PLL2Q = 2;
-    PeriphClkInitStruct.PLL2.PLL2R = 2;
-    PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3;
-    PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
-    PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
-    PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-    {
-      Error_Handler();
-    }
-
     /* ADC3 clock enable */
     __HAL_RCC_ADC3_CLK_ENABLE();
 
@@ -167,7 +298,34 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 {
 
-  if(adcHandle->Instance==ADC3)
+  if(adcHandle->Instance==ADC2)
+  {
+  /* USER CODE BEGIN ADC2_MspDeInit 0 */
+
+  /* USER CODE END ADC2_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_ADC12_CLK_DISABLE();
+
+    /**ADC2 GPIO Configuration
+    PA2     ------> ADC2_INP14
+    PC4     ------> ADC2_INP4
+    PC5     ------> ADC2_INP8
+    PB0     ------> ADC2_INP9
+    PB1     ------> ADC2_INP5
+    */
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2);
+
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_4|GPIO_PIN_5);
+
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_0|GPIO_PIN_1);
+
+    /* ADC2 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(ADC_IRQn);
+  /* USER CODE BEGIN ADC2_MspDeInit 1 */
+
+  /* USER CODE END ADC2_MspDeInit 1 */
+  }
+  else if(adcHandle->Instance==ADC3)
   {
   /* USER CODE BEGIN ADC3_MspDeInit 0 */
 
@@ -190,34 +348,104 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
+#include "debuglog.h"
 uint16_t adc_buf_02[4];
+#if 1
+enum{
+  START,
+  END,
+  CHANNL_0,
+  CHANNL_1,
+  CHANNL_2,
+  CHANNL_3
+};
+typedef struct adc3
+{
+  uint16_t state;
+}adc3_t;
+static adc3_t sg_adc3_fsm = {START}; 
+void adc_pollvale(void)
+{
+
+  switch (sg_adc3_fsm.state)
+  {
+  case START:
+    HAL_ADC_Start(&hadc3);
+    sg_adc3_fsm.state = CHANNL_0;
+  case CHANNL_0:
+    if(__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC))
+    {
+      adc_buf_02[0] = HAL_ADC_GetValue(&hadc3);
+      __HAL_ADC_CLEAR_FLAG(&hadc3,ADC_FLAG_EOC);
+      sg_adc3_fsm.state = CHANNL_1; 
+      LL_ADC_REG_StartConversion((&hadc3)->Instance);
+    }else{
+      break;
+    }
+  case CHANNL_1:
+    if(__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC))
+    {
+      __HAL_ADC_CLEAR_FLAG(&hadc3,ADC_FLAG_EOC);    
+      adc_buf_02[1] = HAL_ADC_GetValue(&hadc3);
+      // HAL_ADC_Start(&hadc3);
+      LL_ADC_REG_StartConversion((&hadc3)->Instance);
+      sg_adc3_fsm.state = CHANNL_2; 
+    };    
+    break;
+  case CHANNL_2:
+    if(__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC))
+    {
+      __HAL_ADC_CLEAR_FLAG(&hadc3,ADC_FLAG_EOC);    
+      adc_buf_02[2] = HAL_ADC_GetValue(&hadc3);
+      // HAL_ADC_Start(&hadc3);
+      LL_ADC_REG_StartConversion((&hadc3)->Instance);
+      sg_adc3_fsm.state = CHANNL_3; 
+    };
+    break;
+  case CHANNL_3:
+    if(__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC))
+    {
+      __HAL_ADC_CLEAR_FLAG(&hadc3,ADC_FLAG_EOC);    
+      adc_buf_02[3] = HAL_ADC_GetValue(&hadc3);
+      sg_adc3_fsm.state = END; 
+    };
+    break;
+  case END:
+    HAL_ADC_Stop(&hadc3);
+    sg_adc3_fsm.state = START; 
+    break;
+  default:
+    break;
+  }
+  return;
+}
+#else
 void adc_pollvale(void)
 {
     HAL_ADC_Start(&hadc3);
 
     for (uint8_t i = 0; i < 4; i++)
     {
-      HAL_ADC_PollForConversion(&hadc3,0xFF);
-      adc_buf_02[i] = HAL_ADC_GetValue(&hadc3);      
+      LL_ADC_Enable(ADC3);
+      while (!__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC))
+      {
+        /* code */
+      }
+      adc_buf_02[i] = HAL_ADC_GetValue(&hadc3);   
+      HAL_Delay(100);   
     }  
 
     HAL_ADC_Stop(&hadc3);
 }
-void adc_dmavale(void)
+#endif
+#include "motorctrl.h"
+void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-  // SCB_InvalidateDCache_by_Addr((uint32_t *)adc_buf_02,  sizeof(adc_buf_02 ));
+    unsigned int adc_vale[3];
+    adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
+    adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
+    adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
 
-  // HAL_ADC_Start_DMA(&hadc3,(uint32_t *)adc_buf_02,4);
-
-
-  
-  // while (__HAL_DMA_GET_FLAG(&hdma_adc3,DMA_FLAG_TCIF0_4))
-  // {
-  //   /* code */
-  //   HAL_Delay(20);
-
-  // }
-  
-  // HAL_ADC_Stop_DMA(&hadc3);
+    // motorctrl_foccalc(adc_vale,0.0f);
 }
 /* USER CODE END 1 */

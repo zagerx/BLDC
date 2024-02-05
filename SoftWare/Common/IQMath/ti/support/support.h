@@ -3,8 +3,8 @@
 
 #include "math.h"
 // #include <ti/devices/msp/msp.h>
-#include "stm32g4xx_hal.h"
-
+// #include "stm32g4xx_hal.h"
+#include "stm32h7xx_hal.h"
 /* Common value defines. */
 #define q15_ln2          0x58b9
 #define q13_pi           0x6488
