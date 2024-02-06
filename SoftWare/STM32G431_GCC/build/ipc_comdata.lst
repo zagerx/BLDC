@@ -1,30 +1,30 @@
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s 			page 1
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s 			page 1
 
 
    1              		.cpu cortex-m4
-   2              		.eabi_attribute 27, 1
-   3              		.eabi_attribute 28, 1
-   4              		.eabi_attribute 20, 1
-   5              		.eabi_attribute 21, 1
-   6              		.eabi_attribute 23, 3
-   7              		.eabi_attribute 24, 1
-   8              		.eabi_attribute 25, 1
-   9              		.eabi_attribute 26, 1
-  10              		.eabi_attribute 30, 1
-  11              		.eabi_attribute 34, 1
-  12              		.eabi_attribute 18, 4
-  13              		.file	"ipc_comdata.c"
-  14              		.text
-  15              	.Ltext0:
-  16              		.cfi_sections	.debug_frame
-  17              		.section	.text.ipc_read_data,"ax",%progbits
-  18              		.align	1
-  19              		.global	ipc_read_data
-  20              		.arch armv7e-m
-  21              		.syntax unified
-  22              		.thumb
-  23              		.thumb_func
-  24              		.fpu fpv4-sp-d16
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"ipc_comdata.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.ipc_read_data,"ax",%progbits
+  20              		.align	1
+  21              		.global	ipc_read_data
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
   26              	ipc_read_data:
   27              	.LVL0:
   28              	.LFB0:
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s 			page 1
   42              	.L3:
   43              		.align	2
   44              	.L2:
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s 			page 2
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s 			page 2
 
 
   45 000c 00000000 		.word	.LANCHOR0
@@ -70,81 +70,80 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s 			page 1
   52              		.syntax unified
   53              		.thumb
   54              		.thumb_func
-  55              		.fpu fpv4-sp-d16
-  57              	ipc_write_data:
-  58              	.LVL1:
-  59              	.LFB1:
+  56              	ipc_write_data:
+  57              	.LVL1:
+  58              	.LFB1:
   15:../Common/IPC/ipc_comdata.c **** 
   16:../Common/IPC/ipc_comdata.c **** char ipc_write_data(E_PUBLIC_DATA index,float data)
   17:../Common/IPC/ipc_comdata.c **** {
-  60              		.loc 1 17 1 is_stmt 1 view -0
-  61              		.cfi_startproc
-  62              		@ args = 0, pretend = 0, frame = 0
-  63              		@ frame_needed = 0, uses_anonymous_args = 0
-  64              		@ link register save eliminated.
+  59              		.loc 1 17 1 is_stmt 1 view -0
+  60              		.cfi_startproc
+  61              		@ args = 0, pretend = 0, frame = 0
+  62              		@ frame_needed = 0, uses_anonymous_args = 0
+  63              		@ link register save eliminated.
   18:../Common/IPC/ipc_comdata.c ****     if ((E_PUBLIC_DATA)index > PUBLIC_DATA_STOP_INDEX)
-  65              		.loc 1 18 5 view .LVU5
-  66              		.loc 1 18 8 is_stmt 0 view .LVU6
-  67 0000 0E28     		cmp	r0, #14
-  68 0002 06D8     		bhi	.L6
+  64              		.loc 1 18 5 view .LVU5
+  65              		.loc 1 18 8 is_stmt 0 view .LVU6
+  66 0000 0E28     		cmp	r0, #14
+  67 0002 06D8     		bhi	.L6
   19:../Common/IPC/ipc_comdata.c ****     {
   20:../Common/IPC/ipc_comdata.c ****         return 1;
   21:../Common/IPC/ipc_comdata.c ****     }
   22:../Common/IPC/ipc_comdata.c ****     gIpc_datazone[index] = data;
-  69              		.loc 1 22 5 is_stmt 1 view .LVU7
-  70              		.loc 1 22 26 is_stmt 0 view .LVU8
-  71 0004 044B     		ldr	r3, .L7
-  72 0006 03EB8000 		add	r0, r3, r0, lsl #2
-  73              	.LVL2:
-  74              		.loc 1 22 26 view .LVU9
-  75 000a 80ED000A 		vstr.32	s0, [r0]
+  68              		.loc 1 22 5 is_stmt 1 view .LVU7
+  69              		.loc 1 22 26 is_stmt 0 view .LVU8
+  70 0004 044B     		ldr	r3, .L7
+  71 0006 03EB8000 		add	r0, r3, r0, lsl #2
+  72              	.LVL2:
+  73              		.loc 1 22 26 view .LVU9
+  74 000a 80ED000A 		vstr.32	s0, [r0]
   23:../Common/IPC/ipc_comdata.c **** 	return 0;
-  76              		.loc 1 23 2 is_stmt 1 view .LVU10
-  77              		.loc 1 23 9 is_stmt 0 view .LVU11
-  78 000e 0020     		movs	r0, #0
-  79 0010 7047     		bx	lr
-  80              	.LVL3:
-  81              	.L6:
+  75              		.loc 1 23 2 is_stmt 1 view .LVU10
+  76              		.loc 1 23 9 is_stmt 0 view .LVU11
+  77 000e 0020     		movs	r0, #0
+  78 0010 7047     		bx	lr
+  79              	.LVL3:
+  80              	.L6:
   20:../Common/IPC/ipc_comdata.c ****     }
-  82              		.loc 1 20 16 view .LVU12
-  83 0012 0120     		movs	r0, #1
-  84              	.LVL4:
+  81              		.loc 1 20 16 view .LVU12
+  82 0012 0120     		movs	r0, #1
+  83              	.LVL4:
   24:../Common/IPC/ipc_comdata.c **** }
-  85              		.loc 1 24 1 view .LVU13
-  86 0014 7047     		bx	lr
-  87              	.L8:
-  88 0016 00BF     		.align	2
-  89              	.L7:
-  90 0018 00000000 		.word	.LANCHOR0
-  91              		.cfi_endproc
-  92              	.LFE1:
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s 			page 3
+  84              		.loc 1 24 1 view .LVU13
+  85 0014 7047     		bx	lr
+  86              	.L8:
+  87 0016 00BF     		.align	2
+  88              	.L7:
+  89 0018 00000000 		.word	.LANCHOR0
+  90              		.cfi_endproc
+  91              	.LFE1:
+  93              		.section	.bss.gIpc_datazone,"aw",%nobits
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s 			page 3
 
 
-  94              		.section	.bss.gIpc_datazone,"aw",%nobits
-  95              		.align	2
-  96              		.set	.LANCHOR0,. + 0
-  99              	gIpc_datazone:
- 100 0000 00000000 		.space	56
- 100      00000000 
- 100      00000000 
- 100      00000000 
- 100      00000000 
- 101              		.text
- 102              	.Letext0:
- 103              		.file 2 "../Common/IPC/ipc.h"
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s 			page 4
+  94              		.align	2
+  95              		.set	.LANCHOR0,. + 0
+  98              	gIpc_datazone:
+  99 0000 00000000 		.space	56
+  99      00000000 
+  99      00000000 
+  99      00000000 
+  99      00000000 
+ 100              		.text
+ 101              	.Letext0:
+ 102              		.file 2 "../Common/IPC/ipc.h"
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s 			page 4
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 ipc_comdata.c
-C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s:18     .text.ipc_read_data:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s:26     .text.ipc_read_data:00000000 ipc_read_data
-C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s:45     .text.ipc_read_data:0000000c $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s:50     .text.ipc_write_data:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s:57     .text.ipc_write_data:00000000 ipc_write_data
-C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s:90     .text.ipc_write_data:00000018 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s:95     .bss.gIpc_datazone:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccYonDhA.s:99     .bss.gIpc_datazone:00000000 gIpc_datazone
+C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s:20     .text.ipc_read_data:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s:26     .text.ipc_read_data:00000000 ipc_read_data
+C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s:45     .text.ipc_read_data:0000000c $d
+C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s:50     .text.ipc_write_data:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s:56     .text.ipc_write_data:00000000 ipc_write_data
+C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s:89     .text.ipc_write_data:00000018 $d
+C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s:94     .bss.gIpc_datazone:00000000 $d
+C:\Users\zhangge\AppData\Local\Temp\cc1ImiOa.s:98     .bss.gIpc_datazone:00000000 gIpc_datazone
 
 NO UNDEFINED SYMBOLS

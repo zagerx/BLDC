@@ -1,4 +1,3 @@
-#include "hall_encoder.h"
 #undef ABS(x)
 #define ABS(x) x>0?x:-x
 #define ABZ_STEP    0.18f
@@ -72,7 +71,7 @@ void encoder_angleupdate(void)
 
 
 
-void* mt6816_read(void)
+void* angle_read(void)
 {
 
     return 0;

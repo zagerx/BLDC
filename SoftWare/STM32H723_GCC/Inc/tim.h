@@ -43,7 +43,10 @@ void MX_TIM8_Init(void);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN Prototypes */
-
+void tim_tigger_adc(void);
+void tim_pwm_disable(void);
+void tim_pwm_enable(void);
+void tim_set_pwm(float _a,float _b,float _c);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

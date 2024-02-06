@@ -19,6 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dma.h"
+#include "i2c.h"
 #include "tim.h"
 #include "gpio.h"
 
@@ -56,8 +58,8 @@ void PeriphCommonClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-
+#include "hardware.h"
+extern uint8_t dma_buf[2];
 /* USER CODE END 0 */
 
 /**
@@ -91,15 +93,14 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ADC3_Init();
+  MX_DMA_Init();
   MX_TIM8_Init();
   MX_ADC2_Init();
+  MX_ADC3_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_ADCEx_Calibration_Start(&hadc3,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
-  HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
-  // HAL_ADCEx_Calibration_Start(&hadc2,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
-  // HAL_ADCEx_InjectedStart_IT(&hadc2);
   USER_DEBUG_NORMAL("H7 hello word\r\n");
+  // ina226_read_data();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -108,10 +109,14 @@ int main(void)
   {
     HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
     HAL_GPIO_TogglePin(WATCHDOG_IN_GPIO_Port,WATCHDOG_IN_Pin);
+    // p = (uint8_t*)ina226_read_data();
+    // USER_DEBUG_NORMAL("id 0x%x\r\n",*p);
+    // buf[0] = *(uint8_t*)ina226_read_data();
+    // buf[1] = *((uint8_t*)ina226_read_data()+1);
+    // USER_DEBUG_NORMAL("id 0x%x\r\n",(buf[0]<<8) | buf[1]);
+    // USER_DEBUG_NORMAL("dmabuf[0] = 0x%x [1] = 0x%x\r\n",dma_buf[0],dma_buf[1]);
     HAL_Delay(1);
     motortctrl_process();
-    // adc_pollvale();
-    
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

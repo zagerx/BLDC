@@ -5,21 +5,16 @@
     #include "_common.h"   //Debug打印
 #endif
 /*---------------------------角度传感器---------------------------------*/
-    #define ANGLE_SENSOR_TLE5012B_EN        (0)    //TLE5012B使能
-    #define ANGLE_SENSORT_MT6016_EN         (1)    //MT6016使能
-
-    #if(ANGLE_SENSORT_MT6016_EN)
-        // #include "hardware.h"
-    #elif(ANGLE_SENSOR_TLE5012B_EN)
-        #include "tle5012b.h"
-    #endif
+#if(ANGLE_SENSOR)
+    #include "hardware.h"
+#endif
 /*---------------------------温湿度传感器---------------------------------*/
 
 
 /*----------------------------传感器列表--------------------------------*/
 typedef enum{
     SENSOR_NONE = -1,
-    SENSOR_01, 
+    SENSOR_01, //角度传感器
     SENSOR_NUMBER
 }ENUM_SENSOR;
 #endif

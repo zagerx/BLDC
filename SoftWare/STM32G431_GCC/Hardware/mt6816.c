@@ -1,5 +1,4 @@
-#include "mt6816.h"
-#include "_common.h"
+#include "hardware_cfg.h"
 
 typedef struct mt6816_data
 {
@@ -17,7 +16,7 @@ static unsigned char Spi_pRxData[4]={0};
 ʹ��cubemx����ʱ:ע�⵱ϵͳʱ��Ƶ��170MHz,Baud Rate����Ӧ��10.635MBits/s��������
 1������������ԭ�������?
 */
-void* mt6816_read(void)
+void* angle_read(void)
 {
     static mt6816_data_t data;
 

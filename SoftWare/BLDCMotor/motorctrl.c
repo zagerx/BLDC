@@ -51,16 +51,18 @@ typedef struct
     unsigned short cnt;
 }motorctrl_t;
 motorctrl_t g_Motor1 = {
-    .state = MOTOR_TEST,
+    .state = MOTOR_INIT,
     .cnt = 0,
 };
 static float sg_MecThetaOffset = 0.0f;
-static duty_t foc_curloopcale(abc_t i_abc,float theta);
 static lowfilter_t sg_elefilter[3];
-static float _get_angleoffset(void);
-#include "main.h"
-#include "adc.h"
 
+static float _get_angleoffset(void);
+static duty_t foc_curloopcale(abc_t i_abc,float theta);
+static void motor_enable(void);
+static void motor_disable(void);
+static void motor_set_pwm(duty_t temp);
+static void motor_temp_test(void);
 void motortctrl_process(void)
 {
     switch (g_Motor1.state)
@@ -71,7 +73,7 @@ void motortctrl_process(void)
             float theta = 100.0f;
             theta = (*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data;            
         }
-        sg_MecThetaOffset = _get_angleoffset();
+        // sg_MecThetaOffset = _get_angleoffset();
         /*-----电流滤波器初始化-------*/
         lowfilter_init(&sg_elefilter[0],80);
         lowfilter_init(&sg_elefilter[1],80);
@@ -84,30 +86,13 @@ void motortctrl_process(void)
         g_Motor1.state = MOTOR_RUNING;           
         break;
 
-    case MOTOR_TEST:
-        motor_enable_noirq();
-         
-        uint16_t a,b,c,d;
-        a = (((float)0.5f)*_ARR);
-        b = (((float)0.2f)*_ARR);
-        c = (((float)0.4f)*_ARR);
-        d = (((float)0.7f)*_ARR);
-        __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,(uint16_t)a);
-        __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,(uint16_t)b);
-        __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,(uint16_t)c);
-       
-        HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_4);
-        __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,(uint16_t)d);
-        g_Motor1.state = MOTOR_RUNING;
-        break;
-
     case MOTOR_RUNING:
         {
-            if (!(++g_Motor1.cnt % 1000))
+            if (!(++g_Motor1.cnt % 1500))
             {
                 USER_DEBUG_NORMAL("motor 1s\r\n");
                 /* code */
-                // g_Motor1.state = MOTOR_STOP;
+                g_Motor1.state = MOTOR_STOP;
             }
         }
         break;
@@ -118,28 +103,12 @@ void motortctrl_process(void)
         break;
     }
 }
-
-static float _get_angleoffset(void)
-{
-    motor_enable_noirq();
-    /*-----------设置alpha/beta坐标系------------------*/
-    alpbet_t uab = {1.0f,0.0f};
-    duty_t dut01;
-    float theta;
-    dut01 = _svpwm(uab.alpha,uab.beta);
-    motor_set_pwm(dut01._a,dut01._b,dut01._c);
-    HAL_Delay(200);
-    theta = (*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data;
-    motor_disable();
-    return theta;
-}
 /*------------周期性被调用----------------*/
+duty_t dut01,dut02;
 
 extern  pid_cb_t *sgp_curloop_d_pid;
 extern pid_cb_t *sgp_curloop_q_pid;
-float AAAAAA;
-duty_t dut01,dut02;
-void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
+void _currentloop(unsigned int *abc_vale,float _elec_theta)
 {
 /*----------------三相电流处理------------------------------*/    
     float Ia,Ib,Ic;    
@@ -161,19 +130,27 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     i_abc.b = Ib;
     i_abc.c = Ic;
 #endif
-
+#if 0
 /*---------------------获取当前转子角度-------------------------*/
     float mech_theta,elec_theta;
     static float pre_elec_theta = 0.0f;
     mech_theta = (*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data - sg_MecThetaOffset;
     
+
     elec_theta = (mech_theta) * MOTOR_PAIR;    
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
     /*--------------对电流进行反park变化-----------------------*/
-    // i_abc.a = cosf(elec_theta);
-    // i_abc.b = cosf(elec_theta - _2PI/3.0f);
-    // i_abc.c = cosf(elec_theta + _2PI/3.0f);
+    static float xxtheta = 0.0f;
+    if (xxtheta >= _2PI)
+    {
+        /* code */
+        xxtheta = 0.0f;
+    }
+    
+    i_abc.a = cosf(xxtheta);
+    i_abc.b = cosf(xxtheta - _2PI/3.0f);
+    i_abc.c = cosf(xxtheta + _2PI/3.0f);
     alpbet_t i_alphbeta;
     dq_t i_dq;
     // _3s_2s(i_abc,&i_alphbeta);
@@ -188,13 +165,15 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     _3s_2s_Q(i_abc,&i_alphbeta);
     sg_motordebug.Q_ialpha = i_alphbeta.Q_alpha;
     sg_motordebug.Q_ibeta = i_alphbeta.Q_beta;
-    _2s_2r_Q(i_alphbeta,(uint32_t)_IQ15(_normalize_angle(elec_theta - PI/2.0f)),&i_dq);
- 
+    // _2s_2r_Q(i_alphbeta,(uint32_t)_IQ15(_normalize_angle(elec_theta - PI/2.0f)),&i_dq);
+    _2s_2r_Q(i_alphbeta,(uint32_t)_IQ15(_normalize_angle(xxtheta - PI/2.0f)),&i_dq);
     sg_motordebug.Q_id = (i_dq.Q_d); 
     sg_motordebug.Q_iq = (i_dq.Q_q);
+    xxtheta += 0.01f;
+
     // sg_motordebug.id_real = i_dq.d *1000;
     // sg_motordebug.iq_real = i_dq.q *1000;
-
+#endif
 #if 0
 /*-------------------闭环控制-----------------------*/
     i_dq.d = _IQ15toF(i_dq.Q_d);
@@ -208,7 +187,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     uab = _2r_2s(u_dq, elec_theta);
     duty_t dut01;
     dut01 = _svpwm(uab.alpha,uab.beta);
-    motor_set_pwm(dut01._a,dut01._b,dut01._c);
+    tim_set_pwm(dut01._a,dut01._b,dut01._c);
 #else
 /*------------------------
 开环控制
@@ -218,7 +197,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     qita    theta += 0.004f;  uq = 1.0f
 ---------------------------*/
 
-    dq_t udq = {0.0f,0.60f,0,_IQ15(0.6f)};
+    dq_t udq = {0.0f,0.08f,_IQ15(0.0f),_IQ15(0.2f)};
     alpbet_t uab,uab_q15;
     #if 1//强拖
         {
@@ -229,7 +208,7 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
                 theta = 0.0f;
             }
             // uab = _2r_2s(udq, theta);
-            uab_q15 = _2r_2s_Q(udq, _IQ15(theta));
+            uab = _2r_2s_Q(udq, _IQ15(theta));
             theta += 0.001f;
         }
     #else //使用传感器
@@ -238,11 +217,12 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
         pre_elec_theta = elec_theta; 
     #endif
 
+
     dut02 = _svpwm_Q(uab.Q_alpha,(uab.Q_beta));
     dut01 = dut02;
     // dut01 = _svpwm(uab.alpha,uab.beta);
 
-    motor_set_pwm(dut01._a,dut01._b,dut01._c);
+    motor_set_pwm(dut01);
 #endif
 
 /*-------------------观测三相电流--------------------*/
@@ -256,6 +236,58 @@ void motorctrl_foccalc(unsigned int *abc_vale,float _elec_theta)
     return;
 }
 
+static void motor_temp_test(void)
+{
+
+}
+static void motor_enable(void)
+{
+#ifdef MOTOR_VERSION_H7
+    gpio_setmotor_power();
+#endif
+    gpio_setmotor_power();
+    /*pwm 使能*/
+    tim_pwm_enable();
+
+    tim_tigger_adc();
+    /*ADC使能*/
+    adc_start();
+}
+static void motor_enable_noirq(void)
+{
+#ifdef MOTOR_VERSION_H7
+    gpio_setmotor_power();
+#endif    
+    /*pwm 使能*/
+    tim_pwm_enable();
+}
+static void motor_disable(void)
+{
+#ifdef MOTOR_VERSION_H7
+    gpio_setmotor_powerdown();
+#endif    
+    tim_pwm_disable();
+    adc_stop();
+}
+static void motor_set_pwm(duty_t temp)
+{
+    tim_set_pwm(temp._a,temp._b,temp._c);
+}
+
+static float _get_angleoffset(void)
+{
+    motor_enable_noirq();
+    /*-----------设置alpha/beta坐标系------------------*/
+    alpbet_t uab = {1.0f,0.0f};
+    duty_t dut01;
+    float theta;
+    dut01 = _svpwm(uab.alpha,uab.beta);
+    motor_set_pwm(dut01);
+    HAL_Delay(200);
+    theta = (*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data;
+    motor_disable();
+    return theta;
+}
 
 /*-----------------------------------------
 */

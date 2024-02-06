@@ -45,8 +45,8 @@ void MX_ADC3_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 void adc_pollvale(void);
-void adc_dmavale(void);
-
+void adc_start(void);
+void adc_stop(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

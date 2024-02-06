@@ -1,4 +1,11 @@
 #ifndef __HARDWARE__H
 #define __HARDWARE__H
-void* mt6816_read(void);
+
+
+
+#ifdef ANGLE_SENSOR
+    void* angle_read(void);
+#endif
+
+void* ina226_read_data(void);
 #endif

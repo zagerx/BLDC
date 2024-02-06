@@ -11,22 +11,16 @@ static sensor_data_t g_data_arry[SENSOR_NUMBER + 1];     //传感器数据
 /*-------------------注册传感器------------------------*/
 static sensor_t g_sensor_arry[SENSOR_NUMBER + 1] = \
 {
-#if(ANGLE_SENSORT_MT6016_EN)
-        [SENSOR_01] = {
-            .pf_read = mt6816_read,
-            .pf_write = NULL,
-            .pf_init = NULL,
-            .cycle = 0x00,
-            .status = EN_SENSOR_NORMAL
-        },
+#if(ANGLE_SENSOR)
+    [SENSOR_01] = {
+        .pf_read = angle_read,
+        .pf_write = NULL,
+        .pf_init = NULL,
+        .cycle = 0x00,
+        .status = EN_SENSOR_NORMAL
+    },
 #endif
-#if(ANGLE_SENSOR_TLE5012B_EN)
-        [SENSOR_01] = {
-            .pf_read = tle5012b_read,
-            .pf_write = NULL,
-            .cycle = 0x00
-        },
-#endif
+
     [SENSOR_NUMBER] = {
         .pf_read = NULL,
         .pf_write = NULL,

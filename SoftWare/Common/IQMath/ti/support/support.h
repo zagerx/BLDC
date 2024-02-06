@@ -2,9 +2,16 @@
 #define __SUPPORTH__
 
 #include "math.h"
-// #include <ti/devices/msp/msp.h>
-// #include "stm32g4xx_hal.h"
+
+#ifdef STM32G431x
+    #include "stm32g4xx_hal.h"
+    #include "cmsis_gcc.h"
+#endif
+
+#ifdef STM32H723xx
 #include "stm32h7xx_hal.h"
+#endif
+
 /* Common value defines. */
 #define q15_ln2          0x58b9
 #define q13_pi           0x6488

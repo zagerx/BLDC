@@ -46,10 +46,10 @@ void MX_TIM2_Init(void);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN Prototypes */
-void motor_set_pwm(float _a,float _b,float _c);
-void motor_enable(void);
-void motor_disable(void);
-void motor_enable_noirq(void);
+void tim_set_pwm(float _a,float _b,float _c);
+void tim_pwm_enable(void);
+void tim_pwm_disable(void);
+void tim_pwm_enable_noirq(void);
 
 	#define PWM_TIME_FULL 			(6875)						//(275*25)
 #define MOTOR_DEAD_TIME (0xFF)

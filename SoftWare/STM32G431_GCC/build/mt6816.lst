@@ -1,55 +1,54 @@
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s 			page 1
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s 			page 1
 
 
    1              		.cpu cortex-m4
-   2              		.eabi_attribute 27, 1
-   3              		.eabi_attribute 28, 1
-   4              		.eabi_attribute 20, 1
-   5              		.eabi_attribute 21, 1
-   6              		.eabi_attribute 23, 3
-   7              		.eabi_attribute 24, 1
-   8              		.eabi_attribute 25, 1
-   9              		.eabi_attribute 26, 1
-  10              		.eabi_attribute 30, 1
-  11              		.eabi_attribute 34, 1
-  12              		.eabi_attribute 18, 4
-  13              		.file	"mt6816.c"
-  14              		.text
-  15              	.Ltext0:
-  16              		.cfi_sections	.debug_frame
-  17              		.section	.text.mt6816_read,"ax",%progbits
-  18              		.align	1
-  19              		.global	mt6816_read
-  20              		.arch armv7e-m
-  21              		.syntax unified
-  22              		.thumb
-  23              		.thumb_func
-  24              		.fpu fpv4-sp-d16
-  26              	mt6816_read:
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"mt6816.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.angle_read,"ax",%progbits
+  20              		.align	1
+  21              		.global	angle_read
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	angle_read:
   27              	.LFB329:
   28              		.file 1 "./Hardware/mt6816.c"
-   1:./Hardware/mt6816.c **** #include "mt6816.h"
-   2:./Hardware/mt6816.c **** #include "_common.h"
-   3:./Hardware/mt6816.c **** 
-   4:./Hardware/mt6816.c **** typedef struct mt6816_data
-   5:./Hardware/mt6816.c **** {
-   6:./Hardware/mt6816.c ****     unsigned int raw; //原始数据
-   7:./Hardware/mt6816.c ****     float cov_data;   //转换后的数据    
-   8:./Hardware/mt6816.c ****     float filter_data;    //滤波后数据
-   9:./Hardware/mt6816.c **** }mt6816_data_t;
+   1:./Hardware/mt6816.c **** #include "hardware_cfg.h"
+   2:./Hardware/mt6816.c **** 
+   3:./Hardware/mt6816.c **** typedef struct mt6816_data
+   4:./Hardware/mt6816.c **** {
+   5:./Hardware/mt6816.c ****     unsigned int raw; //原始数据
+   6:./Hardware/mt6816.c ****     float cov_data;   //转换后的数据    
+   7:./Hardware/mt6816.c ****     float filter_data;    //滤波后数据
+   8:./Hardware/mt6816.c **** }mt6816_data_t;
+   9:./Hardware/mt6816.c **** 
   10:./Hardware/mt6816.c **** 
-  11:./Hardware/mt6816.c **** 
-  12:./Hardware/mt6816.c **** extern SPI_HandleTypeDef hspi1;
-  13:./Hardware/mt6816.c **** static unsigned char Spi_TxData[4]={0x83,0x84,0x05,0xff};
-  14:./Hardware/mt6816.c **** static unsigned char Spi_pRxData[4]={0};
-  15:./Hardware/mt6816.c **** /*
-  16:./Hardware/mt6816.c **** ��Լ��Ҫ26us
-  17:./Hardware/mt6816.c **** ʹ��cubemx����ʱ:ע�⵱ϵͳʱ��Ƶ��170MHz,Baud Rate����Ӧ��10.635
-  18:./Hardware/mt6816.c **** 1������������ԭ�������?
-  19:./Hardware/mt6816.c **** */
-  20:./Hardware/mt6816.c **** void* mt6816_read(void)
-  21:./Hardware/mt6816.c **** {
-  29              		.loc 1 21 1 view -0
+  11:./Hardware/mt6816.c **** extern SPI_HandleTypeDef hspi1;
+  12:./Hardware/mt6816.c **** static unsigned char Spi_TxData[4]={0x83,0x84,0x05,0xff};
+  13:./Hardware/mt6816.c **** static unsigned char Spi_pRxData[4]={0};
+  14:./Hardware/mt6816.c **** /*
+  15:./Hardware/mt6816.c **** ��Լ��Ҫ26us
+  16:./Hardware/mt6816.c **** ʹ��cubemx����ʱ:ע�⵱ϵͳʱ��Ƶ��170MHz,Baud Rate����Ӧ��10.635
+  17:./Hardware/mt6816.c **** 1������������ԭ�������?
+  18:./Hardware/mt6816.c **** */
+  19:./Hardware/mt6816.c **** void* angle_read(void)
+  20:./Hardware/mt6816.c **** {
+  29              		.loc 1 20 1 view -0
   30              		.cfi_startproc
   31              		@ args = 0, pretend = 0, frame = 0
   32              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -58,27 +57,27 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s 			page 1
   35              		.cfi_def_cfa_offset 8
   36              		.cfi_offset 4, -8
   37              		.cfi_offset 14, -4
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s 			page 2
-
-
   38 0002 82B0     		sub	sp, sp, #8
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s 			page 2
+
+
   39              	.LCFI1:
   40              		.cfi_def_cfa_offset 16
-  22:./Hardware/mt6816.c ****     static mt6816_data_t data;
-  41              		.loc 1 22 5 view .LVU1
-  23:./Hardware/mt6816.c **** 
-  24:./Hardware/mt6816.c ****     unsigned int AngleIn17bits = 0;
-  42              		.loc 1 24 5 view .LVU2
+  21:./Hardware/mt6816.c ****     static mt6816_data_t data;
+  41              		.loc 1 21 5 view .LVU1
+  22:./Hardware/mt6816.c **** 
+  23:./Hardware/mt6816.c ****     unsigned int AngleIn17bits = 0;
+  42              		.loc 1 23 5 view .LVU2
   43              	.LVL0:
-  25:./Hardware/mt6816.c ****     HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
-  44              		.loc 1 25 5 view .LVU3
+  24:./Hardware/mt6816.c ****     HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
+  44              		.loc 1 24 5 view .LVU3
   45 0004 0022     		movs	r2, #0
   46 0006 4FF40041 		mov	r1, #32768
   47 000a 4FF09040 		mov	r0, #1207959552
   48 000e FFF7FEFF 		bl	HAL_GPIO_WritePin
   49              	.LVL1:
-  26:./Hardware/mt6816.c ****     HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xffff);
-  50              		.loc 1 26 5 view .LVU4
+  25:./Hardware/mt6816.c ****     HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xffff);
+  50              		.loc 1 25 5 view .LVU4
   51 0012 144C     		ldr	r4, .L3
   52 0014 4FF6FF73 		movw	r3, #65535
   53 0018 0093     		str	r3, [sp]
@@ -88,53 +87,53 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s 			page 1
   57 0020 1248     		ldr	r0, .L3+8
   58 0022 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
   59              	.LVL2:
-  27:./Hardware/mt6816.c ****     HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
-  60              		.loc 1 27 5 view .LVU5
+  26:./Hardware/mt6816.c ****     HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
+  60              		.loc 1 26 5 view .LVU5
   61 0026 0122     		movs	r2, #1
   62 0028 4FF40041 		mov	r1, #32768
   63 002c 4FF09040 		mov	r0, #1207959552
   64 0030 FFF7FEFF 		bl	HAL_GPIO_WritePin
   65              	.LVL3:
-  28:./Hardware/mt6816.c ****     AngleIn17bits =(((Spi_pRxData[1]&0x00ff)<<8) | (Spi_pRxData[2]&0x00fc))>>2;
-  66              		.loc 1 28 5 view .LVU6
-  67              		.loc 1 28 34 is_stmt 0 view .LVU7
+  27:./Hardware/mt6816.c ****     AngleIn17bits =(((Spi_pRxData[1]&0x00ff)<<8) | (Spi_pRxData[2]&0x00fc))>>2;
+  66              		.loc 1 27 5 view .LVU6
+  67              		.loc 1 27 34 is_stmt 0 view .LVU7
   68 0034 6278     		ldrb	r2, [r4, #1]	@ zero_extendqisi2
-  69              		.loc 1 28 64 view .LVU8
+  69              		.loc 1 27 64 view .LVU8
   70 0036 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
-  71              		.loc 1 28 67 view .LVU9
+  71              		.loc 1 27 67 view .LVU9
   72 0038 03F0FC03 		and	r3, r3, #252
-  73              		.loc 1 28 50 view .LVU10
+  73              		.loc 1 27 50 view .LVU10
   74 003c 43EA0223 		orr	r3, r3, r2, lsl #8
-  75              		.loc 1 28 76 view .LVU11
+  75              		.loc 1 27 76 view .LVU11
   76 0040 9B10     		asrs	r3, r3, #2
   77              	.LVL4:
-  29:./Hardware/mt6816.c ****     AngleIn17bits = 16384 - AngleIn17bits;
-  78              		.loc 1 29 5 is_stmt 1 view .LVU12
-  79              		.loc 1 29 19 is_stmt 0 view .LVU13
+  28:./Hardware/mt6816.c ****     AngleIn17bits = 16384 - AngleIn17bits;
+  78              		.loc 1 28 5 is_stmt 1 view .LVU12
+  79              		.loc 1 28 19 is_stmt 0 view .LVU13
   80 0042 C3F58043 		rsb	r3, r3, #16384
   81              	.LVL5:
-  30:./Hardware/mt6816.c ****     data.raw = AngleIn17bits;
-  82              		.loc 1 30 5 is_stmt 1 view .LVU14
-  83              		.loc 1 30 14 is_stmt 0 view .LVU15
+  29:./Hardware/mt6816.c ****     data.raw = AngleIn17bits;
+  82              		.loc 1 29 5 is_stmt 1 view .LVU14
+  83              		.loc 1 29 14 is_stmt 0 view .LVU15
   84 0046 0A48     		ldr	r0, .L3+12
   85 0048 0360     		str	r3, [r0]
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s 			page 3
+  30:./Hardware/mt6816.c ****     data.cov_data = AngleIn17bits * 0.00038349f;
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s 			page 3
 
 
-  31:./Hardware/mt6816.c ****     data.cov_data = AngleIn17bits * 0.00038349f;
-  86              		.loc 1 31 5 is_stmt 1 view .LVU16
-  87              		.loc 1 31 35 is_stmt 0 view .LVU17
+  86              		.loc 1 30 5 is_stmt 1 view .LVU16
+  87              		.loc 1 30 35 is_stmt 0 view .LVU17
   88 004a 07EE903A 		vmov	s15, r3	@ int
   89 004e F8EE677A 		vcvt.f32.u32	s15, s15
   90 0052 9FED087A 		vldr.32	s14, .L3+16
   91 0056 67EE877A 		vmul.f32	s15, s15, s14
-  92              		.loc 1 31 19 view .LVU18
+  92              		.loc 1 30 19 view .LVU18
   93 005a C0ED017A 		vstr.32	s15, [r0, #4]
-  32:./Hardware/mt6816.c **** 
-  33:./Hardware/mt6816.c ****     return (void*)&data;
-  94              		.loc 1 33 5 is_stmt 1 view .LVU19
-  34:./Hardware/mt6816.c **** }...
-  95              		.loc 1 34 1 is_stmt 0 view .LVU20
+  31:./Hardware/mt6816.c **** 
+  32:./Hardware/mt6816.c ****     return (void*)&data;
+  94              		.loc 1 32 5 is_stmt 1 view .LVU19
+  33:./Hardware/mt6816.c **** }...
+  95              		.loc 1 33 1 is_stmt 0 view .LVU20
   96 005e 02B0     		add	sp, sp, #8
   97              	.LCFI2:
   98              		.cfi_def_cfa_offset 8
@@ -169,28 +168,28 @@ ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s 			page 1
  132 0000 838405FF 		.ascii	"\203\204\005\377"
  133              		.text
  134              	.Letext0:
- 135              		.file 2 "d:\\program files (x86)\\gcc-arm-none-eabi-10-2020-q4-major-win32\\tool\\arm-none-eabi\\i
- 136              		.file 3 "d:\\program files (x86)\\gcc-arm-none-eabi-10-2020-q4-major-win32\\tool\\arm-none-eabi\\i
+ 135              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+ 136              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
  137              		.file 4 "Drivers/CMSIS/Device/ST/STM32G4xx/Include/stm32g431xx.h"
  138              		.file 5 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_def.h"
  139              		.file 6 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_gpio.h"
  140              		.file 7 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_dma.h"
  141              		.file 8 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_spi.h"
  142              		.file 9 "Inc/spi.h"
-ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s 			page 4
+ARM GAS  C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s 			page 4
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 mt6816.c
-C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s:18     .text.mt6816_read:00000000 $t
-C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s:26     .text.mt6816_read:00000000 mt6816_read
-C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s:104    .text.mt6816_read:00000064 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s:113    .bss.Spi_pRxData:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s:117    .bss.Spi_pRxData:00000000 Spi_pRxData
-C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s:120    .bss.data.0:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s:124    .bss.data.0:00000000 data.0
-C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s:127    .data.Spi_TxData:00000000 $d
-C:\Users\ADMINI~1\AppData\Local\Temp\ccPyug5m.s:131    .data.Spi_TxData:00000000 Spi_TxData
+C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s:20     .text.angle_read:00000000 $t
+C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s:26     .text.angle_read:00000000 angle_read
+C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s:104    .text.angle_read:00000064 $d
+C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s:113    .bss.Spi_pRxData:00000000 $d
+C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s:117    .bss.Spi_pRxData:00000000 Spi_pRxData
+C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s:120    .bss.data.0:00000000 $d
+C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s:124    .bss.data.0:00000000 data.0
+C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s:127    .data.Spi_TxData:00000000 $d
+C:\Users\zhangge\AppData\Local\Temp\ccrYwjl0.s:131    .data.Spi_TxData:00000000 Spi_TxData
 
 UNDEFINED SYMBOLS
 HAL_GPIO_WritePin

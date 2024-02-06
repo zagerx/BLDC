@@ -271,7 +271,7 @@ static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned shor
 	}
 	return max;
 }
-void motor_set_pwm(float _a,float _b,float _c)
+void tim_set_pwm(float _a,float _b,float _c)
 {
 
     uint16_t  a,b,c;
@@ -292,7 +292,7 @@ void motor_set_pwm(float _a,float _b,float _c)
     /*触发ADC采样*/
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(max + 10));	
 }
-void motor_enable_noirq(void)
+void tim_pwm_enable_noirq(void)
 {
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)0);
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)0);
@@ -305,7 +305,7 @@ void motor_enable_noirq(void)
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3);     
 }
-void motor_enable(void)
+void tim_pwm_enable(void)
 {
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
@@ -319,7 +319,7 @@ void motor_enable(void)
     HAL_ADCEx_InjectedStart_IT(&hadc4);
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);  
 }
-void motor_disable(void)
+void tim_pwm_disable(void)
 {
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(0));
     __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(0));

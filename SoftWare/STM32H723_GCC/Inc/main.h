@@ -62,6 +62,8 @@ void Error_Handler(void);
 #define LED_01_GPIO_Port GPIOE
 #define EBAKE_PWM_EN_Pin GPIO_PIN_7
 #define EBAKE_PWM_EN_GPIO_Port GPIOE
+#define MAIN_POWER_OFF_Pin GPIO_PIN_11
+#define MAIN_POWER_OFF_GPIO_Port GPIOD
 #define WATCHDOG_IN_Pin GPIO_PIN_3
 #define WATCHDOG_IN_GPIO_Port GPIOB
 #define TEST_IO_Pin GPIO_PIN_1

@@ -6,7 +6,7 @@
 #include "tim.h"
 #include "sensor.h"
 #include "_common.h"
-
+#include "gpio.h"
 #define AD_OFFSET                   2116.0f
 #define RA_S                        0.05F
 #define RB_S                        0.05F

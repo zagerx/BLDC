@@ -144,6 +144,7 @@ void MX_ADC3_Init(void)
   /* USER CODE END ADC3_Init 0 */
 
   ADC_ChannelConfTypeDef sConfig = {0};
+  ADC_InjectionConfTypeDef sConfigInjected = {0};
 
   /* USER CODE BEGIN ADC3_Init 1 */
 
@@ -156,24 +157,28 @@ void MX_ADC3_Init(void)
   hadc3.Init.Resolution = ADC_RESOLUTION_12B;
   hadc3.Init.DataAlign = ADC3_DATAALIGN_RIGHT;
   hadc3.Init.ScanConvMode = ADC_SCAN_ENABLE;
-  hadc3.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc3.Init.EOCSelection = ADC_EOC_SEQ_CONV;
   hadc3.Init.LowPowerAutoWait = DISABLE;
-  hadc3.Init.ContinuousConvMode = DISABLE;
+  hadc3.Init.ContinuousConvMode = ENABLE;
   hadc3.Init.NbrOfConversion = 4;
-  hadc3.Init.DiscontinuousConvMode = ENABLE;
+  hadc3.Init.DiscontinuousConvMode = DISABLE;
   hadc3.Init.NbrOfDiscConversion = 1;
   hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc3.Init.DMAContinuousRequests = DISABLE;
   hadc3.Init.SamplingMode = ADC_SAMPLING_MODE_NORMAL;
   hadc3.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DR;
-  hadc3.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc3.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
   hadc3.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
   hadc3.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc3) != HAL_OK)
   {
     Error_Handler();
   }
+
+  /** Disable Injected Queue
+  */
+  HAL_ADCEx_DisableInjectedQueue(&hadc3);
 
   /** Configure Regular Channel
   */
@@ -215,6 +220,53 @@ void MX_ADC3_Init(void)
   {
     Error_Handler();
   }
+
+  /** Configure Injected Channel
+  */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_0;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
+  sConfigInjected.InjectedSamplingTime = ADC3_SAMPLETIME_2CYCLES_5;
+  sConfigInjected.InjectedSingleDiff = ADC_SINGLE_ENDED;
+  sConfigInjected.InjectedOffsetNumber = ADC_OFFSET_NONE;
+  sConfigInjected.InjectedOffset = 0;
+  sConfigInjected.InjectedNbrOfConversion = 4;
+  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+  sConfigInjected.AutoInjectedConv = DISABLE;
+  sConfigInjected.QueueInjectedContext = DISABLE;
+  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_T8_CC4;
+  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
+  sConfigInjected.InjecOversamplingMode = DISABLE;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Injected Channel
+  */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_2;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Injected Channel
+  */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_10;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_3;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Injected Channel
+  */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_11;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_4;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN ADC3_Init 2 */
 
   /* USER CODE END ADC3_Init 2 */
@@ -238,12 +290,13 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_GPIOB_CLK_ENABLE();
     /**ADC2 GPIO Configuration
     PA2     ------> ADC2_INP14
+    PA3     ------> ADC2_INP15
     PC4     ------> ADC2_INP4
     PC5     ------> ADC2_INP8
     PB0     ------> ADC2_INP9
     PB1     ------> ADC2_INP5
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_2;
+    GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -308,12 +361,13 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
     /**ADC2 GPIO Configuration
     PA2     ------> ADC2_INP14
+    PA3     ------> ADC2_INP15
     PC4     ------> ADC2_INP4
     PC5     ------> ADC2_INP8
     PB0     ------> ADC2_INP9
     PB1     ------> ADC2_INP5
     */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2|GPIO_PIN_3);
 
     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_4|GPIO_PIN_5);
 
@@ -350,7 +404,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 /* USER CODE BEGIN 1 */
 #include "debuglog.h"
 uint16_t adc_buf_02[4];
-#if 1
+#if 0
 enum{
   START,
   END,
@@ -422,30 +476,43 @@ void adc_pollvale(void)
 #else
 void adc_pollvale(void)
 {
+  #if 1
+    adc_buf_02[0] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_1);
+    adc_buf_02[1] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_2);
+    adc_buf_02[2] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_3);    
+    adc_buf_02[3] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_4); 
+  #else
     HAL_ADC_Start(&hadc3);
-
     for (uint8_t i = 0; i < 4; i++)
     {
       LL_ADC_Enable(ADC3);
-      while (!__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC))
-      {
-        /* code */
-      }
+      while (!__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC));
       adc_buf_02[i] = HAL_ADC_GetValue(&hadc3);   
       HAL_Delay(100);   
     }  
-
     HAL_ADC_Stop(&hadc3);
+  #endif
 }
 #endif
+
+
+
 #include "motorctrl.h"
+void adc_start(void)
+{
+  HAL_ADCEx_Calibration_Start(&hadc3,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
+  HAL_ADCEx_InjectedStart_IT(&hadc3);
+}
+void adc_stop(void)
+{
+  HAL_ADCEx_InjectedStop_IT(&hadc3);
+}
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     unsigned int adc_vale[3];
     adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
     adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
     adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
-
-    // motorctrl_foccalc(adc_vale,0.0f);
+    _currentloop(adc_vale,0.0f);
 }
 /* USER CODE END 1 */

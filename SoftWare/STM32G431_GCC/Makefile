@@ -89,8 +89,6 @@ C_SOURCES += $(wildcard ../Common/data_structures/*.c)
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32g431xx.s 
-#Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT_ASM_ARMv7M.s
-#Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT_ASM_ARMv7M.s
 
 #######################################
 # binaries
@@ -135,7 +133,8 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32G431xx \
--DENABLE_DEBUG
+-DENABLE_DEBUG \
+-DANGLE_SENSOR
 
 # AS includes
 AS_INCLUDES = 
