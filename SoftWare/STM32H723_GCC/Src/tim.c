@@ -45,7 +45,7 @@ void MX_TIM8_Init(void)
   htim8.Instance = TIM8;
   htim8.Init.Prescaler = 0;
   htim8.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED1;
-  htim8.Init.Period = _ARR;
+  htim8.Init.Period = _ARR-1;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -218,17 +218,14 @@ void tim_set_pwm(float _a,float _b,float _c)
     float a,b,c;
     a = (((float)_a)*_ARR);
     b = (((float)_b)*_ARR);
-    c = (((float)_c)*_ARR);
-    // a = ((1.0f-(float)_a)*_ARR);
-    // b = ((1.0f-(float)_b)*_ARR);
-    // c = ((1.0f-(float)_c)*_ARR);   
+    c = (((float)_c)*_ARR);  
     __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,(uint16_t)a);
     __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,(uint16_t)b);
     __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,(uint16_t)c);
 
     unsigned short max = 0;
     max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,(uint16_t)(2000));	    	
+    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,400);	    	
 }
 void tim_pwm_enable_noirq(void)
 {

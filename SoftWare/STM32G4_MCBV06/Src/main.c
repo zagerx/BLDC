@@ -152,7 +152,7 @@ int main(void)
   MX_ADC4_Init();
   /* USER CODE BEGIN 2 */
   User_Printf_Init();
-  HAL_GPIO_WritePin(POWER_3V3_EN_GPIO_Port,POWER_3V3_EN_Pin,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(POWER_3V3_EN_GPIO_Port,POWER_3V3_EN_Pin,GPIO_PIN_SET);//编码器供电使能
   HAL_Delay(800);
   /* USER CODE END 2 */
 

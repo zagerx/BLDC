@@ -196,8 +196,7 @@ void _currentloop(unsigned int *abc_vale,float _elec_theta)
     yateng  theta += 0.004f;  uq = 1.0f    
     qita    theta += 0.004f;  uq = 1.0f
 ---------------------------*/
-
-    dq_t udq = {0.0f,0.08f,_IQ15(0.0f),_IQ15(0.2f)};
+    dq_t udq = {0.0f,0.4f,_IQ15(0.0f),_IQ15(0.2f)};
     alpbet_t uab,uab_q15;
     #if 1//强拖
         {
@@ -207,8 +206,8 @@ void _currentloop(unsigned int *abc_vale,float _elec_theta)
                 /* code */
                 theta = 0.0f;
             }
-            // uab = _2r_2s(udq, theta);
-            uab = _2r_2s_Q(udq, _IQ15(theta));
+            uab = _2r_2s(udq, theta);
+            // uab = _2r_2s_Q(udq, _IQ15(theta));
             theta += 0.001f;
         }
     #else //使用传感器
@@ -218,9 +217,9 @@ void _currentloop(unsigned int *abc_vale,float _elec_theta)
     #endif
 
 
-    dut02 = _svpwm_Q(uab.Q_alpha,(uab.Q_beta));
-    dut01 = dut02;
-    // dut01 = _svpwm(uab.alpha,uab.beta);
+    // dut02 = _svpwm_Q(uab.Q_alpha,(uab.Q_beta));
+    // dut01 = dut02;
+    dut01 = _svpwm(uab.alpha,uab.beta);
 
     motor_set_pwm(dut01);
 #endif
@@ -245,7 +244,6 @@ static void motor_enable(void)
 #ifdef MOTOR_VERSION_H7
     gpio_setmotor_power();
 #endif
-    gpio_setmotor_power();
     /*pwm 使能*/
     tim_pwm_enable();
 
