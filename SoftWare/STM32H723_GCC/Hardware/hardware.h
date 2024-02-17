@@ -3,9 +3,6 @@
 
 
 
-#ifdef ANGLE_SENSOR
-    void* angle_read(void);
-#endif
-
-void* ina226_read_data(void);
+void hw_init(void);
+void hw_sensor_process(void);
 #endif

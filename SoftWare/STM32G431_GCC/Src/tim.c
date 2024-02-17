@@ -303,5 +303,8 @@ void tim_pwm_disable(void)
     HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_4);      
 }
 
-
+void tim_tigger_adc(void)
+{
+  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
+}
 /* USER CODE END 1 */

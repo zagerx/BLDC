@@ -73,7 +73,7 @@ Src/usart.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart_ex.c
 
-C_SOURCES += $(wildcard ./Hardware/mt6816.c)
+C_SOURCES += $(wildcard ./Hardware/*.c)
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
 C_SOURCES += $(wildcard ../Protocol/*.c)
 C_SOURCES += $(wildcard ../Sensor/*.c)
@@ -153,6 +153,7 @@ C_INCLUDES =  \
 -I../Common/method \
 -I../Common/IPC \
 -I../Common/Fsm \
+-I../Common/_assert \
 -I../Common/data_structures \
 -I../Common \
 -IInc \
@@ -161,6 +162,7 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Device/ST/STM32G4xx/Include \
 -IDrivers/CMSIS/Include
 
+C_INCLUDES += -I./Board
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

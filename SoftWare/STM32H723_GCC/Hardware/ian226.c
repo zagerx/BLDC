@@ -12,9 +12,9 @@
 
 typedef struct _data
 {
-    unsigned int *p_rawdata;
-    float *p_covdata;
-    float *p_filterdata;
+    unsigned int *raw_bufdata;
+    unsigned int *p_covdata;
+    unsigned int *p_filterdata;
     unsigned short buf_column;
 }ina622_data_t;
 
@@ -29,7 +29,7 @@ static void ina226_read(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData
 
 void ina226_init(void)
 {
-    sg_data.p_rawdata = rawdata_buf;
+    sg_data.raw_bufdata = rawdata_buf;
     sg_data.p_covdata = covdata_buf;
     sg_data.p_filterdata = filterdata_buf;
     sg_data.buf_column = 3;

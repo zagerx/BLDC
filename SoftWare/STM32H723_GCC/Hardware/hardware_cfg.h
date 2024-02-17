@@ -3,6 +3,11 @@
 
 
 
+#include "board.h"
+
+#include "sensor.h"
+
+#include "ina226.h"
 
 
 

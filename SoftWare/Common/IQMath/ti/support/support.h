@@ -3,9 +3,8 @@
 
 #include "math.h"
 
-#ifdef STM32G431x
+#ifdef STM32G431xx
     #include "stm32g4xx_hal.h"
-    #include "cmsis_gcc.h"
 #endif
 
 #ifdef STM32H723xx

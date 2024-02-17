@@ -29,35 +29,12 @@ duty_t _svpwm_Q(int32_t ualpha,int32_t ubeta)
     Y = _IQ15mpy(_IQ15mpy(_IQ15(1.5),ualpha) + _IQ15mpy((SQRT3_Q15>>1),ubeta),T_UDC_Q15);
     Z = _IQ15mpy(_IQ15mpy(_IQ15(-1.5),ualpha) + _IQ15mpy((SQRT3_Q15>>1),ubeta),T_UDC_Q15);
    switch (sector) {
-        case 1:
-            m_vector = Z;
-            s_vector = Y;
-        break;
-
-        case 2:
-            m_vector = Y;
-            s_vector = -X;
-            break;
-
-        case 3:
-            m_vector = -Z;
-            s_vector = X;
-        break;
-
-        case 4:
-            m_vector = -X;
-            s_vector = Z;
-        break;
-
-        case 5:
-            m_vector = X;
-            s_vector = -Y;
-        break;
-
-        case 6:
-            m_vector = -Y;
-            s_vector = -Z;
-        break;
+        case 1: m_vector = Z;s_vector = Y ;break;
+        case 2:m_vector = Y ;s_vector = -X;break;
+        case 3:m_vector = -Z;s_vector = X ;break;
+        case 4:m_vector = -X;s_vector = Z ;break;
+        case 5:m_vector = X ;s_vector = -Y;break;
+        case 6:m_vector = -Y;s_vector = -Z;break;
         default:
         break;
     }
@@ -66,15 +43,12 @@ duty_t _svpwm_Q(int32_t ualpha,int32_t ubeta)
         m_vector /= (m_vector + s_vector);
         s_vector /= m_vector + s_vector;
     }
-
     int32_t Ta,Tb,Tc;
     Ta = (T_PWM_Q15-m_vector-s_vector) >> 2;  
     Tb = Ta + (m_vector>>1);
     Tc = Tb + (s_vector>>1);
 
-    int32_t Tcmp1 = 0;
-    int32_t Tcmp2 = 0;
-    int32_t Tcmp3 = 0;
+    int32_t Tcmp1,Tcmp2,Tcmp3;
     switch (sector) {
         case 1:Tcmp1 = Tb;Tcmp2 = Ta;Tcmp3 = Tc;break;
         case 2:Tcmp1 = Ta;Tcmp2 = Tc;Tcmp3 = Tb;break;

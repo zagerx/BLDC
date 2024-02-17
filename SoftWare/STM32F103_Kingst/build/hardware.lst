@@ -1,0 +1,128 @@
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"hardware.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.hw_init,"ax",%progbits
+  18              		.align	1
+  19              		.global	hw_init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	hw_init:
+  25              	.LFB68:
+  26              		.file 1 "./Hardware/hardware.c"
+   1:./Hardware/hardware.c **** #include "hardware_cfg.h"
+   2:./Hardware/hardware.c **** 
+   3:./Hardware/hardware.c **** static sensor_t sg_sensor_ina226 = {
+   4:./Hardware/hardware.c ****         .pf_read = ina226_read_data,
+   5:./Hardware/hardware.c ****         .pf_write = NULL,
+   6:./Hardware/hardware.c ****         .pf_init = ina226_init,
+   7:./Hardware/hardware.c ****         .cycle = 1000,
+   8:./Hardware/hardware.c ****         .status = EN_SENSOR_INIT
+   9:./Hardware/hardware.c **** };
+  10:./Hardware/hardware.c **** 
+  11:./Hardware/hardware.c **** void hw_init(void)
+  12:./Hardware/hardware.c **** {
+  27              		.loc 1 12 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 08B5     		push	{r3, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 3, -8
+  35              		.cfi_offset 14, -4
+  13:./Hardware/hardware.c ****     sensor_register(&sg_sensor_ina226,SENSOR_01);
+  36              		.loc 1 13 5 view .LVU1
+  37 0002 0021     		movs	r1, #0
+  38 0004 0148     		ldr	r0, .L3
+  39 0006 FFF7FEFF 		bl	sensor_register
+  40              	.LVL0:
+  14:./Hardware/hardware.c **** }
+  41              		.loc 1 14 1 is_stmt 0 view .LVU2
+  42 000a 08BD     		pop	{r3, pc}
+  43              	.L4:
+  44              		.align	2
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s 			page 2
+
+
+  45              	.L3:
+  46 000c 00000000 		.word	.LANCHOR0
+  47              		.cfi_endproc
+  48              	.LFE68:
+  50              		.section	.text.hw_sensor_process,"ax",%progbits
+  51              		.align	1
+  52              		.global	hw_sensor_process
+  53              		.syntax unified
+  54              		.thumb
+  55              		.thumb_func
+  57              	hw_sensor_process:
+  58              	.LFB69:
+  15:./Hardware/hardware.c **** 
+  16:./Hardware/hardware.c **** void hw_sensor_process(void)
+  17:./Hardware/hardware.c **** {
+  59              		.loc 1 17 1 is_stmt 1 view -0
+  60              		.cfi_startproc
+  61              		@ args = 0, pretend = 0, frame = 0
+  62              		@ frame_needed = 0, uses_anonymous_args = 0
+  63 0000 08B5     		push	{r3, lr}
+  64              	.LCFI1:
+  65              		.cfi_def_cfa_offset 8
+  66              		.cfi_offset 3, -8
+  67              		.cfi_offset 14, -4
+  18:./Hardware/hardware.c ****     sensor_process();
+  68              		.loc 1 18 5 view .LVU4
+  69 0002 FFF7FEFF 		bl	sensor_process
+  70              	.LVL1:
+  19:./Hardware/hardware.c **** }...
+  71              		.loc 1 19 1 is_stmt 0 view .LVU5
+  72 0006 08BD     		pop	{r3, pc}
+  73              		.cfi_endproc
+  74              	.LFE69:
+  76              		.section	.data.sg_sensor_ina226,"aw"
+  77              		.align	2
+  78              		.set	.LANCHOR0,. + 0
+  81              	sg_sensor_ina226:
+  82 0000 E803     		.short	1000
+  83 0002 00       		.byte	0
+  84 0003 00       		.space	1
+  85 0004 00000000 		.word	ina226_read_data
+  86 0008 00000000 		.word	0
+  87 000c 00000000 		.word	ina226_init
+  88              		.text
+  89              	.Letext0:
+  90              		.file 2 "../Sensor/sensor.h"
+  91              		.file 3 "board/board.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 hardware.c
+C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s:18     .text.hw_init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s:24     .text.hw_init:00000000 hw_init
+C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s:46     .text.hw_init:0000000c $d
+C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s:51     .text.hw_sensor_process:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s:57     .text.hw_sensor_process:00000000 hw_sensor_process
+C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s:77     .data.sg_sensor_ina226:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s:81     .data.sg_sensor_ina226:00000000 sg_sensor_ina226
+
+UNDEFINED SYMBOLS
+sensor_register
+sensor_process
+ina226_read_data
+ina226_init

@@ -1,0 +1,133 @@
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc52YAKq.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gpio.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.MX_GPIO_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	MX_GPIO_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	MX_GPIO_Init:
+  25              	.LFB65:
+  26              		.file 1 "Src/gpio.c"
+   1:Src/gpio.c    **** /* USER CODE BEGIN Header */
+   2:Src/gpio.c    **** /**
+   3:Src/gpio.c    ****   ******************************************************************************
+   4:Src/gpio.c    ****   * @file    gpio.c
+   5:Src/gpio.c    ****   * @brief   This file provides code for the configuration
+   6:Src/gpio.c    ****   *          of all used GPIO pins.
+   7:Src/gpio.c    ****   ******************************************************************************
+   8:Src/gpio.c    ****   * @attention
+   9:Src/gpio.c    ****   *
+  10:Src/gpio.c    ****   * Copyright (c) 2023 STMicroelectronics.
+  11:Src/gpio.c    ****   * All rights reserved.
+  12:Src/gpio.c    ****   *
+  13:Src/gpio.c    ****   * This software is licensed under terms that can be found in the LICENSE file
+  14:Src/gpio.c    ****   * in the root directory of this software component.
+  15:Src/gpio.c    ****   * If no LICENSE file comes with this software, it is provided AS-IS.
+  16:Src/gpio.c    ****   *
+  17:Src/gpio.c    ****   ******************************************************************************
+  18:Src/gpio.c    ****   */
+  19:Src/gpio.c    **** /* USER CODE END Header */
+  20:Src/gpio.c    **** 
+  21:Src/gpio.c    **** /* Includes ------------------------------------------------------------------*/
+  22:Src/gpio.c    **** #include "gpio.h"
+  23:Src/gpio.c    **** 
+  24:Src/gpio.c    **** /* USER CODE BEGIN 0 */
+  25:Src/gpio.c    **** 
+  26:Src/gpio.c    **** /* USER CODE END 0 */
+  27:Src/gpio.c    **** 
+  28:Src/gpio.c    **** /*----------------------------------------------------------------------------*/
+  29:Src/gpio.c    **** /* Configure GPIO                                                             */
+  30:Src/gpio.c    **** /*----------------------------------------------------------------------------*/
+  31:Src/gpio.c    **** /* USER CODE BEGIN 1 */
+  32:Src/gpio.c    **** 
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc52YAKq.s 			page 2
+
+
+  33:Src/gpio.c    **** /* USER CODE END 1 */
+  34:Src/gpio.c    **** 
+  35:Src/gpio.c    **** /** Configure pins as
+  36:Src/gpio.c    ****         * Analog
+  37:Src/gpio.c    ****         * Input
+  38:Src/gpio.c    ****         * Output
+  39:Src/gpio.c    ****         * EVENT_OUT
+  40:Src/gpio.c    ****         * EXTI
+  41:Src/gpio.c    **** */
+  42:Src/gpio.c    **** void MX_GPIO_Init(void)
+  43:Src/gpio.c    **** {
+  27              		.loc 1 43 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32 0000 82B0     		sub	sp, sp, #8
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  44:Src/gpio.c    **** 
+  45:Src/gpio.c    ****   /* GPIO Ports Clock Enable */
+  46:Src/gpio.c    ****   __HAL_RCC_GPIOA_CLK_ENABLE();
+  35              		.loc 1 46 3 view .LVU1
+  36              	.LBB2:
+  37              		.loc 1 46 3 view .LVU2
+  38              		.loc 1 46 3 view .LVU3
+  39 0002 064B     		ldr	r3, .L3
+  40 0004 9A69     		ldr	r2, [r3, #24]
+  41 0006 42F00402 		orr	r2, r2, #4
+  42 000a 9A61     		str	r2, [r3, #24]
+  43              		.loc 1 46 3 view .LVU4
+  44 000c 9B69     		ldr	r3, [r3, #24]
+  45 000e 03F00403 		and	r3, r3, #4
+  46 0012 0193     		str	r3, [sp, #4]
+  47              		.loc 1 46 3 view .LVU5
+  48 0014 019B     		ldr	r3, [sp, #4]
+  49              	.LBE2:
+  50              		.loc 1 46 3 view .LVU6
+  47:Src/gpio.c    **** 
+  48:Src/gpio.c    **** }
+  51              		.loc 1 48 1 is_stmt 0 view .LVU7
+  52 0016 02B0     		add	sp, sp, #8
+  53              	.LCFI1:
+  54              		.cfi_def_cfa_offset 0
+  55              		@ sp needed
+  56 0018 7047     		bx	lr
+  57              	.L4:
+  58 001a 00BF     		.align	2
+  59              	.L3:
+  60 001c 00100240 		.word	1073876992
+  61              		.cfi_endproc
+  62              	.LFE65:
+  64              		.text
+  65              	.Letext0:
+  66              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+  67              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+  68              		.file 4 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc52YAKq.s 			page 3
+
+
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc52YAKq.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 gpio.c
+C:\Users\57308\AppData\Local\Temp\cc52YAKq.s:18     .text.MX_GPIO_Init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc52YAKq.s:24     .text.MX_GPIO_Init:00000000 MX_GPIO_Init
+C:\Users\57308\AppData\Local\Temp\cc52YAKq.s:60     .text.MX_GPIO_Init:0000001c $d
+
+NO UNDEFINED SYMBOLS

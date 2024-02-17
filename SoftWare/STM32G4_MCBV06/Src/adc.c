@@ -211,6 +211,6 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_1);
     adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_2);
     adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_3);
-    _currentloop(adc_vale,0.0f);
+    _50uscycle_process(adc_vale,0.0f);
 }
 /* USER CODE END 1 */

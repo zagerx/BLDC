@@ -10,9 +10,10 @@ typedef enum _sensor_stat{
 
 typedef struct sensor_data
 {
-    unsigned int raw; //原始数据
-    float cov_data;   //转换后的数据    
-    float filter_data;    //滤波后数据
+    uint32_t *raw_buf;     //原始数据
+    uint32_t *covdata_buf;       //转换后的数据    
+    uint32_t *filterdata_buf;    //滤波后数据
+    uint16_t buf_column;
 }sensor_data_t;
 
 typedef struct sensor
@@ -28,5 +29,5 @@ typedef struct sensor
 
 void sensor_process(void);
 void* sensor_user_read(ENUM_SENSOR sensor_id);
-
+void sensor_register(sensor_t *this,ENUM_SENSOR index);
 #endif

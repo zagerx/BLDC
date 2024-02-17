@@ -4,6 +4,9 @@
 #include "stdint.h"
 
 #if 1
+
+#define user_assert_param(expr) ((void)0U)
+
 #define TOTAL_HEAP_SIZE                    ((size_t)4096)
 #define BYTE_ALIGNMENT			8
 #if BYTE_ALIGNMENT == 8

@@ -30,6 +30,7 @@
 #include "../../BLDCMotor/motorctrl.h"
 #include "_common.h"
 #include "debuglog.h"
+#include "hardware.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -153,6 +154,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   User_Printf_Init();
   USER_DEBUG_NORMAL("hello world\r\n");
+  hw_init();
   protocol_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
   USER_DEBUG_NORMAL("SYS start runing\r\n");
@@ -163,7 +165,7 @@ int main(void)
   while (1)
   {
     sysrunning_process();
-    sensor_process();
+    hw_sensor_process();
     motortctrl_process();
     protocol_process();
 

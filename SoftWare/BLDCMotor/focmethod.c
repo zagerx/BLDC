@@ -3,19 +3,8 @@
 
 static dq_t circle_limit(dq_t dq);
 
-static curloop_t sg_curloop_param;
- pid_cb_t *sgp_curloop_d_pid;
- pid_cb_t *sgp_curloop_q_pid;
-void foc_paraminit(void)
-{
-    sgp_curloop_d_pid = &sg_curloop_param.d_pid;
-    sgp_curloop_q_pid = &sg_curloop_param.q_pid;
-    pid_init(sgp_curloop_d_pid,0.08f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
-    pid_init(sgp_curloop_q_pid,0.020f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
-}
 
 
-unsigned char test_sector_f;
 duty_t _svpwm(float ualpha,float ubeta)
 {
     unsigned char sector;    
@@ -30,7 +19,6 @@ duty_t _svpwm(float ualpha,float ubeta)
     if((-sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
         sector += 4;
     }
-    test_sector_f = sector;
     /*----------------------------------------------------*/
     float s_vector = 0.0f,m_vector = 0.0f;
     switch (sector) {
@@ -154,7 +142,6 @@ float _normalize_angle(float angle)
   return a >= 0 ? a : (a + 2.0f*PI);  
 }
 
-/*---------------------DQ��һ��------------------------------------*/
 dq_t circle_limit(dq_t dq)
 {
     dq_t new_vdq;

@@ -1,5 +1,5 @@
-build/mt6816.o: Hardware/mt6816.c Hardware/hardware_cfg.h Inc/spi.h \
- Inc/main.h Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
+build/mt6816.o: Hardware/mt6816.c Inc/spi.h Inc/main.h \
+ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
  Inc/stm32g4xx_hal_conf.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_rcc.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_def.h \
@@ -31,7 +31,6 @@ build/mt6816.o: Hardware/mt6816.c Hardware/hardware_cfg.h Inc/spi.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim_ex.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h
-Hardware/hardware_cfg.h:
 Inc/spi.h:
 Inc/main.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:

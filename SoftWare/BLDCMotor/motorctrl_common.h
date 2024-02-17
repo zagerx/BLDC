@@ -30,7 +30,6 @@ typedef struct _alphabeta
     /* data */
     float alpha;
     float beta;
-    float theta;
     int32_t Q_alpha;
     int32_t Q_beta;
 }alpbet_t;
@@ -47,7 +46,6 @@ typedef struct _abc
     int32_t Q_c;
 }abc_t;
 
-/*------����������--------*/
 typedef struct curloop
 {
     pid_cb_t d_pid;
@@ -57,7 +55,6 @@ typedef struct curloop
 
 float _normalize_angle(float angle);
 duty_t _svpwm(float ualpha,float ubeta);
-// duty_t foc_curloopcale(abc_t i_abc,float theta);
 void foc_paraminit(void);
 duty_t _svpwm_Q(int32_t ualpha,int32_t ubeta);
 alpbet_t _2r_2s(dq_t i_dq,float theta);
