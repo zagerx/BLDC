@@ -42,7 +42,8 @@ build/motorctrl.o: ../BLDCMotor/motorctrl.c ../BLDCMotor/./motorctrl.h \
  ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
  ../Common/data_structures/fifo.h ../Common/data_structures/heap.h \
  ../Sensor/sensor.h ../Sensor/sensor_cfg.h \
- ../BLDCMotor/motorctrl_common.h ../BLDCMotor/./motorctrl_cfg.h
+ ../BLDCMotor/motorctrl_common.h ../BLDCMotor/./motorctrl_cfg.h \
+ Hardware/mt6816.h
 ../BLDCMotor/./motorctrl.h:
 ../BLDCMotor/././motorctrl_cfg.h:
 Inc/adc.h:
@@ -103,3 +104,4 @@ Board/board.h:
 ../Sensor/sensor_cfg.h:
 ../BLDCMotor/motorctrl_common.h:
 ../BLDCMotor/./motorctrl_cfg.h:
+Hardware/mt6816.h:

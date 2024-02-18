@@ -1,10 +1,10 @@
 #include "./motorctrl.h"
 #include "debuglog.h"
 #include "motorctrl_common.h"
-
+#include "mt6816.h"
 #define Q15_PI_2                   (51471)
 #define Q15_2PI                    (205884)
-
+#define PI_2                       (1.570796f)
 #define MOTORCTRL_PERCI            (1)
 
 enum{
@@ -59,6 +59,7 @@ motorctrl_t g_Motor1 = {
     .cnt = 0,
 };
 static float sg_MecThetaOffset = 0.0f;
+static int32_t sg_Q_MecThetaOffset;
 static lowfilter_t sg_elefilter[3];
 static pid_cb_t *sgp_curloop_d_pid;
 static pid_cb_t *sgp_curloop_q_pid;
@@ -81,7 +82,7 @@ void motortctrl_process(void)
         {
             if (!(++g_Motor1.cnt % 1500))
             {
-                USER_DEBUG_NORMAL("motor 1s\r\n");
+                // USER_DEBUG_NORMAL("motor 1s\r\n");
                 /* code */
                 g_Motor1.state = MOTOR_STOP;
             }
@@ -131,9 +132,9 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     yateng  theta += 0.004f;  uq = 1.0f
     qita    theta += 0.004f;  uq = 1.0f
 ---------------------------*/
-    dq_t udq = {0.0f,0.4f,_IQ15(0.0f),_IQ15(0.8f)};
+    dq_t udq = {0.0f,1.2f,_IQ15(0.0f),_IQ15(0.8f)};
     alpbet_t uab,uab_q15;
-    #if 1//强拖
+    #if 0//强拖
         {
             static float theta = 0.0f;
             if (theta >= _2PI)
@@ -145,20 +146,36 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
             // uab = _2r_2s_Q(udq, _IQ15(theta));
             motor_set_pwm(dut01);
             theta += 0.001f;
+
+
         }
     #else //使用传感器
-        int32_t elec_theta;
+    {
+        float elec_theta,mech_theta;
+        mech_theta = *(float *)mt6816_read()- sg_MecThetaOffset;
+        elec_theta = mech_theta*MOTOR_PAIR ;
+        elec_theta = _normalize_angle(elec_theta);
+        sg_motordebug.ele_angle = elec_theta;
+        uab = _2r_2s(udq, elec_theta);
+        dut01 = _svpwm(uab.alpha,uab.beta);
+        motor_set_pwm(dut01);
+    }
+        
+
+        // int32_t elec_theta;
         // uab = _2r_2s(udq, elec_theta);
-        elec_theta = ((*(sensor_data_t *)sensor_user_read(SENSOR_01)).covdata_buf[0] - (int32_t)sg_MecThetaOffset);
-        elec_theta = _IQ15mpy(elec_theta,2<<15);
-        if (elec_theta >= Q15_2PI)
-        {
-            /* code */
-            elec_theta -= Q15_2PI;
-        }
-        elec_theta > 0? elec_theta:(elec_theta+Q15_2PI);
-        sg_motordebug.Q_ele_angle = elec_theta;
-        uab = _2r_2s_Q(udq, (elec_theta));
+        // elec_theta = ((*(sensor_data_t *)sensor_user_read(SENSOR_01)).covdata_buf[0] - (int32_t)sg_Q_MecThetaOffset);
+        // elec_theta = _IQ15mpy(elec_theta,2<<15);
+        // if (elec_theta >= Q15_2PI)
+        // {
+        //     /* code */
+        //     elec_theta -= Q15_2PI;
+        // }
+        // elec_theta > 0? elec_theta:(elec_theta+Q15_2PI);
+        // sg_motordebug.Q_ele_angle = elec_theta;
+        // uab = _2r_2s_Q(udq, (elec_theta));
+        // dut02 = _svpwm_Q(uab.Q_alpha,(uab.Q_beta));
+        // motor_set_pwm(dut02);
     #endif
     // dut02 = _svpwm_Q(uab.Q_alpha,(uab.Q_beta));
     // dut01 = dut02;
@@ -233,7 +250,6 @@ static void motor_set_pwm(duty_t temp)
 {
     tim_set_pwm(temp._a,temp._b,temp._c);
 }
-
 static float _get_angleoffset(void)
 {
     motor_enable_noirq();
@@ -244,8 +260,11 @@ static float _get_angleoffset(void)
     dut01 = _svpwm(uab.alpha,uab.beta);
     motor_set_pwm(dut01);
     HAL_Delay(200);
-    theta = (*(sensor_data_t *)sensor_user_read(SENSOR_01)).covdata_buf[0];
+    // theta = (*(sensor_data_t *)sensor_user_read(SENSOR_01)).covdata_buf[0];
+    // sg_Q_MecThetaOffset = (*(sensor_data_t *)sensor_user_read(SENSOR_01)).covdata_buf[0];
+    theta = *(float *)mt6816_read();
     motor_disable();
+    
     return theta;
 }
 
