@@ -69,7 +69,9 @@ void motortctrl_process(void)
     switch (g_Motor1.state)
     {
     case MOTOR_INIT:
-        sg_MecThetaOffset = _get_angleoffset();
+        #ifdef BOARD_STM32G431
+            sg_MecThetaOffset = _get_angleoffset();
+        #endif    
         foc_paraminit();
         motor_enable();
         g_Motor1.state = MOTOR_RUNING;           
@@ -81,7 +83,7 @@ void motortctrl_process(void)
             {
                 USER_DEBUG_NORMAL("motor 1s\r\n");
                 /* code */
-                // g_Motor1.state = MOTOR_STOP;
+                g_Motor1.state = MOTOR_STOP;
             }
         }
         break;
@@ -131,15 +133,17 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 ---------------------------*/
     dq_t udq = {0.0f,0.4f,_IQ15(0.0f),_IQ15(0.8f)};
     alpbet_t uab,uab_q15;
-    #if 0//强拖
+    #if 1//强拖
         {
             static float theta = 0.0f;
             if (theta >= _2PI)
             {
                 theta = 0.0f;
             }
-            // uab = _2r_2s(udq, theta);
-            uab = _2r_2s_Q(udq, _IQ15(theta));
+            uab = _2r_2s(udq, theta);
+            dut01 = _svpwm(uab.alpha,uab.beta);
+            // uab = _2r_2s_Q(udq, _IQ15(theta));
+            motor_set_pwm(dut01);
             theta += 0.001f;
         }
     #else //使用传感器
@@ -156,10 +160,10 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
         sg_motordebug.Q_ele_angle = elec_theta;
         uab = _2r_2s_Q(udq, (elec_theta));
     #endif
-    dut02 = _svpwm_Q(uab.Q_alpha,(uab.Q_beta));
-    dut01 = dut02;
+    // dut02 = _svpwm_Q(uab.Q_alpha,(uab.Q_beta));
+    // dut01 = dut02;
     // dut01 = _svpwm(uab.alpha,uab.beta);
-    motor_set_pwm(dut01);
+    // motor_set_pwm(dut01);
 #endif 
     return;
 }
@@ -201,7 +205,7 @@ void _currmentloop(abc_t i_abc,float theta)
 }
 static void motor_enable(void)
 {
-#ifdef MOTOR_VERSION_H7
+#ifdef BOARD_STM32H723
     gpio_setmotor_power();
 #endif
     /*pwm 使能*/
@@ -211,7 +215,7 @@ static void motor_enable(void)
 }
 static void motor_enable_noirq(void)
 {
-#ifdef MOTOR_VERSION_H7
+#ifdef BOARD_STM32H723
     gpio_setmotor_power();
 #endif    
     /*pwm 使能*/
@@ -219,7 +223,7 @@ static void motor_enable_noirq(void)
 }
 static void motor_disable(void)
 {
-#ifdef MOTOR_VERSION_H7
+#ifdef BOARD_STM32H723
     gpio_setmotor_powerdown();
 #endif    
     tim_pwm_disable();

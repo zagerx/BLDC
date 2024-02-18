@@ -1,7 +1,7 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
-#define STM32H723_BOARD
+#define BOARD_STM32H723
 
 /*公共模块*/
 #define DEBUG_DISABLE                  (0)

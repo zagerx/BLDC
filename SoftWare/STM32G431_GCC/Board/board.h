@@ -1,7 +1,7 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
-#define STM32G431GCC_BOARD
+#define BOARD_STM32G431
 
 /*公共模块*/
 #define DEBUG_DISABLE                  (0)
@@ -37,6 +37,7 @@ typedef enum{
     SENSOR_NUMBER
 }ENUM_SENSOR;
 #endif
+
 
 #define BOARD_MOTORCTRL_MODE
 

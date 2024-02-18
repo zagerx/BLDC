@@ -223,8 +223,6 @@ void tim_set_pwm(float _a,float _b,float _c)
     __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,(uint16_t)b);
     __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,(uint16_t)c);
 
-    unsigned short max = 0;
-    max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
     __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,400);	    	
 }
 void tim_pwm_enable_noirq(void)

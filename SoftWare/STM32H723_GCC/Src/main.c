@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
-#include "dma.h"
 #include "i2c.h"
 #include "tim.h"
 #include "gpio.h"
@@ -27,6 +26,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "motorctrl.h"
+#include "hardware.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,8 +59,52 @@ void PeriphCommonClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#include "hardware.h"
-extern uint8_t dma_buf[2];
+#define SYSRUNNING_PERCI            (1)
+#define DELAY_1MS                   (1)/SYSRUNNING_PERCI
+#define DELAY_2MS                   (2)/SYSRUNNING_PERCI
+#define DELAY_5MS                   (5)/SYSRUNNING_PERCI
+#define DELAY_20MS                  (20)/SYSRUNNING_PERCI
+#define DELAY_500MS                 (500)/SYSRUNNING_PERCI
+#define DELAY_1000MS                (1000)/SYSRUNNING_PERCI
+#define DELAY_5000MS                (5000)/SYSRUNNING_PERCI
+typedef struct
+{
+    /* data */
+    unsigned int time_cnt;
+    unsigned char state;
+}sys_run_t;
+static sys_run_t sg_SYSRuning;
+void sysrunning_process(void)
+{
+    enum{
+        SYS_IDLE,
+        SYS_NORMLE,
+    };
+    /*-----------------------*/
+    sg_SYSRuning.time_cnt++;
+    switch (sg_SYSRuning.state)
+    {
+        case SYS_IDLE:
+            if(!(sg_SYSRuning.time_cnt % (DELAY_5000MS))){
+                sg_SYSRuning.time_cnt = 0;
+                break;
+            }           
+            if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
+            }
+            if(!(sg_SYSRuning.time_cnt % (DELAY_500MS)))
+            {
+            }            
+            if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
+            {
+                // USER_DEBUG_NORMAL("theta %f\r\n",(*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data);
+                HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
+            }
+            if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
+            }
+        default:
+            break;
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -93,7 +138,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_TIM8_Init();
   MX_ADC2_Init();
   MX_ADC3_Init();
@@ -101,23 +145,21 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("H7 hello word\r\n");
-  // ina226_read_data();
+  // HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
+
+  hw_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
     HAL_GPIO_TogglePin(WATCHDOG_IN_GPIO_Port,WATCHDOG_IN_Pin);
-    // p = (uint8_t*)ina226_read_data();
-    // USER_DEBUG_NORMAL("id 0x%x\r\n",*p);
-    // buf[0] = *(uint8_t*)ina226_read_data();
-    // buf[1] = *((uint8_t*)ina226_read_data()+1);
-    // USER_DEBUG_NORMAL("id 0x%x\r\n",(buf[0]<<8) | buf[1]);
-    // USER_DEBUG_NORMAL("dmabuf[0] = 0x%x [1] = 0x%x\r\n",dma_buf[0],dma_buf[1]);
-    HAL_Delay(1);
+    hw_sensor_process();
+    sysrunning_process();
     motortctrl_process();
+    HAL_Delay(1);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

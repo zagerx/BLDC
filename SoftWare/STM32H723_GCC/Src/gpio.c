@@ -88,11 +88,9 @@ void MX_GPIO_Init(void)
 void gpio_setmotor_power(void)
 {
   HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
-  HAL_GPIO_WritePin(MAIN_POWER_OFF_GPIO_Port,MAIN_POWER_OFF_Pin,GPIO_PIN_SET);
 }
 void gpio_setmotor_powerdown(void)
 {
   HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(MAIN_POWER_OFF_GPIO_Port,MAIN_POWER_OFF_Pin,GPIO_PIN_RESET);
 }
 /* USER CODE END 2 */

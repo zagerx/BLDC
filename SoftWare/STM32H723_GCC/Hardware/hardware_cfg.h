@@ -2,7 +2,6 @@
 #define __HARDWARE_CFG__H
 
 
-
 #include "board.h"
 
 #include "sensor.h"

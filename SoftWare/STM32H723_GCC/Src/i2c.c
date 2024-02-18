@@ -25,7 +25,6 @@
 /* USER CODE END 0 */
 
 I2C_HandleTypeDef hi2c2;
-DMA_HandleTypeDef hdma_i2c2_rx;
 
 /* I2C2 init function */
 void MX_I2C2_Init(void)
@@ -105,26 +104,6 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
 
     /* I2C2 clock enable */
     __HAL_RCC_I2C2_CLK_ENABLE();
-
-    /* I2C2 DMA Init */
-    /* I2C2_RX Init */
-    hdma_i2c2_rx.Instance = DMA1_Stream0;
-    hdma_i2c2_rx.Init.Request = DMA_REQUEST_I2C2_RX;
-    hdma_i2c2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
-    hdma_i2c2_rx.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_i2c2_rx.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_i2c2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-    hdma_i2c2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_i2c2_rx.Init.Mode = DMA_CIRCULAR;
-    hdma_i2c2_rx.Init.Priority = DMA_PRIORITY_LOW;
-    hdma_i2c2_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-    if (HAL_DMA_Init(&hdma_i2c2_rx) != HAL_OK)
-    {
-      Error_Handler();
-    }
-
-    __HAL_LINKDMA(i2cHandle,hdmarx,hdma_i2c2_rx);
-
   /* USER CODE BEGIN I2C2_MspInit 1 */
 
   /* USER CODE END I2C2_MspInit 1 */
@@ -150,8 +129,6 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_11);
 
-    /* I2C2 DMA DeInit */
-    HAL_DMA_DeInit(i2cHandle->hdmarx);
   /* USER CODE BEGIN I2C2_MspDeInit 1 */
 
   /* USER CODE END I2C2_MspDeInit 1 */
@@ -161,20 +138,24 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 /* USER CODE BEGIN 1 */
 #include "_common.h"
 uint8_t dma_buf[2];
-void i2c2_read(uint16_t DevAddress, uint16_t MemAddress,uint16_t cfg, uint8_t *pData, uint16_t Size)
+void i2c2_read(uint16_t DevAddress, uint8_t register_addr, uint8_t *pData, uint16_t Size)
 {
-  if (!cfg)
-  {
-    HAL_I2C_Mem_Read(&hi2c2,DevAddress,MemAddress,I2C_MEMADD_SIZE_8BIT,pData,Size,0xFF);
-  }else{
-    // HAL_I2C_Mem_Read(&hi2c2,DevAddress,MemAddress,I2C_MEMADD_SIZE_16BIT,pData,Size,0xFF);
-    USER_DEBUG_NORMAL("USER DMA MODE\r\n");
-    HAL_I2C_Mem_Read_DMA(&hi2c2,DevAddress,MemAddress,I2C_MEMADD_SIZE_16BIT,dma_buf,Size);
-  }
+  uint8_t buf[1];
+  buf[0] = register_addr;
+  HAL_I2C_Master_Transmit(&hi2c2,DevAddress, buf,1, 0xFF);
+  HAL_I2C_Master_Receive(&hi2c2,DevAddress,&pData[0],Size,0xFF);
+}
+void i2c2_write(uint16_t DevAddress, uint8_t register_addr,uint8_t *pData, uint16_t Size)
+{
+    uint8_t SentTable[3];
+    // uint16_t ConfigWord = 0x4127;
+    // SentTable[0] = register_addr;
+    // SentTable[1] = (ConfigWord & 0xFF00) >> 8;
+    // SentTable[2] = (ConfigWord & 0x00FF);
+    SentTable[0] = register_addr;
+    SentTable[1] = (pData[0]);
+    SentTable[2] = (pData[1]);    
+    HAL_I2C_Master_Transmit(&hi2c2, 0x80, SentTable, sizeof(SentTable), 0xFF);
 }
 
-void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-  USER_DEBUG_NORMAL("s");
-}
 /* USER CODE END 1 */
