@@ -38,7 +38,9 @@ build/main.o: Src/main.c Inc/main.h \
  ../Common/debuglog/./../app_cfg.h \
  ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
  ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
- ../Sensor/sensor.h ../Sensor/sensor_cfg.h Hardware/hardware.h
+ ../Sensor/sensor.h ../Sensor/sensor_cfg.h Hardware/hardware.h \
+ ../Common/Perf_counter/perf_counter.h \
+ Drivers/CMSIS/Include/cmsis_compiler.h
 Inc/main.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 Inc/stm32h7xx_hal_conf.h:
@@ -95,3 +97,5 @@ Board/board.h:
 ../Sensor/sensor.h:
 ../Sensor/sensor_cfg.h:
 Hardware/hardware.h:
+../Common/Perf_counter/perf_counter.h:
+Drivers/CMSIS/Include/cmsis_compiler.h:

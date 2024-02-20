@@ -53,27 +53,27 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, LED_01_Pin|EBAKE_PWM_EN_Pin|TEST_IO_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, LED_01_Pin|EBAKE_PWM_EN_Pin|VCC3V3_OUT_EN_Pin|TEST_IO_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(MAIN_POWER_OFF_GPIO_Port, MAIN_POWER_OFF_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, MAIN_POWER_OFF_Pin|VCC5V_OUT_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(WATCHDOG_IN_GPIO_Port, WATCHDOG_IN_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PEPin PEPin PEPin */
-  GPIO_InitStruct.Pin = LED_01_Pin|EBAKE_PWM_EN_Pin|TEST_IO_Pin;
+  /*Configure GPIO pins : PEPin PEPin PEPin PEPin */
+  GPIO_InitStruct.Pin = LED_01_Pin|EBAKE_PWM_EN_Pin|VCC3V3_OUT_EN_Pin|TEST_IO_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = MAIN_POWER_OFF_Pin;
+  /*Configure GPIO pins : PDPin PDPin */
+  GPIO_InitStruct.Pin = MAIN_POWER_OFF_Pin|VCC5V_OUT_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(MAIN_POWER_OFF_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = WATCHDOG_IN_Pin;
@@ -92,5 +92,11 @@ void gpio_setmotor_power(void)
 void gpio_setmotor_powerdown(void)
 {
   HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_RESET);
+}
+
+void gpio_setencoder_power(void)
+{
+  // HAL_GPIO_WritePin(VCC3V3_OUT_EN_GPIO_Port,VCC3V3_OUT_EN_Pin,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(VCC5V_OUT_EN_GPIO_Port,VCC5V_OUT_EN_Pin,GPIO_PIN_SET);
 }
 /* USER CODE END 2 */

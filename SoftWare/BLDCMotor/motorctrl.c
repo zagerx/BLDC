@@ -1,7 +1,9 @@
 #include "./motorctrl.h"
 #include "debuglog.h"
 #include "motorctrl_common.h"
+#ifdef BOARD_STM32G431
 #include "mt6816.h"
+#endif
 #define Q15_PI_2                   (51471)
 #define Q15_2PI                    (205884)
 #define PI_2                       (1.570796f)
@@ -80,7 +82,7 @@ void motortctrl_process(void)
 
     case MOTOR_RUNING:
         {
-            if (!(++g_Motor1.cnt % 1500))
+            if (!(++g_Motor1.cnt % 15000))
             {
                 // USER_DEBUG_NORMAL("motor 1s\r\n");
                 /* code */
@@ -132,9 +134,9 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     yateng  theta += 0.004f;  uq = 1.0f
     qita    theta += 0.004f;  uq = 1.0f
 ---------------------------*/
-    dq_t udq = {0.0f,1.2f,_IQ15(0.0f),_IQ15(0.8f)};
+    dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
     alpbet_t uab,uab_q15;
-    #if 0//强拖
+    #if 1//强拖
         {
             static float theta = 0.0f;
             if (theta >= _2PI)
@@ -145,9 +147,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
             dut01 = _svpwm(uab.alpha,uab.beta);
             // uab = _2r_2s_Q(udq, _IQ15(theta));
             motor_set_pwm(dut01);
-            theta += 0.001f;
-
-
+            theta += 0.002f;
         }
     #else //使用传感器
     {
@@ -262,7 +262,7 @@ static float _get_angleoffset(void)
     HAL_Delay(200);
     // theta = (*(sensor_data_t *)sensor_user_read(SENSOR_01)).covdata_buf[0];
     // sg_Q_MecThetaOffset = (*(sensor_data_t *)sensor_user_read(SENSOR_01)).covdata_buf[0];
-    theta = *(float *)mt6816_read();
+    // theta = *(float *)mt6816_read();
     motor_disable();
     
     return theta;

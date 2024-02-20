@@ -27,7 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "motorctrl.h"
 #include "hardware.h"
-
+#include "perf_counter.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,6 +97,7 @@ void sysrunning_process(void)
             if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
             {
                 // USER_DEBUG_NORMAL("theta %f\r\n",(*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data);
+                HAL_GPIO_TogglePin(WATCHDOG_IN_GPIO_Port,WATCHDOG_IN_Pin);
                 HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
@@ -133,7 +134,7 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  init_cycle_counter(true);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -143,18 +144,22 @@ int main(void)
   MX_ADC3_Init();
   MX_I2C2_Init();
   MX_ADC1_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("H7 hello word\r\n");
-  // HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
-
+  unsigned int nCycleUsed = 0;
+  __cycleof__("full test",{nCycleUsed = _;}){
+    delay_ms(1000);
+  }
+  USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/550);
   hw_init();
+  // gpio_setmotor_power();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    HAL_GPIO_TogglePin(WATCHDOG_IN_GPIO_Port,WATCHDOG_IN_Pin);
     hw_sensor_process();
     sysrunning_process();
     motortctrl_process();

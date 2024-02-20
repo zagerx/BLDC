@@ -1,6 +1,11 @@
+#include "tim.h"
+#include "debuglog.h"
 #undef ABS(x)
 #define ABS(x) x>0?x:-x
-#define ABZ_STEP    0.18f
+#define ABZ_STEP    0.18f//
+
+#define ENCODER_LINES        (4096)
+#define ENCODER_STEP         (0.00153398f)       //2pi/4096
 /*6-4-5-1-3-2*/
 static float sg_hall_section[7] = {0.0f,210.0f,330.0f,270.0f,90.0f,150.0f,30.0f};
 typedef struct _hall
@@ -51,7 +56,6 @@ void abz_couterupdate(void)
 
 void encoder_angleupdate(void)
 {
-
     if (!hall_section_update())
     {
         // encoder_01.pre_theta = hall_01.ref_hall_theta;
@@ -68,11 +72,25 @@ void encoder_angleupdate(void)
     encoder_01.pre_theta = encoder_01.cur_theta;
 }
 
-
-
-
-void* angle_read(void)
+void hallencoder_init(void)
 {
+    gpio_setencoder_power();
+    tim_encode_start();
+}
 
-    return 0;
+float test_curtheta;
+void* hallencoder_readangle(void)
+{
+    static unsigned short pre_cnt = 0;
+    unsigned short cur_cnt;
+    unsigned short diff_cnt;
+    cur_cnt = tim_encode_readcnt();
+    diff_cnt = cur_cnt - pre_cnt;
+    pre_cnt = cur_cnt;
+    float cur_pose = 0;
+    static float pre_pose;
+    cur_pose = pre_pose + diff_cnt * ENCODER_STEP;
+    pre_pose = cur_pose;
+    test_curtheta = cur_pose;
+    return (void *)0;
 }

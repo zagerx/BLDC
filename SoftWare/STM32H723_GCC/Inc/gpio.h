@@ -41,7 +41,7 @@ void MX_GPIO_Init(void);
 /* USER CODE BEGIN Prototypes */
 void gpio_setmotor_power(void);
 void gpio_setmotor_powerdown(void);
-
+void gpio_setencoder_power(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

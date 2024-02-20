@@ -8,7 +8,6 @@
 
 #include "ina226.h"
 
-
-
+#include "hallencoder.h"
 
 #endif
