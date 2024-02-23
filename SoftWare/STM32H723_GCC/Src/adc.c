@@ -364,9 +364,6 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* ADC1 interrupt Init */
-    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(ADC_IRQn);
   /* USER CODE BEGIN ADC1_MspInit 1 */
 
   /* USER CODE END ADC1_MspInit 1 */
@@ -408,9 +405,6 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /* ADC2 interrupt Init */
-    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(ADC_IRQn);
   /* USER CODE BEGIN ADC2_MspInit 1 */
 
   /* USER CODE END ADC2_MspInit 1 */
@@ -465,15 +459,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_5|GPIO_PIN_6);
 
-    /* ADC1 interrupt Deinit */
-  /* USER CODE BEGIN ADC1:ADC_IRQn disable */
-    /**
-    * Uncomment the line below to disable the "ADC_IRQn" interrupt
-    * Be aware, disabling shared interrupt may affect other IPs
-    */
-    /* HAL_NVIC_DisableIRQ(ADC_IRQn); */
-  /* USER CODE END ADC1:ADC_IRQn disable */
-
   /* USER CODE BEGIN ADC1_MspDeInit 1 */
 
   /* USER CODE END ADC1_MspDeInit 1 */
@@ -502,15 +487,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_4|GPIO_PIN_5);
 
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_0|GPIO_PIN_1);
-
-    /* ADC2 interrupt Deinit */
-  /* USER CODE BEGIN ADC2:ADC_IRQn disable */
-    /**
-    * Uncomment the line below to disable the "ADC_IRQn" interrupt
-    * Be aware, disabling shared interrupt may affect other IPs
-    */
-    /* HAL_NVIC_DisableIRQ(ADC_IRQn); */
-  /* USER CODE END ADC2:ADC_IRQn disable */
 
   /* USER CODE BEGIN ADC2_MspDeInit 1 */
 
@@ -644,12 +620,18 @@ void adc_stop(void)
 {
   HAL_ADCEx_InjectedStop_IT(&hadc3);
 }
+#include "perf_counter.h"
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     unsigned int adc_vale[3];
     adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
     adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
     adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
+  unsigned int nCycleUsed = 0;
+  __cycleof__("full test",{nCycleUsed = _;}){
     _50uscycle_process(adc_vale,0.0f);
+  }
+  // USER_DEBUG_NORMAL("nCycleUsed %d\r\n",nCycleUsed);
+    
 }
 /* USER CODE END 1 */

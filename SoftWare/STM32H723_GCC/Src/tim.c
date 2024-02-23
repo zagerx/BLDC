@@ -51,11 +51,11 @@ void MX_TIM4_Init(void)
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC1Filter = 0;
+  sConfig.IC1Filter = 15;
   sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC2Filter = 0;
+  sConfig.IC2Filter = 15;
   if (HAL_TIM_Encoder_Init(&htim4, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -321,7 +321,7 @@ void tim_set_pwm(float _a,float _b,float _c)
     __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,(uint16_t)b);
     __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,(uint16_t)c);
 
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,400);	    	
+    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,_ARR-300);	    	
 }
 void tim_pwm_enable_noirq(void)
 {

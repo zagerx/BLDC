@@ -75,8 +75,14 @@ void sensor_process(void)
     }
 }
 
-/*-------------用户读取指定传感器-----------*/
-void* sensor_user_read(ENUM_SENSOR sensor_id)
+/*-------------用户读取指定传感器-----------
+
+
+    test_angle = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
+
+
+*-----------------------------------------*/
+void* sensor_user_read(ENUM_SENSOR sensor_id,sensordata_type _type)
 {
     static volatile sensor_data_t rawdata;
     if (sensor_id <= SENSOR_NONE || sensor_id > SENSOR_NUMBER)
@@ -92,7 +98,21 @@ void* sensor_user_read(ENUM_SENSOR sensor_id)
     }else{
         rawdata = g_data_arry[sensor_id];        
     }
-    return &rawdata;
+
+    if (_type == EN_SENSORDATA_COV)
+    {
+        return (void*)(rawdata.covdata_buf);
+    }
+
+    if (_type == EN_SENSORDATA_RAW)
+    {
+        return (void*)(rawdata.raw_buf);
+    }
+
+    if (_type == EN_SENSORDATA_FILTER)
+    {
+        return (void*)(rawdata.filterdata_buf);
+    }
 }
 
 void* sensor_user_write(ENUM_SENSOR sensor_id,int8_t *pdata,uint16_t size)

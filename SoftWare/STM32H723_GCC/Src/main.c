@@ -106,6 +106,7 @@ void sysrunning_process(void)
             break;
     }
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -153,14 +154,13 @@ int main(void)
   }
   USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/550);
   hw_init();
-  // gpio_setmotor_power();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    hw_sensor_process();
+    sensor_process();
     sysrunning_process();
     motortctrl_process();
     HAL_Delay(1);

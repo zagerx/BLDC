@@ -55,8 +55,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern ADC_HandleTypeDef hadc1;
-extern ADC_HandleTypeDef hadc2;
+extern I2C_HandleTypeDef hi2c2;
 /* USER CODE BEGIN EV */
 #include "_common.h"
 /* USER CODE END EV */
@@ -85,7 +84,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+  USER_DEBUG_NORMAL("HardFault\r\n");
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -200,19 +199,31 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles ADC1 and ADC2 global interrupts.
+  * @brief This function handles I2C2 event interrupt.
   */
-void ADC_IRQHandler(void)
+void I2C2_EV_IRQHandler(void)
 {
-  /* USER CODE BEGIN ADC_IRQn 0 */
+  /* USER CODE BEGIN I2C2_EV_IRQn 0 */
 
-  /* USER CODE END ADC_IRQn 0 */
-  HAL_ADC_IRQHandler(&hadc1);
-  HAL_ADC_IRQHandler(&hadc2);
-  /* USER CODE BEGIN ADC_IRQn 1 */
-  HAL_GPIO_TogglePin(TEST_IO_GPIO_Port,TEST_IO_Pin);
+  /* USER CODE END I2C2_EV_IRQn 0 */
+  HAL_I2C_EV_IRQHandler(&hi2c2);
+  /* USER CODE BEGIN I2C2_EV_IRQn 1 */
 
-  /* USER CODE END ADC_IRQn 1 */
+  /* USER CODE END I2C2_EV_IRQn 1 */
+}
+
+/**
+  * @brief This function handles I2C2 error interrupt.
+  */
+void I2C2_ER_IRQHandler(void)
+{
+  /* USER CODE BEGIN I2C2_ER_IRQn 0 */
+
+  /* USER CODE END I2C2_ER_IRQn 0 */
+  HAL_I2C_ER_IRQHandler(&hi2c2);
+  /* USER CODE BEGIN I2C2_ER_IRQn 1 */
+
+  /* USER CODE END I2C2_ER_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

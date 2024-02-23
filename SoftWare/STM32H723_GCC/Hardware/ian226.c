@@ -17,7 +17,7 @@
 #define IAN226_POWERREGISTER_ADDR        (0x03)
 #define IAN226_CURRENTREGISTER_ADDR      (0x04)
 
-#define IAN226_CFG_VAL                   (0x4127)
+#define IAN226_CFG_VAL                   (0x4727)
 #define IAN226_CALIB_VAL                 (0x0A00)
 
 #define IAN226_SHUNTVOLITE_LSB           (0.0025f)//mV/bit
@@ -28,10 +28,10 @@
 
 typedef struct _data
 {
-    unsigned int *raw_bufdata;
-    unsigned int *p_covdata;
-    unsigned int *p_filterdata;
-    unsigned short buf_column;
+    int32_t *raw_buf;     //原始数据
+    int32_t *covdata_buf;       //转换后的数据    
+    int32_t *filterdata_buf;    //滤波后数据
+    int16_t buf_column;
 }ina622_data_t;
 
 static ina622_data_t sg_data;
@@ -42,6 +42,7 @@ static void ina226_read(uint16_t MemAddress, uint16_t *pData)
 {
     uint8_t buf[2];
     i2c2_read(IAN226_BASE_ADDR, MemAddress, buf, sizeof(buf));
+
     *pData = (uint16_t)buf[0]<<8 | buf[1];
 }
 static void ina226_write( uint8_t MemAddress, uint16_t *cmd)
@@ -53,13 +54,21 @@ static void ina226_write( uint8_t MemAddress, uint16_t *cmd)
 }
 void ina226_init(void)
 {
-
+    i2c2_init();
     /*读取ID号*/
     uint16_t id,cfg_val;
     uint16_t cmd_cfg = IAN226_CFG_VAL;
     uint16_t cmd_calib = IAN226_CALIB_VAL;
+
     ina226_read(IAN226_DIEIDREGISTER_ADDR,&id);
-    USER_DEBUG_NORMAL("id 0x%x\r\n",id);
+    // USER_DEBUG_NORMAL("id 0x%x\r\n",id);    
+
+    // HAL_Delay(100);
+    // ina226_read(IAN226_CFGREGISTER_ADDR,&cfg_val);
+    // USER_DEBUG_NORMAL("cfg_val 0x%x\r\n",cfg_val);
+
+    return;
+
     ina226_write(IAN226_CFGREGISTER_ADDR,&cmd_cfg);
     ina226_read(IAN226_CFGREGISTER_ADDR,&cfg_val);
     USER_DEBUG_NORMAL("id 0x%x\r\n",cfg_val);    
@@ -75,7 +84,6 @@ void ina226_init(void)
 
 typedef struct ian226
 {
-    /* data */
     float bus_volite;
     float shunt_volite;
     float currment;
@@ -86,6 +94,7 @@ st_ian226_t IAN226_Vale;
 
 void* ina226_read_data(void)
 {
+    return (void *)(&sg_data);
     uint16_t temp = 0;
     ina226_read(IAN226_SHUNTVOLTAGEREGISTER_ADDR,&temp);
     USER_DEBUG_NORMAL("shunt voltage:%d  ",temp);

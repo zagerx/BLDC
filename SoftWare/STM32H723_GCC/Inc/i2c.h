@@ -41,6 +41,8 @@ extern I2C_HandleTypeDef hi2c2;
 void MX_I2C2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+
+void i2c2_init(void);
 void i2c2_read(uint16_t DevAddress, uint8_t register_addr, uint8_t *pData, uint16_t Size);
 void i2c2_write(uint16_t DevAddress, uint8_t register_addr,uint8_t *pData, uint16_t Size);
 
