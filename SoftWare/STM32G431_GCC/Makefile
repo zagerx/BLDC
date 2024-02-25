@@ -78,6 +78,7 @@ C_SOURCES += $(wildcard ../BLDCMotor/*.c)
 C_SOURCES += $(wildcard ../Protocol/*.c)
 C_SOURCES += $(wildcard ../Sensor/*.c)
 C_SOURCES += $(wildcard ../Common/*.c)
+C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
 C_SOURCES += $(wildcard ../Common/IPC/*.c)
 C_SOURCES += $(wildcard ../Common/Fsm/*.c)
 C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
@@ -163,6 +164,7 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Include
 
 C_INCLUDES += -I./Board
+C_INCLUDES += -I../Common/Perf_counter
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

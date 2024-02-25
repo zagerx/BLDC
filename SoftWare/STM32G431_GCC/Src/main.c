@@ -31,6 +31,7 @@
 #include "_common.h"
 #include "debuglog.h"
 #include "hardware.h"
+#include "perf_counter.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -141,6 +142,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  init_cycle_counter(true);
 
   /* USER CODE END SysInit */
 
@@ -154,6 +156,11 @@ int main(void)
   /* USER CODE BEGIN 2 */
   User_Printf_Init();
   USER_DEBUG_NORMAL("hello world\r\n");
+  unsigned int nCycleUsed = 0;
+  __cycleof__("full test",{nCycleUsed = _;}){
+    delay_ms(1000);
+  }
+  USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/170);  
   hw_init();
   protocol_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);

@@ -236,12 +236,20 @@ void adc_stop(void)
 /*----------------------------------------ADC�ж�----------------------------------------------------
 ** ÿ100usִ��һ�� pwmƵ��10KHz
 */
+#include "_common.h"
+#include "perf_counter.h"
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     unsigned int adc_vale[3];
     adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
     adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_2);
     adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_3);
+  unsigned int nCycleUsed = 0;
+  __cycleof__("full test",{nCycleUsed = _;}){
     _50uscycle_process(adc_vale,0.0f);
+  }
+  // USER_DEBUG_NORMAL("_50uscycle_process %d\r\n",nCycleUsed/170);     
 }
 /* USER CODE END 1 */
+
+

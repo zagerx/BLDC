@@ -138,8 +138,9 @@ static dq_t _3s_2r(abc_t i_abc, float theta)
 
 float _normalize_angle(float angle)
 {
-  float a = fmod(angle, 2.0f*PI);   
-  return a >= 0 ? a : (a + 2.0f*PI);  
+  float a = fmod(angle, _2PI);
+  return a;  
+//   return a >= 0 ? a : (a + 2.0f*PI);  
 }
 
 dq_t circle_limit(dq_t dq)

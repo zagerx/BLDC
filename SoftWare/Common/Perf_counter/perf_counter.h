@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "cmsis_compiler.h"
-
+#include "stdio.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

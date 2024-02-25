@@ -41,7 +41,9 @@ build/adc.o: Src/adc.c Inc/adc.h Inc/main.h \
  ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
  ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
  ../Common/data_structures/fifo.h ../Common/data_structures/heap.h \
- ../Sensor/sensor.h ../Sensor/sensor_cfg.h
+ ../Sensor/sensor.h ../Sensor/sensor_cfg.h \
+ ../Common/Perf_counter/perf_counter.h \
+ Drivers/CMSIS/Include/cmsis_compiler.h
 Inc/adc.h:
 Inc/main.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
@@ -100,3 +102,5 @@ Board/board.h:
 ../Common/data_structures/heap.h:
 ../Sensor/sensor.h:
 ../Sensor/sensor_cfg.h:
+../Common/Perf_counter/perf_counter.h:
+Drivers/CMSIS/Include/cmsis_compiler.h:

@@ -242,9 +242,6 @@ static unsigned short min_val_01(unsigned short a,unsigned short b,unsigned shor
 void tim_set_pwm(float _a,float _b,float _c)
 {
     float a,b,c;
-    // a = ((1.0f-(float)_a)*_ARR);
-    // b = ((1.0f-(float)_b)*_ARR);
-    // c = ((1.0f-(float)_c)*_ARR);
     a = (((float)_a)*_ARR);
     b = (((float)_b)*_ARR);
     c = (((float)_c)*_ARR);
@@ -277,11 +274,6 @@ void tim_pwm_enable(void)
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3); 
-
-    /*------------------------*/
-    HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
-    HAL_ADCEx_InjectedStart_IT(&hadc1);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);  
 }
 void tim_pwm_disable(void)
 {

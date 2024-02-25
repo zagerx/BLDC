@@ -14,12 +14,10 @@
 #define BYTE3(dwTemp) (*((char *)(&dwTemp) + 3))
 
 
-/*----------------------------------���������Ԫ�ظ���---------------------------------------------*/
 #ifndef dimof
 #define   dimof(__array)     (sizeof(__array)/sizeof(__array[0]))
 #endif
 
-/*-----------------------------------------����λ����----------------------------------------------*/
 #define USER_CLEAR_BIT(x, n) ( (x) &= ~(1 << (n)) )
 #define USER_SET_BIT(x, n) ( (x) |= (1 << (n)) )
 #define USER_GET_BIT(x, n) ( ((x)>>(n)) & 1 )

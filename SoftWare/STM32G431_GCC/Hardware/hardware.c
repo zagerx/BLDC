@@ -3,7 +3,7 @@
 static sensor_t sg_sensor_mt6816 = {
         .pf_read = mt6816_read,
         .pf_write = NULL,
-        .pf_init = NULL,
+        .pf_init = mt6816_init,
         .cycle = 0,
         .status = EN_SENSOR_INIT
 };

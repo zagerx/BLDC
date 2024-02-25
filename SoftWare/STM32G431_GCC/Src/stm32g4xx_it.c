@@ -51,7 +51,8 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+#include "_common.h"
+#include "perf_counter.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -189,6 +190,7 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
+  user_code_insert_to_systick_handler();
 
   /* USER CODE END SysTick_IRQn 1 */
 }

@@ -23,12 +23,12 @@
 
 /*传感器模块*/
 #define SENSOR_MODE_EN (1)
+
 #ifdef SENSOR_MODE_EN
 /*定义传感器数量*/
 typedef enum{
     SENSOR_NONE = -1,
     SENSOR_01, //角度传感器
-    SENSOR_02, 
     SENSOR_NUMBER
 }ENUM_SENSOR;
 #else
@@ -36,24 +36,32 @@ typedef enum{
     SENSOR_NONE = -1,
     SENSOR_NUMBER
 }ENUM_SENSOR;
+
 #endif
 
 
 #define BOARD_MOTORCTRL_MODE
 
 #ifdef BOARD_MOTORCTRL_MODE
-    #define AD_OFFSET                   2116.0f
-    #define RA_S                        0.05F
-    #define RB_S                        0.05F
-    #define RC_S                        0.06F
-    #define MOTOR_PAIR                  2.0f
-    #define BETA_                       5.7F
-    #define FACTOR                      (1.0f)
-    #define T_PWM                       (100.0f)*FACTOR
-    #define U_DC                        (24.0f)*FACTOR
-    #define F_PWM                       (float)(1.0f/T_PWM)*FACTOR
-    #define T_UDC                       (float)(T_PWM/U_DC)*FACTOR
+        #define A_ADCCHANNL_OFFSET          (2100)
+        #define B_ADCCHANNL_OFFSET          (2150)
+        #define C_ADCCHANNL_OFFSET          (2150)
+        #define APHASE_SHUNT                 0.05F
+        #define APHASE_SHUNT                 0.05F
+        #define APHASE_SHUNT                 0.06F
+        #define MOTOR_PAIR                  2.0f
 
+        /*Ia = (float)ADC1*(float)(3.3f/4096.0f/RA_S/BETA_);*/
+        #define A_VOLITETOCURRENT_FACTOR    (0.0002f)
+        #define B_VOLITETOCURRENT_FACTOR    (0.0002f)
+        #define C_VOLITETOCURRENT_FACTOR    (0.0002f)
+
+        #define T_PWM                       (100.0f)
+        #define U_DC                        (24.0f)
+        #define F_PWM                       (float)(1.0f/T_PWM)
+        #define T_UDC                       (float)(T_PWM/U_DC)
+
+        #define ANGLE_COMPENSATA            (0.0f)
     #define CIRCLE_MAX_VAL               16.0f
     #define D_MAX_VAL                    CIRCLE_MAX_VAL*0.95f
     #define D_MIN_VAL                    -D_MAX_VAL
