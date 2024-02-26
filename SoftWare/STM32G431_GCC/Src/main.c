@@ -115,7 +115,7 @@ void sysrunning_process(void)
             break;
     }
 }
-
+float RTT_test_Id = 0.0F;
 
 /* USER CODE END 0 */
 
