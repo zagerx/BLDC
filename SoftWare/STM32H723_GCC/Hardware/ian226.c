@@ -60,7 +60,7 @@ void ina226_init(void)
     uint16_t cmd_cfg = IAN226_CFG_VAL;
     uint16_t cmd_calib = IAN226_CALIB_VAL;
 
-    ina226_read(IAN226_DIEIDREGISTER_ADDR,&id);
+    // ina226_read(IAN226_DIEIDREGISTER_ADDR,&id);
     // USER_DEBUG_NORMAL("id 0x%x\r\n",id);    
 
     // HAL_Delay(100);
@@ -90,26 +90,26 @@ typedef struct ian226
     float power;
 }st_ian226_t;
 
-st_ian226_t IAN226_Vale;
+st_ian226_t IAN226_Vale = {0};
 
 void* ina226_read_data(void)
 {
     return (void *)(&sg_data);
     uint16_t temp = 0;
     ina226_read(IAN226_SHUNTVOLTAGEREGISTER_ADDR,&temp);
-    USER_DEBUG_NORMAL("shunt voltage:%d  ",temp);
+    // USER_DEBUG_NORMAL("shunt voltage:%d  ",temp);
     IAN226_Vale.shunt_volite = temp*IAN226_SHUNTVOLITE_LSB;
 
     ina226_read(IAN226_VBUSREGISTER_ADDR,&temp);
-    USER_DEBUG_NORMAL("Bus voltage:%d  ",temp);
+    // USER_DEBUG_NORMAL("Bus voltage:%d  ",temp);
     IAN226_Vale.bus_volite = temp*IAN226_BUSVOLITE_LSB;
 
     ina226_read(IAN226_CURRENTREGISTER_ADDR,&temp);
-    USER_DEBUG_NORMAL("current:%d  ",temp);
+    // USER_DEBUG_NORMAL("current:%d  ",temp);
     IAN226_Vale.currment = temp*IAN226_CURRENT_LSB;
 
     ina226_read(IAN226_POWERREGISTER_ADDR,&temp);
-    USER_DEBUG_NORMAL("Power:%d  \r\n",temp);
+    // USER_DEBUG_NORMAL("Power:%d  \r\n",temp);
     IAN226_Vale.power = temp*IAN226_POWER_LSB;
     return (void *)(&sg_data);
 }

@@ -96,7 +96,6 @@ void sysrunning_process(void)
             }            
             if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
             {
-                // USER_DEBUG_NORMAL("theta %f\r\n",(*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data);
                 HAL_GPIO_TogglePin(WATCHDOG_IN_GPIO_Port,WATCHDOG_IN_Pin);
                 HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
             }
@@ -106,6 +105,10 @@ void sysrunning_process(void)
             break;
     }
 }
+#define DOWN_BUFFER_NAME "DownBuffer"  
+#define DOWN_BUFFER_SIZE 1024  
+unsigned char downBuffer[DOWN_BUFFER_SIZE]; 
+float RTT_test_Id = 0.0f;
 
 /* USER CODE END 0 */
 
@@ -154,12 +157,30 @@ int main(void)
   }
   USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/550);
   hw_init();
+
+  SEGGER_RTT_ConfigDownBuffer(0, DOWN_BUFFER_NAME, (void*)downBuffer, DOWN_BUFFER_SIZE, SEGGER_RTT_MODE_NO_BLOCK_SKIP);  
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    if (SEGGER_RTT_HasKey())  
+    {  
+        char rxBuffer[32];  
+        int bytesRead = SEGGER_RTT_Read(0, rxBuffer, sizeof(rxBuffer) - 1);  
+        if (bytesRead > 0)  
+        {  
+          rxBuffer[bytesRead] = '\0'; // 添加字符串结束符
+          RTT_test_Id = atof(rxBuffer);
+          // if (test == 0.01f)
+          // {
+          //   USER_DEBUG_NORMAL("%s\r\n",rxBuffer);
+          // }
+          
+          
+        }
+    }
     sensor_process();
     sysrunning_process();
     motortctrl_process();

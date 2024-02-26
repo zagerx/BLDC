@@ -52,7 +52,7 @@ typedef struct
     unsigned short cnt;
 }motorctrl_t;
 
-static void _currmentloop(abc_t i_abc,float ele_theta);
+static dq_t _currmentloop(abc_t i_abc,float ele_theta);
 static float _get_angleoffset(void);
 static void motor_enable(void);
 static void motor_disable(void);
@@ -70,6 +70,10 @@ static curloop_t sg_curloop_param;
 float pre_angle_test = 0.0f;
 float next_angle_test = 0.0f;
 float raw_angle = 0.0f;
+float test_ia = 0.0f;
+float test_ib = 0.0f;
+float test_ic = 0.0f;
+extern float RTT_test_Id;
 void motortctrl_process(void)
 {
     switch (g_Motor1.state)
@@ -78,7 +82,7 @@ void motortctrl_process(void)
         sg_MecThetaOffset = _get_angleoffset() + ANGLE_COMPENSATA;
         foc_paraminit();
         USER_DEBUG_NORMAL("motor init\r\n");
-        HAL_Delay(200);
+        // HAL_Delay(200);
         motor_enable();
         g_Motor1.state = MOTOR_RUNING;           
         break;
@@ -103,11 +107,11 @@ void motortctrl_process(void)
 /*------------周期性被调用----------------*/
 void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 {
-    static unsigned short cnt = 0;
-    if (cnt++%3000)
-    {
-        return;
-    }
+    // static unsigned short cnt = 0;
+    // if (cnt++%3000)
+    // {
+    //     return;
+    // }
 
     duty_t dut01,dut02;
 /*----------------三相电流处理------------------------------*/    
@@ -124,9 +128,9 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
 #if 1
     abc_t i_abc;
-    i_abc.a = lowfilter_cale(&sg_elefilter[0],a1);
-    i_abc.b = lowfilter_cale(&sg_elefilter[1],b1);
-    i_abc.c = lowfilter_cale(&sg_elefilter[2],c1);
+    i_abc.a = lowfilter_cale(&sg_elefilter[0],Ia);
+    i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
+    i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
 #else
     abc_t i_abc;
     i_abc.a = Ia;
@@ -141,18 +145,13 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     mech_theta = _IQ15toF(Q15_Mechtheta);
     raw_angle = mech_theta;
     mech_theta = (mech_theta - sg_MecThetaOffset);
-    // elec_theta = mech_theta * MOTOR_PAIR;
-    // elec_theta += ANGLE_COMPENSATA;
-    pre_angle_test = mech_theta;// - sg_MecThetaOffset * 4;
-    elec_theta = _normalize_angle(pre_angle_test);
-    next_angle_test = elec_theta;
+    elec_theta = mech_theta * MOTOR_PAIR;
+    elec_theta += ANGLE_COMPENSATA;
+    elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
-    _currmentloop(i_abc,elec_theta);
+    _currmentloop(i_abc,sg_motordebug.self_ele_theta);
     // _currmentloop(i_abc,sg_motordebug.self_ele_theta);
-#if 0
-/*-------------------闭环控制-----------------------*/
-    _currmentloop(i_abc,elec_theta);
-#else
+
 /*--------------------------------------------------------------
 开环控制
 100us调用匹配参数  
@@ -160,10 +159,10 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     yateng  theta += 0.004f;  uq = 1.0f
     qita    theta += 0.004f;  uq = 1.0f
 --------------------------------------------------------------*/
-    dq_t udq = {0.0f,2.0f,_IQ15(0.0f),_IQ15(0.8f)};
-    alpbet_t uab,uab_q15;
     #if 1//强拖
         {
+            dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
+            alpbet_t uab,uab_q15;            
             if (sg_motordebug.self_ele_theta >= _2PI)
             {
                 sg_motordebug.self_ele_theta = 0.0f;
@@ -171,16 +170,25 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
             uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
             dut01 = _svpwm(uab.alpha,uab.beta);
             motor_set_pwm(dut01);
-            sg_motordebug.self_ele_theta += 0.31415926f;
+            
+            #ifdef BOARD_STM32H723
+                sg_motordebug.self_ele_theta += 0.001f;
+            #else
+                sg_motordebug.self_ele_theta += 0.31415926f;
+            #endif
         }
     #else //使用传感器
     {
+        dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.8f)};
+        alpbet_t uab,uab_q15;
+        #if 1/*闭环控制*/
+            // udq = _currmentloop(i_abc,elec_theta);
+        #endif
         uab = _2r_2s(udq, elec_theta);
         dut01 = _svpwm(uab.alpha,uab.beta);
         motor_set_pwm(dut01);
     }
     #endif
-#endif 
 
     return;
 }
@@ -190,7 +198,7 @@ void _limit_voltagecircle(uint32_t u_ref,uint32_t elec_theta)
     u_alpha = u_ref * cosf(elec_theta);
     u_beta = u_ref * sinf(elec_theta);
 }
-void _currmentloop(abc_t i_abc,float ele_theta)
+dq_t _currmentloop(abc_t i_abc,float ele_theta)
 {
 #if 0
     /*--------------对电流进行反Clark变化-----------------------*/
@@ -220,18 +228,34 @@ void _currmentloop(abc_t i_abc,float ele_theta)
 #else
     alpbet_t i_alphbeta;
     dq_t i_dq;
-    // i_abc.a = cosf(ele_theta);
-    // i_abc.b = cosf(ele_theta - _2PI/3.0f);
-    // i_abc.c = cosf(ele_theta + _2PI/3.0f);
+    test_ia = cosf(ele_theta);
+    test_ib = cosf(ele_theta - _2PI/3.0f);
+    test_ic = cosf(ele_theta + _2PI/3.0f);
+
+    // i_abc.a = test_ib;
+    // i_abc.b = test_ic;
+    // i_abc.c = test_ia;
+
+    // i_abc.a = test_ia;
+    // i_abc.b = test_ib;
+    // i_abc.c = test_ic;
+
     sg_motordebug.ia = i_abc.a;
     sg_motordebug.ib = i_abc.b;
     sg_motordebug.ic = i_abc.c;
     _3s_2s(i_abc,&i_alphbeta);
     sg_motordebug.ialpha = i_alphbeta.alpha;
     sg_motordebug.ibeta = i_alphbeta.beta;    
-    _2s_2r(i_alphbeta,((ele_theta-PI_2)),&i_dq);
+    _2s_2r(i_alphbeta,((ele_theta)-PI_2),&i_dq);
     sg_motordebug.id = (i_dq.d);
     sg_motordebug.iq = (i_dq.q);
+
+#if 1
+    dq_t udq;
+    udq.d =pid_contrl(sgp_curloop_d_pid,RTT_test_Id,i_dq.d);
+    udq.q = 0.9f;
+#endif
+    return udq;
 #endif
 }
 
@@ -274,7 +298,7 @@ static float _get_angleoffset(void)
     float theta;
     dut01 = _svpwm(uab.alpha,uab.beta);
     motor_set_pwm(dut01);
-    HAL_Delay(2000);
+    HAL_Delay(100);
     #ifdef BOARD_STM32H723
         tim_encode_writecnt(0);
         theta = 0.0f;
@@ -294,7 +318,7 @@ void foc_paraminit(void)
 {
     sgp_curloop_d_pid = &sg_curloop_param.d_pid;
     sgp_curloop_q_pid = &sg_curloop_param.q_pid;
-    pid_init(sgp_curloop_d_pid,0.08f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(sgp_curloop_d_pid,0.4f,0.000f,1.0f,D_MAX_VAL,D_MIN_VAL);
     pid_init(sgp_curloop_q_pid,0.020f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
     lowfilter_init(&sg_elefilter[0],80);
     lowfilter_init(&sg_elefilter[1],80);

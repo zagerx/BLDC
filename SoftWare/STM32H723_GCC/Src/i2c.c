@@ -21,7 +21,14 @@
 #include "i2c.h"
 
 /* USER CODE BEGIN 0 */
+#include "_common.h"
+
 static uint8_t i2cx_RxBuf[2] = {0};
+
+
+void user_i2cirq_cb(I2C_HandleTypeDef *hi2c);
+
+
 
 /* USER CODE END 0 */
 
@@ -145,33 +152,79 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 }
 
 /* USER CODE BEGIN 1 */
+uint16_t ID_TEST = 0;
+
+void user_i2cirq_cb(I2C_HandleTypeDef *hi2c)
+{
+  if (__HAL_I2C_GET_IT_SOURCE(hi2c,I2C_IT_RXI))
+  {
+    ID_TEST = (uint16_t)i2cx_RxBuf[0]<<8 | i2cx_RxBuf[1];
+    USER_DEBUG_NORMAL("i2x Rx cb 0x%x\r\n",ID_TEST);  
+  }
+}
 void i2c2_init(void)
 {
+  // hi2c2.Instance = I2C2;
+  // I2C_HandleTypeDef *p;
+  // p = &hi2c2;
+  // __HAL_I2C_ENABLE(p);
+  // RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+  // PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_I2C2;
+  // PeriphClkInitStruct.I2c123ClockSelection = RCC_I2C1235CLKSOURCE_D2PCLK1;
+  // if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+  // {
+  //   Error_Handler();
+  // }
+
+  // __HAL_RCC_I2C2_CLK_ENABLE();
+  // /* I2C2 interrupt Init */
+  // HAL_NVIC_SetPriority(I2C2_EV_IRQn, 0, 0);
+  // HAL_NVIC_EnableIRQ(I2C2_EV_IRQn);
+  // HAL_NVIC_SetPriority(I2C2_ER_IRQn, 0, 0);
+  // HAL_NVIC_EnableIRQ(I2C2_ER_IRQn);
+  
   uint8_t buf[1];
-  buf[0] = 0Xff;
+  buf[0] = 0X00;
+  USER_DEBUG_NORMAL("I2C2 CR1 0x%08x  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->CR1));
+  USER_DEBUG_NORMAL("I2C2 CR2 0x%08x  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->CR2));
+  USER_DEBUG_NORMAL("I2C2 ISR 0x%08x  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->ISR));
+  USER_DEBUG_NORMAL("I2C2 ICR 0x%08x  \r\n",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->ICR));
   // HAL_I2C_Master_Transmit(&hi2c2,0x80, buf,1, 0xFF);
-  HAL_I2C_Master_Transmit_IT(&hi2c2,0x80, buf,1);
-  // HAL_Delay(200);
-  HAL_I2C_Master_Receive_IT(&hi2c2,0x80,&i2cx_RxBuf[0],1);
-  // HAL_Delay(200);
-  HAL_I2C_Master_Receive_IT(&hi2c2,0x80,&i2cx_RxBuf[0],1);
-  HAL_I2C_Master_Transmit_IT(&hi2c2,0x80, buf,1);
+  // HAL_I2C_Master_Receive_IT(&hi2c2,0x80,&i2cx_RxBuf[0],2);
+  // __HAL_I2C_ENABLE_IT(&hi2c2,I2C_IT_RXI);
+  WRITE_REG(I2C2->CR2,0x02021480);//
+  // WRITE_REG(I2C2->ISR,0x00000004);
+  USER_DEBUG_NORMAL("I2C2 CR1 0x%08x  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->CR1));  
+  USER_DEBUG_NORMAL("I2C2 CR2 0x%08X  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->CR2));
+  USER_DEBUG_NORMAL("I2C2 ISR 0x%08x  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->ISR));
+  USER_DEBUG_NORMAL("I2C2 ICR 0x%08x  \r\n",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->ICR));
+
+  // HAL_I2C_Master_Transmit_IT(&hi2c2,0x80, buf,1);
+  // HAL_I2C_Master_Transmit(&hi2c2,0x80, buf,1, 0xFF);
+  
   HAL_Delay(200);
-  HAL_I2C_Master_Transmit_IT(&hi2c2,0x80, buf,1);  
+  // buf[0] = 0xFF;
+  // HAL_I2C_Master_Receive_IT(&hi2c2,0x80,&i2cx_RxBuf[0],2);
+  // HAL_I2C_Master_Transmit(&hi2c2,0x80, buf,1, 0xFF);
+  // HAL_I2C_Master_Transmit_IT(&hi2c2,0x80, buf,1);
+  // __HAL_I2C_ENABLE_IT(&hi2c2,I2C_IT_RXI|I2C_IT_TXI|I2C_IT_TCI);
+
+  // HAL_Delay(200);
+
+  // buf[0] = 0x05;
+  // HAL_I2C_Master_Receive_IT(&hi2c2,0x80,&i2cx_RxBuf[0],2);
+  // HAL_I2C_Master_Transmit(&hi2c2,0x80, buf,1, 0xFF);
 }
 
-uint32_t cnt_test = 0;
-#include "_common.h"
 void i2c2_read(uint16_t DevAddress, uint8_t register_addr, uint8_t *pData, uint16_t Size)
 {
   uint8_t buf[1];
   buf[0] = register_addr;
   // HAL_I2C_Master_Transmit(&hi2c2,DevAddress, buf,1, 0xFF);
-  // HAL_I2C_Master_Transmit_IT(&hi2c2,DevAddress, buf,1);
+  // HAL_I2C_Master_Receive(&hi2c2,DevAddress,&pData[0],2,0xFF);
   // pData[0] = i2cx_RxBuf[0];
   // pData[1] = i2cx_RxBuf[1];
   // HAL_I2C_Master_Receive_IT(&hi2c2,0x80,&i2cx_RxBuf[0],2);
-  // HAL_I2C_Master_Receive(&hi2c2,DevAddress,&pData[0],2,0xFF);
 }
 void i2c2_write(uint16_t DevAddress, uint8_t register_addr,uint8_t *pData, uint16_t Size)
 {
@@ -180,61 +233,27 @@ void i2c2_write(uint16_t DevAddress, uint8_t register_addr,uint8_t *pData, uint1
   SentTable[1] = (pData[0]);
   SentTable[2] = (pData[1]);
   // HAL_I2C_Master_Transmit(&hi2c2, 0x80, SentTable, sizeof(SentTable), 0xFF);
-  // HAL_I2C_Master_Transmit_IT(&hi2c2, 0x80, SentTable, sizeof(SentTable));
-}
-uint16_t ID_TEST = 0;
-void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-  if (hi2c->Instance == I2C2)
-  {
-    cnt_test++;
-    // ID_TEST = (uint16_t)i2cx_RxBuf[0]<<8 | i2cx_RxBuf[1];
-    
-    // HAL_I2C_DeInit(&hi2c2);
-    // MX_I2C2_Init();
-    uint8_t received_data = hi2c->pBuffPtr[0];
-    USER_DEBUG_NORMAL("i2x Rx cb 0x%x\r\n",I2C2->RXDR);
-    // uint8_t received_data1 = hi2c->pBuffPtr[1];
-    // HAL_I2C_Master_Receive_IT(&hi2c2,0x80,&i2cx_RxBuf[0],1);
-  }
 }
 
-#if 0
-{
-    /* Process Locked */
-    __HAL_LOCK(hi2c);
-    hi2c->State       = HAL_I2C_STATE_BUSY_RX;
-    hi2c->Mode        = HAL_I2C_MODE_MASTER;
-    hi2c->ErrorCode   = HAL_I2C_ERROR_NONE;
-    /* Prepare transfer parameters */
-    hi2c->pBuffPtr    = pData;
-    hi2c->XferCount   = Size;
-    hi2c->XferOptions = I2C_NO_OPTION_FRAME;
-    hi2c->XferISR     = I2C_Master_ISR_IT;
-    if (hi2c->XferCount > MAX_NBYTE_SIZE){
-      hi2c->XferSize = MAX_NBYTE_SIZE;
-      xfermode = I2C_RELOAD_MODE;
-    }else{
-      hi2c->XferSize = hi2c->XferCount;
-      xfermode = I2C_AUTOEND_MODE;
-    }
 
-    I2C_TransferConfig(hi2c, DevAddress, (uint8_t)hi2c->XferSize, xfermode, I2C_GENERATE_START_READ);
-    __HAL_UNLOCK(hi2c);
-    I2C_Enable_IRQ(hi2c, I2C_XFER_RX_IT);
 
-    return HAL_OK; 
-}
-#endif
+// void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
+// {
+//   if (hi2c->Instance == I2C2)
+//   {
+//     ID_TEST = (uint16_t)i2cx_RxBuf[0]<<8 | i2cx_RxBuf[1];
+//     USER_DEBUG_NORMAL("i2x Rx cb 0x%x\r\n",ID_TEST);
+//   }
+// }
 
-void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-  __HAL_I2C_CLEAR_FLAG(hi2c, I2C_FLAG_TXE); // 清除发�?�完成标志位  
+// void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
+// {
+//   __HAL_I2C_CLEAR_FLAG(hi2c, I2C_FLAG_TXE);
 
-  USER_DEBUG_NORMAL("i2x Tx cb \r\n");
-}
-void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
-{
-  USER_DEBUG_NORMAL("i2x err cb\r\n");
-}
+//   USER_DEBUG_NORMAL("i2x Tx cb \r\n");
+// }
+// void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
+// {
+//   USER_DEBUG_NORMAL("i2x err cb\r\n");
+// }
 /* USER CODE END 1 */
