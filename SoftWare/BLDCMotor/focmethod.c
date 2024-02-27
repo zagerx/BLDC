@@ -139,7 +139,6 @@ static dq_t _3s_2r(abc_t i_abc, float theta)
 float _normalize_angle(float angle)
 {
   float a = fmod(angle, _2PI);
-//   return a;  
   return a >= 0 ? a : (a + 2.0f*PI);  
 }
 

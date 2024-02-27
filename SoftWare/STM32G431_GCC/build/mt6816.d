@@ -30,7 +30,16 @@ build/mt6816.o: Hardware/mt6816.c Inc/spi.h Inc/main.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim_ex.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h \
- Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h
+ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h \
+ ../Common/_common.h Board/board.h ../Common/IPC/ipc.h \
+ ../Common/data_structures/list.h ../Common/macro_defined.h \
+ ../Common/IQMath/ti/IQmathLib.h ../Common/method/method.h \
+ ../Common/method/filter.h ../Common/method/pid.h ../Common/method/crc.h \
+ ../Common/debuglog/debuglog.h ../Common/debuglog/./debuglog_cfg.h \
+ ../Common/debuglog/./../app_cfg.h \
+ ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
+ ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
+ ../Common/data_structures/fifo.h ../Common/data_structures/heap.h
 Inc/spi.h:
 Inc/main.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
@@ -67,3 +76,20 @@ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim_ex.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h:
+../Common/_common.h:
+Board/board.h:
+../Common/IPC/ipc.h:
+../Common/data_structures/list.h:
+../Common/macro_defined.h:
+../Common/IQMath/ti/IQmathLib.h:
+../Common/method/method.h:
+../Common/method/filter.h:
+../Common/method/pid.h:
+../Common/method/crc.h:
+../Common/debuglog/debuglog.h:
+../Common/debuglog/./debuglog_cfg.h:
+../Common/debuglog/./../app_cfg.h:
+../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
+../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
+../Common/data_structures/fifo.h:
+../Common/data_structures/heap.h:

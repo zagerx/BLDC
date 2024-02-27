@@ -313,11 +313,6 @@ void tim_pwm_enable(void)
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3); 
-
-    /*----------启动ADC采样--------------*/
-    HAL_ADCEx_Calibration_Start(&hadc4,ADC_SINGLE_ENDED);
-    HAL_ADCEx_InjectedStart_IT(&hadc4);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);  
 }
 void tim_pwm_disable(void)
 {
