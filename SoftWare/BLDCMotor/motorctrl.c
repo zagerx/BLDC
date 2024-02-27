@@ -150,8 +150,8 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     elec_theta += ANGLE_COMPENSATA;
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
-    _currmentloop(i_abc,sg_motordebug.self_ele_theta);
     // _currmentloop(i_abc,sg_motordebug.self_ele_theta);
+    // _currmentloop(elec_theta);
 #endif
 
 #ifdef BOARD_STM32G431
@@ -178,7 +178,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     #if 1//强拖
         {            
             #ifdef BOARD_STM32H723
-            dq_t udq = {0.0f,1.5f,_IQ15(0.0f),_IQ15(0.8f)};
+            dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
             alpbet_t uab,uab_q15;            
             if (sg_motordebug.self_ele_theta > 6.28f)
             {

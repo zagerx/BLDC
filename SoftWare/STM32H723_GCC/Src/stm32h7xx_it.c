@@ -222,7 +222,7 @@ void ADC_IRQHandler(void)
 void I2C2_EV_IRQHandler(void)
 {
   /* USER CODE BEGIN I2C2_EV_IRQn 0 */
-  user_i2cirq_cb(&hi2c2);
+  // user_i2cirq_cb(&hi2c2);
   /* USER CODE END I2C2_EV_IRQn 0 */
   HAL_I2C_EV_IRQHandler(&hi2c2);
   /* USER CODE BEGIN I2C2_EV_IRQn 1 */

@@ -173,12 +173,6 @@ int main(void)
         {  
           rxBuffer[bytesRead] = '\0'; // 添加字符串结束符
           RTT_test_Id = atof(rxBuffer);
-          // if (test == 0.01f)
-          // {
-          //   USER_DEBUG_NORMAL("%s\r\n",rxBuffer);
-          // }
-          
-          
         }
     }
     sensor_process();
