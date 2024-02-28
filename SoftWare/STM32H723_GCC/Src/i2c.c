@@ -25,9 +25,9 @@
 
 static uint8_t i2cx_RxBuf[2] = {0};
 
-
-void user_i2cirq_cb(I2C_HandleTypeDef *hi2c);
-
+#define I2C_TRANSMIT_MODE_POLL (0)
+#define I2C_TRANSMIT_MODE_IT   (1)
+#define I2C_TRANSMIT_MODE  I2C_TRANSMIT_MODE_IT
 /* USER CODE END 0 */
 
 I2C_HandleTypeDef hi2c2;
@@ -157,8 +157,9 @@ void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
   ID_TEST = (uint16_t)i2cx_RxBuf[0]<<8 | i2cx_RxBuf[1];
   USER_DEBUG_NORMAL("i2x Rx cb 0x%04x\r\n",ID_TEST);
   // HAL_I2C_Mem_Read_IT(&hi2c2,0x0080,0xFF00,I2C_MEMADD_SIZE_16BIT,&i2cx_RxBuf[0],2);
-
 }
+
+
 void i2c2_init(void)
 {
   uint8_t pData[2];
@@ -184,17 +185,32 @@ void i2c2_init(void)
 
 void i2c2_read(uint16_t DevAddress, uint8_t register_addr, uint8_t *pData, uint16_t Size)
 {
+#if (I2C_TRANSMIT_MODE == I2C_TRANSMIT_MODE_POLL)
   uint8_t buf[1];
   buf[0] = register_addr;
   HAL_I2C_Master_Transmit(&hi2c2,DevAddress, buf,1, 0xFF);
   HAL_I2C_Master_Receive(&hi2c2,DevAddress,&pData[0],2,0xFF);
+#elif(I2C_TRANSMIT_MODE == I2C_TRANSMIT_MODE_IT)
+  HAL_I2C_Mem_Read_IT(&hi2c2,DevAddress,(uint16_t)(register_addr<<8),\
+                      I2C_MEMADD_SIZE_16BIT,&pData[0],2);
+  // HAL_I2C_Mem_Read_IT(&hi2c2,DevAddress,(uint16_t)(register_addr<<8),\
+  //                     I2C_MEMADD_SIZE_16BIT,&i2cx_RxBuf[0],2);
+  // pData[0] = i2cx_RxBuf[0]; pData[1] = i2cx_RxBuf[1];
+  // HAL_I2C_Mem_Read_IT(&hi2c2,0x0080,0xFF00,I2C_MEMADD_SIZE_16BIT,&i2cx_RxBuf[0],2);
+#endif
 }
 void i2c2_write(uint16_t DevAddress, uint8_t register_addr,uint8_t *pData, uint16_t Size)
 {
-  static uint8_t SentTable[3];
+// #if (I2C_TRANSMIT_MODE == I2C_TRANSMIT_MODE_POLL)
+  uint8_t SentTable[3];
   SentTable[0] = register_addr;
   SentTable[1] = (pData[0]);
   SentTable[2] = (pData[1]);
   HAL_I2C_Master_Transmit(&hi2c2, 0x80, SentTable, sizeof(SentTable), 0xFF);
+// #elif(I2C_TRANSMIT_MODE == I2C_TRANSMIT_MODE_IT)
+//   HAL_I2C_Mem_Read_IT(&hi2c2,DevAddress,register_addr,I2C_MEMADD_SIZE_16BIT,pData,2);
+//   HAL_I2C_Mem_Write_IT(&hi2c2,DevAddress,register_addr,I2C_MEMADD_SIZE_16BIT,pData,2);
+// #endif 
+
 }
 /* USER CODE END 1 */

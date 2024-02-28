@@ -38,16 +38,17 @@ static ina622_data_t sg_data;
 static unsigned int rawdata_buf[3];
 static float covdata_buf[3];
 static float filterdata_buf[3];
+static uint8_t Rx_buf[2] = {0};
 static void ina226_read(uint16_t MemAddress, uint16_t *pData)
 {
-    uint8_t buf[2];
-    i2c2_read(IAN226_BASE_ADDR, MemAddress, buf, sizeof(buf));
-
+    static uint8_t buf[2] = {0};
+    i2c2_read(IAN226_BASE_ADDR, MemAddress, Rx_buf, sizeof(Rx_buf));
+    HAL_Delay(10);//临时，等待中断更新buf
     *pData = (uint16_t)buf[0]<<8 | buf[1];
 }
 static void ina226_write( uint8_t MemAddress, uint16_t *cmd)
 {
-    uint8_t buf[2] = {0};
+    static uint8_t buf[2] = {0};
     buf[0] = (uint8_t)(*cmd>>8);
     buf[1] = (uint8_t)(*cmd);
     i2c2_write(IAN226_BASE_ADDR, MemAddress, buf, sizeof(buf));
@@ -66,12 +67,14 @@ void ina226_init(void)
     // ina226_read(IAN226_CFGREGISTER_ADDR,&cfg_val);
     // USER_DEBUG_NORMAL("id 0x%x\r\n",cfg_val);    
     // HAL_Delay(100);
-
-    ina226_write(IAN226_CALIBREGISTER_ADDR,&cmd_calib);
-    i2c2_init();
+    cmd_cfg = 0x4537;
+    ina226_write(IAN226_CFGREGISTER_ADDR,&cmd_cfg);
+    ina226_read(IAN226_CFGREGISTER_ADDR,&cmd_cfg);
+    ina226_read(IAN226_CFGREGISTER_ADDR,&cmd_cfg);
+    USER_DEBUG_NORMAL("id 0x%x\r\n",cfg_val); 
+    // i2c2_init();
     return;
-	//写校准寄存器
-    ina226_write(IAN226_CALIBREGISTER_ADDR,&cmd_calib);
+
 
     // sg_data.raw_bufdata = rawdata_buf;
     // sg_data.p_covdata = covdata_buf;
