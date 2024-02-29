@@ -4,7 +4,7 @@ static sensor_t sg_sensor_ina226 = {
         .pf_read = ina226_read_data,
         .pf_write = NULL,
         .pf_init = ina226_init,
-        .cycle = 500,
+        .cycle = 50,
         .status = EN_SENSOR_INIT
 };
 static sensor_t sg_hallencoder = {

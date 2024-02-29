@@ -202,19 +202,36 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     yateng  theta += 0.004f;  uq = 1.0f
     qita    theta += 0.004f;  uq = 1.0f
 --------------------------------------------------------------*/
-    #if 1//强拖
+    #if 0//强拖
         {            
             #ifdef BOARD_STM32H723
-            dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
-            alpbet_t uab,uab_q15;            
-            if (sg_motordebug.self_ele_theta > 6.28f)
-            {
-                sg_motordebug.self_ele_theta = 0.0f;
-            }
-            uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
-            dut01 = _svpwm(uab.alpha,uab.beta);
-            motor_set_pwm(dut01);            
-                sg_motordebug.self_ele_theta += 0.001f;
+
+            #if 1
+                dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
+                alpbet_t uab,uab_q15;            
+                if (sg_motordebug.self_ele_theta > 6.28f)
+                {
+                    sg_motordebug.self_ele_theta = 0.0f;
+                }
+                _currmentloop(i_abc,sg_motordebug.self_ele_theta);
+                uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
+                dut01 = _svpwm(uab.alpha,uab.beta);
+                motor_set_pwm(dut01);
+                sg_motordebug.self_ele_theta += 0.001f;                
+            #else
+                dq_t udq = {0.0f,-0.8f,_IQ15(0.0f),_IQ15(0.8f)};
+                alpbet_t uab,uab_q15;            
+                if (sg_motordebug.self_ele_theta < 0.0f)
+                {
+                    sg_motordebug.self_ele_theta += _2PI;
+                }
+                _currmentloop(i_abc,sg_motordebug.self_ele_theta);
+                uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
+                dut01 = _svpwm(uab.alpha,uab.beta);
+                motor_set_pwm(dut01);
+                sg_motordebug.self_ele_theta -= 0.001f;               
+            #endif
+
             #endif
             #ifdef BOARD_STM32G431
                 float elec_theta,mech_theta;
@@ -252,10 +269,10 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
         }
     #else //使用传感器
     {
-        dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.8f)};
+        dq_t udq = {0.0f,-1.0f,_IQ15(0.0f),_IQ15(0.8f)};
         alpbet_t uab,uab_q15;
         #if 1/*闭环控制*/
-            // udq = _currmentloop(i_abc,elec_theta);
+            udq = _currmentloop(i_abc,elec_theta - PI/2.0F);
         #endif
         uab = _2r_2s(udq, elec_theta);
         dut01 = _svpwm(uab.alpha,uab.beta);
@@ -324,12 +341,12 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     _3s_2s(i_abc,&i_alphbeta);
     sg_motordebug.ialpha = i_alphbeta.alpha;
     sg_motordebug.ibeta = i_alphbeta.beta;    
-    _2s_2r(i_alphbeta,((ele_theta) - PI_2),&i_dq);
+    _2s_2r(i_alphbeta,((ele_theta)),&i_dq);
     sg_motordebug.id = (i_dq.d);
     sg_motordebug.iq = (i_dq.q);
 
-#if 1
     dq_t udq;
+#if 0
     udq.d =pid_contrl(sgp_curloop_d_pid,RTT_test_Id,i_dq.d);
     udq.q = 0.9f;
 #endif
