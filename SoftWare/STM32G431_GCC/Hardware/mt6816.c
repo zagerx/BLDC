@@ -28,11 +28,14 @@ void* mt6816_read(void)
     AngleIn17bits =(((Spi_pRxData[1]&0x00ff)<<8) | (Spi_pRxData[2]&0x00fc))>>2;
     AngleIn17bits = 16384 - AngleIn17bits;
     rawdata = AngleIn17bits;
-    covdata = AngleIn17bits * 12;
-    // covdata = lowfilter_cale(&sg_anglefilter,AngleIn17bits * 12);
+    covdata = (AngleIn17bits * 0.00038349f) * (1<<20);
     return (void*)&sg_mt6816data;
 }
 
+// float mt6816_readf(void)
+// {
+
+// }
 void mt6816_init(void)
 {
     for (uint8_t i = 0; i < 10; i++)

@@ -57,7 +57,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     /*------------------*/
     IPC_SET_EVENT(gEventGroup,KEY01_SHORT_PRESS);
 }
-
+#define DOWN_BUFFER_NAME "DownBuffer"  
+#define DOWN_BUFFER_SIZE 1024  
+unsigned char downBuffer[DOWN_BUFFER_SIZE]; 
+float RTT_test_Id = 0.0f;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,7 +100,7 @@ void sysrunning_process(void)
             if(!(sg_SYSRuning.time_cnt % (DELAY_5000MS))){
                 sg_SYSRuning.time_cnt = 0;
                 break;
-            }           
+            }
             if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_500MS)))
@@ -115,7 +118,6 @@ void sysrunning_process(void)
             break;
     }
 }
-float RTT_test_Id = 0.0F;
 
 /* USER CODE END 0 */
 
@@ -162,6 +164,8 @@ int main(void)
   }
   USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/170);  
   hw_init();
+  SEGGER_RTT_ConfigDownBuffer(0, DOWN_BUFFER_NAME, (void*)downBuffer, DOWN_BUFFER_SIZE, SEGGER_RTT_MODE_NO_BLOCK_SKIP);  
+
   protocol_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
   USER_DEBUG_NORMAL("SYS start runing\r\n");
@@ -171,6 +175,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    if (SEGGER_RTT_HasKey())  
+    {  
+        char rxBuffer[32];  
+        int bytesRead = SEGGER_RTT_Read(0, rxBuffer, sizeof(rxBuffer) - 1);  
+        if (bytesRead > 0)  
+        {  
+          rxBuffer[bytesRead] = '\0'; // ????????
+          RTT_test_Id = atof(rxBuffer);
+        }
+    }    
     sysrunning_process();
     hw_sensor_process();
     motortctrl_process();
