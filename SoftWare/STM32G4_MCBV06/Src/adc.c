@@ -201,16 +201,32 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
 /* USER CODE BEGIN 1 */
 #include "motorctrl.h"
+
+void adc_start(void)
+{
+  HAL_ADCEx_Calibration_Start(&hadc4,ADC_SINGLE_ENDED);
+  HAL_ADCEx_InjectedStart_IT(&hadc4);
+}
+void adc_stop(void)
+{
+  HAL_ADCEx_InjectedStop_IT(&hadc4);
+}
+
 /*----------------------------------------ADC�ж�----------------------------------------------------
 ** ÿ100usִ��һ�� pwmƵ��10KHz
 */
-static unsigned int adc_vale[3];
+#include "_common.h"
+#include "perf_counter.h"
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-    
+    unsigned int adc_vale[3];
     adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_1);
     adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_2);
     adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_3);
+  unsigned int nCycleUsed = 0;
+  __cycleof__("full test",{nCycleUsed = _;}){
     _50uscycle_process(adc_vale,0.0f);
+  }
+  // USER_DEBUG_NORMAL("_50uscycle_process %d\r\n",nCycleUsed/170);     
 }
 /* USER CODE END 1 */

@@ -3,5 +3,6 @@
 
 #include "./hardware_cfg.h"
 
+void tle5012b_init(void);
 void* tle5012b_read(void);
 #endif

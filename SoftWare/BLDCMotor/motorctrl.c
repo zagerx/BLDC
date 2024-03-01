@@ -132,7 +132,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 /*---------------------获取当前转子角度-------------------------*/
 #ifdef BOARD_STM32H723
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
-    mech_theta = _IQ15toF(Q15_Mechtheta);
+    mech_theta = _IQ20toF(Q15_Mechtheta);
     raw_angle = mech_theta;
     mech_theta = (mech_theta - sg_MecThetaOffset);
     elec_theta = mech_theta * MOTOR_PAIR;
@@ -178,10 +178,6 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
         motor_set_pwm(dut01);
     }
     #endif
-
-
-
-
 #endif
 
 #ifdef BOARD_STM32G431
@@ -310,7 +306,7 @@ static void motor_enable_noirq(void)
 {
 #ifdef BOARD_STM32H723
     gpio_setmotor_power();
-#endif    
+#endif
     /*pwm 使能*/
     tim_pwm_enable();
 }

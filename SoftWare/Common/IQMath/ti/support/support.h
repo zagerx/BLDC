@@ -2,7 +2,9 @@
 #define __SUPPORTH__
 
 #include "math.h"
-
+#ifdef STM32G473xx
+    #include "stm32g4xx_hal.h"
+#endif
 #ifdef STM32G431xx
     #include "stm32g4xx_hal.h"
 #endif

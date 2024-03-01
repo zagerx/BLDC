@@ -41,7 +41,8 @@ extern ADC_HandleTypeDef hadc4;
 void MX_ADC4_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void adc_start(void);
+void adc_stop(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

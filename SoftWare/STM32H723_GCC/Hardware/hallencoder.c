@@ -116,6 +116,6 @@ void* hallencoder_readangle(void)
     cur_pose = pre_pose + diff_cnt * ENCODER_STEP;
     pre_pose = cur_pose;
     test_curtheta = cur_pose;
-    sg_covangle = (int32_t)(cur_pose * (1<<15));
+    sg_covangle = (int32_t)(cur_pose * (1<<20));
     return (void *)(&sg_hcdata);
 }

@@ -50,12 +50,7 @@ void tim_set_pwm(float _a,float _b,float _c);
 void tim_pwm_enable(void);
 void tim_pwm_disable(void);
 void tim_pwm_enable_noirq(void);
-
-	#define PWM_TIME_FULL 			(6875)						//(275*25)
-#define MOTOR_DEAD_TIME (0xFF)
-void TimerInitHalSR(TIM_HandleTypeDef *hTimBase);
-void TimerEnableHalSR(TIM_HandleTypeDef *hTimBase);
-void foc_openloop(void);
+void tim_tigger_adc(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

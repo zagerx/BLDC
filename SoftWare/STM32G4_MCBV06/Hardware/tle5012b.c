@@ -8,10 +8,16 @@
 
 typedef struct _data
 {
-    unsigned int raw; //原始数据
-    float cov_data;   //转换后的数据    
-    float filter_data;    //滤波后数据
-}tle_data_t;
+    int32_t *raw_buf;     //原始数据
+    int32_t *covdata_buf;       //转换后的数据    
+    int32_t *filterdata_buf;    //滤波后数据
+    int16_t buf_column;
+}tle5012b_data_t;
+
+static tle5012b_data_t sg_tle5012data = {0};
+ int32_t rawdata,covdata,filterdata;
+static int16_t column;
+
 
 static inline uint8_t SpiCheckCrc8SR(uint8_t* uc_data,uint8_t uc_len)
 {
@@ -55,18 +61,22 @@ static inline uint8_t SpiExchangeHalSR(SPI_HandleTypeDef *hSpi, uint16_t *pData)
     }
     return u1Ret;
 }
+void tle5012b_init(void)
+{
 
+}
 void* tle5012b_read(void)
 {
     unsigned short pData;
-    static tle_data_t data;
 	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port,SPI3_CS_Pin,GPIO_PIN_RESET);
     for(short i = 50; i > 0 ; i--);
 	SpiExchangeHalSR(&hspi3, &pData);
 	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port,SPI3_CS_Pin,GPIO_PIN_SET);
 
-    data.raw = (unsigned int)pData - 32768;
-    data.cov_data = data.raw * 6.2831853f/32768;
+    unsigned int AngleIn17bits = 0;
+    AngleIn17bits = (unsigned int)pData - 32768;
 
-    return (void *)&data; 
+    rawdata = AngleIn17bits;
+    covdata = (AngleIn17bits * 6.2831853f/32768.0f) * (1<<20);
+    return (void*)&sg_tle5012data;
 }
