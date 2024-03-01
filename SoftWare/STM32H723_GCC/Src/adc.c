@@ -143,7 +143,7 @@ void MX_ADC2_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Channel = ADC_CHANNEL_14;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -164,7 +164,7 @@ void MX_ADC2_Init(void)
   sConfigInjected.InjectedOffsetNumber = ADC_OFFSET_NONE;
   sConfigInjected.InjectedOffset = 0;
   sConfigInjected.InjectedOffsetSignedSaturation = DISABLE;
-  sConfigInjected.InjectedNbrOfConversion = 3;
+  sConfigInjected.InjectedNbrOfConversion = 4;
   sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
   sConfigInjected.AutoInjectedConv = DISABLE;
   sConfigInjected.QueueInjectedContext = DISABLE;
@@ -189,6 +189,16 @@ void MX_ADC2_Init(void)
   */
   sConfigInjected.InjectedChannel = ADC_CHANNEL_5;
   sConfigInjected.InjectedRank = ADC_INJECTED_RANK_3;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Injected Channel
+  */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_4;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_4;
+  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   if (HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected) != HAL_OK)
   {
     Error_Handler();
@@ -645,17 +655,20 @@ void adc_stop(void)
   HAL_ADCEx_InjectedStop_IT(&hadc3);
 }
 #include "perf_counter.h"
+float BusVolite = 0.0F;
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     unsigned int adc_vale[3];
     adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
     adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
     adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
+    BusVolite = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_4)/65536.0f*3.0f * (104.7f/4.7f);
+
   unsigned int nCycleUsed = 0;
   __cycleof__("full test",{nCycleUsed = _;}){
     _50uscycle_process(adc_vale,0.0f);
   }
   // USER_DEBUG_NORMAL("nCycleUsed %d\r\n",nCycleUsed/550);
-    
+
 }
 /* USER CODE END 1 */

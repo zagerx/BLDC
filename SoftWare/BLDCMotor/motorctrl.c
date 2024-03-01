@@ -168,7 +168,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
         #endif
     #else //使用传感器
     {
-        dq_t udq = {0.0f,-1.0f,_IQ15(0.0f),_IQ15(0.8f)};
+        dq_t udq = {0.0f,-0.1f,_IQ15(0.0f),_IQ15(0.8f)};
         alpbet_t uab,uab_q15;
         #if 1/*闭环控制*/
             udq = _currmentloop(i_abc,elec_theta - PI/2.0F);
