@@ -6,9 +6,9 @@
   ******************************************************************************
   * @attention
   *
-  * 1��42BLDC �������˳���? ��Դ+ ��Դ- ���� ���� ����
+  * 1ï¿½ï¿½42BLDC ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Î? ï¿½ï¿½Ô´+ ï¿½ï¿½Ô´- ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
   * git
-  *     ���Գ��Ը�theta -PI/2
+  *     ï¿½ï¿½ï¿½Ô³ï¿½ï¿½Ô¸ï¿½theta -PI/2
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -57,10 +57,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     /*------------------*/
     IPC_SET_EVENT(gEventGroup,KEY01_SHORT_PRESS);
 }
-#define DOWN_BUFFER_NAME "DownBuffer"  
-#define DOWN_BUFFER_SIZE 1024  
-unsigned char downBuffer[DOWN_BUFFER_SIZE]; 
-float RTT_test_Id = 0.0f;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,7 +67,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/*--------------ϵͳ�߳�-------------------*/
+/*--------------ÏµÍ³ï¿½ß³ï¿½-------------------*/
 #define SYSRUNNING_PERCI            (1)
 #define DELAY_1MS                   (1)/SYSRUNNING_PERCI
 #define DELAY_2MS                   (2)/SYSRUNNING_PERCI
@@ -164,7 +161,6 @@ int main(void)
   }
   USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/170);  
   hw_init();
-  SEGGER_RTT_ConfigDownBuffer(0, DOWN_BUFFER_NAME, (void*)downBuffer, DOWN_BUFFER_SIZE, SEGGER_RTT_MODE_NO_BLOCK_SKIP);  
 
   protocol_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
@@ -175,16 +171,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    if (SEGGER_RTT_HasKey())  
-    {  
-        char rxBuffer[32];  
-        int bytesRead = SEGGER_RTT_Read(0, rxBuffer, sizeof(rxBuffer) - 1);  
-        if (bytesRead > 0)  
-        {  
-          rxBuffer[bytesRead] = '\0'; // ????????
-          RTT_test_Id = atof(rxBuffer);
-        }
-    }    
+
     sysrunning_process();
     hw_sensor_process();
     motortctrl_process();

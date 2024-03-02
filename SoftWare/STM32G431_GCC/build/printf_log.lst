@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccS6yy8w.s 			page 1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -19,15 +19,21 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccS6yy8w.s 			page 1
   16              		.text
   17              	.Ltext0:
   18              		.cfi_sections	.debug_frame
-  19              		.section	.text.User_Printf_Init,"ax",%progbits
-  20              		.align	1
-  21              		.weak	User_Printf_Init
-  22              		.syntax unified
-  23              		.thumb
-  24              		.thumb_func
-  26              	User_Printf_Init:
-  27              	.LFB0:
-  28              		.file 1 "../Common/debuglog/printf_log.c"
+  19              		.section	.rodata.User_Printf_Init.str1.4,"aMS",%progbits,1
+  20              		.align	2
+  21              	.LC0:
+  22 0000 446F776E 		.ascii	"DownBuffer\000"
+  22      42756666 
+  22      657200
+  23              		.section	.text.User_Printf_Init,"ax",%progbits
+  24              		.align	1
+  25              		.weak	User_Printf_Init
+  26              		.syntax unified
+  27              		.thumb
+  28              		.thumb_func
+  30              	User_Printf_Init:
+  31              	.LFB0:
+  32              		.file 1 "../Common/debuglog/printf_log.c"
    1:../Common/debuglog/printf_log.c **** #include "debuglog_cfg.h"
    2:../Common/debuglog/printf_log.c **** #if (DEBUG_SW == DEBUG_UART)
    3:../Common/debuglog/printf_log.c ****     int _write(int file, char *data, int len)
@@ -38,51 +44,203 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccS6yy8w.s 			page 1
    8:../Common/debuglog/printf_log.c ****     __attribute__((weak)) void User_Printf_Init(void){}
    9:../Common/debuglog/printf_log.c ****     
   10:../Common/debuglog/printf_log.c **** #elif (DEBUG_SW == DEBUG_RTT)
-  11:../Common/debuglog/printf_log.c ****     __attribute__((weak)) void User_Printf_Init(void)
-  12:../Common/debuglog/printf_log.c ****     {
-  29              		.loc 1 12 5 view -0
-  30              		.cfi_startproc
-  31              		@ args = 0, pretend = 0, frame = 0
-  32              		@ frame_needed = 0, uses_anonymous_args = 0
-  33 0000 00B5     		push	{lr}
-  34              	.LCFI0:
-  35              		.cfi_def_cfa_offset 4
-  36              		.cfi_offset 14, -4
-  37 0002 83B0     		sub	sp, sp, #12
-  38              	.LCFI1:
-  39              		.cfi_def_cfa_offset 16
-  13:../Common/debuglog/printf_log.c ****         SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);           
-  40              		.loc 1 13 9 view .LVU1
-  41 0004 0223     		movs	r3, #2
-  42 0006 0093     		str	r3, [sp]
-  43 0008 0023     		movs	r3, #0
-  44 000a 1A46     		mov	r2, r3
-  45 000c 1946     		mov	r1, r3
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccS6yy8w.s 			page 2
+  11:../Common/debuglog/printf_log.c **** 
+  12:../Common/debuglog/printf_log.c **** #define DOWN_BUFFER_NAME "DownBuffer"  
+  13:../Common/debuglog/printf_log.c **** #define DOWN_BUFFER_SIZE 1024  
+  14:../Common/debuglog/printf_log.c **** unsigned char downBuffer[DOWN_BUFFER_SIZE]; 
+  15:../Common/debuglog/printf_log.c **** 
+  16:../Common/debuglog/printf_log.c ****     __attribute__((weak)) void User_Printf_Init(void)
+  17:../Common/debuglog/printf_log.c ****     {
+  33              		.loc 1 17 5 view -0
+  34              		.cfi_startproc
+  35              		@ args = 0, pretend = 0, frame = 0
+  36              		@ frame_needed = 0, uses_anonymous_args = 0
+  37 0000 00B5     		push	{lr}
+  38              	.LCFI0:
+  39              		.cfi_def_cfa_offset 4
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s 			page 2
 
 
-  46 000e 1846     		mov	r0, r3
-  47 0010 FFF7FEFF 		bl	SEGGER_RTT_ConfigUpBuffer
-  48              	.LVL0:
-  14:../Common/debuglog/printf_log.c ****     }
-  49              		.loc 1 14 5 is_stmt 0 view .LVU2
-  50 0014 03B0     		add	sp, sp, #12
-  51              	.LCFI2:
-  52              		.cfi_def_cfa_offset 4
-  53              		@ sp needed
-  54 0016 5DF804FB 		ldr	pc, [sp], #4
-  55              		.cfi_endproc
-  56              	.LFE0:
-  58              		.text
-  59              	.Letext0:
-  60              		.file 2 "../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h"
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccS6yy8w.s 			page 3
+  40              		.cfi_offset 14, -4
+  41 0002 83B0     		sub	sp, sp, #12
+  42              	.LCFI1:
+  43              		.cfi_def_cfa_offset 16
+  18:../Common/debuglog/printf_log.c ****         SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
+  44              		.loc 1 18 9 view .LVU1
+  45 0004 0223     		movs	r3, #2
+  46 0006 0093     		str	r3, [sp]
+  47 0008 0023     		movs	r3, #0
+  48 000a 1A46     		mov	r2, r3
+  49 000c 1946     		mov	r1, r3
+  50 000e 1846     		mov	r0, r3
+  51 0010 FFF7FEFF 		bl	SEGGER_RTT_ConfigUpBuffer
+  52              	.LVL0:
+  19:../Common/debuglog/printf_log.c ****         SEGGER_RTT_ConfigDownBuffer(0, DOWN_BUFFER_NAME, (void*)downBuffer, DOWN_BUFFER_SIZE, SEGGE
+  53              		.loc 1 19 9 view .LVU2
+  54 0014 0020     		movs	r0, #0
+  55 0016 0090     		str	r0, [sp]
+  56 0018 4FF48063 		mov	r3, #1024
+  57 001c 034A     		ldr	r2, .L3
+  58 001e 0449     		ldr	r1, .L3+4
+  59 0020 FFF7FEFF 		bl	SEGGER_RTT_ConfigDownBuffer
+  60              	.LVL1:
+  20:../Common/debuglog/printf_log.c ****     }
+  61              		.loc 1 20 5 is_stmt 0 view .LVU3
+  62 0024 03B0     		add	sp, sp, #12
+  63              	.LCFI2:
+  64              		.cfi_def_cfa_offset 4
+  65              		@ sp needed
+  66 0026 5DF804FB 		ldr	pc, [sp], #4
+  67              	.L4:
+  68 002a 00BF     		.align	2
+  69              	.L3:
+  70 002c 00000000 		.word	.LANCHOR0
+  71 0030 00000000 		.word	.LC0
+  72              		.cfi_endproc
+  73              	.LFE0:
+  75              		.section	.text.readLineFromRTT,"ax",%progbits
+  76              		.align	1
+  77              		.global	readLineFromRTT
+  78              		.syntax unified
+  79              		.thumb
+  80              		.thumb_func
+  82              	readLineFromRTT:
+  83              	.LVL2:
+  84              	.LFB1:
+  21:../Common/debuglog/printf_log.c **** 
+  22:../Common/debuglog/printf_log.c **** 
+  23:../Common/debuglog/printf_log.c ****     /*----------------RTT解析命令--------------------------*/
+  24:../Common/debuglog/printf_log.c ****     #include "string.h"
+  25:../Common/debuglog/printf_log.c ****     int readLineFromRTT(char* buffer, int bufferSize) {  
+  85              		.loc 1 25 55 is_stmt 1 view -0
+  86              		.cfi_startproc
+  87              		@ args = 0, pretend = 0, frame = 0
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89              		.loc 1 25 55 is_stmt 0 view .LVU5
+  90 0000 70B5     		push	{r4, r5, r6, lr}
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s 			page 3
+
+
+  91              	.LCFI3:
+  92              		.cfi_def_cfa_offset 16
+  93              		.cfi_offset 4, -16
+  94              		.cfi_offset 5, -12
+  95              		.cfi_offset 6, -8
+  96              		.cfi_offset 14, -4
+  97 0002 0646     		mov	r6, r0
+  98 0004 0D46     		mov	r5, r1
+  26:../Common/debuglog/printf_log.c ****         int index = 0; // 缓冲区中的当前位置  
+  99              		.loc 1 26 9 is_stmt 1 view .LVU6
+ 100              	.LVL3:
+  27:../Common/debuglog/printf_log.c ****         int c; // 读取的字符  
+ 101              		.loc 1 27 9 view .LVU7
+  28:../Common/debuglog/printf_log.c ****     
+  29:../Common/debuglog/printf_log.c ****         // 清空缓冲区  
+  30:../Common/debuglog/printf_log.c ****         memset(buffer, 0, bufferSize);  
+ 102              		.loc 1 30 9 view .LVU8
+ 103 0006 0A46     		mov	r2, r1
+ 104 0008 0021     		movs	r1, #0
+ 105              	.LVL4:
+ 106              		.loc 1 30 9 is_stmt 0 view .LVU9
+ 107 000a FFF7FEFF 		bl	memset
+ 108              	.LVL5:
+  31:../Common/debuglog/printf_log.c ****     
+  32:../Common/debuglog/printf_log.c ****         // 循环读取字符，直到遇到换行符或缓冲区满  
+  33:../Common/debuglog/printf_log.c ****         while (SEGGER_RTT_HasKey()) {  
+ 109              		.loc 1 33 9 is_stmt 1 view .LVU10
+  26:../Common/debuglog/printf_log.c ****         int c; // 读取的字符  
+ 110              		.loc 1 26 13 is_stmt 0 view .LVU11
+ 111 000e 0024     		movs	r4, #0
+ 112              	.LVL6:
+ 113              	.L6:
+ 114              		.loc 1 33 15 is_stmt 1 view .LVU12
+ 115              		.loc 1 33 16 is_stmt 0 view .LVU13
+ 116 0010 FFF7FEFF 		bl	SEGGER_RTT_HasKey
+ 117              	.LVL7:
+ 118              		.loc 1 33 15 view .LVU14
+ 119 0014 58B1     		cbz	r0, .L5
+  34:../Common/debuglog/printf_log.c ****             c = SEGGER_RTT_GetKey(); // 读取一个字符  
+ 120              		.loc 1 34 13 is_stmt 1 view .LVU15
+ 121              		.loc 1 34 17 is_stmt 0 view .LVU16
+ 122 0016 FFF7FEFF 		bl	SEGGER_RTT_GetKey
+ 123              	.LVL8:
+  35:../Common/debuglog/printf_log.c ****             if (c == '\n' || c == '\r') { // 检查换行符或回车符（取决于你的系统配
+ 124              		.loc 1 35 13 is_stmt 1 view .LVU17
+ 125              		.loc 1 35 16 is_stmt 0 view .LVU18
+ 126 001a 0A28     		cmp	r0, #10
+ 127 001c 07D0     		beq	.L5
+ 128              		.loc 1 35 27 discriminator 1 view .LVU19
+ 129 001e 0D28     		cmp	r0, #13
+ 130 0020 05D0     		beq	.L5
+  36:../Common/debuglog/printf_log.c ****                 break; // 如果是换行符，则结束循环  
+  37:../Common/debuglog/printf_log.c ****             }
+  38:../Common/debuglog/printf_log.c ****             if (index < bufferSize - 1) { // 确保不会溢出缓冲区  
+ 131              		.loc 1 38 13 is_stmt 1 view .LVU20
+ 132              		.loc 1 38 36 is_stmt 0 view .LVU21
+ 133 0022 6B1E     		subs	r3, r5, #1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s 			page 4
+
+
+ 134              		.loc 1 38 16 view .LVU22
+ 135 0024 A342     		cmp	r3, r4
+ 136 0026 02DD     		ble	.L5
+  39:../Common/debuglog/printf_log.c ****                 buffer[index++] = (char)c; // 将字符添加到缓冲区并递增索引  
+ 137              		.loc 1 39 17 is_stmt 1 view .LVU23
+ 138              	.LVL9:
+ 139              		.loc 1 39 33 is_stmt 0 view .LVU24
+ 140 0028 3055     		strb	r0, [r6, r4]
+ 141              		.loc 1 39 29 view .LVU25
+ 142 002a 0134     		adds	r4, r4, #1
+ 143              	.LVL10:
+ 144              		.loc 1 39 29 view .LVU26
+ 145 002c F0E7     		b	.L6
+ 146              	.LVL11:
+ 147              	.L5:
+  40:../Common/debuglog/printf_log.c ****             } else {  
+  41:../Common/debuglog/printf_log.c ****                 // 缓冲区已满，可以选择处理溢出情况（例如通过发送错误消�
+  42:../Common/debuglog/printf_log.c ****                 // 在这里我们简单地退出循环，忽略额外的字符
+  43:../Common/debuglog/printf_log.c ****                 break;  
+  44:../Common/debuglog/printf_log.c ****             }
+  45:../Common/debuglog/printf_log.c ****         }
+  46:../Common/debuglog/printf_log.c ****         return index;
+  47:../Common/debuglog/printf_log.c ****     }    
+ 148              		.loc 1 47 5 view .LVU27
+ 149 002e 2046     		mov	r0, r4
+ 150 0030 70BD     		pop	{r4, r5, r6, pc}
+ 151              		.loc 1 47 5 view .LVU28
+ 152              		.cfi_endproc
+ 153              	.LFE1:
+ 155              		.global	downBuffer
+ 156              		.section	.bss.downBuffer,"aw",%nobits
+ 157              		.align	2
+ 158              		.set	.LANCHOR0,. + 0
+ 161              	downBuffer:
+ 162 0000 00000000 		.space	1024
+ 162      00000000 
+ 162      00000000 
+ 162      00000000 
+ 162      00000000 
+ 163              		.text
+ 164              	.Letext0:
+ 165              		.file 2 "../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h"
+ 166              		.file 3 "<built-in>"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s 			page 5
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 printf_log.c
-C:\Users\57308\AppData\Local\Temp\ccS6yy8w.s:20     .text.User_Printf_Init:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccS6yy8w.s:26     .text.User_Printf_Init:00000000 User_Printf_Init
+C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s:20     .rodata.User_Printf_Init.str1.4:00000000 $d
+C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s:24     .text.User_Printf_Init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s:30     .text.User_Printf_Init:00000000 User_Printf_Init
+C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s:70     .text.User_Printf_Init:0000002c $d
+C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s:76     .text.readLineFromRTT:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s:82     .text.readLineFromRTT:00000000 readLineFromRTT
+C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s:161    .bss.downBuffer:00000000 downBuffer
+C:\Users\57308\AppData\Local\Temp\cc5pSHOt.s:157    .bss.downBuffer:00000000 $d
 
 UNDEFINED SYMBOLS
 SEGGER_RTT_ConfigUpBuffer
+SEGGER_RTT_ConfigDownBuffer
+memset
+SEGGER_RTT_HasKey
+SEGGER_RTT_GetKey

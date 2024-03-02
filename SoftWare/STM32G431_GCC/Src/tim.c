@@ -207,7 +207,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
-#include "adc.h"
 
 static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned short c)
 {
@@ -290,7 +289,7 @@ void tim_pwm_disable(void)
     HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_2);
     HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_3); 
-    HAL_ADCEx_InjectedStop_IT(&hadc1);
+
     HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_4);      
 }
 

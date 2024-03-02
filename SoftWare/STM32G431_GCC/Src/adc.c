@@ -222,7 +222,10 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
 /* USER CODE BEGIN 1 */
 #include "motorctrl.h"
+void adc_init(void)
+{
 
+}
 void adc_start(void)
 {
   HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
@@ -238,6 +241,7 @@ void adc_stop(void)
 */
 #include "_common.h"
 #include "perf_counter.h"
+unsigned int offset_buf[3];
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     unsigned int adc_vale[3];
@@ -249,6 +253,23 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     _50uscycle_process(adc_vale,0.0f);
   }
   // USER_DEBUG_NORMAL("_50uscycle_process %d\r\n",nCycleUsed/170);     
+
+  // static unsigned int adc_value_sum[3] = {0};
+  // static unsigned short cnt = 0;
+  // adc_value_sum[0] += adc_vale[0];
+  // adc_value_sum[1] += adc_vale[1];
+  // adc_value_sum[2] += adc_vale[2];
+  // if (cnt++ > 5000)
+  // {
+  //   for (unsigned char i = 0; i < 3; i++)
+  //   {
+  //     offset_buf[i] = adc_value_sum[i]/5000;
+  //     adc_value_sum[i] = 0;
+  //   }
+  //   cnt = 0;
+  // }
+  
+
 }
 /* USER CODE END 1 */
 
