@@ -34,6 +34,7 @@
     #else
         #define USER_DEBUG_NORMAL(format,...)
     #endif
+    __attribute__((weak)) char readline_fromPC(char* buffer, int bufferSize);
 #else
     #define USER_DEBUG_NORMAL(format,...)
     #define USER_DEBUG_WARING(format,...)
