@@ -656,13 +656,15 @@ void adc_stop(void)
 }
 #include "perf_counter.h"
 float BusVolite = 0.0F;
+uint32_t ADC_BUS = 0;
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     unsigned int adc_vale[3];
     adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
     adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
     adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
-    BusVolite = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_4)/65536.0f*3.0f * (104.7f/4.7f);
+    ADC_BUS =     HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_4);
+    BusVolite = ADC_BUS/65536.0f*3.0f * (104.7f/4.7f);
 
   unsigned int nCycleUsed = 0;
   __cycleof__("full test",{nCycleUsed = _;}){

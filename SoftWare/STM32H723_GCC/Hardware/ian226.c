@@ -38,21 +38,10 @@ static ina622_data_t sg_data;
 static unsigned int rawdata_buf[3];
 static float covdata_buf[3];
 static float filterdata_buf[3];
-// static uint8_t Rx_buf[2] = {0};
 
-static void ina226_read(uint16_t MemAddress, uint16_t *pData)
-{
-    uint8_t buf[2] = {0};
-    i2c2_read(IAN226_BASE_ADDR, MemAddress, buf, sizeof(buf));
-    *pData = (uint16_t)buf[0]<<8 | buf[1];
-}
-static void ina226_write( uint8_t MemAddress, uint16_t *cmd)
-{
-    static uint8_t buf[2] = {0};
-    buf[0] = (uint8_t)(*cmd>>8);
-    buf[1] = (uint8_t)(*cmd);
-    i2c2_write(IAN226_BASE_ADDR, MemAddress, buf, sizeof(buf));
-}
+static void ina226_read(uint16_t MemAddress, uint16_t *pData);
+static void ina226_write( uint8_t MemAddress, uint16_t *cmd);
+
 void ina226_init(void)
 {
     uint16_t id,cfg_val;
@@ -62,7 +51,6 @@ void ina226_init(void)
     HAL_Delay(1);
     ina226_write(IAN226_CALIBREGISTER_ADDR,&cmd_calib);
 
-// return;
     /*读取ID号*/
     ina226_read(IAN226_DIEIDREGISTER_ADDR,&id);
     HAL_Delay(1);
@@ -90,13 +78,14 @@ st_ian226_t IAN226_Vale = {0};
 
 void* ina226_read_data(void)
 {
-    return (void *)(&sg_data);
+    // return (void *)(&sg_data);
     uint16_t temp = 0;
     enum{
         EN_READ_VBUS = 0,
         EN_READ_SHUNT,
         EN_READ_CURRENT,
         EN_READ_POWER,
+        EN_READ_ID
     };
     static uint8_t stats = 0;
     switch (stats)
@@ -117,10 +106,18 @@ void* ina226_read_data(void)
 
     case EN_READ_CURRENT:
         ina226_read(IAN226_CURRENTREGISTER_ADDR,&temp);
-        USER_DEBUG_NORMAL("current:%d  ",temp);
+        USER_DEBUG_NORMAL("id:%d  ",temp);
         IAN226_Vale.currment = temp*IAN226_CURRENT_LSB;    
-        stats = EN_READ_POWER;
+        stats = EN_READ_ID;
         break;
+
+    case EN_READ_ID:
+        ina226_read(IAN226_DIEIDREGISTER_ADDR,&temp);
+        USER_DEBUG_NORMAL("current:%d  \r\n",temp);
+        IAN226_Vale.currment = temp*IAN226_CURRENT_LSB;    
+        stats = EN_READ_CURRENT;
+        break;
+
 
     case EN_READ_POWER:
         ina226_read(IAN226_POWERREGISTER_ADDR,&temp);
@@ -134,3 +131,16 @@ void* ina226_read_data(void)
     return (void *)(&sg_data);  
 }
 
+static void ina226_read(uint16_t MemAddress, uint16_t *pData)
+{
+    uint8_t buf[2] = {0};
+    i2c2_read(IAN226_BASE_ADDR, MemAddress, buf, sizeof(buf));
+    *pData = (uint16_t)buf[0]<<8 | buf[1];
+}
+static void ina226_write( uint8_t MemAddress, uint16_t *cmd)
+{
+    static uint8_t buf[2] = {0};
+    buf[0] = (uint8_t)(*cmd>>8);
+    buf[1] = (uint8_t)(*cmd);
+    i2c2_write(IAN226_BASE_ADDR, MemAddress, buf, sizeof(buf));
+}
