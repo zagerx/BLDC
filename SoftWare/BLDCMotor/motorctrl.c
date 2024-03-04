@@ -166,21 +166,14 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 #ifdef BOARD_STM32G431
         static uint32_t cnt = 0;
         static uint32_t flag = 2;
-        // if (cnt++<2000)
-        // {
-        //     return;
-        // }
-        // cnt = 0;        
-        
-        
+    
+            
         Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
         mech_theta = _IQ20toF(Q15_Mechtheta);
-
+        mech_theta -= sg_MecThetaOffset;
         elec_theta = mech_theta * MOTOR_PAIR;
-        mech_theta -= sg_MecThetaOffset*2.0f;
 
-        elec_theta += ANGLE_COMPENSATA;
-
+        // elec_theta += ANGLE_COMPENSATA;
 
         if (flag == 2)
         {
@@ -206,13 +199,17 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
             }
         #else //使用传感器
         {
-            dq_t udq = {01.0f,0.0f,_IQ15(0.0f),_IQ15(0.8f)};
+            dq_t udq = {0.0f,0.0f,_IQ15(0.0f),_IQ15(0.8f)};
             alpbet_t uab,uab_q15;
-            #if 0/*闭环控制*/
-                _currmentloop(i_abc,elec_theta);
-                // udq = _currmentloop(i_abc,elec_theta);
+            #if 1/*闭环控制*/
+                // _currmentloop(i_abc,elec_theta);
+                udq = _currmentloop(i_abc,elec_theta);
             #endif
-            uab = _2r_2s(udq, elec_theta + PI_2);
+            // float tar_id = 0.0f;
+            // tar_id = _IQ15toF(sg_motordebug.Q_id_targe);
+            // udq.d =  tar_id;
+            
+            uab = _2r_2s(udq, elec_theta);
             sg_motordebug.ialpha =  uab.alpha;
             sg_motordebug.ibeta = uab.beta;
             dut01 = _svpwm(uab.alpha,uab.beta);
@@ -254,13 +251,13 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     sg_motordebug.ic = i_abc.c;
 
 #ifdef BOARD_STM32G431
-    // i_abc.a = sg_motordebug.ia;
-    // i_abc.b = sg_motordebug.ic;
-    // i_abc.c = sg_motordebug.ib;
+    i_abc.a = sg_motordebug.ia;
+    i_abc.b = sg_motordebug.ic;
+    i_abc.c = sg_motordebug.ib;
 
-    i_abc.a = sg_motordebug.ib;
-    i_abc.b = sg_motordebug.ia;
-    i_abc.c = sg_motordebug.ic;//可以再试 iq为正正常
+    // i_abc.a = sg_motordebug.ib;
+    // i_abc.b = sg_motordebug.ia;
+    // i_abc.c = sg_motordebug.ic;//可以再试 iq为正正常
 
     // i_abc.a = sg_motordebug.ib;
     // i_abc.b = sg_motordebug.ic;
@@ -290,6 +287,8 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     udq.d =pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
     udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
 #endif
+
+    
     return udq;
 #endif
 }
@@ -366,8 +365,8 @@ void foc_paraminit(void)
 {
     sgp_curloop_d_pid = &sg_curloop_param.d_pid;
     sgp_curloop_q_pid = &sg_curloop_param.q_pid;
-    pid_init(sgp_curloop_d_pid,2.5f,0.01f,1.0f,D_MAX_VAL,D_MIN_VAL);
-    pid_init(sgp_curloop_q_pid,2.5f,0.01f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(sgp_curloop_d_pid,100.0f,20.0f,1.0f,3.5f,-3.5f);
+    pid_init(sgp_curloop_q_pid,100.0f,20.0f,1.0f,3.5f,-3.5f);
     lowfilter_init(&sg_elefilter[0],80);
     lowfilter_init(&sg_elefilter[1],80);
     lowfilter_init(&sg_elefilter[2],80);
