@@ -34,6 +34,9 @@ typedef struct
 
     float id_real;
     int32_t Q_id_targe;
+    float id_targe;
+
+
     float iq_targe;
     int32_t Q_iq_targe;
     float iq_real;

@@ -7,7 +7,7 @@ void pid_init(pid_cb_t *pid,float kp,float ki,float kc,\
     pid->ki = ki;
     pid->kc = kc;
     pid->u_i = 0.0f;
-    pid->satErr = 0;
+    pid->satErr = 0.0f;
     pid->out_max = outmax;
     pid->out_min = outmin;
 }
