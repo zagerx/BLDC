@@ -113,6 +113,31 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 #endif
 
 /*---------------------获取当前转子角度-------------------------*/
+#ifdef BOARD_STM32G4_MCB
+    // Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
+    // mech_theta = _IQ20toF(Q15_Mechtheta);
+    // raw_angle = mech_theta;
+    // mech_theta = (mech_theta - sg_MecThetaOffset);
+    // elec_theta = mech_theta * MOTOR_PAIR;
+    // elec_theta += ANGLE_COMPENSATA;
+    // elec_theta = _normalize_angle(elec_theta);
+    // sg_motordebug.ele_angle = elec_theta;
+
+
+    dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
+    alpbet_t uab,uab_q15;            
+    if (sg_motordebug.self_ele_theta > 6.28f)
+    {
+        sg_motordebug.self_ele_theta = 0.0f;
+    }
+    _currmentloop(i_abc,sg_motordebug.self_ele_theta);
+    uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
+    dut01 = _svpwm(uab.alpha,uab.beta);
+    motor_set_pwm(dut01);//暂时屏蔽 电机不转动
+    sg_motordebug.self_ele_theta += 0.001f;  
+
+#endif
+
 #ifdef BOARD_STM32H723
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
     mech_theta = _IQ20toF(Q15_Mechtheta);
@@ -123,7 +148,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
 
-    #if 1//强拖       
+    #if 0//强拖       
         #if 1
             dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
             alpbet_t uab,uab_q15;            
@@ -151,9 +176,9 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
         #endif
     #else //使用传感器
     {
-        dq_t udq = {0.0f,-0.1f,_IQ15(0.0f),_IQ15(0.8f)};
+        dq_t udq = {0.0f,0.1f,_IQ15(0.0f),_IQ15(0.8f)};
         alpbet_t uab,uab_q15;
-        #if 1/*闭环控制*/
+        #if 0/*闭环控制*/
             udq = _currmentloop(i_abc,elec_theta - PI/2.0F);
         #endif
         uab = _2r_2s(udq, elec_theta);
@@ -331,7 +356,7 @@ static float _get_angleoffset(void)
     duty_t dut01;
     float theta;
 
-    #ifdef BOARD_STM32H723
+    #ifdef BOARD_STM32H723 || BOARD_STM32G4_MCB
         dut01 = _svpwm(uab.alpha,uab.beta);
         motor_set_pwm(dut01);
         HAL_Delay(500);    

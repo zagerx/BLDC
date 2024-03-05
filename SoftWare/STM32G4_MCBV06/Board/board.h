@@ -47,8 +47,8 @@ typedef enum{
         #define B_ADCCHANNL_OFFSET          (2150)
         #define C_ADCCHANNL_OFFSET          (2150)
         #define APHASE_SHUNT                 0.05F
-        #define APHASE_SHUNT                 0.05F
-        #define APHASE_SHUNT                 0.06F
+        #define BPHASE_SHUNT                 0.05F
+        #define CPHASE_SHUNT                 0.06F
         #define MOTOR_PAIR                  2.0f
 
         /*Ia = (float)ADC1*(float)(3.3f/4096.0f/RA_S/BETA_);*/

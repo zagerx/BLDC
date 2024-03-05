@@ -150,9 +150,11 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_ADC4_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   User_Printf_Init();
-  HAL_GPIO_WritePin(POWER_3V3_EN_GPIO_Port,POWER_3V3_EN_Pin,GPIO_PIN_SET);//编码器供电使能
+  USER_DEBUG_NORMAL("MCB_V06 start runing\r\n");
+  HAL_GPIO_WritePin(POWER_3V3_EN_GPIO_Port,POWER_3V3_EN_Pin,GPIO_PIN_SET);//编码器供电使�?
   HAL_Delay(800);
   /* USER CODE END 2 */
 

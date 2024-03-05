@@ -36,12 +36,15 @@ extern TIM_HandleTypeDef htim1;
 
 extern TIM_HandleTypeDef htim2;
 
+extern TIM_HandleTypeDef htim4;
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
 void MX_TIM1_Init(void);
 void MX_TIM2_Init(void);
+void MX_TIM4_Init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
@@ -51,6 +54,11 @@ void tim_pwm_enable(void);
 void tim_pwm_disable(void);
 void tim_pwm_enable_noirq(void);
 void tim_tigger_adc(void);
+
+void tim_encode_start(void);
+unsigned short tim_encode_readcnt(void);
+void tim_encode_writecnt(unsigned short cnt);
+void tim_encode_stop(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
