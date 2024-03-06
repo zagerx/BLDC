@@ -67,8 +67,8 @@ void Error_Handler(void);
 #define POWER_12V_EN_GPIO_Port GPIOB
 #define LED01_Pin GPIO_PIN_7
 #define LED01_GPIO_Port GPIOE
-#define POWER_5V_EN_Pin GPIO_PIN_10
-#define POWER_5V_EN_GPIO_Port GPIOB
+#define VCC5V_OUT_EN_Pin GPIO_PIN_10
+#define VCC5V_OUT_EN_GPIO_Port GPIOB
 #define SPI3_CS_Pin GPIO_PIN_15
 #define SPI3_CS_GPIO_Port GPIOA
 #define POWER_MAIN_OFF_Pin GPIO_PIN_7

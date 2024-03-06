@@ -59,7 +59,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, SF_DOG_Pin|SPI3_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, POWER_12V_EN_Pin|POWER_5V_EN_Pin|POWER_3V3_EN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, POWER_12V_EN_Pin|VCC5V_OUT_EN_Pin|POWER_3V3_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED01_GPIO_Port, LED01_Pin, GPIO_PIN_RESET);
@@ -82,7 +82,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PBPin PBPin PBPin */
-  GPIO_InitStruct.Pin = POWER_12V_EN_Pin|POWER_5V_EN_Pin|POWER_3V3_EN_Pin;
+  GPIO_InitStruct.Pin = POWER_12V_EN_Pin|VCC5V_OUT_EN_Pin|POWER_3V3_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -105,5 +105,10 @@ void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
+void gpio_setencoder_power(void)
+{
+  // HAL_GPIO_WritePin(POWER_3V3_EN_GPIO_Port,POWER_3V3_EN_Pin,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(VCC5V_OUT_EN_GPIO_Port,VCC5V_OUT_EN_Pin,GPIO_PIN_SET);
 
+}
 /* USER CODE END 2 */

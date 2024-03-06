@@ -49,7 +49,7 @@ typedef enum{
         #define APHASE_SHUNT                 0.05F
         #define BPHASE_SHUNT                 0.05F
         #define CPHASE_SHUNT                 0.06F
-        #define MOTOR_PAIR                  2.0f
+        #define MOTOR_PAIR                  15.0f
 
         /*Ia = (float)ADC1*(float)(3.3f/4096.0f/RA_S/BETA_);*/
         #define A_VOLITETOCURRENT_FACTOR    (0.0015f)

@@ -100,9 +100,10 @@ void* hallencoder_readangle(void)
     unsigned int cur_cnt = 0;
     int diff_cnt = 0;
     float cur_pose = 0.0f;
-    static float pre_pose = 0.0f;    
+    static float pre_pose = 0.0f;
     cur_cnt = tim_encode_readcnt();
-    if (cur_cnt<5 || cur_cnt>16379)
+
+    if (cur_cnt<1 || cur_cnt>16384)
     {
         pre_pose = 0.0f;
         pre_cnt = 0;

@@ -114,14 +114,14 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 
 /*---------------------获取当前转子角度-------------------------*/
 #ifdef BOARD_STM32G4_MCB
-    // Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
-    // mech_theta = _IQ20toF(Q15_Mechtheta);
-    // raw_angle = mech_theta;
-    // mech_theta = (mech_theta - sg_MecThetaOffset);
-    // elec_theta = mech_theta * MOTOR_PAIR;
-    // elec_theta += ANGLE_COMPENSATA;
-    // elec_theta = _normalize_angle(elec_theta);
-    // sg_motordebug.ele_angle = elec_theta;
+    Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
+    mech_theta = _IQ20toF(Q15_Mechtheta);
+    raw_angle = mech_theta;
+    mech_theta = (mech_theta - sg_MecThetaOffset);
+    elec_theta = mech_theta * MOTOR_PAIR;
+    elec_theta += ANGLE_COMPENSATA;
+    elec_theta = _normalize_angle(elec_theta);
+    sg_motordebug.ele_angle = elec_theta;
 
 
     dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
