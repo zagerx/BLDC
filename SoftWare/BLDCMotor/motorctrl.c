@@ -29,6 +29,10 @@ static float _get_angleoffset(void);
 static void motor_enable(void);
 static void motor_disable(void);
 static void motor_set_pwm(duty_t temp);
+static void sg_debug_clear(void)
+{
+    sg_motordebug.id_targe =0.0f;
+}
 alpbet_t _limit_voltagecircle(alpbet_t raw_uab);
 motorctrl_t g_Motor1 = {
     .state = MOTOR_INIT,
@@ -36,6 +40,7 @@ motorctrl_t g_Motor1 = {
 };
 static volatile float sg_MecThetaOffset = 0.0f;
 static lowfilter_t sg_elefilter[3];
+pid_cb_t _d_pid = {0};
 static pid_cb_t *sgp_curloop_d_pid;
 static pid_cb_t *sgp_curloop_q_pid;
 static curloop_t sg_curloop_param;
@@ -59,9 +64,10 @@ void motortctrl_process(void)
     switch (g_Motor1.state)
     {
     case MOTOR_INIT:
+        USER_DEBUG_NORMAL("motor init\r\n");
+        sg_debug_clear();
         sg_MecThetaOffset = _get_angleoffset();
         foc_paraminit();
-        USER_DEBUG_NORMAL("motor init\r\n");
         HAL_Delay(20);
         motor_enable();
         g_Motor1.state = MOTOR_RUNING;           
@@ -73,12 +79,25 @@ void motortctrl_process(void)
             {
                 // g_Motor1.state = MOTOR_STOP;
             }
+            if (sg_motordebug.motor_stat == 1)
+            {
+                g_Motor1.state = MOTOR_STOP;
+            }
         }
         break;
 
     case MOTOR_STOP:
         motor_disable();
+        USER_DEBUG_NORMAL("update parm...\r\n");
+        g_Motor1.state = MOTOR_IDLE;
+    case MOTOR_IDLE:
+            if (sg_motordebug.motor_stat == 3)
+            {
+                USER_DEBUG_NORMAL("update suceeful\r\n");
+                g_Motor1.state = MOTOR_INIT;
+            }        
         break;
+    
     default:
         break;
     }
@@ -226,8 +245,6 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
                 udq = _currmentloop(i_abc,elec_theta);
                 sg_motordebug.pid_D_out = udq.d;
             #endif
-            
-
     // float tar_id = 0.0f,tar_iq = 0.0f;
     // tar_id = _IQ15toF(sg_motordebug.Q_id_targe);
     // tar_iq = _IQ15toF(sg_motordebug.Q_iq_targe);
@@ -269,6 +286,7 @@ alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {
     }
     return uab;
 }
+float piderr = 0.0f;
 dq_t _currmentloop(abc_t i_abc,float ele_theta)
 {
 #if 1
@@ -314,15 +332,16 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     sg_motordebug.id = (i_dq.d);
     sg_motordebug.iq = (i_dq.q);
 
-    dq_t udq;
+    dq_t udq = {0.0f};
 #if 1
     float tar_id = 0.0f,tar_iq = 0.0f;
     tar_id = _IQ15toF(sg_motordebug.Q_id_targe);
     tar_iq = _IQ15toF(sg_motordebug.Q_iq_targe);
+    piderr = tar_id - i_dq.d;
     udq.d =pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
     sg_motordebug.id_real = i_dq.d;
     sg_motordebug.id_targe = tar_id;
-    udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
+    // udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
     sg_motordebug.iq_real = i_dq.q;
     sg_motordebug.iq_targe = tar_iq;
 
@@ -404,10 +423,11 @@ static float _get_angleoffset(void)
 
 void foc_paraminit(void)
 {
-    sgp_curloop_d_pid = &sg_curloop_param.d_pid;
+    sgp_curloop_d_pid = &(sg_curloop_param.d_pid);
     sgp_curloop_q_pid = &sg_curloop_param.q_pid;
-    pid_init(sgp_curloop_d_pid,0.10f,0.001f,1.0f,D_MAX_VAL,-13.0f);
-    pid_init(sgp_curloop_q_pid,0.10f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(sgp_curloop_d_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,0.001f,D_MAX_VAL,-13.0f);
+    USER_DEBUG_NORMAL("d  kp %f\r\n",sgp_curloop_d_pid->kp);
+    // pid_init(sgp_curloop_q_pid,0.10f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
     lowfilter_init(&sg_elefilter[0],80);
     lowfilter_init(&sg_elefilter[1],80);
     lowfilter_init(&sg_elefilter[2],80);

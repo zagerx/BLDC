@@ -16,6 +16,7 @@
 
 typedef struct
 {
+    unsigned char motor_stat;
     float ia;
     float ib;
     float ic;
@@ -42,7 +43,11 @@ typedef struct
     float iq_real;
 
     float pid_Q_out;
+    float Pid_q_kp;
+    float pid_q_ki;
     float pid_D_out;
+    float pid_d_kp;
+    float pid_d_ki;
     float ele_angle;
     float self_ele_theta;
     int32_t Q15_ele_angle;

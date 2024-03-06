@@ -17,28 +17,38 @@ void pid_reset(pid_cb_t *pid)
     pid->u_i = 0.0f;
     pid->satErr = 0.0f;
 }
-
+float test_pidout = 0.0f;
 float pid_contrl(pid_cb_t *pid,float tar,float cur)
 {
-    float err,u_p,v_out,presat;
+    float err = 0.0f,u_p = 0.0f,v_out = 0.0f,presat = 0.0f;
     err = tar - cur;
-    u_p = pid->kp*err;
-    pid->u_i = pid->u_i + pid->ki*u_p + pid->kc*pid->satErr;
-    presat = u_p+pid->u_i;
-    if(presat>pid->out_max)
-    {
-        v_out = pid->out_max;
-    }else if(presat < pid->out_min)
-    {
-        v_out = pid->out_min;
-    }else{
-        v_out = presat;
-    }
-    pid->satErr = v_out - presat;
-#if 0
-        u_p1 = u_p;
-        ud = kd*(u_p-u_p1);
-        pid->presat = u_p + u_i + u_d;
-#endif
+    // u_p = pid->kp*err;
+    u_p = 0.01f*err;
+    test_pidout = u_p;
+
+    // pid->u_i = pid->u_i + pid->ki*u_p + pid->kc*pid->satErr;
+    // presat = u_p + pid->u_i;
+    // if(presat>pid->out_max)
+    // {
+    //     v_out = pid->out_max;
+    // }else if(presat < pid->out_min)
+    // {
+    //     v_out = pid->out_min;
+    // }else{
+    //     v_out = presat;
+    // }
+    // pid->satErr = v_out - presat;
+    // return v_out;
+
+    v_out = u_p;
+    // if(v_out > 10)
+    // {
+    //     v_out = 10.0;
+    // }
+    // if(v_out < -10)
+    // {
+    //     v_out = -10.0;
+    // }
+
     return v_out;
 }
