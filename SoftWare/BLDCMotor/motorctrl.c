@@ -110,8 +110,6 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 
     duty_t dut01,dut02;
 
-
-
 /*----------------三相电流处理------------------------------*/    
     float Ia,Ib,Ic;
     int32_t a1,b1,c1;
@@ -137,7 +135,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     mech_theta = _IQ20toF(Q15_Mechtheta);
     raw_angle = mech_theta;
     mech_theta = (mech_theta - sg_MecThetaOffset);
-    elec_theta = mech_theta * MOTOR_PAIR;
+    elec_theta = mech_theta * 1.0f;
     elec_theta += ANGLE_COMPENSATA;
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
@@ -159,7 +157,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 
 #ifdef BOARD_STM32H723
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
-    mech_theta = _IQ20toF(Q15_Mechtheta);
+    mech_theta = _IQ22toF(Q15_Mechtheta);
     raw_angle = mech_theta;
     mech_theta = (mech_theta - sg_MecThetaOffset);
     elec_theta = mech_theta * MOTOR_PAIR;
@@ -391,13 +389,23 @@ static float _get_angleoffset(void)
     duty_t dut01;
     float theta;
 
-    #ifdef BOARD_STM32H723 || BOARD_STM32G4_MCB
+    #ifdef BOARD_STM32H723 
         dut01 = _svpwm(uab.alpha,uab.beta);
         motor_set_pwm(dut01);
         HAL_Delay(500);    
         tim_encode_writecnt(0);
         theta = 0.0f;
-        motor_disable();
+        // motor_disable();
+        return theta;
+    #endif
+
+    #ifdef BOARD_STM32G4_MCB
+        dut01 = _svpwm(uab.alpha,uab.beta);
+        motor_set_pwm(dut01);
+        HAL_Delay(500);    
+        tim_encode_writecnt(0);
+        theta = 0.0f;
+        // motor_disable();
         return theta;
     #endif
 

@@ -6,7 +6,7 @@
 #define ABZ_STEP    0.18f//
 
 #define ENCODER_LINES        (_ENCODERLINS)
-#define ENCODER_STEP         (0.0003835f)       //2pi/4096
+#define ENCODER_STEP         (0.001533980f)       //2pi/4096/4
 /*6-4-5-1-3-2*/
 static float sg_hall_section[7] = {0.0f,210.0f,330.0f,270.0f,90.0f,150.0f,30.0f};
 typedef struct _hall
@@ -103,12 +103,12 @@ void* hallencoder_readangle(void)
     static float pre_pose = 0.0f;
     cur_cnt = tim_encode_readcnt();
 
-    if (cur_cnt<1 || cur_cnt>16384)
-    {
-        pre_pose = 0.0f;
-        pre_cnt = 0;
-        cur_cnt = 0;
-    }
+    // if (cur_cnt < 2 || cur_cnt > ENCODER_LINES-2)
+    // {
+    //     pre_pose = 0.0f;
+    //     pre_cnt = 0;
+    //     cur_cnt = 0;
+    // }
     test_cur_cnt = cur_cnt;
     diff_cnt = cur_cnt - pre_cnt;
     ABS(diff_cnt);
@@ -117,6 +117,6 @@ void* hallencoder_readangle(void)
     cur_pose = pre_pose + diff_cnt * ENCODER_STEP;
     pre_pose = cur_pose;
     test_curtheta = cur_pose;
-    sg_covangle = (int32_t)(cur_pose * (1<<20));
+    sg_covangle = (int32_t)(cur_pose * (1<<22));
     return (void *)(&sg_hcdata);
 }
