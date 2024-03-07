@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s 			page 1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRVJOzS.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s 			page 1
   47 000e 0361     		str	r3, [r0, #16]	@ float
   10:../Common/method/pid.c ****     pid->satErr = 0.0f;
   48              		.loc 1 10 5 is_stmt 1 view .LVU9
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s 			page 2
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRVJOzS.s 			page 2
 
 
   49              		.loc 1 10 17 is_stmt 0 view .LVU10
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s 			page 1
   97              		.section	.text.pid_contrl,"ax",%progbits
   98              		.align	1
   99              		.global	pid_contrl
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s 			page 3
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRVJOzS.s 			page 3
 
 
  100              		.syntax unified
@@ -127,99 +127,63 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s 			page 1
  104              	pid_contrl:
  105              	.LVL4:
  106              	.LFB2:
-  20:../Common/method/pid.c **** float test_pidout = 0.0f;
-  21:../Common/method/pid.c **** float pid_contrl(pid_cb_t *pid,float tar,float cur)
-  22:../Common/method/pid.c **** {
- 107              		.loc 1 22 1 is_stmt 1 view -0
+  20:../Common/method/pid.c **** float pid_contrl(pid_cb_t *pid,float tar,float cur)
+  21:../Common/method/pid.c **** {
+ 107              		.loc 1 21 1 is_stmt 1 view -0
  108              		.cfi_startproc
  109              		@ args = 0, pretend = 0, frame = 0
  110              		@ frame_needed = 0, uses_anonymous_args = 0
  111              		@ link register save eliminated.
-  23:../Common/method/pid.c ****     float err = 0.0f,u_p = 0.0f,v_out = 0.0f,presat = 0.0f;
- 112              		.loc 1 23 5 view .LVU25
-  24:../Common/method/pid.c ****     err = tar - cur;
- 113              		.loc 1 24 5 view .LVU26
- 114              		.loc 1 24 9 is_stmt 0 view .LVU27
+  22:../Common/method/pid.c ****     float err = 0.0f,u_p = 0.0f,v_out = 0.0f,presat = 0.0f;
+ 112              		.loc 1 22 5 view .LVU25
+  23:../Common/method/pid.c ****     err = tar - cur;
+ 113              		.loc 1 23 5 view .LVU26
+ 114              		.loc 1 23 9 is_stmt 0 view .LVU27
  115 0000 30EE600A 		vsub.f32	s0, s0, s1
  116              	.LVL5:
-  25:../Common/method/pid.c ****     // u_p = pid->kp*err;
-  26:../Common/method/pid.c ****     u_p = 0.01f*err;
- 117              		.loc 1 26 5 is_stmt 1 view .LVU28
- 118              		.loc 1 26 9 is_stmt 0 view .LVU29
- 119 0004 DFED030A 		vldr.32	s1, .L4
+  24:../Common/method/pid.c ****     u_p = pid->kp*err;
+ 117              		.loc 1 24 5 is_stmt 1 view .LVU28
+ 118              		.loc 1 24 14 is_stmt 0 view .LVU29
+ 119 0004 D0ED007A 		vldr.32	s15, [r0]
  120              	.LVL6:
- 121              		.loc 1 26 9 view .LVU30
- 122 0008 20EE200A 		vmul.f32	s0, s0, s1
- 123              	.LVL7:
-  27:../Common/method/pid.c ****     test_pidout = u_p;
- 124              		.loc 1 27 5 is_stmt 1 view .LVU31
- 125              		.loc 1 27 17 is_stmt 0 view .LVU32
- 126 000c 024B     		ldr	r3, .L4+4
- 127 000e 83ED000A 		vstr.32	s0, [r3]
-  28:../Common/method/pid.c **** 
-  29:../Common/method/pid.c ****     // pid->u_i = pid->u_i + pid->ki*u_p + pid->kc*pid->satErr;
-  30:../Common/method/pid.c ****     // presat = u_p + pid->u_i;
-  31:../Common/method/pid.c ****     // if(presat>pid->out_max)
+  25:../Common/method/pid.c ****     return u_p;
+ 121              		.loc 1 25 5 is_stmt 1 view .LVU30
+  26:../Common/method/pid.c ****     pid->u_i = pid->u_i + pid->ki*u_p + pid->kc*pid->satErr;
+  27:../Common/method/pid.c ****     presat = u_p + pid->u_i;
+  28:../Common/method/pid.c ****     // if(presat>pid->out_max)
+  29:../Common/method/pid.c ****     // {
+  30:../Common/method/pid.c ****     //     v_out = pid->out_max;
+  31:../Common/method/pid.c ****     // }else if(presat < pid->out_min)
   32:../Common/method/pid.c ****     // {
-  33:../Common/method/pid.c ****     //     v_out = pid->out_max;
-  34:../Common/method/pid.c ****     // }else if(presat < pid->out_min)
-  35:../Common/method/pid.c ****     // {
-  36:../Common/method/pid.c ****     //     v_out = pid->out_min;
-  37:../Common/method/pid.c ****     // }else{
-  38:../Common/method/pid.c ****     //     v_out = presat;
-  39:../Common/method/pid.c ****     // }
-  40:../Common/method/pid.c ****     // pid->satErr = v_out - presat;
-  41:../Common/method/pid.c ****     // return v_out;
-  42:../Common/method/pid.c **** 
-  43:../Common/method/pid.c ****     v_out = u_p;
- 128              		.loc 1 43 5 is_stmt 1 view .LVU33
- 129              	.LVL8:
-  44:../Common/method/pid.c ****     // if(v_out > 10)
-  45:../Common/method/pid.c ****     // {
-  46:../Common/method/pid.c ****     //     v_out = 10.0;
-  47:../Common/method/pid.c ****     // }
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s 			page 4
-
-
-  48:../Common/method/pid.c ****     // if(v_out < -10)
-  49:../Common/method/pid.c ****     // {
-  50:../Common/method/pid.c ****     //     v_out = -10.0;
-  51:../Common/method/pid.c ****     // }
-  52:../Common/method/pid.c **** 
-  53:../Common/method/pid.c ****     return v_out;
- 130              		.loc 1 53 5 view .LVU34
-  54:../Common/method/pid.c **** }
- 131              		.loc 1 54 1 is_stmt 0 view .LVU35
- 132 0012 7047     		bx	lr
- 133              	.L5:
- 134              		.align	2
- 135              	.L4:
- 136 0014 0AD7233C 		.word	1008981770
- 137 0018 00000000 		.word	.LANCHOR0
- 138              		.cfi_endproc
- 139              	.LFE2:
- 141              		.global	test_pidout
- 142              		.section	.bss.test_pidout,"aw",%nobits
- 143              		.align	2
- 144              		.set	.LANCHOR0,. + 0
- 147              	test_pidout:
- 148 0000 00000000 		.space	4
- 149              		.text
- 150              	.Letext0:
- 151              		.file 2 "../Common/method/./pid.h"
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s 			page 5
+  33:../Common/method/pid.c ****     //     v_out = pid->out_min;
+  34:../Common/method/pid.c ****     // }else{
+  35:../Common/method/pid.c ****         
+  36:../Common/method/pid.c ****     // }
+  37:../Common/method/pid.c **** 
+  38:../Common/method/pid.c ****     v_out = presat;
+  39:../Common/method/pid.c ****     pid->satErr = v_out - presat;
+  40:../Common/method/pid.c ****     return v_out;
+  41:../Common/method/pid.c **** }
+ 122              		.loc 1 41 1 is_stmt 0 view .LVU31
+ 123 0008 27EE800A 		vmul.f32	s0, s15, s0
+ 124              	.LVL7:
+ 125              		.loc 1 41 1 view .LVU32
+ 126 000c 7047     		bx	lr
+ 127              		.cfi_endproc
+ 128              	.LFE2:
+ 130              		.text
+ 131              	.Letext0:
+ 132              		.file 2 "../Common/method/./pid.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRVJOzS.s 			page 4
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 pid.c
-C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s:20     .text.pid_init:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s:26     .text.pid_init:00000000 pid_init
-C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s:71     .text.pid_reset:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s:77     .text.pid_reset:00000000 pid_reset
-C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s:98     .text.pid_contrl:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s:104    .text.pid_contrl:00000000 pid_contrl
-C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s:136    .text.pid_contrl:00000014 $d
-C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s:147    .bss.test_pidout:00000000 test_pidout
-C:\Users\57308\AppData\Local\Temp\ccGUJKjT.s:143    .bss.test_pidout:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRVJOzS.s:20     .text.pid_init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRVJOzS.s:26     .text.pid_init:00000000 pid_init
+C:\Users\57308\AppData\Local\Temp\ccRVJOzS.s:71     .text.pid_reset:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRVJOzS.s:77     .text.pid_reset:00000000 pid_reset
+C:\Users\57308\AppData\Local\Temp\ccRVJOzS.s:98     .text.pid_contrl:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRVJOzS.s:104    .text.pid_contrl:00000000 pid_contrl
 
 NO UNDEFINED SYMBOLS

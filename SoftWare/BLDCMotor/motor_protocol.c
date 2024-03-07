@@ -42,7 +42,7 @@ commandmap_t sg_commandmap[] = {
     {"motor_stop",4,_set_motorstop},
     {"motor_start",5,_set_motorstart},
     {"mc_setd_kp",6,_set_d_kp},
-    {"mc_setd_ki",6,_set_d_ki},
+    {"mc_setd_ki",7,_set_d_ki},
     // 可以在这里添加更多的命令映射  
 };
 
@@ -50,14 +50,14 @@ void motorprotocol_pause(char *cmd)
 {
     float value =0.0f;
     unsigned short cmd_ID;
-    USER_DEBUG_NORMAL("recive: %s\r\n",cmd);
 
     const size_t mapSize = sizeof(sg_commandmap) / sizeof(sg_commandmap[0]); 
     cmd_ID = _findcmd_from_map(cmd,sg_commandmap,mapSize);    
 }
 static void* _set_d_kp(char *str,int32_t kp)
 {
-    float val = 0.0f;            
+    float val = 0.0f;
+    USER_DEBUG_NORMAL("enter set d kp\r\n");
     if (!_findF_from_str(str,&val))
     {
         return 0;
@@ -65,7 +65,7 @@ static void* _set_d_kp(char *str,int32_t kp)
     int32_t temp = 0;
     temp = val * (1<<15);    
     sg_motordebug.pid_d_kp = val;
-    USER_DEBUG_NORMAL("d Kp set ok\r\n");
+    USER_DEBUG_NORMAL("d Kp = %f set ok\r\n",sg_motordebug.pid_d_kp);
     return 0;    
 }
 static void* _set_d_ki(char *str,int32_t ki)
@@ -78,7 +78,7 @@ static void* _set_d_ki(char *str,int32_t ki)
     int32_t temp = 0;
     temp = val * (1<<15);    
     sg_motordebug.pid_d_ki = val;
-    USER_DEBUG_NORMAL("d Ki set ok\r\n");
+    USER_DEBUG_NORMAL("d Ki set ok \r\n");
     return 0; 
 }
 static void* _set_motorstart(char *str,int32_t iq)
@@ -141,6 +141,7 @@ static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map
             return map[i].cmd_index; // 找到匹配项，返回对应值  
         }
     }
+    USER_DEBUG_NORMAL("NO Cmd PATH\r\n");
     return 0; // 未找到匹配项，返回0  
 }  
 

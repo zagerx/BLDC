@@ -32,6 +32,7 @@ static void motor_set_pwm(duty_t temp);
 static void sg_debug_clear(void)
 {
     sg_motordebug.id_targe =0.0f;
+    sg_motordebug.iq_targe =0.0f;
 }
 alpbet_t _limit_voltagecircle(alpbet_t raw_uab);
 motorctrl_t g_Motor1 = {
@@ -40,7 +41,7 @@ motorctrl_t g_Motor1 = {
 };
 static volatile float sg_MecThetaOffset = 0.0f;
 static lowfilter_t sg_elefilter[3];
-pid_cb_t _d_pid = {0};
+pid_cb_t test_d_pid = {0};
 static pid_cb_t *sgp_curloop_d_pid;
 static pid_cb_t *sgp_curloop_q_pid;
 static curloop_t sg_curloop_param;
@@ -50,11 +51,9 @@ float raw_angle = 0.0f;
 float test_ia = 0.0f;
 float test_ib = 0.0f;
 float test_ic = 0.0f;
-extern float RTT_test_Id;
 void motortctrl_process(void)
 {
-
-    char rec_buf[32];
+    char rec_buf[64];
     char cnt = 0;
     if (readline_fromPC(rec_buf,sizeof(rec_buf)))
     {
@@ -107,29 +106,20 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 {
     float elec_theta,mech_theta;
     int32_t Q15_Mechtheta;    
-
     duty_t dut01,dut02;
-
 /*----------------三相电流处理------------------------------*/    
     float Ia,Ib,Ic;
     int32_t a1,b1,c1;
     a1 = abc_vale[0] - A_ADCCHANNL_OFFSET;
     b1 = abc_vale[1] - B_ADCCHANNL_OFFSET;
-    c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;
-    sg_motordebug.Q_ia = a1;
-    sg_motordebug.Q_ib = b1;
-    sg_motordebug.Q_ic = c1;    
+    c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;   
     Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
     Ib = (float)b1*(float)B_VOLITETOCURRENT_FACTOR;
     Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
-#if 1
     abc_t i_abc;
     i_abc.a = lowfilter_cale(&sg_elefilter[0],Ia);
     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
-#endif
-
-/*---------------------获取当前转子角度-------------------------*/
 #ifdef BOARD_STM32G4_MCB
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
     mech_theta = _IQ20toF(Q15_Mechtheta);
@@ -139,7 +129,6 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     elec_theta += ANGLE_COMPENSATA;
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
-
 
     dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
     alpbet_t uab,uab_q15;            
@@ -206,18 +195,16 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 #endif
 
 #ifdef BOARD_STM32G431
-            
         Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
         mech_theta = _IQ20toF(Q15_Mechtheta);
         mech_theta -= sg_MecThetaOffset;
         elec_theta = mech_theta * MOTOR_PAIR;
-        static unsigned char flag = 2;
-        if (flag == 2)
-        {
-            elec_theta = 0.0f;
-            flag = 0;
-        }
-        
+        // static unsigned char flag = 2;
+        // if (flag == 2)
+        // {
+        //     elec_theta = 0.0f;
+        //     flag = 0;
+        // }
         elec_theta = _normalize_angle(elec_theta);
         sg_motordebug.ele_angle = elec_theta;
 
@@ -239,33 +226,17 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
             dq_t udq = {0.0f,0.0f,_IQ15(0.0f),_IQ15(0.8f)};
             alpbet_t uab,uab_q15;
             #if 1/*闭环控制*/
-                // _currmentloop(i_abc,elec_theta);
                 udq = _currmentloop(i_abc,elec_theta);
-                sg_motordebug.pid_D_out = udq.d;
+            #else
+                udq.d = 0.0f;
+                udq.q = 1.0f;
             #endif
-    // float tar_id = 0.0f,tar_iq = 0.0f;
-    // tar_id = _IQ15toF(sg_motordebug.Q_id_targe);
-    // tar_iq = _IQ15toF(sg_motordebug.Q_iq_targe);
-    // udq.d =tar_id;
             uab = _2r_2s(udq, elec_theta);
-
             uab = _limit_voltagecircle(uab);
-
-            sg_motordebug.ialpha =  uab.alpha;
-            sg_motordebug.ibeta = uab.beta;
-            dut01 = _svpwm(uab.alpha,uab.beta);
-            motor_set_pwm(dut01);
-
+            motor_set_pwm(_svpwm(uab.alpha,uab.beta));
         }
         #endif
 #endif
-/*--------------------------------------------------------------
-开环控制
-100us调用匹配参数  
-    42BLDC  theta += 0.004f;  uq = 1.0f
-    yateng  theta += 0.004f;  uq = 1.0f
-    qita    theta += 0.004f;  uq = 1.0f
---------------------------------------------------------------*/
     return;
 }
 alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {  
@@ -284,69 +255,35 @@ alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {
     }
     return uab;
 }
-float piderr = 0.0f;
 dq_t _currmentloop(abc_t i_abc,float ele_theta)
 {
 #if 1
     alpbet_t i_alphbeta;
     dq_t i_dq;
-    test_ia = cosf(ele_theta);
-    test_ib = cosf(ele_theta - _2PI/3.0f);
-    test_ic = cosf(ele_theta + _2PI/3.0f);
-
-    // i_abc.a = test_ib;
-    // i_abc.b = test_ic;
-    // i_abc.c = test_ia;
-
     sg_motordebug.ia = i_abc.a;
     sg_motordebug.ib = i_abc.b;
     sg_motordebug.ic = i_abc.c;
-
 #ifdef BOARD_STM32G431
     i_abc.a = sg_motordebug.ia;
     i_abc.b = sg_motordebug.ic;
     i_abc.c = sg_motordebug.ib;
-
-    // i_abc.a = sg_motordebug.ib;
-    // i_abc.b = sg_motordebug.ia;
-    // i_abc.c = sg_motordebug.ic;//可以再试 iq为正正常
-
-    // i_abc.a = sg_motordebug.ib;
-    // i_abc.b = sg_motordebug.ic;
-    // i_abc.c = sg_motordebug.ia;    //无法使用
-
-    // i_abc.a = sg_motordebug.ic;
-    // i_abc.b = sg_motordebug.ia;
-    // i_abc.c = sg_motordebug.ib;//无法使用
-
-    // i_abc.a = sg_motordebug.ic;
-    // i_abc.b = sg_motordebug.ib;
-    // i_abc.c = sg_motordebug.ia;//可以再试 id,iq方向正确  可以试着调试
 #endif
-    _3s_2s(i_abc,&i_alphbeta);
-    // sg_motordebug.ialpha = i_alphbeta.alpha;
-    // sg_motordebug.ibeta = i_alphbeta.beta;    
+    _3s_2s(i_abc,&i_alphbeta);   
     _2s_2r(i_alphbeta,((ele_theta - PI_2)),&i_dq);
     sg_motordebug.id = (i_dq.d);
     sg_motordebug.iq = (i_dq.q);
-
     dq_t udq = {0.0f};
 #if 1
     float tar_id = 0.0f,tar_iq = 0.0f;
     tar_id = _IQ15toF(sg_motordebug.Q_id_targe);
     tar_iq = _IQ15toF(sg_motordebug.Q_iq_targe);
-    piderr = tar_id - i_dq.d;
-    udq.d =pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
+    udq.d = pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
     sg_motordebug.id_real = i_dq.d;
     sg_motordebug.id_targe = tar_id;
-    // udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
+    udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
     sg_motordebug.iq_real = i_dq.q;
     sg_motordebug.iq_targe = tar_iq;
-
-
 #endif
-
-    
     return udq;
 #endif
 }
@@ -433,9 +370,9 @@ void foc_paraminit(void)
 {
     sgp_curloop_d_pid = &(sg_curloop_param.d_pid);
     sgp_curloop_q_pid = &sg_curloop_param.q_pid;
-    pid_init(sgp_curloop_d_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,0.001f,D_MAX_VAL,-13.0f);
-    USER_DEBUG_NORMAL("d  kp %f\r\n",sgp_curloop_d_pid->kp);
-    // pid_init(sgp_curloop_q_pid,0.10f,0.001f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(sgp_curloop_d_pid,0.010f,0.001f,0.001f,D_MAX_VAL,-13.0f);
+    USER_DEBUG_NORMAL("d  kp:%f ki:%f\r\n",sgp_curloop_d_pid->kp,sgp_curloop_d_pid->ki);
+    pid_init(sgp_curloop_q_pid,0.010f,0.001f,0.001f,D_MAX_VAL,D_MIN_VAL);
     lowfilter_init(&sg_elefilter[0],80);
     lowfilter_init(&sg_elefilter[1],80);
     lowfilter_init(&sg_elefilter[2],80);

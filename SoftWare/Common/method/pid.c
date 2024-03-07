@@ -17,17 +17,14 @@ void pid_reset(pid_cb_t *pid)
     pid->u_i = 0.0f;
     pid->satErr = 0.0f;
 }
-float test_pidout = 0.0f;
 float pid_contrl(pid_cb_t *pid,float tar,float cur)
 {
     float err = 0.0f,u_p = 0.0f,v_out = 0.0f,presat = 0.0f;
     err = tar - cur;
-    // u_p = pid->kp*err;
-    u_p = 0.01f*err;
-    test_pidout = u_p;
-
-    // pid->u_i = pid->u_i + pid->ki*u_p + pid->kc*pid->satErr;
-    // presat = u_p + pid->u_i;
+    u_p = pid->kp*err;
+    return u_p;
+    pid->u_i = pid->u_i + pid->ki*u_p + pid->kc*pid->satErr;
+    presat = u_p + pid->u_i;
     // if(presat>pid->out_max)
     // {
     //     v_out = pid->out_max;
@@ -35,20 +32,10 @@ float pid_contrl(pid_cb_t *pid,float tar,float cur)
     // {
     //     v_out = pid->out_min;
     // }else{
-    //     v_out = presat;
-    // }
-    // pid->satErr = v_out - presat;
-    // return v_out;
-
-    v_out = u_p;
-    // if(v_out > 10)
-    // {
-    //     v_out = 10.0;
-    // }
-    // if(v_out < -10)
-    // {
-    //     v_out = -10.0;
+        
     // }
 
+    v_out = presat;
+    pid->satErr = v_out - presat;
     return v_out;
 }
