@@ -1,5 +1,5 @@
 #include "spi.h"
-#include "_common.h"
+#include "filter.h"
 extern SPI_HandleTypeDef hspi1;
 static unsigned char Spi_TxData[4]={0x83,0x84,0x05,0xff};
 static unsigned char Spi_pRxData[4]={0};
@@ -14,7 +14,7 @@ typedef struct mt6816_data
 }mt6816_data_t;
 
 static mt6816_data_t sg_mt6816data = {0};
- int32_t rawdata,covdata,filterdata;
+int32_t rawdata,covdata,filterdata;
 static int16_t column;
 
 
@@ -32,10 +32,6 @@ void* mt6816_read(void)
     return (void*)&sg_mt6816data;
 }
 
-// float mt6816_readf(void)
-// {
-
-// }
 void mt6816_init(void)
 {
     for (uint8_t i = 0; i < 10; i++)

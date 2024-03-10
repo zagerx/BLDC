@@ -2,6 +2,7 @@
 #define __SENSOR__H
 #include "sensor_cfg.h"
 
+#include "stdint.h"
 typedef enum _sensor_stat{
     EN_SENSOR_INIT,
     EN_SENSOR_NORMAL,

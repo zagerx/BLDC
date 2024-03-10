@@ -28,7 +28,6 @@
 #include "sensor.h"
 #include "../Protocol/protocol.h"
 #include "../../BLDCMotor/motorctrl.h"
-#include "_common.h"
 #include "debuglog.h"
 #include "hardware.h"
 #include "perf_counter.h"
@@ -54,8 +53,7 @@
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    /*------------------*/
-    IPC_SET_EVENT(gEventGroup,KEY01_SHORT_PRESS);
+  IPC_SET_EVENT(gEventGroup,KEY01_SHORT_PRESS);
 }
 
 /* USER CODE END PV */
@@ -109,7 +107,7 @@ void sysrunning_process(void)
                 HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
-                protocol02_process();
+                // protocol02_process();
             }
         default:
             break;

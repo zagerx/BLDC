@@ -6,8 +6,7 @@ mc_tar_iq:0.8f
 
 */
 #include "motorctrl_common.h"
-#include "_common.h"
-
+#include "board.h"
 #include "string.h"
 #include "stdio.h"
 #include "stdint.h"
@@ -43,21 +42,36 @@ commandmap_t sg_commandmap[] = {
     {"motor_start",5,_set_motorstart},
     {"mc_setd_kp",6,_set_d_kp},
     {"mc_setd_ki",7,_set_d_ki},
-    // 可以在这里添加更多的命令映射  
 };
+static char *Rx_Buf[62] = {0};
+void motorprotocol_getdata(char *data)
+{
+    strcpy(Rx_Buf,data);
+}
+
 
 void motorprotocol_pause(char *cmd)
 {
     float value =0.0f;
     unsigned short cmd_ID;
-
+    if (cmd[0] == 0 && cmd[1] == 0)
+    {
+        /* code */
+        return;
+    }
     const size_t mapSize = sizeof(sg_commandmap) / sizeof(sg_commandmap[0]); 
     cmd_ID = _findcmd_from_map(cmd,sg_commandmap,mapSize);    
+}
+
+void motorprotocol_process(void)
+{   
+    motorprotocol_pause(Rx_Buf);
+    // RxFinishFlag = 0;
+    memset(Rx_Buf, 0, sizeof(Rx_Buf));
 }
 static void* _set_d_kp(char *str,int32_t kp)
 {
     float val = 0.0f;
-    USER_DEBUG_NORMAL("enter set d kp\r\n");
     if (!_findF_from_str(str,&val))
     {
         return 0;
@@ -65,7 +79,6 @@ static void* _set_d_kp(char *str,int32_t kp)
     int32_t temp = 0;
     temp = val * (1<<15);    
     sg_motordebug.pid_d_kp = val;
-    USER_DEBUG_NORMAL("d Kp = %f set ok\r\n",sg_motordebug.pid_d_kp);
     return 0;    
 }
 static void* _set_d_ki(char *str,int32_t ki)
@@ -78,7 +91,6 @@ static void* _set_d_ki(char *str,int32_t ki)
     int32_t temp = 0;
     temp = val * (1<<15);    
     sg_motordebug.pid_d_ki = val;
-    USER_DEBUG_NORMAL("d Ki set ok \r\n");
     return 0; 
 }
 static void* _set_motorstart(char *str,int32_t iq)
@@ -101,9 +113,7 @@ static void* _set_tarid(char *str,int32_t id)
     {
         return 0;
     }
-    int32_t temp = 0;
-    temp = val * (1<<15);    
-    sg_motordebug.Q_id_targe = temp;
+    sg_motordebug.id_targe = val;
     return 0;
 } 
 
@@ -115,9 +125,7 @@ static void* _set_tariq(char *str,int32_t iq)
     {
         return 0;
     }
-    int32_t temp = 0;
-    temp = val * (1<<15);      
-    sg_motordebug.Q_iq_targe = temp;
+    sg_motordebug.iq_targe = val;
     return 0;    
 }
 // 查找命令的函数  
@@ -145,8 +153,6 @@ static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map
     return 0; // 未找到匹配项，返回0  
 }  
 
-
-  
 static int _findF_from_str(const char *str, float *val) {  
     if (str == NULL || val == NULL) {  
         return 0; // Invalid arguments  

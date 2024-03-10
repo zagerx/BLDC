@@ -4,9 +4,12 @@
 #include "adc.h"
 #include "tim.h"
 #include "math.h"
-#include "_common.h"
 #include "sensor.h"
 
+#include "pid.h"
+#include "filter.h"
+#include "IQmathLib.h"
+#include "debuglog.h"
 #include "board.h"
 
 #ifndef BOARD_MOTORCTRL_MODE

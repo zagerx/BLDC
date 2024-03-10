@@ -19,11 +19,23 @@
 #define USE_ANALOGI2C_ENABLE           (0)
 #define USE_DATASTRUCTURES_ENABLE      (1)
 
-/*特定模块*/
+/*
+IPC模块
+
+31                        3 2 1                0
+                        当前电机状态         按键被按下
+                        0:init
+                        1:运行
+                        2:停止
+                        3:空闲
+                        
+*/
+
+
+
 
 /*传感器模块*/
 #define SENSOR_MODE_EN (1)
-
 #ifdef SENSOR_MODE_EN
 /*定义传感器数量*/
 typedef enum{
@@ -60,8 +72,8 @@ typedef enum{
         #define U_DC                        (24.0f)
         #define F_PWM                       (float)(1.0f/T_PWM)
         #define T_UDC                       (float)(T_PWM/U_DC)
-
         #define ANGLE_COMPENSATA           (0.0f)
+
     #define CIRCLE_MAX_VAL               (24.0f)
     #define D_MAX_VAL                    13.0f//CIRCLE_MAX_VAL*sqrt(3.0f)/3.0f
     #define D_MIN_VAL                    -D_MAX_VAL

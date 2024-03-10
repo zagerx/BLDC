@@ -1,5 +1,7 @@
 #include "hardware_cfg.h"
 
+#undef NULL
+#define NULL 0
 static sensor_t sg_sensor_mt6816 = {
         .pf_read = mt6816_read,
         .pf_write = NULL,

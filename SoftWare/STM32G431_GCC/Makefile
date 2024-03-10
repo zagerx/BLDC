@@ -142,21 +142,6 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--I./Hardware \
--I../Sensor \
--I../BLDCMotor \
--I../protocol \
--I../Common/IQMath/support \
--I../Common/IQMath/ti \
--I../Common/debuglog/SEGGER_RTT_V792h/Config \
--I../Common/debuglog/SEGGER_RTT_V792h/RTT \
--I../Common/debuglog \
--I../Common/method \
--I../Common/IPC \
--I../Common/Fsm \
--I../Common/_assert \
--I../Common/data_structures \
--I../Common \
 -IInc \
 -IDrivers/STM32G4xx_HAL_Driver/Inc \
 -IDrivers/STM32G4xx_HAL_Driver/Inc/Legacy \
@@ -165,7 +150,21 @@ C_INCLUDES =  \
 
 C_INCLUDES += -I./Board
 C_INCLUDES += -I../Common/Perf_counter
-
+C_INCLUDES += -I./Hardware 
+C_INCLUDES += -I../Sensor 
+C_INCLUDES += -I../BLDCMotor 
+C_INCLUDES += -I../protocol 
+C_INCLUDES += -I../Common/IQMath/support 
+C_INCLUDES += -I../Common/IQMath/ti 
+C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
+C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
+C_INCLUDES += -I../Common/debuglog 
+C_INCLUDES += -I../Common/method 
+C_INCLUDES += -I../Common/IPC 
+C_INCLUDES += -I../Common/Fsm 
+C_INCLUDES += -I../Common/_assert 
+C_INCLUDES += -I../Common/data_structures 
+C_INCLUDES += -I../Common 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
@@ -248,8 +247,8 @@ sjlinkgdbs:
 	$(Q)JLinkGDBServer -select USB -device $(CHIP) \
 	-endian little -if SWD -speed 4000 -noir -LocalhostOnly
 jlinkdown:
-# $(Q)echo "h" >> jlink.jlink
-# $(Q)echo "loadfile" $(BUILD_DIR)/$(TARGET).bin >> jlink.jlink
+	$(Q)echo "h" >> jlink.jlink
+	$(Q)echo "loadfile" $(BUILD_DIR)/$(TARGET).hex >> jlink.jlink
 	$(Q)$(JLINKEXE) -device $(CHIP) -Speed 4000 -IF SWD -CommanderScript jlink.jlink
 
 

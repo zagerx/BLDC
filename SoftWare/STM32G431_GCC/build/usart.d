@@ -35,7 +35,6 @@ build/usart.o: Src/usart.c Inc/usart.h Inc/main.h \
  ../Common/method/crc.h ../Common/data_structures/fifo.h \
  ../Common/IPC/ipc.h ../Common/data_structures/list.h ../Common/Fsm/fsm.h \
  ../Common/debuglog/debuglog.h ../Common/debuglog/./debuglog_cfg.h \
- ../Common/debuglog/./../app_cfg.h Board/board.h \
  ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
  ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
  ../Common/data_structures/heap.h ../protocol/protocol.h
@@ -84,8 +83,6 @@ Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h:
 ../Common/Fsm/fsm.h:
 ../Common/debuglog/debuglog.h:
 ../Common/debuglog/./debuglog_cfg.h:
-../Common/debuglog/./../app_cfg.h:
-Board/board.h:
 ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
 ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
 ../Common/data_structures/heap.h:

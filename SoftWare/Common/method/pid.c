@@ -22,20 +22,20 @@ float pid_contrl(pid_cb_t *pid,float tar,float cur)
     float err = 0.0f,u_p = 0.0f,v_out = 0.0f,presat = 0.0f;
     err = tar - cur;
     u_p = pid->kp*err;
-    return u_p;
     pid->u_i = pid->u_i + pid->ki*u_p + pid->kc*pid->satErr;
     presat = u_p + pid->u_i;
-    // if(presat>pid->out_max)
+    v_out = presat;
+    // if(v_out > pid->out_max)
     // {
     //     v_out = pid->out_max;
-    // }else if(presat < pid->out_min)
+    //     pid->satErr = v_out - presat;
+    // }
+    // if(v_out < pid->out_min)
     // {
     //     v_out = pid->out_min;
-    // }else{
-        
+    //     pid->satErr = v_out - presat;
     // }
 
-    v_out = presat;
-    pid->satErr = v_out - presat;
+    
     return v_out;
 }

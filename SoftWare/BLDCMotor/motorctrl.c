@@ -1,6 +1,10 @@
 #include "./motorctrl.h"
 #include "debuglog.h"
 #include "motorctrl_common.h"
+
+#include "board.h"
+
+
 #ifdef BOARD_STM32G431
 #include "mt6816.h"
 #endif
@@ -55,17 +59,17 @@ void motortctrl_process(void)
 {
     char rec_buf[64];
     char cnt = 0;
-    if (readline_fromPC(rec_buf,sizeof(rec_buf)))
-    {
-        motorprotocol_pause(rec_buf);
-    }
-
+    // if (readline_fromPC(rec_buf,sizeof(rec_buf)))
+    // {
+    //     motorprotocol_pause(rec_buf);
+    // }
+    motorprotocol_process();
     switch (g_Motor1.state)
     {
     case MOTOR_INIT:
         USER_DEBUG_NORMAL("motor init\r\n");
-        sg_debug_clear();
         sg_MecThetaOffset = _get_angleoffset();
+        sg_debug_clear();
         foc_paraminit();
         HAL_Delay(20);
         motor_enable();
@@ -87,12 +91,10 @@ void motortctrl_process(void)
 
     case MOTOR_STOP:
         motor_disable();
-        USER_DEBUG_NORMAL("update parm...\r\n");
         g_Motor1.state = MOTOR_IDLE;
     case MOTOR_IDLE:
             if (sg_motordebug.motor_stat == 3)
             {
-                USER_DEBUG_NORMAL("update suceeful\r\n");
                 g_Motor1.state = MOTOR_INIT;
             }        
         break;
@@ -199,12 +201,6 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
         mech_theta = _IQ20toF(Q15_Mechtheta);
         mech_theta -= sg_MecThetaOffset;
         elec_theta = mech_theta * MOTOR_PAIR;
-        // static unsigned char flag = 2;
-        // if (flag == 2)
-        // {
-        //     elec_theta = 0.0f;
-        //     flag = 0;
-        // }
         elec_theta = _normalize_angle(elec_theta);
         sg_motordebug.ele_angle = elec_theta;
 
@@ -228,8 +224,9 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
             #if 1/*闭环控制*/
                 udq = _currmentloop(i_abc,elec_theta);
             #else
+                _currmentloop(i_abc,elec_theta);
                 udq.d = 0.0f;
-                udq.q = 1.0f;
+                udq.q = sg_motordebug.iq_targe;
             #endif
             uab = _2r_2s(udq, elec_theta);
             uab = _limit_voltagecircle(uab);
@@ -259,14 +256,18 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
 {
 #if 1
     alpbet_t i_alphbeta;
+    float _tempa,_tempb,_tempc;
     dq_t i_dq;
+    _tempa = i_abc.a;
+    _tempb = i_abc.b;
+    _tempc = i_abc.c;
+#ifdef BOARD_STM32G431
+    i_abc.a = _tempa;
+    i_abc.b = _tempc;
+    i_abc.c = _tempb;
     sg_motordebug.ia = i_abc.a;
     sg_motordebug.ib = i_abc.b;
     sg_motordebug.ic = i_abc.c;
-#ifdef BOARD_STM32G431
-    i_abc.a = sg_motordebug.ia;
-    i_abc.b = sg_motordebug.ic;
-    i_abc.c = sg_motordebug.ib;
 #endif
     _3s_2s(i_abc,&i_alphbeta);   
     _2s_2r(i_alphbeta,((ele_theta - PI_2)),&i_dq);
@@ -275,14 +276,12 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     dq_t udq = {0.0f};
 #if 1
     float tar_id = 0.0f,tar_iq = 0.0f;
-    tar_id = _IQ15toF(sg_motordebug.Q_id_targe);
-    tar_iq = _IQ15toF(sg_motordebug.Q_iq_targe);
+    tar_id = sg_motordebug.id_targe;
+    tar_iq = sg_motordebug.iq_targe;
     udq.d = pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
     sg_motordebug.id_real = i_dq.d;
-    sg_motordebug.id_targe = tar_id;
     udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
     sg_motordebug.iq_real = i_dq.q;
-    sg_motordebug.iq_targe = tar_iq;
 #endif
     return udq;
 #endif
@@ -370,9 +369,8 @@ void foc_paraminit(void)
 {
     sgp_curloop_d_pid = &(sg_curloop_param.d_pid);
     sgp_curloop_q_pid = &sg_curloop_param.q_pid;
-    pid_init(sgp_curloop_d_pid,0.010f,0.001f,0.001f,D_MAX_VAL,-13.0f);
-    USER_DEBUG_NORMAL("d  kp:%f ki:%f\r\n",sgp_curloop_d_pid->kp,sgp_curloop_d_pid->ki);
-    pid_init(sgp_curloop_q_pid,0.010f,0.001f,0.001f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(sgp_curloop_d_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,0.001f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(sgp_curloop_q_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,0.001f,D_MAX_VAL,D_MIN_VAL);
     lowfilter_init(&sg_elefilter[0],80);
     lowfilter_init(&sg_elefilter[1],80);
     lowfilter_init(&sg_elefilter[2],80);

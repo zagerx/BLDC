@@ -51,7 +51,6 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#include "_common.h"
 #include "perf_counter.h"
 /* USER CODE END 0 */
 
