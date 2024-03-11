@@ -32,17 +32,24 @@ extern "C" {
 
 /* USER CODE END Includes */
 
+extern ADC_HandleTypeDef hadc2;
+
 extern ADC_HandleTypeDef hadc4;
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
+void MX_ADC2_Init(void);
 void MX_ADC4_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 void adc_start(void);
 void adc_stop(void);
+
+void adc2_start(void);
+void get_adc2val(void);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

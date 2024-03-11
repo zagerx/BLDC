@@ -60,6 +60,8 @@ void Error_Handler(void);
 #define PSC 1
 #define _ARR 8500
 #define _ENCODERLINS 4096
+#define HALL_U1_Pin GPIO_PIN_14
+#define HALL_U1_GPIO_Port GPIOC
 #define POWER_12V_OFF_Pin GPIO_PIN_3
 #define POWER_12V_OFF_GPIO_Port GPIOC
 #define SF_DOG_Pin GPIO_PIN_2
@@ -68,6 +70,12 @@ void Error_Handler(void);
 #define POWER_12V_EN_GPIO_Port GPIOB
 #define LED01_Pin GPIO_PIN_7
 #define LED01_GPIO_Port GPIOE
+#define HALL_V1_Pin GPIO_PIN_14
+#define HALL_V1_GPIO_Port GPIOE
+#define HALL_V1_EXTI_IRQn EXTI15_10_IRQn
+#define HALL_W1_Pin GPIO_PIN_15
+#define HALL_W1_GPIO_Port GPIOE
+#define HALL_W1_EXTI_IRQn EXTI15_10_IRQn
 #define VCC5V_OUT_EN_Pin GPIO_PIN_10
 #define VCC5V_OUT_EN_GPIO_Port GPIOB
 #define SPI3_CS_Pin GPIO_PIN_15

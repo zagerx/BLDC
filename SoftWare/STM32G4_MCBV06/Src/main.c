@@ -25,7 +25,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "_common.h"
 #include "debuglog.h"
 #include "hardware.h"
 #include "motorctrl.h"
@@ -150,6 +149,7 @@ int main(void)
   MX_TIM1_Init();
   MX_ADC4_Init();
   MX_TIM4_Init();
+  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   User_Printf_Init();
   USER_DEBUG_NORMAL("MCB_V06 start runing\r\n");

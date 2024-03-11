@@ -283,7 +283,6 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
 
 /* USER CODE BEGIN 1 */
 #include "adc.h"
-#include "_common.h"
 static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned short c)
 {
 	short max;
