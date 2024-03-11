@@ -49,7 +49,6 @@ void motorprotocol_getdata(char *data)
     strcpy(Rx_Buf,data);
 }
 
-
 void motorprotocol_pause(char *cmd)
 {
     float value =0.0f;
@@ -66,7 +65,6 @@ void motorprotocol_pause(char *cmd)
 void motorprotocol_process(void)
 {   
     motorprotocol_pause(Rx_Buf);
-    // RxFinishFlag = 0;
     memset(Rx_Buf, 0, sizeof(Rx_Buf));
 }
 static void* _set_d_kp(char *str,int32_t kp)
@@ -75,9 +73,7 @@ static void* _set_d_kp(char *str,int32_t kp)
     if (!_findF_from_str(str,&val))
     {
         return 0;
-    }
-    int32_t temp = 0;
-    temp = val * (1<<15);    
+    }   
     sg_motordebug.pid_d_kp = val;
     return 0;    
 }
@@ -87,21 +83,17 @@ static void* _set_d_ki(char *str,int32_t ki)
     if (!_findF_from_str(str,&val))
     {
         return 0;
-    }
-    int32_t temp = 0;
-    temp = val * (1<<15);    
+    }  
     sg_motordebug.pid_d_ki = val;
     return 0; 
 }
 static void* _set_motorstart(char *str,int32_t iq)
 {
-    USER_DEBUG_NORMAL("motor start\r\n");
     sg_motordebug.motor_stat = 3;
     return 0;
 }
 static void* _set_motorstop(char *str,int32_t iq)
 {
-    USER_DEBUG_NORMAL("motor stop\r\n");
     sg_motordebug.motor_stat = 1;
     return 0;
 }
@@ -119,7 +111,6 @@ static void* _set_tarid(char *str,int32_t id)
 
 static void* _set_tariq(char *str,int32_t iq)
 {
-    USER_DEBUG_NORMAL("set iq\r\n");
     float val = 0.0f;            
     if (!_findF_from_str(str,&val))
     {
@@ -177,7 +168,7 @@ static int _findF_from_str(const char *str, float *val) {
     if (endPtr != numStart && (*endPtr == '\0' || isspace((unsigned char)*endPtr))) {  
         *val = parsedValue;  
         return 1; // Success  
-    }  
+    }
   
     return 0; // Failure: no valid number found or trailing non-whitespace characters  
 }  

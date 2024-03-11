@@ -9,7 +9,6 @@
 #define DEBUG_UART                     (2)
 #define DEBUG_SW                       (DEBUG_RTT)
 
-#define USE_IPC_ENABLE                 (1)
 #define USE_FSM_ENABLE                 (0)
 #define USE_GPIO_ENABLE                (0)
 #define USE_ASSERT_ENABLE              (0)
@@ -21,16 +20,40 @@
 
 /*
 IPC模块
-
 31                        3 2 1                0
                         当前电机状态         按键被按下
                         0:init
                         1:运行
                         2:停止
-                        3:空闲
-                        
+                        3:空闲                   
 */
+#define USE_IPC_ENABLE                 (1)
+typedef enum{
+    EN_EVENT_01 = 0,
+}EN_EVENT;
+typedef enum{
+    EN_EVENT_ONEBIT = 1,
+    EN_EVENT_TWOBIT,
+    EN_EVENT_THREEBIT
+}EN_EVENT_SIZE;
 
+typedef enum{
+    PUBLIC_DATA_START_INDEX,
+    PUBLIC_DATA_IQ_TARGET,
+    PUBLIC_DATA_IA,
+    PUBLIC_DATA_IB,    
+    PUBLIC_DATA_IC,
+    PUBLIC_DATA_IALPHA,
+    PUBLIC_DATA_IBETA,
+    PUBLIC_DATA_ID,
+    PUBLIC_DATA_IQ,
+    PUBLIC_DATA_TCMP1,
+    PUBLIC_DATA_TCMP2,
+    PUBLIC_DATA_TCMP3,
+    PUBLIC_DATA_TEMP0,
+    PUBLIC_DATA_TEMP1,    
+    PUBLIC_DATA_STOP_INDEX,
+}E_PUBLIC_DATA;
 
 
 

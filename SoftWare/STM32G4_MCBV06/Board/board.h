@@ -9,7 +9,7 @@
 #define DEBUG_UART                     (2)
 #define DEBUG_SW                       (DEBUG_RTT)
 
-#define USE_IPC_ENABLE                 (1)
+// #define USE_IPC_ENABLE                 (1)
 #define USE_FSM_ENABLE                 (0)
 #define USE_GPIO_ENABLE                (0)
 #define USE_ASSERT_ENABLE              (0)

@@ -6,7 +6,6 @@
 
 
 #ifdef BOARD_STM32G431
-#include "mt6816.h"
 #endif
 #define Q15_PI_2                   (51471)
 #define Q15_2PI                    (205884)
@@ -67,7 +66,6 @@ void motortctrl_process(void)
     switch (g_Motor1.state)
     {
     case MOTOR_INIT:
-        USER_DEBUG_NORMAL("motor init\r\n");
         sg_MecThetaOffset = _get_angleoffset();
         sg_debug_clear();
         foc_paraminit();

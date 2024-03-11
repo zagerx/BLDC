@@ -31,15 +31,13 @@ build/main.o: Src/main.c Inc/main.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h \
  Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h Inc/adc.h \
  Inc/main.h Inc/i2c.h Inc/tim.h Inc/gpio.h ../BLDCMotor/motorctrl.h \
- ../BLDCMotor/./motorctrl_cfg.h ../Common/_common.h Board/board.h \
- ../Common/IQMath/ti/IQmathLib.h ../Common/method/method.h \
- ../Common/method/filter.h ../Common/method/pid.h ../Common/method/crc.h \
- ../Common/debuglog/debuglog.h ../Common/debuglog/./debuglog_cfg.h \
- ../Common/debuglog/./../app_cfg.h \
+ ../BLDCMotor/./motorctrl_cfg.h ../Sensor/sensor.h ../Sensor/sensor_cfg.h \
+ Board/board.h ../Common/method/pid.h ../Common/method/filter.h \
+ ../Common/IQMath/ti/IQmathLib.h ../Common/debuglog/debuglog.h \
+ ../Common/debuglog/./debuglog_cfg.h \
  ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
  ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
- ../Sensor/sensor.h ../Sensor/sensor_cfg.h Hardware/hardware.h \
- ../Common/Perf_counter/perf_counter.h \
+ Hardware/hardware.h ../Common/Perf_counter/perf_counter.h \
  Drivers/CMSIS/Include/cmsis_compiler.h
 Inc/main.h:
 Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
@@ -82,20 +80,16 @@ Inc/tim.h:
 Inc/gpio.h:
 ../BLDCMotor/motorctrl.h:
 ../BLDCMotor/./motorctrl_cfg.h:
-../Common/_common.h:
-Board/board.h:
-../Common/IQMath/ti/IQmathLib.h:
-../Common/method/method.h:
-../Common/method/filter.h:
-../Common/method/pid.h:
-../Common/method/crc.h:
-../Common/debuglog/debuglog.h:
-../Common/debuglog/./debuglog_cfg.h:
-../Common/debuglog/./../app_cfg.h:
-../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
-../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
 ../Sensor/sensor.h:
 ../Sensor/sensor_cfg.h:
+Board/board.h:
+../Common/method/pid.h:
+../Common/method/filter.h:
+../Common/IQMath/ti/IQmathLib.h:
+../Common/debuglog/debuglog.h:
+../Common/debuglog/./debuglog_cfg.h:
+../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
+../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
 Hardware/hardware.h:
 ../Common/Perf_counter/perf_counter.h:
 Drivers/CMSIS/Include/cmsis_compiler.h:

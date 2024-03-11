@@ -32,9 +32,8 @@ build/main.o: Src/main.c Inc/main.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h \
  Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h Inc/adc.h \
  Inc/main.h Inc/dma.h Inc/spi.h Inc/tim.h Inc/usart.h Inc/gpio.h \
- ../Common/IPC/ipc.h ../Common/data_structures/list.h \
- ../Common/macro_defined.h ../Sensor/sensor.h ../Sensor/sensor_cfg.h \
- Board/board.h ../Sensor/../Protocol/protocol.h \
+ ../Common/IPC/ipc.h Board/board.h ../Sensor/sensor.h \
+ ../Sensor/sensor_cfg.h ../Sensor/../Protocol/protocol.h \
  Src/../../BLDCMotor/motorctrl.h Src/../../BLDCMotor/./motorctrl_cfg.h \
  ../Common/method/pid.h ../Common/method/filter.h \
  ../Common/IQMath/ti/IQmathLib.h ../Common/debuglog/debuglog.h \
@@ -86,11 +85,9 @@ Inc/tim.h:
 Inc/usart.h:
 Inc/gpio.h:
 ../Common/IPC/ipc.h:
-../Common/data_structures/list.h:
-../Common/macro_defined.h:
+Board/board.h:
 ../Sensor/sensor.h:
 ../Sensor/sensor_cfg.h:
-Board/board.h:
 ../Sensor/../Protocol/protocol.h:
 Src/../../BLDCMotor/motorctrl.h:
 Src/../../BLDCMotor/./motorctrl_cfg.h:

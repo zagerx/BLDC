@@ -99,7 +99,7 @@ fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
             break;
         }
         event =search_msgmap_event(cmd_fun);
-        if (!IPC_GET_EVENT(g_protocol_event,event))//û�н��յ���Ӧ
+        // if (!IPC_GET_EVENT(g_protocol_event,event))//û�н��յ���Ӧ
         {
             /* code */
             if (pmsg->timeout++ >= TIMEOUT/fsm_cycle)//��ʱ
@@ -112,7 +112,7 @@ fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
             }
             break;
         }
-        IPC_CLEAR_EVENT(g_protocol_event,event);
+        // IPC_CLEAR_EVENT(g_protocol_event,event);
         ptThis->chState = RECIVE_ACK;
     case RECIVE_ACK:
         USER_DEBUG_NORMAL("recive cmd(0x%x) ack\r\n",cmd_fun);
@@ -149,20 +149,18 @@ void protocol_transmit(unsigned char cmd_type,unsigned char cmd,\
 
 void protocol_transmitprocess(void)
 {
-    /*��ȡ���� �鿴�Ƿ��д����͵���Ϣ*/
     _node_t *cur_node;
     node_item_t *cur_item;
     pro_pack_t *pack;
     pro_frame_t* p_fram;     
     cur_node = gtransmit_list->head;
-    while (cur_node != 0)//������������
+    while (cur_node != 0)
     {
         cur_item = cur_node->pitem;
         pack = (pro_pack_t *)cur_item->pdata;
         p_fram = (pro_frame_t *)pack->frame;
         if(DISPATCH_FSM(((fsm_cb_t *)pack)) == fsm_rt_cpl)
         {
-            /*��ǰ״̬��ִ�н���  ����ɾ��*/
             list_delete_node(gtransmit_list,cur_node);
             USER_DEBUG_NORMAL("free \r\n");
         }
@@ -200,13 +198,13 @@ void protocol02_transmit(unsigned char *pdata,unsigned short datalen)
 void protocol02_process(void)
 {
     int buf2[SEND_NUMBER];
-    buf2[0] = ipc_read_data(PUBLIC_DATA_IA)*1000;
-    buf2[1] = ipc_read_data(PUBLIC_DATA_IB)*1000;
-    buf2[2] = ipc_read_data(PUBLIC_DATA_IC)*1000;
-    buf2[3] = ipc_read_data(PUBLIC_DATA_IALPHA)*1000;
-    buf2[4] = ipc_read_data(PUBLIC_DATA_IBETA)*1000;
-    buf2[5] = ipc_read_data(PUBLIC_DATA_ID)*1000;
-    buf2[6] = ipc_read_data(PUBLIC_DATA_IQ)*1000;
-    buf2[7] = ipc_read_data(PUBLIC_DATA_TEMP0)*1000;
+    // buf2[0] = ipc_read_data(PUBLIC_DATA_IA)*1000;
+    // buf2[1] = ipc_read_data(PUBLIC_DATA_IB)*1000;
+    // buf2[2] = ipc_read_data(PUBLIC_DATA_IC)*1000;
+    // buf2[3] = ipc_read_data(PUBLIC_DATA_IALPHA)*1000;
+    // buf2[4] = ipc_read_data(PUBLIC_DATA_IBETA)*1000;
+    // buf2[5] = ipc_read_data(PUBLIC_DATA_ID)*1000;
+    // buf2[6] = ipc_read_data(PUBLIC_DATA_IQ)*1000;
+    // buf2[7] = ipc_read_data(PUBLIC_DATA_TEMP0)*1000;
     protocol02_transmit((unsigned char*)buf2,sizeof(buf2));    
 }

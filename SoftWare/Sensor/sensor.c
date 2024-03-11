@@ -16,7 +16,6 @@ void sensor_register(sensor_t *this,ENUM_SENSOR index)
     {
         return;//注册失败
     }
-
     g_sensor_arry[index] = *this;
 }
 

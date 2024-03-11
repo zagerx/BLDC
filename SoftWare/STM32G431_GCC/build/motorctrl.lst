@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -35,55 +35,54 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
    6:../BLDCMotor/motorctrl.c **** 
    7:../BLDCMotor/motorctrl.c **** 
    8:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G431
-   9:../BLDCMotor/motorctrl.c **** #include "mt6816.h"
-  10:../BLDCMotor/motorctrl.c **** #endif
-  11:../BLDCMotor/motorctrl.c **** #define Q15_PI_2                   (51471)
-  12:../BLDCMotor/motorctrl.c **** #define Q15_2PI                    (205884)
-  13:../BLDCMotor/motorctrl.c **** #define PI_2                       (1.570796f)
-  14:../BLDCMotor/motorctrl.c **** #define MOTORCTRL_PERCI            (1)
-  15:../BLDCMotor/motorctrl.c **** 
-  16:../BLDCMotor/motorctrl.c **** enum{
-  17:../BLDCMotor/motorctrl.c ****     MOTOR_INIT,
-  18:../BLDCMotor/motorctrl.c ****     MOTOR_IDLE,
-  19:../BLDCMotor/motorctrl.c ****     MOTOR_START, 
-  20:../BLDCMotor/motorctrl.c ****     MOTOR_RUNING,
-  21:../BLDCMotor/motorctrl.c ****     MOTOR_STOP,
-  22:../BLDCMotor/motorctrl.c **** };
-  23:../BLDCMotor/motorctrl.c **** 
-  24:../BLDCMotor/motorctrl.c **** motordebug_t sg_motordebug = {0};
-  25:../BLDCMotor/motorctrl.c **** typedef struct
-  26:../BLDCMotor/motorctrl.c **** {
-  27:../BLDCMotor/motorctrl.c ****     unsigned char state;
-  28:../BLDCMotor/motorctrl.c ****     unsigned short cnt;
-  29:../BLDCMotor/motorctrl.c **** }motorctrl_t;
-  30:../BLDCMotor/motorctrl.c **** 
-  31:../BLDCMotor/motorctrl.c **** static dq_t _currmentloop(abc_t i_abc,float ele_theta);
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 2
+   9:../BLDCMotor/motorctrl.c **** #endif
+  10:../BLDCMotor/motorctrl.c **** #define Q15_PI_2                   (51471)
+  11:../BLDCMotor/motorctrl.c **** #define Q15_2PI                    (205884)
+  12:../BLDCMotor/motorctrl.c **** #define PI_2                       (1.570796f)
+  13:../BLDCMotor/motorctrl.c **** #define MOTORCTRL_PERCI            (1)
+  14:../BLDCMotor/motorctrl.c **** 
+  15:../BLDCMotor/motorctrl.c **** enum{
+  16:../BLDCMotor/motorctrl.c ****     MOTOR_INIT,
+  17:../BLDCMotor/motorctrl.c ****     MOTOR_IDLE,
+  18:../BLDCMotor/motorctrl.c ****     MOTOR_START, 
+  19:../BLDCMotor/motorctrl.c ****     MOTOR_RUNING,
+  20:../BLDCMotor/motorctrl.c ****     MOTOR_STOP,
+  21:../BLDCMotor/motorctrl.c **** };
+  22:../BLDCMotor/motorctrl.c **** 
+  23:../BLDCMotor/motorctrl.c **** motordebug_t sg_motordebug = {0};
+  24:../BLDCMotor/motorctrl.c **** typedef struct
+  25:../BLDCMotor/motorctrl.c **** {
+  26:../BLDCMotor/motorctrl.c ****     unsigned char state;
+  27:../BLDCMotor/motorctrl.c ****     unsigned short cnt;
+  28:../BLDCMotor/motorctrl.c **** }motorctrl_t;
+  29:../BLDCMotor/motorctrl.c **** 
+  30:../BLDCMotor/motorctrl.c **** static dq_t _currmentloop(abc_t i_abc,float ele_theta);
+  31:../BLDCMotor/motorctrl.c **** static float _get_angleoffset(void);
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 2
 
 
-  32:../BLDCMotor/motorctrl.c **** static float _get_angleoffset(void);
-  33:../BLDCMotor/motorctrl.c **** static void motor_enable(void);
-  34:../BLDCMotor/motorctrl.c **** static void motor_disable(void);
-  35:../BLDCMotor/motorctrl.c **** static void motor_set_pwm(duty_t temp);
-  36:../BLDCMotor/motorctrl.c **** static void sg_debug_clear(void)
-  37:../BLDCMotor/motorctrl.c **** {
-  28              		.loc 1 37 1 view -0
+  32:../BLDCMotor/motorctrl.c **** static void motor_enable(void);
+  33:../BLDCMotor/motorctrl.c **** static void motor_disable(void);
+  34:../BLDCMotor/motorctrl.c **** static void motor_set_pwm(duty_t temp);
+  35:../BLDCMotor/motorctrl.c **** static void sg_debug_clear(void)
+  36:../BLDCMotor/motorctrl.c **** {
+  28              		.loc 1 36 1 view -0
   29              		.cfi_startproc
   30              		@ args = 0, pretend = 0, frame = 0
   31              		@ frame_needed = 0, uses_anonymous_args = 0
   32              		@ link register save eliminated.
-  38:../BLDCMotor/motorctrl.c ****     sg_motordebug.id_targe =0.0f;
-  33              		.loc 1 38 5 view .LVU1
-  34              		.loc 1 38 28 is_stmt 0 view .LVU2
+  37:../BLDCMotor/motorctrl.c ****     sg_motordebug.id_targe =0.0f;
+  33              		.loc 1 37 5 view .LVU1
+  34              		.loc 1 37 28 is_stmt 0 view .LVU2
   35 0000 024B     		ldr	r3, .L2
   36 0002 0022     		movs	r2, #0
   37 0004 5A64     		str	r2, [r3, #68]	@ float
-  39:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq_targe =0.0f;
-  38              		.loc 1 39 5 is_stmt 1 view .LVU3
-  39              		.loc 1 39 28 is_stmt 0 view .LVU4
+  38:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq_targe =0.0f;
+  38              		.loc 1 38 5 is_stmt 1 view .LVU3
+  39              		.loc 1 38 28 is_stmt 0 view .LVU4
   40 0006 9A64     		str	r2, [r3, #72]	@ float
-  40:../BLDCMotor/motorctrl.c **** }
-  41              		.loc 1 40 1 view .LVU5
+  39:../BLDCMotor/motorctrl.c **** }
+  41              		.loc 1 39 1 view .LVU5
   42 0008 7047     		bx	lr
   43              	.L3:
   44 000a 00BF     		.align	2
@@ -98,285 +97,282 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
   54              		.thumb_func
   56              	motor_enable_noirq:
   57              	.LFB335:
-  41:../BLDCMotor/motorctrl.c **** alpbet_t _limit_voltagecircle(alpbet_t raw_uab);
-  42:../BLDCMotor/motorctrl.c **** motorctrl_t g_Motor1 = {
-  43:../BLDCMotor/motorctrl.c ****     .state = MOTOR_INIT,
-  44:../BLDCMotor/motorctrl.c ****     .cnt = 0,
-  45:../BLDCMotor/motorctrl.c **** };
-  46:../BLDCMotor/motorctrl.c **** static volatile float sg_MecThetaOffset = 0.0f;
-  47:../BLDCMotor/motorctrl.c **** static lowfilter_t sg_elefilter[3];
-  48:../BLDCMotor/motorctrl.c **** pid_cb_t test_d_pid = {0};
-  49:../BLDCMotor/motorctrl.c **** static pid_cb_t *sgp_curloop_d_pid;
-  50:../BLDCMotor/motorctrl.c **** static pid_cb_t *sgp_curloop_q_pid;
-  51:../BLDCMotor/motorctrl.c **** static curloop_t sg_curloop_param;
-  52:../BLDCMotor/motorctrl.c **** float pre_angle_test = 0.0f;
-  53:../BLDCMotor/motorctrl.c **** float next_angle_test = 0.0f;
-  54:../BLDCMotor/motorctrl.c **** float raw_angle = 0.0f;
-  55:../BLDCMotor/motorctrl.c **** float test_ia = 0.0f;
-  56:../BLDCMotor/motorctrl.c **** float test_ib = 0.0f;
-  57:../BLDCMotor/motorctrl.c **** float test_ic = 0.0f;
-  58:../BLDCMotor/motorctrl.c **** void motortctrl_process(void)
-  59:../BLDCMotor/motorctrl.c **** {
-  60:../BLDCMotor/motorctrl.c ****     char rec_buf[64];
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 3
+  40:../BLDCMotor/motorctrl.c **** alpbet_t _limit_voltagecircle(alpbet_t raw_uab);
+  41:../BLDCMotor/motorctrl.c **** motorctrl_t g_Motor1 = {
+  42:../BLDCMotor/motorctrl.c ****     .state = MOTOR_INIT,
+  43:../BLDCMotor/motorctrl.c ****     .cnt = 0,
+  44:../BLDCMotor/motorctrl.c **** };
+  45:../BLDCMotor/motorctrl.c **** static volatile float sg_MecThetaOffset = 0.0f;
+  46:../BLDCMotor/motorctrl.c **** static lowfilter_t sg_elefilter[3];
+  47:../BLDCMotor/motorctrl.c **** pid_cb_t test_d_pid = {0};
+  48:../BLDCMotor/motorctrl.c **** static pid_cb_t *sgp_curloop_d_pid;
+  49:../BLDCMotor/motorctrl.c **** static pid_cb_t *sgp_curloop_q_pid;
+  50:../BLDCMotor/motorctrl.c **** static curloop_t sg_curloop_param;
+  51:../BLDCMotor/motorctrl.c **** float pre_angle_test = 0.0f;
+  52:../BLDCMotor/motorctrl.c **** float next_angle_test = 0.0f;
+  53:../BLDCMotor/motorctrl.c **** float raw_angle = 0.0f;
+  54:../BLDCMotor/motorctrl.c **** float test_ia = 0.0f;
+  55:../BLDCMotor/motorctrl.c **** float test_ib = 0.0f;
+  56:../BLDCMotor/motorctrl.c **** float test_ic = 0.0f;
+  57:../BLDCMotor/motorctrl.c **** void motortctrl_process(void)
+  58:../BLDCMotor/motorctrl.c **** {
+  59:../BLDCMotor/motorctrl.c ****     char rec_buf[64];
+  60:../BLDCMotor/motorctrl.c ****     char cnt = 0;
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 3
 
 
-  61:../BLDCMotor/motorctrl.c ****     char cnt = 0;
-  62:../BLDCMotor/motorctrl.c ****     // if (readline_fromPC(rec_buf,sizeof(rec_buf)))
-  63:../BLDCMotor/motorctrl.c ****     // {
-  64:../BLDCMotor/motorctrl.c ****     //     motorprotocol_pause(rec_buf);
-  65:../BLDCMotor/motorctrl.c ****     // }
-  66:../BLDCMotor/motorctrl.c ****     motorprotocol_process();
-  67:../BLDCMotor/motorctrl.c ****     switch (g_Motor1.state)
-  68:../BLDCMotor/motorctrl.c ****     {
-  69:../BLDCMotor/motorctrl.c ****     case MOTOR_INIT:
-  70:../BLDCMotor/motorctrl.c ****         USER_DEBUG_NORMAL("motor init\r\n");
-  71:../BLDCMotor/motorctrl.c ****         sg_MecThetaOffset = _get_angleoffset();
-  72:../BLDCMotor/motorctrl.c ****         sg_debug_clear();
-  73:../BLDCMotor/motorctrl.c ****         foc_paraminit();
-  74:../BLDCMotor/motorctrl.c ****         HAL_Delay(20);
-  75:../BLDCMotor/motorctrl.c ****         motor_enable();
-  76:../BLDCMotor/motorctrl.c ****         g_Motor1.state = MOTOR_RUNING;           
-  77:../BLDCMotor/motorctrl.c ****         break;
-  78:../BLDCMotor/motorctrl.c **** 
-  79:../BLDCMotor/motorctrl.c ****     case MOTOR_RUNING:
-  80:../BLDCMotor/motorctrl.c ****         {
-  81:../BLDCMotor/motorctrl.c ****             if (!(++g_Motor1.cnt % 15000))
-  82:../BLDCMotor/motorctrl.c ****             {
-  83:../BLDCMotor/motorctrl.c ****                 // g_Motor1.state = MOTOR_STOP;
-  84:../BLDCMotor/motorctrl.c ****             }
-  85:../BLDCMotor/motorctrl.c ****             if (sg_motordebug.motor_stat == 1)
-  86:../BLDCMotor/motorctrl.c ****             {
-  87:../BLDCMotor/motorctrl.c ****                 g_Motor1.state = MOTOR_STOP;
-  88:../BLDCMotor/motorctrl.c ****             }
-  89:../BLDCMotor/motorctrl.c ****         }
-  90:../BLDCMotor/motorctrl.c ****         break;
-  91:../BLDCMotor/motorctrl.c **** 
-  92:../BLDCMotor/motorctrl.c ****     case MOTOR_STOP:
-  93:../BLDCMotor/motorctrl.c ****         motor_disable();
-  94:../BLDCMotor/motorctrl.c ****         USER_DEBUG_NORMAL("update parm...\r\n");
-  95:../BLDCMotor/motorctrl.c ****         g_Motor1.state = MOTOR_IDLE;
-  96:../BLDCMotor/motorctrl.c ****     case MOTOR_IDLE:
-  97:../BLDCMotor/motorctrl.c ****             if (sg_motordebug.motor_stat == 3)
-  98:../BLDCMotor/motorctrl.c ****             {
-  99:../BLDCMotor/motorctrl.c ****                 USER_DEBUG_NORMAL("update suceeful\r\n");
- 100:../BLDCMotor/motorctrl.c ****                 g_Motor1.state = MOTOR_INIT;
- 101:../BLDCMotor/motorctrl.c ****             }        
- 102:../BLDCMotor/motorctrl.c ****         break;
- 103:../BLDCMotor/motorctrl.c ****     
- 104:../BLDCMotor/motorctrl.c ****     default:
- 105:../BLDCMotor/motorctrl.c ****         break;
- 106:../BLDCMotor/motorctrl.c ****     }
- 107:../BLDCMotor/motorctrl.c **** }
- 108:../BLDCMotor/motorctrl.c **** /*------------周期性被调用----------------*/
- 109:../BLDCMotor/motorctrl.c **** void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
- 110:../BLDCMotor/motorctrl.c **** {
- 111:../BLDCMotor/motorctrl.c ****     float elec_theta,mech_theta;
- 112:../BLDCMotor/motorctrl.c ****     int32_t Q15_Mechtheta;    
- 113:../BLDCMotor/motorctrl.c ****     duty_t dut01,dut02;
- 114:../BLDCMotor/motorctrl.c **** /*----------------三相电流处理------------------------------*/    
- 115:../BLDCMotor/motorctrl.c ****     float Ia,Ib,Ic;
- 116:../BLDCMotor/motorctrl.c ****     int32_t a1,b1,c1;
- 117:../BLDCMotor/motorctrl.c ****     a1 = abc_vale[0] - A_ADCCHANNL_OFFSET;
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 4
+  61:../BLDCMotor/motorctrl.c ****     // if (readline_fromPC(rec_buf,sizeof(rec_buf)))
+  62:../BLDCMotor/motorctrl.c ****     // {
+  63:../BLDCMotor/motorctrl.c ****     //     motorprotocol_pause(rec_buf);
+  64:../BLDCMotor/motorctrl.c ****     // }
+  65:../BLDCMotor/motorctrl.c ****     motorprotocol_process();
+  66:../BLDCMotor/motorctrl.c ****     switch (g_Motor1.state)
+  67:../BLDCMotor/motorctrl.c ****     {
+  68:../BLDCMotor/motorctrl.c ****     case MOTOR_INIT:
+  69:../BLDCMotor/motorctrl.c ****         sg_MecThetaOffset = _get_angleoffset();
+  70:../BLDCMotor/motorctrl.c ****         sg_debug_clear();
+  71:../BLDCMotor/motorctrl.c ****         foc_paraminit();
+  72:../BLDCMotor/motorctrl.c ****         HAL_Delay(20);
+  73:../BLDCMotor/motorctrl.c ****         motor_enable();
+  74:../BLDCMotor/motorctrl.c ****         g_Motor1.state = MOTOR_RUNING;           
+  75:../BLDCMotor/motorctrl.c ****         break;
+  76:../BLDCMotor/motorctrl.c **** 
+  77:../BLDCMotor/motorctrl.c ****     case MOTOR_RUNING:
+  78:../BLDCMotor/motorctrl.c ****         {
+  79:../BLDCMotor/motorctrl.c ****             if (!(++g_Motor1.cnt % 15000))
+  80:../BLDCMotor/motorctrl.c ****             {
+  81:../BLDCMotor/motorctrl.c ****                 // g_Motor1.state = MOTOR_STOP;
+  82:../BLDCMotor/motorctrl.c ****             }
+  83:../BLDCMotor/motorctrl.c ****             if (sg_motordebug.motor_stat == 1)
+  84:../BLDCMotor/motorctrl.c ****             {
+  85:../BLDCMotor/motorctrl.c ****                 g_Motor1.state = MOTOR_STOP;
+  86:../BLDCMotor/motorctrl.c ****             }
+  87:../BLDCMotor/motorctrl.c ****         }
+  88:../BLDCMotor/motorctrl.c ****         break;
+  89:../BLDCMotor/motorctrl.c **** 
+  90:../BLDCMotor/motorctrl.c ****     case MOTOR_STOP:
+  91:../BLDCMotor/motorctrl.c ****         motor_disable();
+  92:../BLDCMotor/motorctrl.c ****         g_Motor1.state = MOTOR_IDLE;
+  93:../BLDCMotor/motorctrl.c ****     case MOTOR_IDLE:
+  94:../BLDCMotor/motorctrl.c ****             if (sg_motordebug.motor_stat == 3)
+  95:../BLDCMotor/motorctrl.c ****             {
+  96:../BLDCMotor/motorctrl.c ****                 g_Motor1.state = MOTOR_INIT;
+  97:../BLDCMotor/motorctrl.c ****             }        
+  98:../BLDCMotor/motorctrl.c ****         break;
+  99:../BLDCMotor/motorctrl.c ****     
+ 100:../BLDCMotor/motorctrl.c ****     default:
+ 101:../BLDCMotor/motorctrl.c ****         break;
+ 102:../BLDCMotor/motorctrl.c ****     }
+ 103:../BLDCMotor/motorctrl.c **** }
+ 104:../BLDCMotor/motorctrl.c **** /*------------周期性被调用----------------*/
+ 105:../BLDCMotor/motorctrl.c **** void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
+ 106:../BLDCMotor/motorctrl.c **** {
+ 107:../BLDCMotor/motorctrl.c ****     float elec_theta,mech_theta;
+ 108:../BLDCMotor/motorctrl.c ****     int32_t Q15_Mechtheta;    
+ 109:../BLDCMotor/motorctrl.c ****     duty_t dut01,dut02;
+ 110:../BLDCMotor/motorctrl.c **** /*----------------三相电流处理------------------------------*/    
+ 111:../BLDCMotor/motorctrl.c ****     float Ia,Ib,Ic;
+ 112:../BLDCMotor/motorctrl.c ****     int32_t a1,b1,c1;
+ 113:../BLDCMotor/motorctrl.c ****     a1 = abc_vale[0] - A_ADCCHANNL_OFFSET;
+ 114:../BLDCMotor/motorctrl.c ****     b1 = abc_vale[1] - B_ADCCHANNL_OFFSET;
+ 115:../BLDCMotor/motorctrl.c ****     c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;   
+ 116:../BLDCMotor/motorctrl.c ****     Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
+ 117:../BLDCMotor/motorctrl.c ****     Ib = (float)b1*(float)B_VOLITETOCURRENT_FACTOR;
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 4
 
 
- 118:../BLDCMotor/motorctrl.c ****     b1 = abc_vale[1] - B_ADCCHANNL_OFFSET;
- 119:../BLDCMotor/motorctrl.c ****     c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;   
- 120:../BLDCMotor/motorctrl.c ****     Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
- 121:../BLDCMotor/motorctrl.c ****     Ib = (float)b1*(float)B_VOLITETOCURRENT_FACTOR;
- 122:../BLDCMotor/motorctrl.c ****     Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
- 123:../BLDCMotor/motorctrl.c ****     abc_t i_abc;
- 124:../BLDCMotor/motorctrl.c ****     i_abc.a = lowfilter_cale(&sg_elefilter[0],Ia);
- 125:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
- 126:../BLDCMotor/motorctrl.c ****     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
- 127:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G4_MCB
- 128:../BLDCMotor/motorctrl.c ****     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
- 129:../BLDCMotor/motorctrl.c ****     mech_theta = _IQ20toF(Q15_Mechtheta);
- 130:../BLDCMotor/motorctrl.c ****     raw_angle = mech_theta;
- 131:../BLDCMotor/motorctrl.c ****     mech_theta = (mech_theta - sg_MecThetaOffset);
- 132:../BLDCMotor/motorctrl.c ****     elec_theta = mech_theta * 1.0f;
- 133:../BLDCMotor/motorctrl.c ****     elec_theta += ANGLE_COMPENSATA;
- 134:../BLDCMotor/motorctrl.c ****     elec_theta = _normalize_angle(elec_theta);
- 135:../BLDCMotor/motorctrl.c ****     sg_motordebug.ele_angle = elec_theta;
- 136:../BLDCMotor/motorctrl.c **** 
- 137:../BLDCMotor/motorctrl.c ****     dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
- 138:../BLDCMotor/motorctrl.c ****     alpbet_t uab,uab_q15;            
- 139:../BLDCMotor/motorctrl.c ****     if (sg_motordebug.self_ele_theta > 6.28f)
- 140:../BLDCMotor/motorctrl.c ****     {
- 141:../BLDCMotor/motorctrl.c ****         sg_motordebug.self_ele_theta = 0.0f;
- 142:../BLDCMotor/motorctrl.c ****     }
- 143:../BLDCMotor/motorctrl.c ****     _currmentloop(i_abc,sg_motordebug.self_ele_theta);
- 144:../BLDCMotor/motorctrl.c ****     uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
- 145:../BLDCMotor/motorctrl.c ****     dut01 = _svpwm(uab.alpha,uab.beta);
- 146:../BLDCMotor/motorctrl.c ****     motor_set_pwm(dut01);//暂时屏蔽 电机不转动
- 147:../BLDCMotor/motorctrl.c ****     sg_motordebug.self_ele_theta += 0.001f;  
- 148:../BLDCMotor/motorctrl.c **** 
- 149:../BLDCMotor/motorctrl.c **** #endif
- 150:../BLDCMotor/motorctrl.c **** 
- 151:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
- 152:../BLDCMotor/motorctrl.c ****     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
- 153:../BLDCMotor/motorctrl.c ****     mech_theta = _IQ22toF(Q15_Mechtheta);
- 154:../BLDCMotor/motorctrl.c ****     raw_angle = mech_theta;
- 155:../BLDCMotor/motorctrl.c ****     mech_theta = (mech_theta - sg_MecThetaOffset);
- 156:../BLDCMotor/motorctrl.c ****     elec_theta = mech_theta * MOTOR_PAIR;
- 157:../BLDCMotor/motorctrl.c ****     elec_theta += ANGLE_COMPENSATA;
- 158:../BLDCMotor/motorctrl.c ****     elec_theta = _normalize_angle(elec_theta);
- 159:../BLDCMotor/motorctrl.c ****     sg_motordebug.ele_angle = elec_theta;
- 160:../BLDCMotor/motorctrl.c **** 
- 161:../BLDCMotor/motorctrl.c ****     #if 0//强拖       
- 162:../BLDCMotor/motorctrl.c ****         #if 1
- 163:../BLDCMotor/motorctrl.c ****             dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
- 164:../BLDCMotor/motorctrl.c ****             alpbet_t uab,uab_q15;            
- 165:../BLDCMotor/motorctrl.c ****             if (sg_motordebug.self_ele_theta > 6.28f)
- 166:../BLDCMotor/motorctrl.c ****             {
- 167:../BLDCMotor/motorctrl.c ****                 sg_motordebug.self_ele_theta = 0.0f;
- 168:../BLDCMotor/motorctrl.c ****             }
- 169:../BLDCMotor/motorctrl.c ****             _currmentloop(i_abc,sg_motordebug.self_ele_theta);
- 170:../BLDCMotor/motorctrl.c ****             uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
- 171:../BLDCMotor/motorctrl.c ****             dut01 = _svpwm(uab.alpha,uab.beta);
- 172:../BLDCMotor/motorctrl.c ****             // motor_set_pwm(dut01);//暂时屏蔽 电机不转动
- 173:../BLDCMotor/motorctrl.c ****             sg_motordebug.self_ele_theta += 0.001f;                
- 174:../BLDCMotor/motorctrl.c ****         #else
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 5
+ 118:../BLDCMotor/motorctrl.c ****     Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
+ 119:../BLDCMotor/motorctrl.c ****     abc_t i_abc;
+ 120:../BLDCMotor/motorctrl.c ****     i_abc.a = lowfilter_cale(&sg_elefilter[0],Ia);
+ 121:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
+ 122:../BLDCMotor/motorctrl.c ****     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
+ 123:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G4_MCB
+ 124:../BLDCMotor/motorctrl.c ****     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
+ 125:../BLDCMotor/motorctrl.c ****     mech_theta = _IQ20toF(Q15_Mechtheta);
+ 126:../BLDCMotor/motorctrl.c ****     raw_angle = mech_theta;
+ 127:../BLDCMotor/motorctrl.c ****     mech_theta = (mech_theta - sg_MecThetaOffset);
+ 128:../BLDCMotor/motorctrl.c ****     elec_theta = mech_theta * 1.0f;
+ 129:../BLDCMotor/motorctrl.c ****     elec_theta += ANGLE_COMPENSATA;
+ 130:../BLDCMotor/motorctrl.c ****     elec_theta = _normalize_angle(elec_theta);
+ 131:../BLDCMotor/motorctrl.c ****     sg_motordebug.ele_angle = elec_theta;
+ 132:../BLDCMotor/motorctrl.c **** 
+ 133:../BLDCMotor/motorctrl.c ****     dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
+ 134:../BLDCMotor/motorctrl.c ****     alpbet_t uab,uab_q15;            
+ 135:../BLDCMotor/motorctrl.c ****     if (sg_motordebug.self_ele_theta > 6.28f)
+ 136:../BLDCMotor/motorctrl.c ****     {
+ 137:../BLDCMotor/motorctrl.c ****         sg_motordebug.self_ele_theta = 0.0f;
+ 138:../BLDCMotor/motorctrl.c ****     }
+ 139:../BLDCMotor/motorctrl.c ****     _currmentloop(i_abc,sg_motordebug.self_ele_theta);
+ 140:../BLDCMotor/motorctrl.c ****     uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
+ 141:../BLDCMotor/motorctrl.c ****     dut01 = _svpwm(uab.alpha,uab.beta);
+ 142:../BLDCMotor/motorctrl.c ****     motor_set_pwm(dut01);//暂时屏蔽 电机不转动
+ 143:../BLDCMotor/motorctrl.c ****     sg_motordebug.self_ele_theta += 0.001f;  
+ 144:../BLDCMotor/motorctrl.c **** 
+ 145:../BLDCMotor/motorctrl.c **** #endif
+ 146:../BLDCMotor/motorctrl.c **** 
+ 147:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
+ 148:../BLDCMotor/motorctrl.c ****     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
+ 149:../BLDCMotor/motorctrl.c ****     mech_theta = _IQ22toF(Q15_Mechtheta);
+ 150:../BLDCMotor/motorctrl.c ****     raw_angle = mech_theta;
+ 151:../BLDCMotor/motorctrl.c ****     mech_theta = (mech_theta - sg_MecThetaOffset);
+ 152:../BLDCMotor/motorctrl.c ****     elec_theta = mech_theta * MOTOR_PAIR;
+ 153:../BLDCMotor/motorctrl.c ****     elec_theta += ANGLE_COMPENSATA;
+ 154:../BLDCMotor/motorctrl.c ****     elec_theta = _normalize_angle(elec_theta);
+ 155:../BLDCMotor/motorctrl.c ****     sg_motordebug.ele_angle = elec_theta;
+ 156:../BLDCMotor/motorctrl.c **** 
+ 157:../BLDCMotor/motorctrl.c ****     #if 0//强拖       
+ 158:../BLDCMotor/motorctrl.c ****         #if 1
+ 159:../BLDCMotor/motorctrl.c ****             dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
+ 160:../BLDCMotor/motorctrl.c ****             alpbet_t uab,uab_q15;            
+ 161:../BLDCMotor/motorctrl.c ****             if (sg_motordebug.self_ele_theta > 6.28f)
+ 162:../BLDCMotor/motorctrl.c ****             {
+ 163:../BLDCMotor/motorctrl.c ****                 sg_motordebug.self_ele_theta = 0.0f;
+ 164:../BLDCMotor/motorctrl.c ****             }
+ 165:../BLDCMotor/motorctrl.c ****             _currmentloop(i_abc,sg_motordebug.self_ele_theta);
+ 166:../BLDCMotor/motorctrl.c ****             uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
+ 167:../BLDCMotor/motorctrl.c ****             dut01 = _svpwm(uab.alpha,uab.beta);
+ 168:../BLDCMotor/motorctrl.c ****             // motor_set_pwm(dut01);//暂时屏蔽 电机不转动
+ 169:../BLDCMotor/motorctrl.c ****             sg_motordebug.self_ele_theta += 0.001f;                
+ 170:../BLDCMotor/motorctrl.c ****         #else
+ 171:../BLDCMotor/motorctrl.c ****             dq_t udq = {0.0f,-0.8f,_IQ15(0.0f),_IQ15(0.8f)};
+ 172:../BLDCMotor/motorctrl.c ****             alpbet_t uab,uab_q15;            
+ 173:../BLDCMotor/motorctrl.c ****             if (sg_motordebug.self_ele_theta < 0.0f)
+ 174:../BLDCMotor/motorctrl.c ****             {
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 5
 
 
- 175:../BLDCMotor/motorctrl.c ****             dq_t udq = {0.0f,-0.8f,_IQ15(0.0f),_IQ15(0.8f)};
- 176:../BLDCMotor/motorctrl.c ****             alpbet_t uab,uab_q15;            
- 177:../BLDCMotor/motorctrl.c ****             if (sg_motordebug.self_ele_theta < 0.0f)
- 178:../BLDCMotor/motorctrl.c ****             {
- 179:../BLDCMotor/motorctrl.c ****                 sg_motordebug.self_ele_theta += _2PI;
- 180:../BLDCMotor/motorctrl.c ****             }
- 181:../BLDCMotor/motorctrl.c ****             _currmentloop(i_abc,sg_motordebug.self_ele_theta);
- 182:../BLDCMotor/motorctrl.c ****             uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
- 183:../BLDCMotor/motorctrl.c ****             dut01 = _svpwm(uab.alpha,uab.beta);
- 184:../BLDCMotor/motorctrl.c ****             motor_set_pwm(dut01);
- 185:../BLDCMotor/motorctrl.c ****             sg_motordebug.self_ele_theta -= 0.001f;               
- 186:../BLDCMotor/motorctrl.c ****         #endif
- 187:../BLDCMotor/motorctrl.c ****     #else //使用传感器
- 188:../BLDCMotor/motorctrl.c ****     {
- 189:../BLDCMotor/motorctrl.c ****         dq_t udq = {0.0f,0.1f,_IQ15(0.0f),_IQ15(0.8f)};
- 190:../BLDCMotor/motorctrl.c ****         alpbet_t uab,uab_q15;
- 191:../BLDCMotor/motorctrl.c ****         #if 0/*闭环控制*/
- 192:../BLDCMotor/motorctrl.c ****             udq = _currmentloop(i_abc,elec_theta - PI/2.0F);
- 193:../BLDCMotor/motorctrl.c ****         #endif
- 194:../BLDCMotor/motorctrl.c ****         uab = _2r_2s(udq, elec_theta);
- 195:../BLDCMotor/motorctrl.c ****         dut01 = _svpwm(uab.alpha,uab.beta);
- 196:../BLDCMotor/motorctrl.c ****         motor_set_pwm(dut01);
- 197:../BLDCMotor/motorctrl.c ****     }
- 198:../BLDCMotor/motorctrl.c ****     #endif
- 199:../BLDCMotor/motorctrl.c **** #endif
- 200:../BLDCMotor/motorctrl.c **** 
- 201:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G431
- 202:../BLDCMotor/motorctrl.c ****         Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
- 203:../BLDCMotor/motorctrl.c ****         mech_theta = _IQ20toF(Q15_Mechtheta);
- 204:../BLDCMotor/motorctrl.c ****         mech_theta -= sg_MecThetaOffset;
- 205:../BLDCMotor/motorctrl.c ****         elec_theta = mech_theta * MOTOR_PAIR;
- 206:../BLDCMotor/motorctrl.c ****         elec_theta = _normalize_angle(elec_theta);
- 207:../BLDCMotor/motorctrl.c ****         sg_motordebug.ele_angle = elec_theta;
- 208:../BLDCMotor/motorctrl.c **** 
- 209:../BLDCMotor/motorctrl.c ****         #if 0//强拖
- 210:../BLDCMotor/motorctrl.c ****             {            
- 211:../BLDCMotor/motorctrl.c ****                 dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.0f)};
- 212:../BLDCMotor/motorctrl.c ****                 alpbet_t uab,uab_q15;
- 213:../BLDCMotor/motorctrl.c ****                 if (sg_motordebug.self_ele_theta >= _2PI)
- 214:../BLDCMotor/motorctrl.c ****                 {
- 215:../BLDCMotor/motorctrl.c ****                     sg_motordebug.self_ele_theta -= _2PI;
- 216:../BLDCMotor/motorctrl.c ****                 }
- 217:../BLDCMotor/motorctrl.c ****                 uab = _2r_2s(udq, sg_motordebug.self_ele_theta); 
- 218:../BLDCMotor/motorctrl.c ****                 dut01 = _svpwm(uab.alpha,uab.beta);
- 219:../BLDCMotor/motorctrl.c ****                 motor_set_pwm(dut01);
- 220:../BLDCMotor/motorctrl.c ****                 sg_motordebug.self_ele_theta += 0.31415926f;
- 221:../BLDCMotor/motorctrl.c ****             }
- 222:../BLDCMotor/motorctrl.c ****         #else //使用传感器
- 223:../BLDCMotor/motorctrl.c ****         {
- 224:../BLDCMotor/motorctrl.c ****             dq_t udq = {0.0f,0.0f,_IQ15(0.0f),_IQ15(0.8f)};
- 225:../BLDCMotor/motorctrl.c ****             alpbet_t uab,uab_q15;
- 226:../BLDCMotor/motorctrl.c ****             #if 1/*闭环控制*/
- 227:../BLDCMotor/motorctrl.c ****                 udq = _currmentloop(i_abc,elec_theta);
- 228:../BLDCMotor/motorctrl.c ****             #else
- 229:../BLDCMotor/motorctrl.c ****                 _currmentloop(i_abc,elec_theta);
- 230:../BLDCMotor/motorctrl.c ****                 udq.d = 0.0f;
- 231:../BLDCMotor/motorctrl.c ****                 udq.q = sg_motordebug.iq_targe;
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 6
+ 175:../BLDCMotor/motorctrl.c ****                 sg_motordebug.self_ele_theta += _2PI;
+ 176:../BLDCMotor/motorctrl.c ****             }
+ 177:../BLDCMotor/motorctrl.c ****             _currmentloop(i_abc,sg_motordebug.self_ele_theta);
+ 178:../BLDCMotor/motorctrl.c ****             uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
+ 179:../BLDCMotor/motorctrl.c ****             dut01 = _svpwm(uab.alpha,uab.beta);
+ 180:../BLDCMotor/motorctrl.c ****             motor_set_pwm(dut01);
+ 181:../BLDCMotor/motorctrl.c ****             sg_motordebug.self_ele_theta -= 0.001f;               
+ 182:../BLDCMotor/motorctrl.c ****         #endif
+ 183:../BLDCMotor/motorctrl.c ****     #else //使用传感器
+ 184:../BLDCMotor/motorctrl.c ****     {
+ 185:../BLDCMotor/motorctrl.c ****         dq_t udq = {0.0f,0.1f,_IQ15(0.0f),_IQ15(0.8f)};
+ 186:../BLDCMotor/motorctrl.c ****         alpbet_t uab,uab_q15;
+ 187:../BLDCMotor/motorctrl.c ****         #if 0/*闭环控制*/
+ 188:../BLDCMotor/motorctrl.c ****             udq = _currmentloop(i_abc,elec_theta - PI/2.0F);
+ 189:../BLDCMotor/motorctrl.c ****         #endif
+ 190:../BLDCMotor/motorctrl.c ****         uab = _2r_2s(udq, elec_theta);
+ 191:../BLDCMotor/motorctrl.c ****         dut01 = _svpwm(uab.alpha,uab.beta);
+ 192:../BLDCMotor/motorctrl.c ****         motor_set_pwm(dut01);
+ 193:../BLDCMotor/motorctrl.c ****     }
+ 194:../BLDCMotor/motorctrl.c ****     #endif
+ 195:../BLDCMotor/motorctrl.c **** #endif
+ 196:../BLDCMotor/motorctrl.c **** 
+ 197:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G431
+ 198:../BLDCMotor/motorctrl.c ****         Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
+ 199:../BLDCMotor/motorctrl.c ****         mech_theta = _IQ20toF(Q15_Mechtheta);
+ 200:../BLDCMotor/motorctrl.c ****         mech_theta -= sg_MecThetaOffset;
+ 201:../BLDCMotor/motorctrl.c ****         elec_theta = mech_theta * MOTOR_PAIR;
+ 202:../BLDCMotor/motorctrl.c ****         elec_theta = _normalize_angle(elec_theta);
+ 203:../BLDCMotor/motorctrl.c ****         sg_motordebug.ele_angle = elec_theta;
+ 204:../BLDCMotor/motorctrl.c **** 
+ 205:../BLDCMotor/motorctrl.c ****         #if 0//强拖
+ 206:../BLDCMotor/motorctrl.c ****             {            
+ 207:../BLDCMotor/motorctrl.c ****                 dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.0f)};
+ 208:../BLDCMotor/motorctrl.c ****                 alpbet_t uab,uab_q15;
+ 209:../BLDCMotor/motorctrl.c ****                 if (sg_motordebug.self_ele_theta >= _2PI)
+ 210:../BLDCMotor/motorctrl.c ****                 {
+ 211:../BLDCMotor/motorctrl.c ****                     sg_motordebug.self_ele_theta -= _2PI;
+ 212:../BLDCMotor/motorctrl.c ****                 }
+ 213:../BLDCMotor/motorctrl.c ****                 uab = _2r_2s(udq, sg_motordebug.self_ele_theta); 
+ 214:../BLDCMotor/motorctrl.c ****                 dut01 = _svpwm(uab.alpha,uab.beta);
+ 215:../BLDCMotor/motorctrl.c ****                 motor_set_pwm(dut01);
+ 216:../BLDCMotor/motorctrl.c ****                 sg_motordebug.self_ele_theta += 0.31415926f;
+ 217:../BLDCMotor/motorctrl.c ****             }
+ 218:../BLDCMotor/motorctrl.c ****         #else //使用传感器
+ 219:../BLDCMotor/motorctrl.c ****         {
+ 220:../BLDCMotor/motorctrl.c ****             dq_t udq = {0.0f,0.0f,_IQ15(0.0f),_IQ15(0.8f)};
+ 221:../BLDCMotor/motorctrl.c ****             alpbet_t uab,uab_q15;
+ 222:../BLDCMotor/motorctrl.c ****             #if 1/*闭环控制*/
+ 223:../BLDCMotor/motorctrl.c ****                 udq = _currmentloop(i_abc,elec_theta);
+ 224:../BLDCMotor/motorctrl.c ****             #else
+ 225:../BLDCMotor/motorctrl.c ****                 _currmentloop(i_abc,elec_theta);
+ 226:../BLDCMotor/motorctrl.c ****                 udq.d = 0.0f;
+ 227:../BLDCMotor/motorctrl.c ****                 udq.q = sg_motordebug.iq_targe;
+ 228:../BLDCMotor/motorctrl.c ****             #endif
+ 229:../BLDCMotor/motorctrl.c ****             uab = _2r_2s(udq, elec_theta);
+ 230:../BLDCMotor/motorctrl.c ****             uab = _limit_voltagecircle(uab);
+ 231:../BLDCMotor/motorctrl.c ****             motor_set_pwm(_svpwm(uab.alpha,uab.beta));
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 6
 
 
- 232:../BLDCMotor/motorctrl.c ****             #endif
- 233:../BLDCMotor/motorctrl.c ****             uab = _2r_2s(udq, elec_theta);
- 234:../BLDCMotor/motorctrl.c ****             uab = _limit_voltagecircle(uab);
- 235:../BLDCMotor/motorctrl.c ****             motor_set_pwm(_svpwm(uab.alpha,uab.beta));
- 236:../BLDCMotor/motorctrl.c ****         }
- 237:../BLDCMotor/motorctrl.c ****         #endif
- 238:../BLDCMotor/motorctrl.c **** #endif
- 239:../BLDCMotor/motorctrl.c ****     return;
- 240:../BLDCMotor/motorctrl.c **** }
- 241:../BLDCMotor/motorctrl.c **** alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {  
- 242:../BLDCMotor/motorctrl.c ****     float max_voltage = D_MAX_VAL;// 这里应该是你的最大允许电压值，例如对于三�
- 243:../BLDCMotor/motorctrl.c ****     float voltage_magnitude = sqrt(raw_uab.alpha * raw_uab.alpha + raw_uab.beta * raw_uab.beta); //
- 244:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
- 245:../BLDCMotor/motorctrl.c ****     if (voltage_magnitude > max_voltage) {  
- 246:../BLDCMotor/motorctrl.c ****         // 如果矢量长度超过最大电压，则按比例缩放矢量以使其落在电压矢�
- 247:../BLDCMotor/motorctrl.c ****         float scale_factor = max_voltage / voltage_magnitude;  
- 248:../BLDCMotor/motorctrl.c ****         uab.alpha = raw_uab.alpha * scale_factor;  
- 249:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta * scale_factor;  
- 250:../BLDCMotor/motorctrl.c ****     } else {  
- 251:../BLDCMotor/motorctrl.c ****         // 如果矢量长度在允许范围内，则不进行任何改变  
- 252:../BLDCMotor/motorctrl.c ****         uab.alpha = raw_uab.alpha;  
- 253:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta;  
- 254:../BLDCMotor/motorctrl.c ****     }
- 255:../BLDCMotor/motorctrl.c ****     return uab;
- 256:../BLDCMotor/motorctrl.c **** }
- 257:../BLDCMotor/motorctrl.c **** dq_t _currmentloop(abc_t i_abc,float ele_theta)
- 258:../BLDCMotor/motorctrl.c **** {
- 259:../BLDCMotor/motorctrl.c **** #if 1
- 260:../BLDCMotor/motorctrl.c ****     alpbet_t i_alphbeta;
- 261:../BLDCMotor/motorctrl.c ****     float _tempa,_tempb,_tempc;
- 262:../BLDCMotor/motorctrl.c ****     dq_t i_dq;
- 263:../BLDCMotor/motorctrl.c ****     _tempa = i_abc.a;
- 264:../BLDCMotor/motorctrl.c ****     _tempb = i_abc.b;
- 265:../BLDCMotor/motorctrl.c ****     _tempc = i_abc.c;
- 266:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G431
- 267:../BLDCMotor/motorctrl.c ****     i_abc.a = _tempa;
- 268:../BLDCMotor/motorctrl.c ****     i_abc.b = _tempc;
- 269:../BLDCMotor/motorctrl.c ****     i_abc.c = _tempb;
- 270:../BLDCMotor/motorctrl.c ****     sg_motordebug.ia = i_abc.a;
- 271:../BLDCMotor/motorctrl.c ****     sg_motordebug.ib = i_abc.b;
- 272:../BLDCMotor/motorctrl.c ****     sg_motordebug.ic = i_abc.c;
- 273:../BLDCMotor/motorctrl.c **** #endif
- 274:../BLDCMotor/motorctrl.c ****     _3s_2s(i_abc,&i_alphbeta);   
- 275:../BLDCMotor/motorctrl.c ****     _2s_2r(i_alphbeta,((ele_theta - PI_2)),&i_dq);
- 276:../BLDCMotor/motorctrl.c ****     sg_motordebug.id = (i_dq.d);
- 277:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq = (i_dq.q);
- 278:../BLDCMotor/motorctrl.c ****     dq_t udq = {0.0f};
- 279:../BLDCMotor/motorctrl.c **** #if 1
- 280:../BLDCMotor/motorctrl.c ****     float tar_id = 0.0f,tar_iq = 0.0f;
- 281:../BLDCMotor/motorctrl.c ****     tar_id = sg_motordebug.id_targe;
- 282:../BLDCMotor/motorctrl.c ****     tar_iq = sg_motordebug.iq_targe;
- 283:../BLDCMotor/motorctrl.c ****     udq.d = pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
- 284:../BLDCMotor/motorctrl.c ****     sg_motordebug.id_real = i_dq.d;
- 285:../BLDCMotor/motorctrl.c ****     udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
- 286:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq_real = i_dq.q;
- 287:../BLDCMotor/motorctrl.c **** #endif
- 288:../BLDCMotor/motorctrl.c ****     return udq;
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 7
+ 232:../BLDCMotor/motorctrl.c ****         }
+ 233:../BLDCMotor/motorctrl.c ****         #endif
+ 234:../BLDCMotor/motorctrl.c **** #endif
+ 235:../BLDCMotor/motorctrl.c ****     return;
+ 236:../BLDCMotor/motorctrl.c **** }
+ 237:../BLDCMotor/motorctrl.c **** alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {  
+ 238:../BLDCMotor/motorctrl.c ****     float max_voltage = D_MAX_VAL;// 这里应该是你的最大允许电压值，例如对于三�
+ 239:../BLDCMotor/motorctrl.c ****     float voltage_magnitude = sqrt(raw_uab.alpha * raw_uab.alpha + raw_uab.beta * raw_uab.beta); //
+ 240:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
+ 241:../BLDCMotor/motorctrl.c ****     if (voltage_magnitude > max_voltage) {  
+ 242:../BLDCMotor/motorctrl.c ****         // 如果矢量长度超过最大电压，则按比例缩放矢量以使其落在电压矢�
+ 243:../BLDCMotor/motorctrl.c ****         float scale_factor = max_voltage / voltage_magnitude;  
+ 244:../BLDCMotor/motorctrl.c ****         uab.alpha = raw_uab.alpha * scale_factor;  
+ 245:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta * scale_factor;  
+ 246:../BLDCMotor/motorctrl.c ****     } else {  
+ 247:../BLDCMotor/motorctrl.c ****         // 如果矢量长度在允许范围内，则不进行任何改变  
+ 248:../BLDCMotor/motorctrl.c ****         uab.alpha = raw_uab.alpha;  
+ 249:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta;  
+ 250:../BLDCMotor/motorctrl.c ****     }
+ 251:../BLDCMotor/motorctrl.c ****     return uab;
+ 252:../BLDCMotor/motorctrl.c **** }
+ 253:../BLDCMotor/motorctrl.c **** dq_t _currmentloop(abc_t i_abc,float ele_theta)
+ 254:../BLDCMotor/motorctrl.c **** {
+ 255:../BLDCMotor/motorctrl.c **** #if 1
+ 256:../BLDCMotor/motorctrl.c ****     alpbet_t i_alphbeta;
+ 257:../BLDCMotor/motorctrl.c ****     float _tempa,_tempb,_tempc;
+ 258:../BLDCMotor/motorctrl.c ****     dq_t i_dq;
+ 259:../BLDCMotor/motorctrl.c ****     _tempa = i_abc.a;
+ 260:../BLDCMotor/motorctrl.c ****     _tempb = i_abc.b;
+ 261:../BLDCMotor/motorctrl.c ****     _tempc = i_abc.c;
+ 262:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G431
+ 263:../BLDCMotor/motorctrl.c ****     i_abc.a = _tempa;
+ 264:../BLDCMotor/motorctrl.c ****     i_abc.b = _tempc;
+ 265:../BLDCMotor/motorctrl.c ****     i_abc.c = _tempb;
+ 266:../BLDCMotor/motorctrl.c ****     sg_motordebug.ia = i_abc.a;
+ 267:../BLDCMotor/motorctrl.c ****     sg_motordebug.ib = i_abc.b;
+ 268:../BLDCMotor/motorctrl.c ****     sg_motordebug.ic = i_abc.c;
+ 269:../BLDCMotor/motorctrl.c **** #endif
+ 270:../BLDCMotor/motorctrl.c ****     _3s_2s(i_abc,&i_alphbeta);   
+ 271:../BLDCMotor/motorctrl.c ****     _2s_2r(i_alphbeta,((ele_theta - PI_2)),&i_dq);
+ 272:../BLDCMotor/motorctrl.c ****     sg_motordebug.id = (i_dq.d);
+ 273:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq = (i_dq.q);
+ 274:../BLDCMotor/motorctrl.c ****     dq_t udq = {0.0f};
+ 275:../BLDCMotor/motorctrl.c **** #if 1
+ 276:../BLDCMotor/motorctrl.c ****     float tar_id = 0.0f,tar_iq = 0.0f;
+ 277:../BLDCMotor/motorctrl.c ****     tar_id = sg_motordebug.id_targe;
+ 278:../BLDCMotor/motorctrl.c ****     tar_iq = sg_motordebug.iq_targe;
+ 279:../BLDCMotor/motorctrl.c ****     udq.d = pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
+ 280:../BLDCMotor/motorctrl.c ****     sg_motordebug.id_real = i_dq.d;
+ 281:../BLDCMotor/motorctrl.c ****     udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
+ 282:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq_real = i_dq.q;
+ 283:../BLDCMotor/motorctrl.c **** #endif
+ 284:../BLDCMotor/motorctrl.c ****     return udq;
+ 285:../BLDCMotor/motorctrl.c **** #endif
+ 286:../BLDCMotor/motorctrl.c **** }
+ 287:../BLDCMotor/motorctrl.c **** 
+ 288:../BLDCMotor/motorctrl.c **** static void motor_enable(void)
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 7
 
 
- 289:../BLDCMotor/motorctrl.c **** #endif
- 290:../BLDCMotor/motorctrl.c **** }
- 291:../BLDCMotor/motorctrl.c **** 
- 292:../BLDCMotor/motorctrl.c **** static void motor_enable(void)
- 293:../BLDCMotor/motorctrl.c **** {
- 294:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
- 295:../BLDCMotor/motorctrl.c ****     gpio_setmotor_power();
- 296:../BLDCMotor/motorctrl.c **** #endif
- 297:../BLDCMotor/motorctrl.c ****     /*pwm 使能*/
- 298:../BLDCMotor/motorctrl.c ****     tim_pwm_enable();
- 299:../BLDCMotor/motorctrl.c ****     tim_tigger_adc();
- 300:../BLDCMotor/motorctrl.c ****     adc_start();
- 301:../BLDCMotor/motorctrl.c **** }
- 302:../BLDCMotor/motorctrl.c **** static void motor_enable_noirq(void)
- 303:../BLDCMotor/motorctrl.c **** {
-  58              		.loc 1 303 1 is_stmt 1 view -0
+ 289:../BLDCMotor/motorctrl.c **** {
+ 290:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
+ 291:../BLDCMotor/motorctrl.c ****     gpio_setmotor_power();
+ 292:../BLDCMotor/motorctrl.c **** #endif
+ 293:../BLDCMotor/motorctrl.c ****     /*pwm 使能*/
+ 294:../BLDCMotor/motorctrl.c ****     tim_pwm_enable();
+ 295:../BLDCMotor/motorctrl.c ****     tim_tigger_adc();
+ 296:../BLDCMotor/motorctrl.c ****     adc_start();
+ 297:../BLDCMotor/motorctrl.c **** }
+ 298:../BLDCMotor/motorctrl.c **** static void motor_enable_noirq(void)
+ 299:../BLDCMotor/motorctrl.c **** {
+  58              		.loc 1 299 1 is_stmt 1 view -0
   59              		.cfi_startproc
   60              		@ args = 0, pretend = 0, frame = 0
   61              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -385,16 +381,16 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
   64              		.cfi_def_cfa_offset 8
   65              		.cfi_offset 3, -8
   66              		.cfi_offset 14, -4
- 304:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
- 305:../BLDCMotor/motorctrl.c ****     gpio_setmotor_power();
- 306:../BLDCMotor/motorctrl.c **** #endif
- 307:../BLDCMotor/motorctrl.c ****     /*pwm 使能*/
- 308:../BLDCMotor/motorctrl.c ****     tim_pwm_enable();
-  67              		.loc 1 308 5 view .LVU7
+ 300:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
+ 301:../BLDCMotor/motorctrl.c ****     gpio_setmotor_power();
+ 302:../BLDCMotor/motorctrl.c **** #endif
+ 303:../BLDCMotor/motorctrl.c ****     /*pwm 使能*/
+ 304:../BLDCMotor/motorctrl.c ****     tim_pwm_enable();
+  67              		.loc 1 304 5 view .LVU7
   68 0002 FFF7FEFF 		bl	tim_pwm_enable
   69              	.LVL0:
- 309:../BLDCMotor/motorctrl.c **** }
-  70              		.loc 1 309 1 is_stmt 0 view .LVU8
+ 305:../BLDCMotor/motorctrl.c **** }
+  70              		.loc 1 305 1 is_stmt 0 view .LVU8
   71 0006 08BD     		pop	{r3, pc}
   72              		.cfi_endproc
   73              	.LFE335:
@@ -405,26 +401,26 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
   79              		.thumb_func
   81              	motor_set_pwm:
   82              	.LFB337:
- 310:../BLDCMotor/motorctrl.c **** static void motor_disable(void)
- 311:../BLDCMotor/motorctrl.c **** {
- 312:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
- 313:../BLDCMotor/motorctrl.c ****     gpio_setmotor_powerdown();
- 314:../BLDCMotor/motorctrl.c **** #endif    
- 315:../BLDCMotor/motorctrl.c ****     tim_pwm_disable();
- 316:../BLDCMotor/motorctrl.c ****     adc_stop();
- 317:../BLDCMotor/motorctrl.c **** }
- 318:../BLDCMotor/motorctrl.c **** static void motor_set_pwm(duty_t temp)
- 319:../BLDCMotor/motorctrl.c **** {
-  83              		.loc 1 319 1 is_stmt 1 view -0
+ 306:../BLDCMotor/motorctrl.c **** static void motor_disable(void)
+ 307:../BLDCMotor/motorctrl.c **** {
+ 308:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
+ 309:../BLDCMotor/motorctrl.c ****     gpio_setmotor_powerdown();
+ 310:../BLDCMotor/motorctrl.c **** #endif    
+ 311:../BLDCMotor/motorctrl.c ****     tim_pwm_disable();
+ 312:../BLDCMotor/motorctrl.c ****     adc_stop();
+ 313:../BLDCMotor/motorctrl.c **** }
+ 314:../BLDCMotor/motorctrl.c **** static void motor_set_pwm(duty_t temp)
+ 315:../BLDCMotor/motorctrl.c **** {
+  83              		.loc 1 315 1 is_stmt 1 view -0
   84              		.cfi_startproc
   85              		@ args = 0, pretend = 0, frame = 16
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 8
-
-
   86              		@ frame_needed = 0, uses_anonymous_args = 0
   87 0000 00B5     		push	{lr}
   88              	.LCFI1:
   89              		.cfi_def_cfa_offset 4
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 8
+
+
   90              		.cfi_offset 14, -4
   91 0002 85B0     		sub	sp, sp, #20
   92              	.LCFI2:
@@ -432,12 +428,12 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
   94 0004 8DED010A 		vstr.32	s0, [sp, #4]
   95 0008 CDED020A 		vstr.32	s1, [sp, #8]
   96 000c 8DED031A 		vstr.32	s2, [sp, #12]
- 320:../BLDCMotor/motorctrl.c ****     tim_set_pwm(temp._a,temp._b,temp._c);
-  97              		.loc 1 320 5 view .LVU10
+ 316:../BLDCMotor/motorctrl.c ****     tim_set_pwm(temp._a,temp._b,temp._c);
+  97              		.loc 1 316 5 view .LVU10
   98 0010 FFF7FEFF 		bl	tim_set_pwm
   99              	.LVL1:
- 321:../BLDCMotor/motorctrl.c **** }
- 100              		.loc 1 321 1 is_stmt 0 view .LVU11
+ 317:../BLDCMotor/motorctrl.c **** }
+ 100              		.loc 1 317 1 is_stmt 0 view .LVU11
  101 0014 05B0     		add	sp, sp, #20
  102              	.LCFI3:
  103              		.cfi_def_cfa_offset 4
@@ -452,9 +448,9 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  113              		.thumb_func
  115              	_get_angleoffset:
  116              	.LFB338:
- 322:../BLDCMotor/motorctrl.c **** static float _get_angleoffset(void)
- 323:../BLDCMotor/motorctrl.c **** {
- 117              		.loc 1 323 1 is_stmt 1 view -0
+ 318:../BLDCMotor/motorctrl.c **** static float _get_angleoffset(void)
+ 319:../BLDCMotor/motorctrl.c **** {
+ 117              		.loc 1 319 1 is_stmt 1 view -0
  118              		.cfi_startproc
  119              		@ args = 0, pretend = 0, frame = 48
  120              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -467,165 +463,165 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  127 0002 8FB0     		sub	sp, sp, #60
  128              	.LCFI5:
  129              		.cfi_def_cfa_offset 72
- 324:../BLDCMotor/motorctrl.c ****     motor_enable_noirq();
- 130              		.loc 1 324 5 view .LVU13
+ 320:../BLDCMotor/motorctrl.c ****     motor_enable_noirq();
+ 130              		.loc 1 320 5 view .LVU13
  131 0004 FFF7FEFF 		bl	motor_enable_noirq
  132              	.LVL2:
- 325:../BLDCMotor/motorctrl.c ****     /*-----------设置alpha/beta坐标系------------------*/
- 326:../BLDCMotor/motorctrl.c ****     alpbet_t uab = {1.0f,0.0f};
- 133              		.loc 1 326 5 view .LVU14
- 134              		.loc 1 326 14 is_stmt 0 view .LVU15
+ 321:../BLDCMotor/motorctrl.c ****     /*-----------设置alpha/beta坐标系------------------*/
+ 322:../BLDCMotor/motorctrl.c ****     alpbet_t uab = {1.0f,0.0f};
+ 133              		.loc 1 322 5 view .LVU14
+ 134              		.loc 1 322 14 is_stmt 0 view .LVU15
  135 0008 0025     		movs	r5, #0
  136 000a 0A95     		str	r5, [sp, #40]
  137 000c 0B95     		str	r5, [sp, #44]
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 9
-
-
  138 000e 0C95     		str	r5, [sp, #48]
  139 0010 0D95     		str	r5, [sp, #52]
  140 0012 4FF07E52 		mov	r2, #1065353216
  141 0016 0A92     		str	r2, [sp, #40]	@ float
- 327:../BLDCMotor/motorctrl.c ****     duty_t dut01;
- 142              		.loc 1 327 5 is_stmt 1 view .LVU16
- 328:../BLDCMotor/motorctrl.c ****     float theta;
- 143              		.loc 1 328 5 view .LVU17
- 329:../BLDCMotor/motorctrl.c **** 
- 330:../BLDCMotor/motorctrl.c ****     #ifdef BOARD_STM32H723 
- 331:../BLDCMotor/motorctrl.c ****         dut01 = _svpwm(uab.alpha,uab.beta);
- 332:../BLDCMotor/motorctrl.c ****         motor_set_pwm(dut01);
- 333:../BLDCMotor/motorctrl.c ****         HAL_Delay(500);    
- 334:../BLDCMotor/motorctrl.c ****         tim_encode_writecnt(0);
- 335:../BLDCMotor/motorctrl.c ****         theta = 0.0f;
- 336:../BLDCMotor/motorctrl.c ****         // motor_disable();
- 337:../BLDCMotor/motorctrl.c ****         return theta;
- 338:../BLDCMotor/motorctrl.c ****     #endif
- 339:../BLDCMotor/motorctrl.c **** 
- 340:../BLDCMotor/motorctrl.c ****     #ifdef BOARD_STM32G4_MCB
- 341:../BLDCMotor/motorctrl.c ****         dut01 = _svpwm(uab.alpha,uab.beta);
- 342:../BLDCMotor/motorctrl.c ****         motor_set_pwm(dut01);
- 343:../BLDCMotor/motorctrl.c ****         HAL_Delay(500);    
- 344:../BLDCMotor/motorctrl.c ****         tim_encode_writecnt(0);
- 345:../BLDCMotor/motorctrl.c ****         theta = 0.0f;
- 346:../BLDCMotor/motorctrl.c ****         // motor_disable();
- 347:../BLDCMotor/motorctrl.c ****         return theta;
- 348:../BLDCMotor/motorctrl.c ****     #endif
- 349:../BLDCMotor/motorctrl.c **** 
- 350:../BLDCMotor/motorctrl.c ****     #ifdef BOARD_STM32G431
- 351:../BLDCMotor/motorctrl.c ****         dq_t udq = {1.0f,0.0f};
- 144              		.loc 1 351 9 view .LVU18
- 145              		.loc 1 351 14 is_stmt 0 view .LVU19
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 9
+
+
+ 323:../BLDCMotor/motorctrl.c ****     duty_t dut01;
+ 142              		.loc 1 323 5 is_stmt 1 view .LVU16
+ 324:../BLDCMotor/motorctrl.c ****     float theta;
+ 143              		.loc 1 324 5 view .LVU17
+ 325:../BLDCMotor/motorctrl.c **** 
+ 326:../BLDCMotor/motorctrl.c ****     #ifdef BOARD_STM32H723 
+ 327:../BLDCMotor/motorctrl.c ****         dut01 = _svpwm(uab.alpha,uab.beta);
+ 328:../BLDCMotor/motorctrl.c ****         motor_set_pwm(dut01);
+ 329:../BLDCMotor/motorctrl.c ****         HAL_Delay(500);    
+ 330:../BLDCMotor/motorctrl.c ****         tim_encode_writecnt(0);
+ 331:../BLDCMotor/motorctrl.c ****         theta = 0.0f;
+ 332:../BLDCMotor/motorctrl.c ****         // motor_disable();
+ 333:../BLDCMotor/motorctrl.c ****         return theta;
+ 334:../BLDCMotor/motorctrl.c ****     #endif
+ 335:../BLDCMotor/motorctrl.c **** 
+ 336:../BLDCMotor/motorctrl.c ****     #ifdef BOARD_STM32G4_MCB
+ 337:../BLDCMotor/motorctrl.c ****         dut01 = _svpwm(uab.alpha,uab.beta);
+ 338:../BLDCMotor/motorctrl.c ****         motor_set_pwm(dut01);
+ 339:../BLDCMotor/motorctrl.c ****         HAL_Delay(500);    
+ 340:../BLDCMotor/motorctrl.c ****         tim_encode_writecnt(0);
+ 341:../BLDCMotor/motorctrl.c ****         theta = 0.0f;
+ 342:../BLDCMotor/motorctrl.c ****         // motor_disable();
+ 343:../BLDCMotor/motorctrl.c ****         return theta;
+ 344:../BLDCMotor/motorctrl.c ****     #endif
+ 345:../BLDCMotor/motorctrl.c **** 
+ 346:../BLDCMotor/motorctrl.c ****     #ifdef BOARD_STM32G431
+ 347:../BLDCMotor/motorctrl.c ****         dq_t udq = {1.0f,0.0f};
+ 144              		.loc 1 347 9 view .LVU18
+ 145              		.loc 1 347 14 is_stmt 0 view .LVU19
  146 0018 03AB     		add	r3, sp, #12
  147 001a 0395     		str	r5, [sp, #12]
  148 001c 0495     		str	r5, [sp, #16]
  149 001e 0595     		str	r5, [sp, #20]
  150 0020 0695     		str	r5, [sp, #24]
  151 0022 0392     		str	r2, [sp, #12]	@ float
- 352:../BLDCMotor/motorctrl.c ****         uab = _2r_2s(udq,0.0f);
- 152              		.loc 1 352 9 is_stmt 1 view .LVU20
- 153              		.loc 1 352 15 is_stmt 0 view .LVU21
+ 348:../BLDCMotor/motorctrl.c ****         uab = _2r_2s(udq,0.0f);
+ 152              		.loc 1 348 9 is_stmt 1 view .LVU20
+ 153              		.loc 1 348 15 is_stmt 0 view .LVU21
  154 0024 0095     		str	r5, [sp]
  155 0026 0ECB     		ldm	r3, {r1, r2, r3}
  156 0028 9FED180A 		vldr.32	s0, .L12
  157 002c 0AA8     		add	r0, sp, #40
  158 002e FFF7FEFF 		bl	_2r_2s
  159              	.LVL3:
- 353:../BLDCMotor/motorctrl.c ****         dut01 = _svpwm(uab.alpha,uab.beta);
- 160              		.loc 1 353 9 is_stmt 1 view .LVU22
- 161              		.loc 1 353 17 is_stmt 0 view .LVU23
+ 349:../BLDCMotor/motorctrl.c ****         dut01 = _svpwm(uab.alpha,uab.beta);
+ 160              		.loc 1 349 9 is_stmt 1 view .LVU22
+ 161              		.loc 1 349 17 is_stmt 0 view .LVU23
  162 0032 DDED0B0A 		vldr.32	s1, [sp, #44]
  163 0036 9DED0A0A 		vldr.32	s0, [sp, #40]
  164 003a FFF7FEFF 		bl	_svpwm
  165              	.LVL4:
  166 003e 8DED070A 		vstr.32	s0, [sp, #28]
  167 0042 CDED080A 		vstr.32	s1, [sp, #32]
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 10
-
-
  168 0046 8DED091A 		vstr.32	s2, [sp, #36]
- 354:../BLDCMotor/motorctrl.c ****         motor_set_pwm(dut01);
- 169              		.loc 1 354 9 is_stmt 1 view .LVU24
+ 350:../BLDCMotor/motorctrl.c ****         motor_set_pwm(dut01);
+ 169              		.loc 1 350 9 is_stmt 1 view .LVU24
  170 004a FFF7FEFF 		bl	motor_set_pwm
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 10
+
+
  171              	.LVL5:
- 355:../BLDCMotor/motorctrl.c ****         HAL_Delay(500);    
- 172              		.loc 1 355 9 view .LVU25
+ 351:../BLDCMotor/motorctrl.c ****         HAL_Delay(500);    
+ 172              		.loc 1 351 9 view .LVU25
  173 004e 4FF4FA70 		mov	r0, #500
  174 0052 FFF7FEFF 		bl	HAL_Delay
  175              	.LVL6:
- 356:../BLDCMotor/motorctrl.c ****         // motor_disable();
- 357:../BLDCMotor/motorctrl.c ****         HAL_Delay(500);
- 176              		.loc 1 357 9 view .LVU26
+ 352:../BLDCMotor/motorctrl.c ****         // motor_disable();
+ 353:../BLDCMotor/motorctrl.c ****         HAL_Delay(500);
+ 176              		.loc 1 353 9 view .LVU26
  177 0056 4FF4FA70 		mov	r0, #500
  178 005a FFF7FEFF 		bl	HAL_Delay
  179              	.LVL7:
- 358:../BLDCMotor/motorctrl.c ****         int32_t Q15_theta;
- 180              		.loc 1 358 9 view .LVU27
- 359:../BLDCMotor/motorctrl.c ****         int32_t Q_thetaSum = 0;
- 181              		.loc 1 359 9 view .LVU28
- 360:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
- 182              		.loc 1 360 9 view .LVU29
+ 354:../BLDCMotor/motorctrl.c ****         int32_t Q15_theta;
+ 180              		.loc 1 354 9 view .LVU27
+ 355:../BLDCMotor/motorctrl.c ****         int32_t Q_thetaSum = 0;
+ 181              		.loc 1 355 9 view .LVU28
+ 356:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
+ 182              		.loc 1 356 9 view .LVU29
  183              	.LBB2:
- 184              		.loc 1 360 14 view .LVU30
- 185              		.loc 1 360 22 is_stmt 0 view .LVU31
+ 184              		.loc 1 356 14 view .LVU30
+ 185              		.loc 1 356 22 is_stmt 0 view .LVU31
  186 005e 2C46     		mov	r4, r5
- 187              		.loc 1 360 9 view .LVU32
+ 187              		.loc 1 356 9 view .LVU32
  188 0060 07E0     		b	.L9
  189              	.LVL8:
  190              	.L10:
- 361:../BLDCMotor/motorctrl.c ****         {
- 362:../BLDCMotor/motorctrl.c ****             Q_thetaSum += ((int32_t*)(sensor_user_read(SENSOR_01,EN_SENSORDATA_COV)))[0];
- 191              		.loc 1 362 13 is_stmt 1 discriminator 3 view .LVU33
- 192              		.loc 1 362 39 is_stmt 0 discriminator 3 view .LVU34
+ 357:../BLDCMotor/motorctrl.c ****         {
+ 358:../BLDCMotor/motorctrl.c ****             Q_thetaSum += ((int32_t*)(sensor_user_read(SENSOR_01,EN_SENSORDATA_COV)))[0];
+ 191              		.loc 1 358 13 is_stmt 1 discriminator 3 view .LVU33
+ 192              		.loc 1 358 39 is_stmt 0 discriminator 3 view .LVU34
  193 0062 0121     		movs	r1, #1
  194 0064 0020     		movs	r0, #0
  195 0066 FFF7FEFF 		bl	sensor_user_read
  196              	.LVL9:
- 197              		.loc 1 362 86 discriminator 3 view .LVU35
+ 197              		.loc 1 358 86 discriminator 3 view .LVU35
  198 006a 0368     		ldr	r3, [r0]
- 199              		.loc 1 362 24 discriminator 3 view .LVU36
+ 199              		.loc 1 358 24 discriminator 3 view .LVU36
  200 006c 1D44     		add	r5, r5, r3
  201              	.LVL10:
- 360:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
- 202              		.loc 1 360 37 is_stmt 1 discriminator 3 view .LVU37
- 360:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
- 203              		.loc 1 360 38 is_stmt 0 discriminator 3 view .LVU38
+ 356:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
+ 202              		.loc 1 356 37 is_stmt 1 discriminator 3 view .LVU37
+ 356:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
+ 203              		.loc 1 356 38 is_stmt 0 discriminator 3 view .LVU38
  204 006e 0134     		adds	r4, r4, #1
  205              	.LVL11:
- 360:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
- 206              		.loc 1 360 38 discriminator 3 view .LVU39
+ 356:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
+ 206              		.loc 1 356 38 discriminator 3 view .LVU39
  207 0070 E4B2     		uxtb	r4, r4
  208              	.LVL12:
  209              	.L9:
- 360:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
- 210              		.loc 1 360 29 is_stmt 1 discriminator 1 view .LVU40
- 360:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 11
-
-
- 211              		.loc 1 360 9 is_stmt 0 discriminator 1 view .LVU41
+ 356:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
+ 210              		.loc 1 356 29 is_stmt 1 discriminator 1 view .LVU40
+ 356:../BLDCMotor/motorctrl.c ****         for (uint8_t i = 0; i < 10; i++)
+ 211              		.loc 1 356 9 is_stmt 0 discriminator 1 view .LVU41
  212 0072 092C     		cmp	r4, #9
  213 0074 F5D9     		bls	.L10
  214              	.LBE2:
- 363:../BLDCMotor/motorctrl.c ****         }
- 364:../BLDCMotor/motorctrl.c ****         Q15_theta = Q_thetaSum/10;        
- 215              		.loc 1 364 9 is_stmt 1 view .LVU42
- 216              		.loc 1 364 19 is_stmt 0 view .LVU43
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 11
+
+
+ 359:../BLDCMotor/motorctrl.c ****         }
+ 360:../BLDCMotor/motorctrl.c ****         Q15_theta = Q_thetaSum/10;        
+ 215              		.loc 1 360 9 is_stmt 1 view .LVU42
+ 216              		.loc 1 360 19 is_stmt 0 view .LVU43
  217 0076 0648     		ldr	r0, .L12+4
  218 0078 80FB0530 		smull	r3, r0, r0, r5
  219 007c ED17     		asrs	r5, r5, #31
  220              	.LVL13:
- 365:../BLDCMotor/motorctrl.c ****         theta = _IQ20toF(Q15_theta);
- 221              		.loc 1 365 9 is_stmt 1 view .LVU44
- 222              		.loc 1 365 17 is_stmt 0 view .LVU45
+ 361:../BLDCMotor/motorctrl.c ****         theta = _IQ20toF(Q15_theta);
+ 221              		.loc 1 361 9 is_stmt 1 view .LVU44
+ 222              		.loc 1 361 17 is_stmt 0 view .LVU45
  223 007e C5EBA000 		rsb	r0, r5, r0, asr #2
  224              	.LVL14:
- 225              		.loc 1 365 17 view .LVU46
+ 225              		.loc 1 361 17 view .LVU46
  226 0082 FFF7FEFF 		bl	_IQ20toF
  227              	.LVL15:
- 366:../BLDCMotor/motorctrl.c ****         return theta;
- 228              		.loc 1 366 9 is_stmt 1 view .LVU47
- 367:../BLDCMotor/motorctrl.c ****     #endif
- 368:../BLDCMotor/motorctrl.c **** }
- 229              		.loc 1 368 1 is_stmt 0 view .LVU48
+ 362:../BLDCMotor/motorctrl.c ****         return theta;
+ 228              		.loc 1 362 9 is_stmt 1 view .LVU47
+ 363:../BLDCMotor/motorctrl.c ****     #endif
+ 364:../BLDCMotor/motorctrl.c **** }
+ 229              		.loc 1 364 1 is_stmt 0 view .LVU48
  230 0086 0FB0     		add	sp, sp, #60
  231              	.LCFI6:
  232              		.cfi_def_cfa_offset 12
@@ -633,7 +629,7 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  234 0088 30BD     		pop	{r4, r5, pc}
  235              	.LVL16:
  236              	.L13:
- 237              		.loc 1 368 1 view .LVU49
+ 237              		.loc 1 364 1 view .LVU49
  238 008a 00BF     		.align	2
  239              	.L12:
  240 008c 00000000 		.word	0
@@ -647,8 +643,8 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  249              		.thumb_func
  251              	motor_enable:
  252              	.LFB334:
- 293:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
- 253              		.loc 1 293 1 is_stmt 1 view -0
+ 289:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
+ 253              		.loc 1 289 1 is_stmt 1 view -0
  254              		.cfi_startproc
  255              		@ args = 0, pretend = 0, frame = 0
  256              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -657,23 +653,23 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  259              		.cfi_def_cfa_offset 8
  260              		.cfi_offset 3, -8
  261              		.cfi_offset 14, -4
- 298:../BLDCMotor/motorctrl.c ****     tim_tigger_adc();
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 12
-
-
- 262              		.loc 1 298 5 view .LVU51
+ 294:../BLDCMotor/motorctrl.c ****     tim_tigger_adc();
+ 262              		.loc 1 294 5 view .LVU51
  263 0002 FFF7FEFF 		bl	tim_pwm_enable
  264              	.LVL17:
- 299:../BLDCMotor/motorctrl.c ****     adc_start();
- 265              		.loc 1 299 5 view .LVU52
+ 295:../BLDCMotor/motorctrl.c ****     adc_start();
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 12
+
+
+ 265              		.loc 1 295 5 view .LVU52
  266 0006 FFF7FEFF 		bl	tim_tigger_adc
  267              	.LVL18:
- 300:../BLDCMotor/motorctrl.c **** }
- 268              		.loc 1 300 5 view .LVU53
+ 296:../BLDCMotor/motorctrl.c **** }
+ 268              		.loc 1 296 5 view .LVU53
  269 000a FFF7FEFF 		bl	adc_start
  270              	.LVL19:
- 301:../BLDCMotor/motorctrl.c **** static void motor_enable_noirq(void)
- 271              		.loc 1 301 1 is_stmt 0 view .LVU54
+ 297:../BLDCMotor/motorctrl.c **** static void motor_enable_noirq(void)
+ 271              		.loc 1 297 1 is_stmt 0 view .LVU54
  272 000e 08BD     		pop	{r3, pc}
  273              		.cfi_endproc
  274              	.LFE334:
@@ -684,8 +680,8 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  280              		.thumb_func
  282              	motor_disable:
  283              	.LFB336:
- 311:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
- 284              		.loc 1 311 1 is_stmt 1 view -0
+ 307:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32H723
+ 284              		.loc 1 307 1 is_stmt 1 view -0
  285              		.cfi_startproc
  286              		@ args = 0, pretend = 0, frame = 0
  287              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -694,16 +690,16 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  290              		.cfi_def_cfa_offset 8
  291              		.cfi_offset 3, -8
  292              		.cfi_offset 14, -4
- 315:../BLDCMotor/motorctrl.c ****     adc_stop();
- 293              		.loc 1 315 5 view .LVU56
+ 311:../BLDCMotor/motorctrl.c ****     adc_stop();
+ 293              		.loc 1 311 5 view .LVU56
  294 0002 FFF7FEFF 		bl	tim_pwm_disable
  295              	.LVL20:
- 316:../BLDCMotor/motorctrl.c **** }
- 296              		.loc 1 316 5 view .LVU57
+ 312:../BLDCMotor/motorctrl.c **** }
+ 296              		.loc 1 312 5 view .LVU57
  297 0006 FFF7FEFF 		bl	adc_stop
  298              	.LVL21:
- 317:../BLDCMotor/motorctrl.c **** static void motor_set_pwm(duty_t temp)
- 299              		.loc 1 317 1 is_stmt 0 view .LVU58
+ 313:../BLDCMotor/motorctrl.c **** static void motor_set_pwm(duty_t temp)
+ 299              		.loc 1 313 1 is_stmt 0 view .LVU58
  300 000a 08BD     		pop	{r3, pc}
  301              		.cfi_endproc
  302              	.LFE336:
@@ -715,16 +711,16 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  310              	_currmentloop:
  311              	.LVL22:
  312              	.LFB333:
- 258:../BLDCMotor/motorctrl.c **** #if 1
- 313              		.loc 1 258 1 is_stmt 1 view -0
+ 254:../BLDCMotor/motorctrl.c **** #if 1
+ 313              		.loc 1 254 1 is_stmt 1 view -0
  314              		.cfi_startproc
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 13
-
-
  315              		@ args = 28, pretend = 16, frame = 32
  316              		@ frame_needed = 0, uses_anonymous_args = 0
- 258:../BLDCMotor/motorctrl.c **** #if 1
- 317              		.loc 1 258 1 is_stmt 0 view .LVU60
+ 254:../BLDCMotor/motorctrl.c **** #if 1
+ 317              		.loc 1 254 1 is_stmt 0 view .LVU60
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 13
+
+
  318 0000 84B0     		sub	sp, sp, #16
  319              	.LCFI9:
  320              		.cfi_def_cfa_offset 16
@@ -747,77 +743,77 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  337 000c 0DF14C0C 		add	ip, sp, #76
  338 0010 8CE80E00 		stm	ip, {r1, r2, r3}
  339 0014 B0EE408A 		vmov.f32	s16, s0
- 260:../BLDCMotor/motorctrl.c ****     float _tempa,_tempb,_tempc;
- 340              		.loc 1 260 5 is_stmt 1 view .LVU61
- 261:../BLDCMotor/motorctrl.c ****     dq_t i_dq;
- 341              		.loc 1 261 5 view .LVU62
- 262:../BLDCMotor/motorctrl.c ****     _tempa = i_abc.a;
- 342              		.loc 1 262 5 view .LVU63
- 263:../BLDCMotor/motorctrl.c ****     _tempb = i_abc.b;
- 343              		.loc 1 263 5 view .LVU64
+ 256:../BLDCMotor/motorctrl.c ****     float _tempa,_tempb,_tempc;
+ 340              		.loc 1 256 5 is_stmt 1 view .LVU61
+ 257:../BLDCMotor/motorctrl.c ****     dq_t i_dq;
+ 341              		.loc 1 257 5 view .LVU62
+ 258:../BLDCMotor/motorctrl.c ****     _tempa = i_abc.a;
+ 342              		.loc 1 258 5 view .LVU63
+ 259:../BLDCMotor/motorctrl.c ****     _tempb = i_abc.b;
+ 343              		.loc 1 259 5 view .LVU64
  344              	.LVL23:
- 264:../BLDCMotor/motorctrl.c ****     _tempc = i_abc.c;
- 345              		.loc 1 264 5 view .LVU65
- 264:../BLDCMotor/motorctrl.c ****     _tempc = i_abc.c;
- 346              		.loc 1 264 12 is_stmt 0 view .LVU66
+ 260:../BLDCMotor/motorctrl.c ****     _tempc = i_abc.c;
+ 345              		.loc 1 260 5 view .LVU65
+ 260:../BLDCMotor/motorctrl.c ****     _tempc = i_abc.c;
+ 346              		.loc 1 260 12 is_stmt 0 view .LVU66
  347 0018 149B     		ldr	r3, [sp, #80]	@ float
  348              	.LVL24:
- 265:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G431
- 349              		.loc 1 265 5 is_stmt 1 view .LVU67
- 265:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G431
- 350              		.loc 1 265 12 is_stmt 0 view .LVU68
+ 261:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G431
+ 349              		.loc 1 261 5 is_stmt 1 view .LVU67
+ 261:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G431
+ 350              		.loc 1 261 12 is_stmt 0 view .LVU68
  351 001a 159A     		ldr	r2, [sp, #84]	@ float
  352              	.LVL25:
- 267:../BLDCMotor/motorctrl.c ****     i_abc.b = _tempc;
- 353              		.loc 1 267 5 is_stmt 1 view .LVU69
- 268:../BLDCMotor/motorctrl.c ****     i_abc.c = _tempb;
- 354              		.loc 1 268 5 view .LVU70
- 268:../BLDCMotor/motorctrl.c ****     i_abc.c = _tempb;
- 355              		.loc 1 268 13 is_stmt 0 view .LVU71
+ 263:../BLDCMotor/motorctrl.c ****     i_abc.b = _tempc;
+ 353              		.loc 1 263 5 is_stmt 1 view .LVU69
+ 264:../BLDCMotor/motorctrl.c ****     i_abc.c = _tempb;
+ 354              		.loc 1 264 5 view .LVU70
+ 264:../BLDCMotor/motorctrl.c ****     i_abc.c = _tempb;
+ 355              		.loc 1 264 13 is_stmt 0 view .LVU71
  356 001c 1492     		str	r2, [sp, #80]	@ float
- 269:../BLDCMotor/motorctrl.c ****     sg_motordebug.ia = i_abc.a;
- 357              		.loc 1 269 5 is_stmt 1 view .LVU72
- 269:../BLDCMotor/motorctrl.c ****     sg_motordebug.ia = i_abc.a;
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 14
-
-
- 358              		.loc 1 269 13 is_stmt 0 view .LVU73
+ 265:../BLDCMotor/motorctrl.c ****     sg_motordebug.ia = i_abc.a;
+ 357              		.loc 1 265 5 is_stmt 1 view .LVU72
+ 265:../BLDCMotor/motorctrl.c ****     sg_motordebug.ia = i_abc.a;
+ 358              		.loc 1 265 13 is_stmt 0 view .LVU73
  359 001e 1593     		str	r3, [sp, #84]	@ float
- 270:../BLDCMotor/motorctrl.c ****     sg_motordebug.ib = i_abc.b;
- 360              		.loc 1 270 5 is_stmt 1 view .LVU74
- 270:../BLDCMotor/motorctrl.c ****     sg_motordebug.ib = i_abc.b;
- 361              		.loc 1 270 22 is_stmt 0 view .LVU75
+ 266:../BLDCMotor/motorctrl.c ****     sg_motordebug.ib = i_abc.b;
+ 360              		.loc 1 266 5 is_stmt 1 view .LVU74
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 14
+
+
+ 266:../BLDCMotor/motorctrl.c ****     sg_motordebug.ib = i_abc.b;
+ 361              		.loc 1 266 22 is_stmt 0 view .LVU75
  362 0020 224D     		ldr	r5, .L20
  363 0022 1399     		ldr	r1, [sp, #76]	@ float
  364 0024 6960     		str	r1, [r5, #4]	@ float
- 271:../BLDCMotor/motorctrl.c ****     sg_motordebug.ic = i_abc.c;
- 365              		.loc 1 271 5 is_stmt 1 view .LVU76
- 271:../BLDCMotor/motorctrl.c ****     sg_motordebug.ic = i_abc.c;
- 366              		.loc 1 271 22 is_stmt 0 view .LVU77
+ 267:../BLDCMotor/motorctrl.c ****     sg_motordebug.ic = i_abc.c;
+ 365              		.loc 1 267 5 is_stmt 1 view .LVU76
+ 267:../BLDCMotor/motorctrl.c ****     sg_motordebug.ic = i_abc.c;
+ 366              		.loc 1 267 22 is_stmt 0 view .LVU77
  367 0026 AA60     		str	r2, [r5, #8]	@ float
- 272:../BLDCMotor/motorctrl.c **** #endif
- 368              		.loc 1 272 5 is_stmt 1 view .LVU78
- 272:../BLDCMotor/motorctrl.c **** #endif
- 369              		.loc 1 272 22 is_stmt 0 view .LVU79
+ 268:../BLDCMotor/motorctrl.c **** #endif
+ 368              		.loc 1 268 5 is_stmt 1 view .LVU78
+ 268:../BLDCMotor/motorctrl.c **** #endif
+ 369              		.loc 1 268 22 is_stmt 0 view .LVU79
  370 0028 EB60     		str	r3, [r5, #12]	@ float
- 274:../BLDCMotor/motorctrl.c ****     _2s_2r(i_alphbeta,((ele_theta - PI_2)),&i_dq);
- 371              		.loc 1 274 5 is_stmt 1 view .LVU80
+ 270:../BLDCMotor/motorctrl.c ****     _2s_2r(i_alphbeta,((ele_theta - PI_2)),&i_dq);
+ 371              		.loc 1 270 5 is_stmt 1 view .LVU80
  372 002a 08AE     		add	r6, sp, #32
  373 002c 0296     		str	r6, [sp, #8]
  374 002e 17AB     		add	r3, sp, #92
  375 0030 93E80300 		ldm	r3, {r0, r1}
  376              	.LVL26:
- 274:../BLDCMotor/motorctrl.c ****     _2s_2r(i_alphbeta,((ele_theta - PI_2)),&i_dq);
- 377              		.loc 1 274 5 is_stmt 0 view .LVU81
+ 270:../BLDCMotor/motorctrl.c ****     _2s_2r(i_alphbeta,((ele_theta - PI_2)),&i_dq);
+ 377              		.loc 1 270 5 is_stmt 0 view .LVU81
  378 0034 8DE80300 		stm	sp, {r0, r1}
  379 0038 9CE80F00 		ldm	ip, {r0, r1, r2, r3}
  380              	.LVL27:
- 274:../BLDCMotor/motorctrl.c ****     _2s_2r(i_alphbeta,((ele_theta - PI_2)),&i_dq);
- 381              		.loc 1 274 5 view .LVU82
+ 270:../BLDCMotor/motorctrl.c ****     _2s_2r(i_alphbeta,((ele_theta - PI_2)),&i_dq);
+ 381              		.loc 1 270 5 view .LVU82
  382 003c FFF7FEFF 		bl	_3s_2s
  383              	.LVL28:
- 275:../BLDCMotor/motorctrl.c ****     sg_motordebug.id = (i_dq.d);
- 384              		.loc 1 275 5 is_stmt 1 view .LVU83
+ 271:../BLDCMotor/motorctrl.c ****     sg_motordebug.id = (i_dq.d);
+ 384              		.loc 1 271 5 is_stmt 1 view .LVU83
  385 0040 04AB     		add	r3, sp, #16
  386 0042 0093     		str	r3, [sp]
  387 0044 9FED1A0A 		vldr.32	s0, .L20+4
@@ -825,93 +821,93 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  389 004c 96E80F00 		ldm	r6, {r0, r1, r2, r3}
  390 0050 FFF7FEFF 		bl	_2s_2r
  391              	.LVL29:
- 276:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq = (i_dq.q);
- 392              		.loc 1 276 5 view .LVU84
- 276:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq = (i_dq.q);
- 393              		.loc 1 276 29 is_stmt 0 view .LVU85
+ 272:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq = (i_dq.q);
+ 392              		.loc 1 272 5 view .LVU84
+ 272:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq = (i_dq.q);
+ 393              		.loc 1 272 29 is_stmt 0 view .LVU85
  394 0054 DDED040A 		vldr.32	s1, [sp, #16]
- 276:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq = (i_dq.q);
- 395              		.loc 1 276 22 view .LVU86
+ 272:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq = (i_dq.q);
+ 395              		.loc 1 272 22 view .LVU86
  396 0058 C5ED060A 		vstr.32	s1, [r5, #24]
- 277:../BLDCMotor/motorctrl.c ****     dq_t udq = {0.0f};
- 397              		.loc 1 277 5 is_stmt 1 view .LVU87
- 277:../BLDCMotor/motorctrl.c ****     dq_t udq = {0.0f};
- 398              		.loc 1 277 29 is_stmt 0 view .LVU88
+ 273:../BLDCMotor/motorctrl.c ****     dq_t udq = {0.0f};
+ 397              		.loc 1 273 5 is_stmt 1 view .LVU87
+ 273:../BLDCMotor/motorctrl.c ****     dq_t udq = {0.0f};
+ 398              		.loc 1 273 29 is_stmt 0 view .LVU88
  399 005c 059B     		ldr	r3, [sp, #20]	@ float
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 15
-
-
- 277:../BLDCMotor/motorctrl.c ****     dq_t udq = {0.0f};
- 400              		.loc 1 277 22 view .LVU89
+ 273:../BLDCMotor/motorctrl.c ****     dq_t udq = {0.0f};
+ 400              		.loc 1 273 22 view .LVU89
  401 005e EB61     		str	r3, [r5, #28]	@ float
- 278:../BLDCMotor/motorctrl.c **** #if 1
- 402              		.loc 1 278 5 is_stmt 1 view .LVU90
- 278:../BLDCMotor/motorctrl.c **** #if 1
- 403              		.loc 1 278 10 is_stmt 0 view .LVU91
+ 274:../BLDCMotor/motorctrl.c **** #if 1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 15
+
+
+ 402              		.loc 1 274 5 is_stmt 1 view .LVU90
+ 274:../BLDCMotor/motorctrl.c **** #if 1
+ 403              		.loc 1 274 10 is_stmt 0 view .LVU91
  404 0060 0023     		movs	r3, #0
  405 0062 2360     		str	r3, [r4]
  406 0064 6360     		str	r3, [r4, #4]
  407 0066 A360     		str	r3, [r4, #8]
  408 0068 E360     		str	r3, [r4, #12]
- 280:../BLDCMotor/motorctrl.c ****     tar_id = sg_motordebug.id_targe;
- 409              		.loc 1 280 5 is_stmt 1 view .LVU92
+ 276:../BLDCMotor/motorctrl.c ****     tar_id = sg_motordebug.id_targe;
+ 409              		.loc 1 276 5 is_stmt 1 view .LVU92
  410              	.LVL30:
- 281:../BLDCMotor/motorctrl.c ****     tar_iq = sg_motordebug.iq_targe;
- 411              		.loc 1 281 5 view .LVU93
- 282:../BLDCMotor/motorctrl.c ****     udq.d = pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
- 412              		.loc 1 282 5 view .LVU94
- 282:../BLDCMotor/motorctrl.c ****     udq.d = pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
- 413              		.loc 1 282 12 is_stmt 0 view .LVU95
+ 277:../BLDCMotor/motorctrl.c ****     tar_iq = sg_motordebug.iq_targe;
+ 411              		.loc 1 277 5 view .LVU93
+ 278:../BLDCMotor/motorctrl.c ****     udq.d = pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
+ 412              		.loc 1 278 5 view .LVU94
+ 278:../BLDCMotor/motorctrl.c ****     udq.d = pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
+ 413              		.loc 1 278 12 is_stmt 0 view .LVU95
  414 006a 95ED128A 		vldr.32	s16, [r5, #72]
  415              	.LVL31:
- 283:../BLDCMotor/motorctrl.c ****     sg_motordebug.id_real = i_dq.d;
- 416              		.loc 1 283 5 is_stmt 1 view .LVU96
- 283:../BLDCMotor/motorctrl.c ****     sg_motordebug.id_real = i_dq.d;
- 417              		.loc 1 283 13 is_stmt 0 view .LVU97
+ 279:../BLDCMotor/motorctrl.c ****     sg_motordebug.id_real = i_dq.d;
+ 416              		.loc 1 279 5 is_stmt 1 view .LVU96
+ 279:../BLDCMotor/motorctrl.c ****     sg_motordebug.id_real = i_dq.d;
+ 417              		.loc 1 279 13 is_stmt 0 view .LVU97
  418 006e 95ED110A 		vldr.32	s0, [r5, #68]
  419 0072 104B     		ldr	r3, .L20+8
  420 0074 1868     		ldr	r0, [r3]
  421 0076 FFF7FEFF 		bl	pid_contrl
  422              	.LVL32:
- 283:../BLDCMotor/motorctrl.c ****     sg_motordebug.id_real = i_dq.d;
- 423              		.loc 1 283 11 view .LVU98
+ 279:../BLDCMotor/motorctrl.c ****     sg_motordebug.id_real = i_dq.d;
+ 423              		.loc 1 279 11 view .LVU98
  424 007a 84ED000A 		vstr.32	s0, [r4]
- 284:../BLDCMotor/motorctrl.c ****     udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
- 425              		.loc 1 284 5 is_stmt 1 view .LVU99
- 284:../BLDCMotor/motorctrl.c ****     udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
- 426              		.loc 1 284 33 is_stmt 0 view .LVU100
+ 280:../BLDCMotor/motorctrl.c ****     udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
+ 425              		.loc 1 280 5 is_stmt 1 view .LVU99
+ 280:../BLDCMotor/motorctrl.c ****     udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
+ 426              		.loc 1 280 33 is_stmt 0 view .LVU100
  427 007e 049B     		ldr	r3, [sp, #16]	@ float
- 284:../BLDCMotor/motorctrl.c ****     udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
- 428              		.loc 1 284 27 view .LVU101
+ 280:../BLDCMotor/motorctrl.c ****     udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
+ 428              		.loc 1 280 27 view .LVU101
  429 0080 EB63     		str	r3, [r5, #60]	@ float
- 285:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq_real = i_dq.q;
- 430              		.loc 1 285 5 is_stmt 1 view .LVU102
- 285:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq_real = i_dq.q;
- 431              		.loc 1 285 12 is_stmt 0 view .LVU103
+ 281:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq_real = i_dq.q;
+ 430              		.loc 1 281 5 is_stmt 1 view .LVU102
+ 281:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq_real = i_dq.q;
+ 431              		.loc 1 281 12 is_stmt 0 view .LVU103
  432 0082 DDED050A 		vldr.32	s1, [sp, #20]
  433 0086 B0EE480A 		vmov.f32	s0, s16
  434 008a 0B4B     		ldr	r3, .L20+12
  435 008c 1868     		ldr	r0, [r3]
  436 008e FFF7FEFF 		bl	pid_contrl
  437              	.LVL33:
- 285:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq_real = i_dq.q;
- 438              		.loc 1 285 11 view .LVU104
+ 281:../BLDCMotor/motorctrl.c ****     sg_motordebug.iq_real = i_dq.q;
+ 438              		.loc 1 281 11 view .LVU104
  439 0092 84ED010A 		vstr.32	s0, [r4, #4]
- 286:../BLDCMotor/motorctrl.c **** #endif
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 16
-
-
- 440              		.loc 1 286 5 is_stmt 1 view .LVU105
- 286:../BLDCMotor/motorctrl.c **** #endif
- 441              		.loc 1 286 33 is_stmt 0 view .LVU106
+ 282:../BLDCMotor/motorctrl.c **** #endif
+ 440              		.loc 1 282 5 is_stmt 1 view .LVU105
+ 282:../BLDCMotor/motorctrl.c **** #endif
+ 441              		.loc 1 282 33 is_stmt 0 view .LVU106
  442 0096 059B     		ldr	r3, [sp, #20]	@ float
- 286:../BLDCMotor/motorctrl.c **** #endif
- 443              		.loc 1 286 27 view .LVU107
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 16
+
+
+ 282:../BLDCMotor/motorctrl.c **** #endif
+ 443              		.loc 1 282 27 view .LVU107
  444 0098 2B65     		str	r3, [r5, #80]	@ float
- 288:../BLDCMotor/motorctrl.c **** #endif
- 445              		.loc 1 288 5 is_stmt 1 view .LVU108
- 290:../BLDCMotor/motorctrl.c **** 
- 446              		.loc 1 290 1 is_stmt 0 view .LVU109
+ 284:../BLDCMotor/motorctrl.c **** #endif
+ 445              		.loc 1 284 5 is_stmt 1 view .LVU108
+ 286:../BLDCMotor/motorctrl.c **** 
+ 446              		.loc 1 286 1 is_stmt 0 view .LVU109
  447 009a 2046     		mov	r0, r4
  448 009c 0CB0     		add	sp, sp, #48
  449              	.LCFI13:
@@ -923,8 +919,8 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  455              		.cfi_restore 81
  456              		.cfi_def_cfa_offset 32
  457              	.LVL34:
- 290:../BLDCMotor/motorctrl.c **** 
- 458              		.loc 1 290 1 view .LVU110
+ 286:../BLDCMotor/motorctrl.c **** 
+ 458              		.loc 1 286 1 view .LVU110
  459 00a2 BDE87040 		pop	{r4, r5, r6, lr}
  460              	.LCFI15:
  461              		.cfi_restore 14
@@ -933,8 +929,8 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  464              		.cfi_restore 4
  465              		.cfi_def_cfa_offset 16
  466              	.LVL35:
- 290:../BLDCMotor/motorctrl.c **** 
- 467              		.loc 1 290 1 view .LVU111
+ 286:../BLDCMotor/motorctrl.c **** 
+ 467              		.loc 1 286 1 view .LVU111
  468 00a6 04B0     		add	sp, sp, #16
  469              	.LCFI16:
  470              		.cfi_def_cfa_offset 0
@@ -958,17 +954,17 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  489              		.thumb_func
  491              	_limit_voltagecircle:
  492              	.LVL36:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 17
-
-
  493              	.LFB332:
- 241:../BLDCMotor/motorctrl.c ****     float max_voltage = D_MAX_VAL;// 这里应该是你的最大允许电压值，例如对于三�
- 494              		.loc 1 241 49 is_stmt 1 view -0
+ 237:../BLDCMotor/motorctrl.c ****     float max_voltage = D_MAX_VAL;// 这里应该是你的最大允许电压值，例如对于三�
+ 494              		.loc 1 237 49 is_stmt 1 view -0
  495              		.cfi_startproc
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 17
+
+
  496              		@ args = 20, pretend = 16, frame = 0
  497              		@ frame_needed = 0, uses_anonymous_args = 0
- 241:../BLDCMotor/motorctrl.c ****     float max_voltage = D_MAX_VAL;// 这里应该是你的最大允许电压值，例如对于三�
- 498              		.loc 1 241 49 is_stmt 0 view .LVU113
+ 237:../BLDCMotor/motorctrl.c ****     float max_voltage = D_MAX_VAL;// 这里应该是你的最大允许电压值，例如对于三�
+ 498              		.loc 1 237 49 is_stmt 0 view .LVU113
  499 0000 84B0     		sub	sp, sp, #16
  500              	.LCFI17:
  501              		.cfi_def_cfa_offset 16
@@ -985,90 +981,90 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  512 0008 0446     		mov	r4, r0
  513 000a 05A8     		add	r0, sp, #20
  514 000c 80E80E00 		stm	r0, {r1, r2, r3}
- 242:../BLDCMotor/motorctrl.c ****     float voltage_magnitude = sqrt(raw_uab.alpha * raw_uab.alpha + raw_uab.beta * raw_uab.beta); //
- 515              		.loc 1 242 5 is_stmt 1 view .LVU114
+ 238:../BLDCMotor/motorctrl.c ****     float voltage_magnitude = sqrt(raw_uab.alpha * raw_uab.alpha + raw_uab.beta * raw_uab.beta); //
+ 515              		.loc 1 238 5 is_stmt 1 view .LVU114
  516              	.LVL37:
- 243:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
- 517              		.loc 1 243 5 view .LVU115
- 243:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
- 518              		.loc 1 243 43 is_stmt 0 view .LVU116
+ 239:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
+ 517              		.loc 1 239 5 view .LVU115
+ 239:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
+ 518              		.loc 1 239 43 is_stmt 0 view .LVU116
  519 0010 DDED058A 		vldr.32	s17, [sp, #20]
- 243:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
- 520              		.loc 1 243 50 view .LVU117
+ 239:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
+ 520              		.loc 1 239 50 view .LVU117
  521 0014 28EEA87A 		vmul.f32	s14, s17, s17
- 243:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
- 522              		.loc 1 243 75 view .LVU118
+ 239:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
+ 522              		.loc 1 239 75 view .LVU118
  523 0018 9DED068A 		vldr.32	s16, [sp, #24]
- 243:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
- 524              		.loc 1 243 81 view .LVU119
+ 239:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
+ 524              		.loc 1 239 81 view .LVU119
  525 001c 68EE087A 		vmul.f32	s15, s16, s16
- 243:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
- 526              		.loc 1 243 31 view .LVU120
+ 239:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
+ 526              		.loc 1 239 31 view .LVU120
  527 0020 77EE277A 		vadd.f32	s15, s14, s15
  528 0024 17EE900A 		vmov	r0, s15
  529              	.LVL38:
- 243:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
- 530              		.loc 1 243 31 view .LVU121
+ 239:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
+ 530              		.loc 1 239 31 view .LVU121
  531 0028 FFF7FEFF 		bl	__aeabi_f2d
  532              	.LVL39:
  533 002c 41EC100B 		vmov	d0, r0, r1
  534 0030 FFF7FEFF 		bl	sqrt
  535              	.LVL40:
  536 0034 51EC100B 		vmov	r0, r1, d0
- 243:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
- 537              		.loc 1 243 11 view .LVU122
+ 239:../BLDCMotor/motorctrl.c ****     alpbet_t uab;
+ 537              		.loc 1 239 11 view .LVU122
  538 0038 FFF7FEFF 		bl	__aeabi_d2f
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 18
-
-
  539              	.LVL41:
  540 003c 07EE900A 		vmov	s15, r0
  541              	.LVL42:
- 244:../BLDCMotor/motorctrl.c ****     if (voltage_magnitude > max_voltage) {  
- 542              		.loc 1 244 5 is_stmt 1 view .LVU123
- 245:../BLDCMotor/motorctrl.c ****         // 如果矢量长度超过最大电压，则按比例缩放矢量以使其落在电压矢�
- 543              		.loc 1 245 5 view .LVU124
- 245:../BLDCMotor/motorctrl.c ****         // 如果矢量长度超过最大电压，则按比例缩放矢量以使其落在电压矢�
- 544              		.loc 1 245 8 is_stmt 0 view .LVU125
+ 240:../BLDCMotor/motorctrl.c ****     if (voltage_magnitude > max_voltage) {  
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 18
+
+
+ 542              		.loc 1 240 5 is_stmt 1 view .LVU123
+ 241:../BLDCMotor/motorctrl.c ****         // 如果矢量长度超过最大电压，则按比例缩放矢量以使其落在电压矢�
+ 543              		.loc 1 241 5 view .LVU124
+ 241:../BLDCMotor/motorctrl.c ****         // 如果矢量长度超过最大电压，则按比例缩放矢量以使其落在电压矢�
+ 544              		.loc 1 241 8 is_stmt 0 view .LVU125
  545 0040 B2EE0A7A 		vmov.f32	s14, #1.3e+1
  546 0044 F4EEC77A 		vcmpe.f32	s15, s14
  547 0048 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
  548 004c 12DD     		ble	.L27
  549              	.LBB3:
- 247:../BLDCMotor/motorctrl.c ****         uab.alpha = raw_uab.alpha * scale_factor;  
- 550              		.loc 1 247 9 is_stmt 1 view .LVU126
- 247:../BLDCMotor/motorctrl.c ****         uab.alpha = raw_uab.alpha * scale_factor;  
- 551              		.loc 1 247 15 is_stmt 0 view .LVU127
+ 243:../BLDCMotor/motorctrl.c ****         uab.alpha = raw_uab.alpha * scale_factor;  
+ 550              		.loc 1 243 9 is_stmt 1 view .LVU126
+ 243:../BLDCMotor/motorctrl.c ****         uab.alpha = raw_uab.alpha * scale_factor;  
+ 551              		.loc 1 243 15 is_stmt 0 view .LVU127
  552 004e F0EE476A 		vmov.f32	s13, s14
  553 0052 86EEA77A 		vdiv.f32	s14, s13, s15
  554              	.LVL43:
- 248:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta * scale_factor;  
- 555              		.loc 1 248 9 is_stmt 1 view .LVU128
- 248:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta * scale_factor;  
- 556              		.loc 1 248 35 is_stmt 0 view .LVU129
+ 244:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta * scale_factor;  
+ 555              		.loc 1 244 9 is_stmt 1 view .LVU128
+ 244:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta * scale_factor;  
+ 556              		.loc 1 244 35 is_stmt 0 view .LVU129
  557 0056 68EE878A 		vmul.f32	s17, s17, s14
- 248:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta * scale_factor;  
- 558              		.loc 1 248 19 view .LVU130
+ 244:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta * scale_factor;  
+ 558              		.loc 1 244 19 view .LVU130
  559 005a C4ED008A 		vstr.32	s17, [r4]
- 249:../BLDCMotor/motorctrl.c ****     } else {  
- 560              		.loc 1 249 9 is_stmt 1 view .LVU131
- 249:../BLDCMotor/motorctrl.c ****     } else {  
- 561              		.loc 1 249 33 is_stmt 0 view .LVU132
+ 245:../BLDCMotor/motorctrl.c ****     } else {  
+ 560              		.loc 1 245 9 is_stmt 1 view .LVU131
+ 245:../BLDCMotor/motorctrl.c ****     } else {  
+ 561              		.loc 1 245 33 is_stmt 0 view .LVU132
  562 005e 28EE078A 		vmul.f32	s16, s16, s14
- 249:../BLDCMotor/motorctrl.c ****     } else {  
- 563              		.loc 1 249 18 view .LVU133
+ 245:../BLDCMotor/motorctrl.c ****     } else {  
+ 563              		.loc 1 245 18 view .LVU133
  564 0062 84ED018A 		vstr.32	s16, [r4, #4]
  565              	.LVL44:
  566              	.L22:
- 249:../BLDCMotor/motorctrl.c ****     } else {  
- 567              		.loc 1 249 18 view .LVU134
+ 245:../BLDCMotor/motorctrl.c ****     } else {  
+ 567              		.loc 1 245 18 view .LVU134
  568              	.LBE3:
- 256:../BLDCMotor/motorctrl.c **** dq_t _currmentloop(abc_t i_abc,float ele_theta)
- 569              		.loc 1 256 1 view .LVU135
+ 252:../BLDCMotor/motorctrl.c **** dq_t _currmentloop(abc_t i_abc,float ele_theta)
+ 569              		.loc 1 252 1 view .LVU135
  570 0066 2046     		mov	r0, r4
  571              	.LVL45:
- 256:../BLDCMotor/motorctrl.c **** dq_t _currmentloop(abc_t i_abc,float ele_theta)
- 572              		.loc 1 256 1 view .LVU136
+ 252:../BLDCMotor/motorctrl.c **** dq_t _currmentloop(abc_t i_abc,float ele_theta)
+ 572              		.loc 1 252 1 view .LVU136
  573 0068 BDEC028B 		vldm	sp!, {d8}
  574              	.LCFI20:
  575              		.cfi_remember_state
@@ -1078,14 +1074,14 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  579 006c BDE81040 		pop	{r4, lr}
  580              	.LCFI21:
  581              		.cfi_restore 14
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 19
-
-
  582              		.cfi_restore 4
  583              		.cfi_def_cfa_offset 16
  584              	.LVL46:
- 256:../BLDCMotor/motorctrl.c **** dq_t _currmentloop(abc_t i_abc,float ele_theta)
- 585              		.loc 1 256 1 view .LVU137
+ 252:../BLDCMotor/motorctrl.c **** dq_t _currmentloop(abc_t i_abc,float ele_theta)
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 19
+
+
+ 585              		.loc 1 252 1 view .LVU137
  586 0070 04B0     		add	sp, sp, #16
  587              	.LCFI22:
  588              		.cfi_def_cfa_offset 0
@@ -1094,20 +1090,20 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  591              	.L27:
  592              	.LCFI23:
  593              		.cfi_restore_state
- 252:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta;  
- 594              		.loc 1 252 9 is_stmt 1 view .LVU138
- 252:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta;  
- 595              		.loc 1 252 19 is_stmt 0 view .LVU139
+ 248:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta;  
+ 594              		.loc 1 248 9 is_stmt 1 view .LVU138
+ 248:../BLDCMotor/motorctrl.c ****         uab.beta = raw_uab.beta;  
+ 595              		.loc 1 248 19 is_stmt 0 view .LVU139
  596 0074 C4ED008A 		vstr.32	s17, [r4]
- 253:../BLDCMotor/motorctrl.c ****     }
- 597              		.loc 1 253 9 is_stmt 1 view .LVU140
- 253:../BLDCMotor/motorctrl.c ****     }
- 598              		.loc 1 253 18 is_stmt 0 view .LVU141
+ 249:../BLDCMotor/motorctrl.c ****     }
+ 597              		.loc 1 249 9 is_stmt 1 view .LVU140
+ 249:../BLDCMotor/motorctrl.c ****     }
+ 598              		.loc 1 249 18 is_stmt 0 view .LVU141
  599 0078 84ED018A 		vstr.32	s16, [r4, #4]
- 255:../BLDCMotor/motorctrl.c **** }
- 600              		.loc 1 255 5 is_stmt 1 view .LVU142
- 255:../BLDCMotor/motorctrl.c **** }
- 601              		.loc 1 255 12 is_stmt 0 view .LVU143
+ 251:../BLDCMotor/motorctrl.c **** }
+ 600              		.loc 1 251 5 is_stmt 1 view .LVU142
+ 251:../BLDCMotor/motorctrl.c **** }
+ 601              		.loc 1 251 12 is_stmt 0 view .LVU143
  602 007c F3E7     		b	.L22
  603              		.cfi_endproc
  604              	.LFE332:
@@ -1120,13 +1116,13 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  613              	_50uscycle_process:
  614              	.LVL48:
  615              	.LFB331:
- 110:../BLDCMotor/motorctrl.c ****     float elec_theta,mech_theta;
- 616              		.loc 1 110 1 is_stmt 1 view -0
+ 106:../BLDCMotor/motorctrl.c ****     float elec_theta,mech_theta;
+ 616              		.loc 1 106 1 is_stmt 1 view -0
  617              		.cfi_startproc
  618              		@ args = 0, pretend = 0, frame = 88
  619              		@ frame_needed = 0, uses_anonymous_args = 0
- 110:../BLDCMotor/motorctrl.c ****     float elec_theta,mech_theta;
- 620              		.loc 1 110 1 is_stmt 0 view .LVU145
+ 106:../BLDCMotor/motorctrl.c ****     float elec_theta,mech_theta;
+ 620              		.loc 1 106 1 is_stmt 0 view .LVU145
  621 0000 30B5     		push	{r4, r5, lr}
  622              	.LCFI24:
  623              		.cfi_def_cfa_offset 12
@@ -1138,202 +1134,202 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  629              		.cfi_def_cfa_offset 20
  630              		.cfi_offset 80, -20
  631              		.cfi_offset 81, -16
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 20
-
-
  632 0006 9BB0     		sub	sp, sp, #108
  633              	.LCFI26:
  634              		.cfi_def_cfa_offset 128
- 111:../BLDCMotor/motorctrl.c ****     int32_t Q15_Mechtheta;    
- 635              		.loc 1 111 5 is_stmt 1 view .LVU146
- 112:../BLDCMotor/motorctrl.c ****     duty_t dut01,dut02;
- 636              		.loc 1 112 5 view .LVU147
- 113:../BLDCMotor/motorctrl.c **** /*----------------三相电流处理------------------------------*/    
- 637              		.loc 1 113 5 view .LVU148
- 115:../BLDCMotor/motorctrl.c ****     int32_t a1,b1,c1;
- 638              		.loc 1 115 5 view .LVU149
- 116:../BLDCMotor/motorctrl.c ****     a1 = abc_vale[0] - A_ADCCHANNL_OFFSET;
- 639              		.loc 1 116 5 view .LVU150
- 117:../BLDCMotor/motorctrl.c ****     b1 = abc_vale[1] - B_ADCCHANNL_OFFSET;
- 640              		.loc 1 117 5 view .LVU151
- 117:../BLDCMotor/motorctrl.c ****     b1 = abc_vale[1] - B_ADCCHANNL_OFFSET;
- 641              		.loc 1 117 18 is_stmt 0 view .LVU152
+ 107:../BLDCMotor/motorctrl.c ****     int32_t Q15_Mechtheta;    
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 20
+
+
+ 635              		.loc 1 107 5 is_stmt 1 view .LVU146
+ 108:../BLDCMotor/motorctrl.c ****     duty_t dut01,dut02;
+ 636              		.loc 1 108 5 view .LVU147
+ 109:../BLDCMotor/motorctrl.c **** /*----------------三相电流处理------------------------------*/    
+ 637              		.loc 1 109 5 view .LVU148
+ 111:../BLDCMotor/motorctrl.c ****     int32_t a1,b1,c1;
+ 638              		.loc 1 111 5 view .LVU149
+ 112:../BLDCMotor/motorctrl.c ****     a1 = abc_vale[0] - A_ADCCHANNL_OFFSET;
+ 639              		.loc 1 112 5 view .LVU150
+ 113:../BLDCMotor/motorctrl.c ****     b1 = abc_vale[1] - B_ADCCHANNL_OFFSET;
+ 640              		.loc 1 113 5 view .LVU151
+ 113:../BLDCMotor/motorctrl.c ****     b1 = abc_vale[1] - B_ADCCHANNL_OFFSET;
+ 641              		.loc 1 113 18 is_stmt 0 view .LVU152
  642 0008 0368     		ldr	r3, [r0]
- 117:../BLDCMotor/motorctrl.c ****     b1 = abc_vale[1] - B_ADCCHANNL_OFFSET;
- 643              		.loc 1 117 22 view .LVU153
+ 113:../BLDCMotor/motorctrl.c ****     b1 = abc_vale[1] - B_ADCCHANNL_OFFSET;
+ 643              		.loc 1 113 22 view .LVU153
  644 000a A3F64903 		subw	r3, r3, #2121
  645 000e 07EE903A 		vmov	s15, r3	@ int
  646              	.LVL49:
- 118:../BLDCMotor/motorctrl.c ****     c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;   
- 647              		.loc 1 118 5 is_stmt 1 view .LVU154
- 118:../BLDCMotor/motorctrl.c ****     c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;   
- 648              		.loc 1 118 18 is_stmt 0 view .LVU155
+ 114:../BLDCMotor/motorctrl.c ****     c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;   
+ 647              		.loc 1 114 5 is_stmt 1 view .LVU154
+ 114:../BLDCMotor/motorctrl.c ****     c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;   
+ 648              		.loc 1 114 18 is_stmt 0 view .LVU155
  649 0012 4368     		ldr	r3, [r0, #4]
  650              	.LVL50:
- 118:../BLDCMotor/motorctrl.c ****     c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;   
- 651              		.loc 1 118 22 view .LVU156
+ 114:../BLDCMotor/motorctrl.c ****     c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;   
+ 651              		.loc 1 114 22 view .LVU156
  652 0014 A3F50563 		sub	r3, r3, #2128
  653 0018 08EE903A 		vmov	s17, r3	@ int
  654              	.LVL51:
- 119:../BLDCMotor/motorctrl.c ****     Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
- 655              		.loc 1 119 5 is_stmt 1 view .LVU157
- 119:../BLDCMotor/motorctrl.c ****     Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
- 656              		.loc 1 119 18 is_stmt 0 view .LVU158
+ 115:../BLDCMotor/motorctrl.c ****     Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
+ 655              		.loc 1 115 5 is_stmt 1 view .LVU157
+ 115:../BLDCMotor/motorctrl.c ****     Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
+ 656              		.loc 1 115 18 is_stmt 0 view .LVU158
  657 001c 8368     		ldr	r3, [r0, #8]
  658              	.LVL52:
- 119:../BLDCMotor/motorctrl.c ****     Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
- 659              		.loc 1 119 22 view .LVU159
+ 115:../BLDCMotor/motorctrl.c ****     Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
+ 659              		.loc 1 115 22 view .LVU159
  660 001e A3F66403 		subw	r3, r3, #2148
  661 0022 08EE103A 		vmov	s16, r3	@ int
  662              	.LVL53:
- 120:../BLDCMotor/motorctrl.c ****     Ib = (float)b1*(float)B_VOLITETOCURRENT_FACTOR;
- 663              		.loc 1 120 5 is_stmt 1 view .LVU160
- 120:../BLDCMotor/motorctrl.c ****     Ib = (float)b1*(float)B_VOLITETOCURRENT_FACTOR;
- 664              		.loc 1 120 10 is_stmt 0 view .LVU161
+ 116:../BLDCMotor/motorctrl.c ****     Ib = (float)b1*(float)B_VOLITETOCURRENT_FACTOR;
+ 663              		.loc 1 116 5 is_stmt 1 view .LVU160
+ 116:../BLDCMotor/motorctrl.c ****     Ib = (float)b1*(float)B_VOLITETOCURRENT_FACTOR;
+ 664              		.loc 1 116 10 is_stmt 0 view .LVU161
  665 0026 F8EEE77A 		vcvt.f32.s32	s15, s15
  666              	.LVL54:
- 121:../BLDCMotor/motorctrl.c ****     Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
- 667              		.loc 1 121 5 is_stmt 1 view .LVU162
- 121:../BLDCMotor/motorctrl.c ****     Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
- 668              		.loc 1 121 10 is_stmt 0 view .LVU163
+ 117:../BLDCMotor/motorctrl.c ****     Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
+ 667              		.loc 1 117 5 is_stmt 1 view .LVU162
+ 117:../BLDCMotor/motorctrl.c ****     Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
+ 668              		.loc 1 117 10 is_stmt 0 view .LVU163
  669 002a F8EEE88A 		vcvt.f32.s32	s17, s17
  670              	.LVL55:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 21
-
-
- 121:../BLDCMotor/motorctrl.c ****     Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
- 671              		.loc 1 121 8 view .LVU164
+ 117:../BLDCMotor/motorctrl.c ****     Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
+ 671              		.loc 1 117 8 view .LVU164
  672 002e 9FED3A7A 		vldr.32	s14, .L31
  673 0032 68EE878A 		vmul.f32	s17, s17, s14
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 21
+
+
  674              	.LVL56:
- 122:../BLDCMotor/motorctrl.c ****     abc_t i_abc;
- 675              		.loc 1 122 5 is_stmt 1 view .LVU165
- 122:../BLDCMotor/motorctrl.c ****     abc_t i_abc;
- 676              		.loc 1 122 10 is_stmt 0 view .LVU166
+ 118:../BLDCMotor/motorctrl.c ****     abc_t i_abc;
+ 675              		.loc 1 118 5 is_stmt 1 view .LVU165
+ 118:../BLDCMotor/motorctrl.c ****     abc_t i_abc;
+ 676              		.loc 1 118 10 is_stmt 0 view .LVU166
  677 0036 B8EEC88A 		vcvt.f32.s32	s16, s16
- 122:../BLDCMotor/motorctrl.c ****     abc_t i_abc;
- 678              		.loc 1 122 8 view .LVU167
+ 118:../BLDCMotor/motorctrl.c ****     abc_t i_abc;
+ 678              		.loc 1 118 8 view .LVU167
  679 003a 9FED387A 		vldr.32	s14, .L31+4
  680 003e 28EE078A 		vmul.f32	s16, s16, s14
  681              	.LVL57:
- 123:../BLDCMotor/motorctrl.c ****     i_abc.a = lowfilter_cale(&sg_elefilter[0],Ia);
- 682              		.loc 1 123 5 is_stmt 1 view .LVU168
- 124:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
- 683              		.loc 1 124 5 view .LVU169
- 124:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
- 684              		.loc 1 124 15 is_stmt 0 view .LVU170
+ 119:../BLDCMotor/motorctrl.c ****     i_abc.a = lowfilter_cale(&sg_elefilter[0],Ia);
+ 682              		.loc 1 119 5 is_stmt 1 view .LVU168
+ 120:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
+ 683              		.loc 1 120 5 view .LVU169
+ 120:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
+ 684              		.loc 1 120 15 is_stmt 0 view .LVU170
  685 0042 374C     		ldr	r4, .L31+8
  686 0044 9FED370A 		vldr.32	s0, .L31+12
  687              	.LVL58:
- 124:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
- 688              		.loc 1 124 15 view .LVU171
+ 120:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
+ 688              		.loc 1 120 15 view .LVU171
  689 0048 27EE800A 		vmul.f32	s0, s15, s0
  690              	.LVL59:
- 124:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
- 691              		.loc 1 124 15 view .LVU172
+ 120:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
+ 691              		.loc 1 120 15 view .LVU172
  692 004c 2046     		mov	r0, r4
  693              	.LVL60:
- 124:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
- 694              		.loc 1 124 15 view .LVU173
+ 120:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
+ 694              		.loc 1 120 15 view .LVU173
  695 004e FFF7FEFF 		bl	lowfilter_cale
  696              	.LVL61:
- 124:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
- 697              		.loc 1 124 13 view .LVU174
+ 120:../BLDCMotor/motorctrl.c ****     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
+ 697              		.loc 1 120 13 view .LVU174
  698 0052 8DED110A 		vstr.32	s0, [sp, #68]
- 125:../BLDCMotor/motorctrl.c ****     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
- 699              		.loc 1 125 5 is_stmt 1 view .LVU175
- 125:../BLDCMotor/motorctrl.c ****     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
- 700              		.loc 1 125 15 is_stmt 0 view .LVU176
+ 121:../BLDCMotor/motorctrl.c ****     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
+ 699              		.loc 1 121 5 is_stmt 1 view .LVU175
+ 121:../BLDCMotor/motorctrl.c ****     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
+ 700              		.loc 1 121 15 is_stmt 0 view .LVU176
  701 0056 B0EE680A 		vmov.f32	s0, s17
  702 005a 04F10800 		add	r0, r4, #8
  703 005e FFF7FEFF 		bl	lowfilter_cale
  704              	.LVL62:
- 125:../BLDCMotor/motorctrl.c ****     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
- 705              		.loc 1 125 13 view .LVU177
+ 121:../BLDCMotor/motorctrl.c ****     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
+ 705              		.loc 1 121 13 view .LVU177
  706 0062 8DED120A 		vstr.32	s0, [sp, #72]
- 126:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G4_MCB
- 707              		.loc 1 126 5 is_stmt 1 view .LVU178
- 126:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G4_MCB
- 708              		.loc 1 126 15 is_stmt 0 view .LVU179
+ 122:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G4_MCB
+ 707              		.loc 1 122 5 is_stmt 1 view .LVU178
+ 122:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G4_MCB
+ 708              		.loc 1 122 15 is_stmt 0 view .LVU179
  709 0066 B0EE480A 		vmov.f32	s0, s16
  710 006a 04F11000 		add	r0, r4, #16
  711 006e FFF7FEFF 		bl	lowfilter_cale
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 22
-
-
  712              	.LVL63:
- 126:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G4_MCB
- 713              		.loc 1 126 13 view .LVU180
+ 122:../BLDCMotor/motorctrl.c **** #ifdef BOARD_STM32G4_MCB
+ 713              		.loc 1 122 13 view .LVU180
  714 0072 8DED130A 		vstr.32	s0, [sp, #76]
- 202:../BLDCMotor/motorctrl.c ****         mech_theta = _IQ20toF(Q15_Mechtheta);
- 715              		.loc 1 202 9 is_stmt 1 view .LVU181
- 202:../BLDCMotor/motorctrl.c ****         mech_theta = _IQ20toF(Q15_Mechtheta);
- 716              		.loc 1 202 36 is_stmt 0 view .LVU182
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 22
+
+
+ 198:../BLDCMotor/motorctrl.c ****         mech_theta = _IQ20toF(Q15_Mechtheta);
+ 715              		.loc 1 198 9 is_stmt 1 view .LVU181
+ 198:../BLDCMotor/motorctrl.c ****         mech_theta = _IQ20toF(Q15_Mechtheta);
+ 716              		.loc 1 198 36 is_stmt 0 view .LVU182
  717 0076 0121     		movs	r1, #1
  718 0078 0020     		movs	r0, #0
  719 007a FFF7FEFF 		bl	sensor_user_read
  720              	.LVL64:
- 203:../BLDCMotor/motorctrl.c ****         mech_theta -= sg_MecThetaOffset;
- 721              		.loc 1 203 9 is_stmt 1 view .LVU183
- 203:../BLDCMotor/motorctrl.c ****         mech_theta -= sg_MecThetaOffset;
- 722              		.loc 1 203 22 is_stmt 0 view .LVU184
+ 199:../BLDCMotor/motorctrl.c ****         mech_theta -= sg_MecThetaOffset;
+ 721              		.loc 1 199 9 is_stmt 1 view .LVU183
+ 199:../BLDCMotor/motorctrl.c ****         mech_theta -= sg_MecThetaOffset;
+ 722              		.loc 1 199 22 is_stmt 0 view .LVU184
  723 007e 0068     		ldr	r0, [r0]
  724              	.LVL65:
- 203:../BLDCMotor/motorctrl.c ****         mech_theta -= sg_MecThetaOffset;
- 725              		.loc 1 203 22 view .LVU185
+ 199:../BLDCMotor/motorctrl.c ****         mech_theta -= sg_MecThetaOffset;
+ 725              		.loc 1 199 22 view .LVU185
  726 0080 FFF7FEFF 		bl	_IQ20toF
  727              	.LVL66:
- 204:../BLDCMotor/motorctrl.c ****         elec_theta = mech_theta * MOTOR_PAIR;
- 728              		.loc 1 204 9 is_stmt 1 view .LVU186
+ 200:../BLDCMotor/motorctrl.c ****         elec_theta = mech_theta * MOTOR_PAIR;
+ 728              		.loc 1 200 9 is_stmt 1 view .LVU186
  729 0084 284B     		ldr	r3, .L31+16
  730 0086 D3ED007A 		vldr.32	s15, [r3]
- 204:../BLDCMotor/motorctrl.c ****         elec_theta = mech_theta * MOTOR_PAIR;
- 731              		.loc 1 204 20 is_stmt 0 view .LVU187
+ 200:../BLDCMotor/motorctrl.c ****         elec_theta = mech_theta * MOTOR_PAIR;
+ 731              		.loc 1 200 20 is_stmt 0 view .LVU187
  732 008a 30EE670A 		vsub.f32	s0, s0, s15
  733              	.LVL67:
- 205:../BLDCMotor/motorctrl.c ****         elec_theta = _normalize_angle(elec_theta);
- 734              		.loc 1 205 9 is_stmt 1 view .LVU188
- 206:../BLDCMotor/motorctrl.c ****         sg_motordebug.ele_angle = elec_theta;
- 735              		.loc 1 206 9 view .LVU189
- 206:../BLDCMotor/motorctrl.c ****         sg_motordebug.ele_angle = elec_theta;
- 736              		.loc 1 206 22 is_stmt 0 view .LVU190
+ 201:../BLDCMotor/motorctrl.c ****         elec_theta = _normalize_angle(elec_theta);
+ 734              		.loc 1 201 9 is_stmt 1 view .LVU188
+ 202:../BLDCMotor/motorctrl.c ****         sg_motordebug.ele_angle = elec_theta;
+ 735              		.loc 1 202 9 view .LVU189
+ 202:../BLDCMotor/motorctrl.c ****         sg_motordebug.ele_angle = elec_theta;
+ 736              		.loc 1 202 22 is_stmt 0 view .LVU190
  737 008e 30EE000A 		vadd.f32	s0, s0, s0
  738              	.LVL68:
- 206:../BLDCMotor/motorctrl.c ****         sg_motordebug.ele_angle = elec_theta;
- 739              		.loc 1 206 22 view .LVU191
+ 202:../BLDCMotor/motorctrl.c ****         sg_motordebug.ele_angle = elec_theta;
+ 739              		.loc 1 202 22 view .LVU191
  740 0092 FFF7FEFF 		bl	_normalize_angle
  741              	.LVL69:
- 206:../BLDCMotor/motorctrl.c ****         sg_motordebug.ele_angle = elec_theta;
- 742              		.loc 1 206 22 view .LVU192
+ 202:../BLDCMotor/motorctrl.c ****         sg_motordebug.ele_angle = elec_theta;
+ 742              		.loc 1 202 22 view .LVU192
  743 0096 B0EE408A 		vmov.f32	s16, s0
  744              	.LVL70:
- 207:../BLDCMotor/motorctrl.c **** 
- 745              		.loc 1 207 9 is_stmt 1 view .LVU193
- 207:../BLDCMotor/motorctrl.c **** 
- 746              		.loc 1 207 33 is_stmt 0 view .LVU194
+ 203:../BLDCMotor/motorctrl.c **** 
+ 745              		.loc 1 203 9 is_stmt 1 view .LVU193
+ 203:../BLDCMotor/motorctrl.c **** 
+ 746              		.loc 1 203 33 is_stmt 0 view .LVU194
  747 009a 244B     		ldr	r3, .L31+20
  748 009c 83ED1B0A 		vstr.32	s0, [r3, #108]
  749              	.LBB4:
- 224:../BLDCMotor/motorctrl.c ****             alpbet_t uab,uab_q15;
- 750              		.loc 1 224 13 is_stmt 1 view .LVU195
- 224:../BLDCMotor/motorctrl.c ****             alpbet_t uab,uab_q15;
- 751              		.loc 1 224 18 is_stmt 0 view .LVU196
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 23
-
-
+ 220:../BLDCMotor/motorctrl.c ****             alpbet_t uab,uab_q15;
+ 750              		.loc 1 220 13 is_stmt 1 view .LVU195
+ 220:../BLDCMotor/motorctrl.c ****             alpbet_t uab,uab_q15;
+ 751              		.loc 1 220 18 is_stmt 0 view .LVU196
  752 00a0 0023     		movs	r3, #0
  753 00a2 0993     		str	r3, [sp, #36]	@ float
  754 00a4 0A93     		str	r3, [sp, #40]	@ float
  755 00a6 0023     		movs	r3, #0
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 23
+
+
  756 00a8 0B93     		str	r3, [sp, #44]
  757 00aa 46F26663 		movw	r3, #26214
  758 00ae 0C93     		str	r3, [sp, #48]
- 225:../BLDCMotor/motorctrl.c ****             #if 1/*闭环控制*/
- 759              		.loc 1 225 13 is_stmt 1 view .LVU197
- 227:../BLDCMotor/motorctrl.c ****             #else
- 760              		.loc 1 227 17 view .LVU198
- 227:../BLDCMotor/motorctrl.c ****             #else
- 761              		.loc 1 227 23 is_stmt 0 view .LVU199
+ 221:../BLDCMotor/motorctrl.c ****             #if 1/*闭环控制*/
+ 759              		.loc 1 221 13 is_stmt 1 view .LVU197
+ 223:../BLDCMotor/motorctrl.c ****             #else
+ 760              		.loc 1 223 17 view .LVU198
+ 223:../BLDCMotor/motorctrl.c ****             #else
+ 761              		.loc 1 223 23 is_stmt 0 view .LVU199
  762 00b0 09AD     		add	r5, sp, #36
  763 00b2 14AB     		add	r3, sp, #80
  764 00b4 93E80700 		ldm	r3, {r0, r1, r2}
@@ -1343,10 +1339,10 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  768 00c0 2846     		mov	r0, r5
  769 00c2 FFF7FEFF 		bl	_currmentloop
  770              	.LVL71:
- 233:../BLDCMotor/motorctrl.c ****             uab = _limit_voltagecircle(uab);
- 771              		.loc 1 233 13 is_stmt 1 view .LVU200
- 233:../BLDCMotor/motorctrl.c ****             uab = _limit_voltagecircle(uab);
- 772              		.loc 1 233 19 is_stmt 0 view .LVU201
+ 229:../BLDCMotor/motorctrl.c ****             uab = _limit_voltagecircle(uab);
+ 771              		.loc 1 229 13 is_stmt 1 view .LVU200
+ 229:../BLDCMotor/motorctrl.c ****             uab = _limit_voltagecircle(uab);
+ 772              		.loc 1 229 19 is_stmt 0 view .LVU201
  773 00c6 0DAC     		add	r4, sp, #52
  774 00c8 0C9B     		ldr	r3, [sp, #48]
  775 00ca 0093     		str	r3, [sp]
@@ -1355,10 +1351,10 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  778 00d4 2046     		mov	r0, r4
  779 00d6 FFF7FEFF 		bl	_2r_2s
  780              	.LVL72:
- 234:../BLDCMotor/motorctrl.c ****             motor_set_pwm(_svpwm(uab.alpha,uab.beta));
- 781              		.loc 1 234 13 is_stmt 1 view .LVU202
- 234:../BLDCMotor/motorctrl.c ****             motor_set_pwm(_svpwm(uab.alpha,uab.beta));
- 782              		.loc 1 234 19 is_stmt 0 view .LVU203
+ 230:../BLDCMotor/motorctrl.c ****             motor_set_pwm(_svpwm(uab.alpha,uab.beta));
+ 781              		.loc 1 230 13 is_stmt 1 view .LVU202
+ 230:../BLDCMotor/motorctrl.c ****             motor_set_pwm(_svpwm(uab.alpha,uab.beta));
+ 782              		.loc 1 230 19 is_stmt 0 view .LVU203
  783 00da 04AD     		add	r5, sp, #16
  784 00dc 109B     		ldr	r3, [sp, #64]
  785 00de 0093     		str	r3, [sp]
@@ -1368,8 +1364,8 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  789              	.LVL73:
  790 00ea 95E80F00 		ldm	r5, {r0, r1, r2, r3}
  791 00ee 84E80F00 		stm	r4, {r0, r1, r2, r3}
- 235:../BLDCMotor/motorctrl.c ****         }
- 792              		.loc 1 235 13 is_stmt 1 view .LVU204
+ 231:../BLDCMotor/motorctrl.c ****         }
+ 792              		.loc 1 231 13 is_stmt 1 view .LVU204
  793 00f2 DDED0E0A 		vldr.32	s1, [sp, #56]
  794 00f6 9DED0D0A 		vldr.32	s0, [sp, #52]
  795 00fa FFF7FEFF 		bl	_svpwm
@@ -1378,15 +1374,15 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  798 0102 CDED180A 		vstr.32	s1, [sp, #96]
  799 0106 8DED191A 		vstr.32	s2, [sp, #100]
  800 010a FFF7FEFF 		bl	motor_set_pwm
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 24
-
-
  801              	.LVL75:
  802              	.LBE4:
- 239:../BLDCMotor/motorctrl.c **** }
- 803              		.loc 1 239 5 view .LVU205
- 240:../BLDCMotor/motorctrl.c **** alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {  
- 804              		.loc 1 240 1 is_stmt 0 view .LVU206
+ 235:../BLDCMotor/motorctrl.c **** }
+ 803              		.loc 1 235 5 view .LVU205
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 24
+
+
+ 236:../BLDCMotor/motorctrl.c **** alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {  
+ 804              		.loc 1 236 1 is_stmt 0 view .LVU206
  805 010e 1BB0     		add	sp, sp, #108
  806              	.LCFI27:
  807              		.cfi_def_cfa_offset 20
@@ -1397,8 +1393,8 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  812              		.cfi_restore 81
  813              		.cfi_def_cfa_offset 12
  814              	.LVL76:
- 240:../BLDCMotor/motorctrl.c **** alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {  
- 815              		.loc 1 240 1 view .LVU207
+ 236:../BLDCMotor/motorctrl.c **** alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {  
+ 815              		.loc 1 236 1 view .LVU207
  816 0114 30BD     		pop	{r4, r5, pc}
  817              	.L32:
  818 0116 00BF     		.align	2
@@ -1419,10 +1415,10 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  834              		.thumb_func
  836              	foc_paraminit:
  837              	.LFB339:
- 369:../BLDCMotor/motorctrl.c **** 
- 370:../BLDCMotor/motorctrl.c **** void foc_paraminit(void)
- 371:../BLDCMotor/motorctrl.c **** {
- 838              		.loc 1 371 1 is_stmt 1 view -0
+ 365:../BLDCMotor/motorctrl.c **** 
+ 366:../BLDCMotor/motorctrl.c **** void foc_paraminit(void)
+ 367:../BLDCMotor/motorctrl.c **** {
+ 838              		.loc 1 367 1 is_stmt 1 view -0
  839              		.cfi_startproc
  840              		@ args = 0, pretend = 0, frame = 0
  841              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -1438,23 +1434,23 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  851              		.cfi_def_cfa_offset 24
  852              		.cfi_offset 80, -24
  853              		.cfi_offset 81, -20
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 25
-
-
- 372:../BLDCMotor/motorctrl.c ****     sgp_curloop_d_pid = &(sg_curloop_param.d_pid);
- 854              		.loc 1 372 5 view .LVU209
- 855              		.loc 1 372 23 is_stmt 0 view .LVU210
+ 368:../BLDCMotor/motorctrl.c ****     sgp_curloop_d_pid = &(sg_curloop_param.d_pid);
+ 854              		.loc 1 368 5 view .LVU209
+ 855              		.loc 1 368 23 is_stmt 0 view .LVU210
  856 0006 1D48     		ldr	r0, .L35
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 25
+
+
  857 0008 1D4B     		ldr	r3, .L35+4
  858 000a 1860     		str	r0, [r3]
- 373:../BLDCMotor/motorctrl.c ****     sgp_curloop_q_pid = &sg_curloop_param.q_pid;
- 859              		.loc 1 373 5 is_stmt 1 view .LVU211
- 860              		.loc 1 373 23 is_stmt 0 view .LVU212
+ 369:../BLDCMotor/motorctrl.c ****     sgp_curloop_q_pid = &sg_curloop_param.q_pid;
+ 859              		.loc 1 369 5 is_stmt 1 view .LVU211
+ 860              		.loc 1 369 23 is_stmt 0 view .LVU212
  861 000c 1D4D     		ldr	r5, .L35+8
  862 000e 00F11C03 		add	r3, r0, #28
  863 0012 2B60     		str	r3, [r5]
- 374:../BLDCMotor/motorctrl.c ****     pid_init(sgp_curloop_d_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,0.001f,D_MAX_VAL,D_MIN
- 864              		.loc 1 374 5 is_stmt 1 view .LVU213
+ 370:../BLDCMotor/motorctrl.c ****     pid_init(sgp_curloop_d_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,0.001f,D_MAX_VAL,D_MIN
+ 864              		.loc 1 370 5 is_stmt 1 view .LVU213
  865 0014 9FED1C8A 		vldr.32	s16, .L35+12
  866 0018 1C4C     		ldr	r4, .L35+16
  867 001a BAEE0A2A 		vmov.f32	s4, #-1.3e+1
@@ -1464,8 +1460,8 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  871 002a 94ED190A 		vldr.32	s0, [r4, #100]
  872 002e FFF7FEFF 		bl	pid_init
  873              	.LVL77:
- 375:../BLDCMotor/motorctrl.c ****     pid_init(sgp_curloop_q_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,0.001f,D_MAX_VAL,D_MIN
- 874              		.loc 1 375 5 view .LVU214
+ 371:../BLDCMotor/motorctrl.c ****     pid_init(sgp_curloop_q_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,0.001f,D_MAX_VAL,D_MIN
+ 874              		.loc 1 371 5 view .LVU214
  875 0032 BAEE0A2A 		vmov.f32	s4, #-1.3e+1
  876 0036 F2EE0A1A 		vmov.f32	s3, #1.3e+1
  877 003a B0EE481A 		vmov.f32	s2, s16
@@ -1474,37 +1470,37 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  880 0046 2868     		ldr	r0, [r5]
  881 0048 FFF7FEFF 		bl	pid_init
  882              	.LVL78:
- 376:../BLDCMotor/motorctrl.c ****     lowfilter_init(&sg_elefilter[0],80);
- 883              		.loc 1 376 5 view .LVU215
+ 372:../BLDCMotor/motorctrl.c ****     lowfilter_init(&sg_elefilter[0],80);
+ 883              		.loc 1 372 5 view .LVU215
  884 004c 9FED108A 		vldr.32	s16, .L35+20
  885 0050 104C     		ldr	r4, .L35+24
  886 0052 B0EE480A 		vmov.f32	s0, s16
  887 0056 2046     		mov	r0, r4
  888 0058 FFF7FEFF 		bl	lowfilter_init
  889              	.LVL79:
- 377:../BLDCMotor/motorctrl.c ****     lowfilter_init(&sg_elefilter[1],80);
- 890              		.loc 1 377 5 view .LVU216
+ 373:../BLDCMotor/motorctrl.c ****     lowfilter_init(&sg_elefilter[1],80);
+ 890              		.loc 1 373 5 view .LVU216
  891 005c B0EE480A 		vmov.f32	s0, s16
  892 0060 04F10800 		add	r0, r4, #8
  893 0064 FFF7FEFF 		bl	lowfilter_init
  894              	.LVL80:
- 378:../BLDCMotor/motorctrl.c ****     lowfilter_init(&sg_elefilter[2],80);
- 895              		.loc 1 378 5 view .LVU217
+ 374:../BLDCMotor/motorctrl.c ****     lowfilter_init(&sg_elefilter[2],80);
+ 895              		.loc 1 374 5 view .LVU217
  896 0068 B0EE480A 		vmov.f32	s0, s16
  897 006c 04F11000 		add	r0, r4, #16
  898 0070 FFF7FEFF 		bl	lowfilter_init
  899              	.LVL81:
- 379:../BLDCMotor/motorctrl.c **** }
- 900              		.loc 1 379 1 is_stmt 0 view .LVU218
+ 375:../BLDCMotor/motorctrl.c **** }
+ 900              		.loc 1 375 1 is_stmt 0 view .LVU218
  901 0074 BDEC028B 		vldm	sp!, {d8}
  902              	.LCFI31:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 26
-
-
  903              		.cfi_restore 80
  904              		.cfi_restore 81
  905              		.cfi_def_cfa_offset 16
  906 0078 38BD     		pop	{r3, r4, r5, pc}
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 26
+
+
  907              	.L36:
  908 007a 00BF     		.align	2
  909              	.L35:
@@ -1517,397 +1513,350 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 1
  916 0094 00000000 		.word	.LANCHOR3
  917              		.cfi_endproc
  918              	.LFE339:
- 920              		.section	.rodata.motortctrl_process.str1.4,"aMS",%progbits,1
- 921              		.align	2
- 922              	.LC0:
- 923 0000 6D6F746F 		.ascii	"motor init\015\012\000"
- 923      7220696E 
- 923      69740D0A 
- 923      00
- 924 000d 000000   		.align	2
- 925              	.LC1:
- 926 0010 75706461 		.ascii	"update parm...\015\012\000"
- 926      74652070 
- 926      61726D2E 
- 926      2E2E0D0A 
- 926      00
- 927 0021 000000   		.align	2
- 928              	.LC2:
- 929 0024 75706461 		.ascii	"update suceeful\015\012\000"
- 929      74652073 
- 929      75636565 
- 929      66756C0D 
- 929      0A00
- 930              		.section	.text.motortctrl_process,"ax",%progbits
- 931              		.align	1
- 932              		.global	motortctrl_process
- 933              		.syntax unified
- 934              		.thumb
- 935              		.thumb_func
- 937              	motortctrl_process:
- 938              	.LFB330:
-  59:../BLDCMotor/motorctrl.c ****     char rec_buf[64];
- 939              		.loc 1 59 1 is_stmt 1 view -0
- 940              		.cfi_startproc
- 941              		@ args = 0, pretend = 0, frame = 0
- 942              		@ frame_needed = 0, uses_anonymous_args = 0
- 943 0000 08B5     		push	{r3, lr}
- 944              	.LCFI32:
- 945              		.cfi_def_cfa_offset 8
- 946              		.cfi_offset 3, -8
- 947              		.cfi_offset 14, -4
-  60:../BLDCMotor/motorctrl.c ****     char cnt = 0;
- 948              		.loc 1 60 5 view .LVU220
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 27
+ 920              		.section	.text.motortctrl_process,"ax",%progbits
+ 921              		.align	1
+ 922              		.global	motortctrl_process
+ 923              		.syntax unified
+ 924              		.thumb
+ 925              		.thumb_func
+ 927              	motortctrl_process:
+ 928              	.LFB330:
+  58:../BLDCMotor/motorctrl.c ****     char rec_buf[64];
+ 929              		.loc 1 58 1 is_stmt 1 view -0
+ 930              		.cfi_startproc
+ 931              		@ args = 0, pretend = 0, frame = 0
+ 932              		@ frame_needed = 0, uses_anonymous_args = 0
+ 933 0000 08B5     		push	{r3, lr}
+ 934              	.LCFI32:
+ 935              		.cfi_def_cfa_offset 8
+ 936              		.cfi_offset 3, -8
+ 937              		.cfi_offset 14, -4
+  59:../BLDCMotor/motorctrl.c ****     char cnt = 0;
+ 938              		.loc 1 59 5 view .LVU220
+  60:../BLDCMotor/motorctrl.c ****     // if (readline_fromPC(rec_buf,sizeof(rec_buf)))
+ 939              		.loc 1 60 5 view .LVU221
+ 940              	.LVL82:
+  65:../BLDCMotor/motorctrl.c ****     switch (g_Motor1.state)
+ 941              		.loc 1 65 5 view .LVU222
+ 942 0002 FFF7FEFF 		bl	motorprotocol_process
+ 943              	.LVL83:
+  66:../BLDCMotor/motorctrl.c ****     {
+ 944              		.loc 1 66 5 view .LVU223
+  66:../BLDCMotor/motorctrl.c ****     {
+ 945              		.loc 1 66 21 is_stmt 0 view .LVU224
+ 946 0006 1A4B     		ldr	r3, .L46
+ 947 0008 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  66:../BLDCMotor/motorctrl.c ****     {
+ 948              		.loc 1 66 5 view .LVU225
+ 949 000a 042B     		cmp	r3, #4
+ 950 000c 2BD8     		bhi	.L37
+ 951 000e DFE803F0 		tbb	[pc, r3]
+ 952              	.L40:
+ 953 0012 03       		.byte	(.L43-.L40)/2
+ 954 0013 26       		.byte	(.L42-.L40)/2
+ 955 0014 2A       		.byte	(.L37-.L40)/2
+ 956 0015 15       		.byte	(.L41-.L40)/2
+ 957 0016 21       		.byte	(.L39-.L40)/2
+ 958 0017 00       		.p2align 1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 27
 
 
-  61:../BLDCMotor/motorctrl.c ****     // if (readline_fromPC(rec_buf,sizeof(rec_buf)))
- 949              		.loc 1 61 5 view .LVU221
- 950              	.LVL82:
-  66:../BLDCMotor/motorctrl.c ****     switch (g_Motor1.state)
- 951              		.loc 1 66 5 view .LVU222
- 952 0002 FFF7FEFF 		bl	motorprotocol_process
- 953              	.LVL83:
-  67:../BLDCMotor/motorctrl.c ****     {
- 954              		.loc 1 67 5 view .LVU223
-  67:../BLDCMotor/motorctrl.c ****     {
- 955              		.loc 1 67 21 is_stmt 0 view .LVU224
- 956 0006 204B     		ldr	r3, .L46
- 957 0008 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
-  67:../BLDCMotor/motorctrl.c ****     {
- 958              		.loc 1 67 5 view .LVU225
- 959 000a 042B     		cmp	r3, #4
- 960 000c 33D8     		bhi	.L37
- 961 000e DFE803F0 		tbb	[pc, r3]
- 962              	.L40:
- 963 0012 03       		.byte	(.L43-.L40)/2
- 964 0013 2E       		.byte	(.L42-.L40)/2
- 965 0014 32       		.byte	(.L37-.L40)/2
- 966 0015 19       		.byte	(.L41-.L40)/2
- 967 0016 25       		.byte	(.L39-.L40)/2
- 968 0017 00       		.p2align 1
- 969              	.L43:
-  70:../BLDCMotor/motorctrl.c ****         sg_MecThetaOffset = _get_angleoffset();
- 970              		.loc 1 70 9 is_stmt 1 view .LVU226
- 971 0018 1C49     		ldr	r1, .L46+4
- 972 001a 0020     		movs	r0, #0
- 973 001c FFF7FEFF 		bl	SEGGER_RTT_printf
- 974              	.LVL84:
-  71:../BLDCMotor/motorctrl.c ****         sg_debug_clear();
- 975              		.loc 1 71 9 view .LVU227
-  71:../BLDCMotor/motorctrl.c ****         sg_debug_clear();
- 976              		.loc 1 71 29 is_stmt 0 view .LVU228
- 977 0020 FFF7FEFF 		bl	_get_angleoffset
- 978              	.LVL85:
-  71:../BLDCMotor/motorctrl.c ****         sg_debug_clear();
- 979              		.loc 1 71 27 view .LVU229
- 980 0024 1A4B     		ldr	r3, .L46+8
- 981 0026 83ED000A 		vstr.32	s0, [r3]
-  72:../BLDCMotor/motorctrl.c ****         foc_paraminit();
- 982              		.loc 1 72 9 is_stmt 1 view .LVU230
- 983 002a FFF7FEFF 		bl	sg_debug_clear
- 984              	.LVL86:
-  73:../BLDCMotor/motorctrl.c ****         HAL_Delay(20);
- 985              		.loc 1 73 9 view .LVU231
- 986 002e FFF7FEFF 		bl	foc_paraminit
- 987              	.LVL87:
-  74:../BLDCMotor/motorctrl.c ****         motor_enable();
- 988              		.loc 1 74 9 view .LVU232
- 989 0032 1420     		movs	r0, #20
- 990 0034 FFF7FEFF 		bl	HAL_Delay
- 991              	.LVL88:
-  75:../BLDCMotor/motorctrl.c ****         g_Motor1.state = MOTOR_RUNING;           
- 992              		.loc 1 75 9 view .LVU233
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 28
+ 959              	.L43:
+  69:../BLDCMotor/motorctrl.c ****         sg_debug_clear();
+ 960              		.loc 1 69 9 is_stmt 1 view .LVU226
+  69:../BLDCMotor/motorctrl.c ****         sg_debug_clear();
+ 961              		.loc 1 69 29 is_stmt 0 view .LVU227
+ 962 0018 FFF7FEFF 		bl	_get_angleoffset
+ 963              	.LVL84:
+  69:../BLDCMotor/motorctrl.c ****         sg_debug_clear();
+ 964              		.loc 1 69 27 view .LVU228
+ 965 001c 154B     		ldr	r3, .L46+4
+ 966 001e 83ED000A 		vstr.32	s0, [r3]
+  70:../BLDCMotor/motorctrl.c ****         foc_paraminit();
+ 967              		.loc 1 70 9 is_stmt 1 view .LVU229
+ 968 0022 FFF7FEFF 		bl	sg_debug_clear
+ 969              	.LVL85:
+  71:../BLDCMotor/motorctrl.c ****         HAL_Delay(20);
+ 970              		.loc 1 71 9 view .LVU230
+ 971 0026 FFF7FEFF 		bl	foc_paraminit
+ 972              	.LVL86:
+  72:../BLDCMotor/motorctrl.c ****         motor_enable();
+ 973              		.loc 1 72 9 view .LVU231
+ 974 002a 1420     		movs	r0, #20
+ 975 002c FFF7FEFF 		bl	HAL_Delay
+ 976              	.LVL87:
+  73:../BLDCMotor/motorctrl.c ****         g_Motor1.state = MOTOR_RUNING;           
+ 977              		.loc 1 73 9 view .LVU232
+ 978 0030 FFF7FEFF 		bl	motor_enable
+ 979              	.LVL88:
+  74:../BLDCMotor/motorctrl.c ****         break;
+ 980              		.loc 1 74 9 view .LVU233
+  74:../BLDCMotor/motorctrl.c ****         break;
+ 981              		.loc 1 74 24 is_stmt 0 view .LVU234
+ 982 0034 0E4B     		ldr	r3, .L46
+ 983 0036 0322     		movs	r2, #3
+ 984 0038 1A70     		strb	r2, [r3]
+  75:../BLDCMotor/motorctrl.c **** 
+ 985              		.loc 1 75 9 is_stmt 1 view .LVU235
+ 986 003a 14E0     		b	.L37
+ 987              	.L41:
+  79:../BLDCMotor/motorctrl.c ****             {
+ 988              		.loc 1 79 13 view .LVU236
+  79:../BLDCMotor/motorctrl.c ****             {
+ 989              		.loc 1 79 29 is_stmt 0 view .LVU237
+ 990 003c 0C4A     		ldr	r2, .L46
+ 991 003e 5388     		ldrh	r3, [r2, #2]
+  79:../BLDCMotor/motorctrl.c ****             {
+ 992              		.loc 1 79 19 view .LVU238
+ 993 0040 0133     		adds	r3, r3, #1
+  79:../BLDCMotor/motorctrl.c ****             {
+ 994              		.loc 1 79 16 view .LVU239
+ 995 0042 5380     		strh	r3, [r2, #2]	@ movhi
+  82:../BLDCMotor/motorctrl.c ****             if (sg_motordebug.motor_stat == 1)
+ 996              		.loc 1 82 13 is_stmt 1 view .LVU240
+  83:../BLDCMotor/motorctrl.c ****             {
+ 997              		.loc 1 83 13 view .LVU241
+  83:../BLDCMotor/motorctrl.c ****             {
+ 998              		.loc 1 83 30 is_stmt 0 view .LVU242
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 28
 
 
- 993 0038 FFF7FEFF 		bl	motor_enable
- 994              	.LVL89:
-  76:../BLDCMotor/motorctrl.c ****         break;
- 995              		.loc 1 76 9 view .LVU234
-  76:../BLDCMotor/motorctrl.c ****         break;
- 996              		.loc 1 76 24 is_stmt 0 view .LVU235
- 997 003c 124B     		ldr	r3, .L46
- 998 003e 0322     		movs	r2, #3
- 999 0040 1A70     		strb	r2, [r3]
-  77:../BLDCMotor/motorctrl.c **** 
- 1000              		.loc 1 77 9 is_stmt 1 view .LVU236
- 1001 0042 18E0     		b	.L37
- 1002              	.L41:
-  81:../BLDCMotor/motorctrl.c ****             {
- 1003              		.loc 1 81 13 view .LVU237
-  81:../BLDCMotor/motorctrl.c ****             {
- 1004              		.loc 1 81 29 is_stmt 0 view .LVU238
- 1005 0044 104A     		ldr	r2, .L46
- 1006 0046 5388     		ldrh	r3, [r2, #2]
-  81:../BLDCMotor/motorctrl.c ****             {
- 1007              		.loc 1 81 19 view .LVU239
- 1008 0048 0133     		adds	r3, r3, #1
-  81:../BLDCMotor/motorctrl.c ****             {
- 1009              		.loc 1 81 16 view .LVU240
- 1010 004a 5380     		strh	r3, [r2, #2]	@ movhi
-  84:../BLDCMotor/motorctrl.c ****             if (sg_motordebug.motor_stat == 1)
- 1011              		.loc 1 84 13 is_stmt 1 view .LVU241
-  85:../BLDCMotor/motorctrl.c ****             {
- 1012              		.loc 1 85 13 view .LVU242
-  85:../BLDCMotor/motorctrl.c ****             {
- 1013              		.loc 1 85 30 is_stmt 0 view .LVU243
- 1014 004c 114B     		ldr	r3, .L46+12
- 1015 004e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
-  85:../BLDCMotor/motorctrl.c ****             {
- 1016              		.loc 1 85 16 view .LVU244
- 1017 0050 012B     		cmp	r3, #1
- 1018 0052 10D1     		bne	.L37
-  87:../BLDCMotor/motorctrl.c ****             }
- 1019              		.loc 1 87 17 is_stmt 1 view .LVU245
-  87:../BLDCMotor/motorctrl.c ****             }
- 1020              		.loc 1 87 32 is_stmt 0 view .LVU246
- 1021 0054 1346     		mov	r3, r2
- 1022 0056 0422     		movs	r2, #4
- 1023 0058 1A70     		strb	r2, [r3]
- 1024 005a 0CE0     		b	.L37
- 1025              	.L39:
-  93:../BLDCMotor/motorctrl.c ****         USER_DEBUG_NORMAL("update parm...\r\n");
- 1026              		.loc 1 93 9 is_stmt 1 view .LVU247
- 1027 005c FFF7FEFF 		bl	motor_disable
- 1028              	.LVL90:
-  94:../BLDCMotor/motorctrl.c ****         g_Motor1.state = MOTOR_IDLE;
- 1029              		.loc 1 94 9 view .LVU248
- 1030 0060 0D49     		ldr	r1, .L46+16
- 1031 0062 0020     		movs	r0, #0
- 1032 0064 FFF7FEFF 		bl	SEGGER_RTT_printf
- 1033              	.LVL91:
-  95:../BLDCMotor/motorctrl.c ****     case MOTOR_IDLE:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 29
+ 999 0044 0C4B     		ldr	r3, .L46+8
+ 1000 0046 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  83:../BLDCMotor/motorctrl.c ****             {
+ 1001              		.loc 1 83 16 view .LVU243
+ 1002 0048 012B     		cmp	r3, #1
+ 1003 004a 0CD1     		bne	.L37
+  85:../BLDCMotor/motorctrl.c ****             }
+ 1004              		.loc 1 85 17 is_stmt 1 view .LVU244
+  85:../BLDCMotor/motorctrl.c ****             }
+ 1005              		.loc 1 85 32 is_stmt 0 view .LVU245
+ 1006 004c 1346     		mov	r3, r2
+ 1007 004e 0422     		movs	r2, #4
+ 1008 0050 1A70     		strb	r2, [r3]
+ 1009 0052 08E0     		b	.L37
+ 1010              	.L39:
+  91:../BLDCMotor/motorctrl.c ****         g_Motor1.state = MOTOR_IDLE;
+ 1011              		.loc 1 91 9 is_stmt 1 view .LVU246
+ 1012 0054 FFF7FEFF 		bl	motor_disable
+ 1013              	.LVL89:
+  92:../BLDCMotor/motorctrl.c ****     case MOTOR_IDLE:
+ 1014              		.loc 1 92 9 view .LVU247
+  92:../BLDCMotor/motorctrl.c ****     case MOTOR_IDLE:
+ 1015              		.loc 1 92 24 is_stmt 0 view .LVU248
+ 1016 0058 054B     		ldr	r3, .L46
+ 1017 005a 0122     		movs	r2, #1
+ 1018 005c 1A70     		strb	r2, [r3]
+ 1019              	.L42:
+  94:../BLDCMotor/motorctrl.c ****             {
+ 1020              		.loc 1 94 13 is_stmt 1 view .LVU249
+  94:../BLDCMotor/motorctrl.c ****             {
+ 1021              		.loc 1 94 30 is_stmt 0 view .LVU250
+ 1022 005e 064B     		ldr	r3, .L46+8
+ 1023 0060 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  94:../BLDCMotor/motorctrl.c ****             {
+ 1024              		.loc 1 94 16 view .LVU251
+ 1025 0062 032B     		cmp	r3, #3
+ 1026 0064 00D0     		beq	.L45
+ 1027              	.L37:
+ 103:../BLDCMotor/motorctrl.c **** /*------------周期性被调用----------------*/
+ 1028              		.loc 1 103 1 view .LVU252
+ 1029 0066 08BD     		pop	{r3, pc}
+ 1030              	.L45:
+  96:../BLDCMotor/motorctrl.c ****             }        
+ 1031              		.loc 1 96 17 is_stmt 1 view .LVU253
+  96:../BLDCMotor/motorctrl.c ****             }        
+ 1032              		.loc 1 96 32 is_stmt 0 view .LVU254
+ 1033 0068 014B     		ldr	r3, .L46
+ 1034 006a 0022     		movs	r2, #0
+ 1035 006c 1A70     		strb	r2, [r3]
+ 103:../BLDCMotor/motorctrl.c **** /*------------周期性被调用----------------*/
+ 1036              		.loc 1 103 1 view .LVU255
+ 1037 006e FAE7     		b	.L37
+ 1038              	.L47:
+ 1039              		.align	2
+ 1040              	.L46:
+ 1041 0070 00000000 		.word	.LANCHOR6
+ 1042 0074 00000000 		.word	.LANCHOR4
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 29
 
 
- 1034              		.loc 1 95 9 view .LVU249
-  95:../BLDCMotor/motorctrl.c ****     case MOTOR_IDLE:
- 1035              		.loc 1 95 24 is_stmt 0 view .LVU250
- 1036 0068 074B     		ldr	r3, .L46
- 1037 006a 0122     		movs	r2, #1
- 1038 006c 1A70     		strb	r2, [r3]
- 1039              	.L42:
-  97:../BLDCMotor/motorctrl.c ****             {
- 1040              		.loc 1 97 13 is_stmt 1 view .LVU251
-  97:../BLDCMotor/motorctrl.c ****             {
- 1041              		.loc 1 97 30 is_stmt 0 view .LVU252
- 1042 006e 094B     		ldr	r3, .L46+12
- 1043 0070 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
-  97:../BLDCMotor/motorctrl.c ****             {
- 1044              		.loc 1 97 16 view .LVU253
- 1045 0072 032B     		cmp	r3, #3
- 1046 0074 00D0     		beq	.L45
- 1047              	.L37:
- 107:../BLDCMotor/motorctrl.c **** /*------------周期性被调用----------------*/
- 1048              		.loc 1 107 1 view .LVU254
- 1049 0076 08BD     		pop	{r3, pc}
- 1050              	.L45:
-  99:../BLDCMotor/motorctrl.c ****                 g_Motor1.state = MOTOR_INIT;
- 1051              		.loc 1 99 17 is_stmt 1 view .LVU255
- 1052 0078 0849     		ldr	r1, .L46+20
- 1053 007a 0020     		movs	r0, #0
- 1054 007c FFF7FEFF 		bl	SEGGER_RTT_printf
- 1055              	.LVL92:
- 100:../BLDCMotor/motorctrl.c ****             }        
- 1056              		.loc 1 100 17 view .LVU256
- 100:../BLDCMotor/motorctrl.c ****             }        
- 1057              		.loc 1 100 32 is_stmt 0 view .LVU257
- 1058 0080 014B     		ldr	r3, .L46
- 1059 0082 0022     		movs	r2, #0
- 1060 0084 1A70     		strb	r2, [r3]
- 107:../BLDCMotor/motorctrl.c **** /*------------周期性被调用----------------*/
- 1061              		.loc 1 107 1 view .LVU258
- 1062 0086 F6E7     		b	.L37
- 1063              	.L47:
+ 1043 0078 00000000 		.word	.LANCHOR0
+ 1044              		.cfi_endproc
+ 1045              	.LFE330:
+ 1047              		.global	test_ic
+ 1048              		.global	test_ib
+ 1049              		.global	test_ia
+ 1050              		.global	raw_angle
+ 1051              		.global	next_angle_test
+ 1052              		.global	pre_angle_test
+ 1053              		.global	test_d_pid
+ 1054              		.global	g_Motor1
+ 1055              		.global	sg_motordebug
+ 1056              		.section	.bss.g_Motor1,"aw",%nobits
+ 1057              		.align	2
+ 1058              		.set	.LANCHOR6,. + 0
+ 1061              	g_Motor1:
+ 1062 0000 00000000 		.space	4
+ 1063              		.section	.bss.next_angle_test,"aw",%nobits
  1064              		.align	2
- 1065              	.L46:
- 1066 0088 00000000 		.word	.LANCHOR6
- 1067 008c 00000000 		.word	.LC0
- 1068 0090 00000000 		.word	.LANCHOR4
- 1069 0094 00000000 		.word	.LANCHOR0
- 1070 0098 10000000 		.word	.LC1
- 1071 009c 24000000 		.word	.LC2
- 1072              		.cfi_endproc
- 1073              	.LFE330:
- 1075              		.global	test_ic
- 1076              		.global	test_ib
- 1077              		.global	test_ia
- 1078              		.global	raw_angle
- 1079              		.global	next_angle_test
- 1080              		.global	pre_angle_test
- 1081              		.global	test_d_pid
- 1082              		.global	g_Motor1
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 30
+ 1067              	next_angle_test:
+ 1068 0000 00000000 		.space	4
+ 1069              		.section	.bss.pre_angle_test,"aw",%nobits
+ 1070              		.align	2
+ 1073              	pre_angle_test:
+ 1074 0000 00000000 		.space	4
+ 1075              		.section	.bss.raw_angle,"aw",%nobits
+ 1076              		.align	2
+ 1079              	raw_angle:
+ 1080 0000 00000000 		.space	4
+ 1081              		.section	.bss.sg_MecThetaOffset,"aw",%nobits
+ 1082              		.align	2
+ 1083              		.set	.LANCHOR4,. + 0
+ 1086              	sg_MecThetaOffset:
+ 1087 0000 00000000 		.space	4
+ 1088              		.section	.bss.sg_curloop_param,"aw",%nobits
+ 1089              		.align	2
+ 1090              		.set	.LANCHOR5,. + 0
+ 1093              	sg_curloop_param:
+ 1094 0000 00000000 		.space	56
+ 1094      00000000 
+ 1094      00000000 
+ 1094      00000000 
+ 1094      00000000 
+ 1095              		.section	.bss.sg_elefilter,"aw",%nobits
+ 1096              		.align	2
+ 1097              		.set	.LANCHOR3,. + 0
+ 1100              	sg_elefilter:
+ 1101 0000 00000000 		.space	24
+ 1101      00000000 
+ 1101      00000000 
+ 1101      00000000 
+ 1101      00000000 
+ 1102              		.section	.bss.sg_motordebug,"aw",%nobits
+ 1103              		.align	2
+ 1104              		.set	.LANCHOR0,. + 0
+ 1107              	sg_motordebug:
+ 1108 0000 00000000 		.space	124
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 30
 
 
- 1083              		.global	sg_motordebug
- 1084              		.section	.bss.g_Motor1,"aw",%nobits
- 1085              		.align	2
- 1086              		.set	.LANCHOR6,. + 0
- 1089              	g_Motor1:
- 1090 0000 00000000 		.space	4
- 1091              		.section	.bss.next_angle_test,"aw",%nobits
- 1092              		.align	2
- 1095              	next_angle_test:
- 1096 0000 00000000 		.space	4
- 1097              		.section	.bss.pre_angle_test,"aw",%nobits
- 1098              		.align	2
- 1101              	pre_angle_test:
- 1102 0000 00000000 		.space	4
- 1103              		.section	.bss.raw_angle,"aw",%nobits
- 1104              		.align	2
- 1107              	raw_angle:
- 1108 0000 00000000 		.space	4
- 1109              		.section	.bss.sg_MecThetaOffset,"aw",%nobits
+ 1108      00000000 
+ 1108      00000000 
+ 1108      00000000 
+ 1108      00000000 
+ 1109              		.section	.bss.sgp_curloop_d_pid,"aw",%nobits
  1110              		.align	2
- 1111              		.set	.LANCHOR4,. + 0
- 1114              	sg_MecThetaOffset:
+ 1111              		.set	.LANCHOR1,. + 0
+ 1114              	sgp_curloop_d_pid:
  1115 0000 00000000 		.space	4
- 1116              		.section	.bss.sg_curloop_param,"aw",%nobits
+ 1116              		.section	.bss.sgp_curloop_q_pid,"aw",%nobits
  1117              		.align	2
- 1118              		.set	.LANCHOR5,. + 0
- 1121              	sg_curloop_param:
- 1122 0000 00000000 		.space	56
- 1122      00000000 
- 1122      00000000 
- 1122      00000000 
- 1122      00000000 
- 1123              		.section	.bss.sg_elefilter,"aw",%nobits
+ 1118              		.set	.LANCHOR2,. + 0
+ 1121              	sgp_curloop_q_pid:
+ 1122 0000 00000000 		.space	4
+ 1123              		.section	.bss.test_d_pid,"aw",%nobits
  1124              		.align	2
- 1125              		.set	.LANCHOR3,. + 0
- 1128              	sg_elefilter:
- 1129 0000 00000000 		.space	24
- 1129      00000000 
- 1129      00000000 
- 1129      00000000 
- 1129      00000000 
- 1130              		.section	.bss.sg_motordebug,"aw",%nobits
- 1131              		.align	2
- 1132              		.set	.LANCHOR0,. + 0
- 1135              	sg_motordebug:
- 1136 0000 00000000 		.space	124
- 1136      00000000 
- 1136      00000000 
- 1136      00000000 
- 1136      00000000 
- 1137              		.section	.bss.sgp_curloop_d_pid,"aw",%nobits
- 1138              		.align	2
- 1139              		.set	.LANCHOR1,. + 0
- 1142              	sgp_curloop_d_pid:
- 1143 0000 00000000 		.space	4
- 1144              		.section	.bss.sgp_curloop_q_pid,"aw",%nobits
- 1145              		.align	2
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 31
-
-
- 1146              		.set	.LANCHOR2,. + 0
- 1149              	sgp_curloop_q_pid:
- 1150 0000 00000000 		.space	4
- 1151              		.section	.bss.test_d_pid,"aw",%nobits
- 1152              		.align	2
- 1155              	test_d_pid:
- 1156 0000 00000000 		.space	28
- 1156      00000000 
- 1156      00000000 
- 1156      00000000 
- 1156      00000000 
- 1157              		.section	.bss.test_ia,"aw",%nobits
- 1158              		.align	2
- 1161              	test_ia:
- 1162 0000 00000000 		.space	4
- 1163              		.section	.bss.test_ib,"aw",%nobits
- 1164              		.align	2
- 1167              	test_ib:
- 1168 0000 00000000 		.space	4
- 1169              		.section	.bss.test_ic,"aw",%nobits
- 1170              		.align	2
- 1173              	test_ic:
- 1174 0000 00000000 		.space	4
- 1175              		.text
- 1176              	.Letext0:
- 1177              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
- 1178              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
- 1179              		.file 4 "../Common/method/pid.h"
- 1180              		.file 5 "../Common/method/filter.h"
- 1181              		.file 6 "../Common/IQMath/ti/IQmathLib.h"
- 1182              		.file 7 "../BLDCMotor/motorctrl_common.h"
- 1183              		.file 8 "./Board/board.h"
- 1184              		.file 9 "../Sensor/sensor.h"
- 1185              		.file 10 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h"
- 1186              		.file 11 "Inc/tim.h"
- 1187              		.file 12 "Inc/adc.h"
- 1188              		.file 13 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\math.h"
- 1189              		.file 14 "../BLDCMotor/./motorctrl.h"
- 1190              		.file 15 "../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h"
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 32
+ 1127              	test_d_pid:
+ 1128 0000 00000000 		.space	28
+ 1128      00000000 
+ 1128      00000000 
+ 1128      00000000 
+ 1128      00000000 
+ 1129              		.section	.bss.test_ia,"aw",%nobits
+ 1130              		.align	2
+ 1133              	test_ia:
+ 1134 0000 00000000 		.space	4
+ 1135              		.section	.bss.test_ib,"aw",%nobits
+ 1136              		.align	2
+ 1139              	test_ib:
+ 1140 0000 00000000 		.space	4
+ 1141              		.section	.bss.test_ic,"aw",%nobits
+ 1142              		.align	2
+ 1145              	test_ic:
+ 1146 0000 00000000 		.space	4
+ 1147              		.text
+ 1148              	.Letext0:
+ 1149              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+ 1150              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+ 1151              		.file 4 "../Common/method/pid.h"
+ 1152              		.file 5 "../Common/method/filter.h"
+ 1153              		.file 6 "../Common/IQMath/ti/IQmathLib.h"
+ 1154              		.file 7 "../BLDCMotor/motorctrl_common.h"
+ 1155              		.file 8 "./Board/board.h"
+ 1156              		.file 9 "../Sensor/sensor.h"
+ 1157              		.file 10 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h"
+ 1158              		.file 11 "Inc/tim.h"
+ 1159              		.file 12 "Inc/adc.h"
+ 1160              		.file 13 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\math.h"
+ 1161              		.file 14 "../BLDCMotor/./motorctrl.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 31
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 motorctrl.c
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:20     .text.sg_debug_clear:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:25     .text.sg_debug_clear:00000000 sg_debug_clear
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:46     .text.sg_debug_clear:0000000c $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:51     .text.motor_enable_noirq:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:56     .text.motor_enable_noirq:00000000 motor_enable_noirq
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:76     .text.motor_set_pwm:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:81     .text.motor_set_pwm:00000000 motor_set_pwm
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:110    .text._get_angleoffset:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:115    .text._get_angleoffset:00000000 _get_angleoffset
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:240    .text._get_angleoffset:0000008c $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:246    .text.motor_enable:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:251    .text.motor_enable:00000000 motor_enable
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:277    .text.motor_disable:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:282    .text.motor_disable:00000000 motor_disable
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:305    .text._currmentloop:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:310    .text._currmentloop:00000000 _currmentloop
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:475    .text._currmentloop:000000ac $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:485    .text._limit_voltagecircle:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:491    .text._limit_voltagecircle:00000000 _limit_voltagecircle
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:607    .text._50uscycle_process:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:613    .text._50uscycle_process:00000000 _50uscycle_process
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:820    .text._50uscycle_process:00000118 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:830    .text.foc_paraminit:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:836    .text.foc_paraminit:00000000 foc_paraminit
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:910    .text.foc_paraminit:0000007c $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:921    .rodata.motortctrl_process.str1.4:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:931    .text.motortctrl_process:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:937    .text.motortctrl_process:00000000 motortctrl_process
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:963    .text.motortctrl_process:00000012 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1066   .text.motortctrl_process:00000088 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1173   .bss.test_ic:00000000 test_ic
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1167   .bss.test_ib:00000000 test_ib
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1161   .bss.test_ia:00000000 test_ia
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1107   .bss.raw_angle:00000000 raw_angle
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1095   .bss.next_angle_test:00000000 next_angle_test
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1101   .bss.pre_angle_test:00000000 pre_angle_test
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1155   .bss.test_d_pid:00000000 test_d_pid
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1089   .bss.g_Motor1:00000000 g_Motor1
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1135   .bss.sg_motordebug:00000000 sg_motordebug
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1085   .bss.g_Motor1:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1092   .bss.next_angle_test:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1098   .bss.pre_angle_test:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1104   .bss.raw_angle:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1110   .bss.sg_MecThetaOffset:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1114   .bss.sg_MecThetaOffset:00000000 sg_MecThetaOffset
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1117   .bss.sg_curloop_param:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1121   .bss.sg_curloop_param:00000000 sg_curloop_param
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1124   .bss.sg_elefilter:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1128   .bss.sg_elefilter:00000000 sg_elefilter
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1131   .bss.sg_motordebug:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1138   .bss.sgp_curloop_d_pid:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1142   .bss.sgp_curloop_d_pid:00000000 sgp_curloop_d_pid
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1145   .bss.sgp_curloop_q_pid:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1149   .bss.sgp_curloop_q_pid:00000000 sgp_curloop_q_pid
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1152   .bss.test_d_pid:00000000 $d
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccO7mff5.s 			page 33
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:20     .text.sg_debug_clear:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:25     .text.sg_debug_clear:00000000 sg_debug_clear
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:46     .text.sg_debug_clear:0000000c $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:51     .text.motor_enable_noirq:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:56     .text.motor_enable_noirq:00000000 motor_enable_noirq
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:76     .text.motor_set_pwm:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:81     .text.motor_set_pwm:00000000 motor_set_pwm
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:110    .text._get_angleoffset:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:115    .text._get_angleoffset:00000000 _get_angleoffset
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:240    .text._get_angleoffset:0000008c $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:246    .text.motor_enable:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:251    .text.motor_enable:00000000 motor_enable
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:277    .text.motor_disable:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:282    .text.motor_disable:00000000 motor_disable
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:305    .text._currmentloop:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:310    .text._currmentloop:00000000 _currmentloop
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:475    .text._currmentloop:000000ac $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:485    .text._limit_voltagecircle:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:491    .text._limit_voltagecircle:00000000 _limit_voltagecircle
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:607    .text._50uscycle_process:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:613    .text._50uscycle_process:00000000 _50uscycle_process
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:820    .text._50uscycle_process:00000118 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:830    .text.foc_paraminit:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:836    .text.foc_paraminit:00000000 foc_paraminit
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:910    .text.foc_paraminit:0000007c $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:921    .text.motortctrl_process:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:927    .text.motortctrl_process:00000000 motortctrl_process
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:953    .text.motortctrl_process:00000012 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1041   .text.motortctrl_process:00000070 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1145   .bss.test_ic:00000000 test_ic
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1139   .bss.test_ib:00000000 test_ib
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1133   .bss.test_ia:00000000 test_ia
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1079   .bss.raw_angle:00000000 raw_angle
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1067   .bss.next_angle_test:00000000 next_angle_test
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1073   .bss.pre_angle_test:00000000 pre_angle_test
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1127   .bss.test_d_pid:00000000 test_d_pid
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1061   .bss.g_Motor1:00000000 g_Motor1
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1107   .bss.sg_motordebug:00000000 sg_motordebug
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1057   .bss.g_Motor1:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1064   .bss.next_angle_test:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1070   .bss.pre_angle_test:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1076   .bss.raw_angle:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1082   .bss.sg_MecThetaOffset:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1086   .bss.sg_MecThetaOffset:00000000 sg_MecThetaOffset
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1089   .bss.sg_curloop_param:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1093   .bss.sg_curloop_param:00000000 sg_curloop_param
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1096   .bss.sg_elefilter:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1100   .bss.sg_elefilter:00000000 sg_elefilter
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1103   .bss.sg_motordebug:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1110   .bss.sgp_curloop_d_pid:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1114   .bss.sgp_curloop_d_pid:00000000 sgp_curloop_d_pid
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1117   .bss.sgp_curloop_q_pid:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1121   .bss.sgp_curloop_q_pid:00000000 sgp_curloop_q_pid
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1124   .bss.test_d_pid:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1130   .bss.test_ia:00000000 $d
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s 			page 32
 
 
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1158   .bss.test_ia:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1164   .bss.test_ib:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:1170   .bss.test_ic:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:968    .text.motortctrl_process:00000017 $d
-C:\Users\57308\AppData\Local\Temp\ccO7mff5.s:968    .text.motortctrl_process:00000018 $t
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1136   .bss.test_ib:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:1142   .bss.test_ic:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:958    .text.motortctrl_process:00000017 $d
+C:\Users\57308\AppData\Local\Temp\ccRn8R1s.s:958    .text.motortctrl_process:00000018 $t
 
 UNDEFINED SYMBOLS
 tim_pwm_enable
@@ -1932,4 +1881,3 @@ _normalize_angle
 pid_init
 lowfilter_init
 motorprotocol_process
-SEGGER_RTT_printf

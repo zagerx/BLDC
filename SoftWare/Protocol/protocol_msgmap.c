@@ -33,8 +33,7 @@ char pro_testfunc(cmdmsg_t *p,void *pdata,unsigned short datalen)
 {
     float data;
     data = *(float *)pdata;
-    ipc_write_data(PUBLIC_DATA_IQ_TARGET,data);
-    IPC_SET_EVENT(gEventGroup,IPC_SET_IQ);
+    // ipc_write_data(PUBLIC_DATA_IQ_TARGET,data);
     return 1;
 }
 
@@ -43,17 +42,17 @@ char write_opt(cmdmsg_t *p,void *pdata,unsigned short datalen)
     if (p->cmd == PRO_FUNC_CMD02)
     {
         /* code */
-        ipc_write_data(PUBLIC_DATA_IQ_TARGET,1.2f);
+        // ipc_write_data(PUBLIC_DATA_IQ_TARGET,1.2f);
     }
     if (p->cmd == PRO_FUNC_CMD03)
     {
         /* code */
-        ipc_write_data(PUBLIC_DATA_IQ_TARGET,0.5f);
+        // ipc_write_data(PUBLIC_DATA_IQ_TARGET,0.5f);
     }
     if (p->cmd == PRO_FUNC_CMD04)
     {
         /* code */
-        ipc_write_data(PUBLIC_DATA_IQ_TARGET,-0.5f);
+        // ipc_write_data(PUBLIC_DATA_IQ_TARGET,-0.5f);
     }    
     return 0;
 }

@@ -85,7 +85,6 @@ void sysrunning_process(void)
 {
     /*----------1ms计时-----------*/
 
-    /*-----------------------*/
     sg_SYSRuning.time_cnt++;
     switch (sg_SYSRuning.state)
     {

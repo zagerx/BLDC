@@ -53,7 +53,7 @@
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  IPC_SET_EVENT(gEventGroup,KEY01_SHORT_PRESS);
+  // IPC_SET_EVENT(gEventGroup,KEY01_SHORT_PRESS);
 }
 
 /* USER CODE END PV */

@@ -123,14 +123,14 @@ void MX_GPIO_Init(void)
 /* USER CODE BEGIN 2 */
 void gpio_setencoder_power(void)
 {
-  // HAL_GPIO_WritePin(POWER_3V3_EN_GPIO_Port,POWER_3V3_EN_Pin,GPIO_PIN_SET);
   HAL_GPIO_WritePin(VCC5V_OUT_EN_GPIO_Port,VCC5V_OUT_EN_Pin,GPIO_PIN_SET);
 }
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  uint8_t temp = 0;
-  temp = (HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin)) | (HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin)<<1) |\
-  (HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin)<<2);
-  
+  uint8_t u,v,w;
+  u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
+  v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
+  w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
+  hallsection_update(u,v,w);
 }
 /* USER CODE END 2 */
