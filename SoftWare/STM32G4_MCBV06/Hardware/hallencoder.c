@@ -12,7 +12,15 @@
 
 #define ENCODER_LINES                 (_ENCODERLINS)
 #define ENCODER_STEP                  (0.001533980f)       //2pi/4096/4
-
+motor_control/src/app/src/MotorControl/MotorControl.c
+motor_control/src/app/src/Peripheral/Sensor/SensorGpio.c
+motor_control/src/app/src/X-CUBE-CLASSB/bsp_softclassb/bsp_cpu.c
+motor_control/src/app/src/X-CUBE-CLASSB/bsp_softclassb/bsp_flash.c
+motor_control/src/app/src/X-CUBE-CLASSB/printf_log.h
+motor_control/src/app/src/X-CUBE-CLASSB/softclassb.c
+motor_control/src/app/src/X-CUBE-CLASSB/softclassb_clk.c
+motor_control/src/app/src/X-CUBE-CLASSB/softclassb_cpu.c
+motor_control/src/app/src/X-CUBE-CLASSB/softclassb_flash.c
 typedef struct hallencoder_data
 {
     int32_t *raw_buf;     
