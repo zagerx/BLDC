@@ -5,7 +5,6 @@
 #define NULL 0
 #define SENSORE_PERCI            (1)
 
-static float g_filtedata_arry[SENSOR_NUMBER + 1];        //传感器滤波的数据
 static sensor_data_t g_data_arry[SENSOR_NUMBER + 1];     //传感器数据
 
 static sensor_t g_sensor_arry[SENSOR_NUMBER + 1];
@@ -67,7 +66,6 @@ void sensor_process(void)
                 // USER_DEBUG_NORMAL("data %d %d\r\n",g_data_arry[sensor_id].raw_buf[2],\    
                 //                                     (int)(g_data_arry[sensor_id].covdata_buf[2]));                
             }
-            /*----是否滤波----*/
         }
         break;    
     default:

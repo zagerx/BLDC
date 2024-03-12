@@ -253,5 +253,3 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
   }
 }
 /* USER CODE END 1 */
-
-

@@ -66,6 +66,7 @@ void Error_Handler(void);
 #define KEY_01_EXTI_IRQn EXTI15_10_IRQn
 #define MT68XX_CSN_Pin GPIO_PIN_15
 #define MT68XX_CSN_GPIO_Port GPIOA
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

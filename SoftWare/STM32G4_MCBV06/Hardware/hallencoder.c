@@ -12,15 +12,7 @@
 
 #define ENCODER_LINES                 (_ENCODERLINS)
 #define ENCODER_STEP                  (0.001533980f)       //2pi/4096/4
-motor_control/src/app/src/MotorControl/MotorControl.c
-motor_control/src/app/src/Peripheral/Sensor/SensorGpio.c
-motor_control/src/app/src/X-CUBE-CLASSB/bsp_softclassb/bsp_cpu.c
-motor_control/src/app/src/X-CUBE-CLASSB/bsp_softclassb/bsp_flash.c
-motor_control/src/app/src/X-CUBE-CLASSB/printf_log.h
-motor_control/src/app/src/X-CUBE-CLASSB/softclassb.c
-motor_control/src/app/src/X-CUBE-CLASSB/softclassb_clk.c
-motor_control/src/app/src/X-CUBE-CLASSB/softclassb_cpu.c
-motor_control/src/app/src/X-CUBE-CLASSB/softclassb_flash.c
+
 typedef struct hallencoder_data
 {
     int32_t *raw_buf;     
@@ -31,35 +23,39 @@ typedef struct hallencoder_data
 
 hc_data_t sg_hcdata = {0};
 static int32_t sg_covangle = 0; 
-
+static int32_t sg_rawangle = 0; 
 /*6-4-5-1-3-2*/
+static unsigned char sg_cur_hallsection = 0;
 static float sg_hall_section[7] = {0.0f,210.0f,330.0f,270.0f,90.0f,150.0f,30.0f};
+static unsigned char read_hallsection(unsigned char u,unsigned char v,unsigned char w);
 
-static unsigned char read_hallsection(unsigned char u,unsigned char v,unsigned char w)
-{
-    unsigned char section = 0;
-    section = u | (v<<1) | (w<<2);
-    return section;
-}
 
-char hallsection_update(unsigned char u,unsigned char v,unsigned char w)
+
+/*
+* hall中断调用
+*/
+void hallsection_update(unsigned char u,unsigned char v,unsigned char w)
 {
 #if(HALLSECTION_UPDATE_MODE == HALLSECTION_UPDATE_TI_MODE)
-    return (char)read_hallsection(u,v,w);
+    /*返回扇区编号*/
+    sg_cur_hallsection = read_hallsection(u,v,w);
+    /*清零编码器*/
+    tim_encode_writecnt(0);
 #endif
 }
-
-
 
 void hallencoder_init(void)
 {
     gpio_setencoder_power();
     tim_encode_start();
-    tim_encode_writecnt(500);
+    tim_encode_writecnt(0);
     sg_hcdata.covdata_buf = &sg_covangle;
+    sg_hcdata.raw_buf = &sg_rawangle;
 }
+
 void* hallencoder_readangle(void)
 {
+#if 0 //只使用编码   
     static unsigned int pre_cnt = 0;
     unsigned int cur_cnt = 0;
     int diff_cnt = 0;
@@ -75,4 +71,17 @@ void* hallencoder_readangle(void)
     pre_pose = cur_pose;
     sg_covangle = (int32_t)(cur_pose * (1<<22));
     return (void *)(&sg_hcdata);
+#else //编码器+hall
+    sg_rawangle = sg_hall_section[sg_cur_hallsection] + tim_encode_readcnt()*ENCODER_STEP;
+    sg_covangle = (int32_t)(sg_rawangle * (1<<22));
+#endif
+
 }
+
+static unsigned char read_hallsection(unsigned char u,unsigned char v,unsigned char w)
+{
+    unsigned char section = 0;
+    section = u | (v<<1) | (w<<2);
+    return section;
+}
+

@@ -202,7 +202,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
         elec_theta = _normalize_angle(elec_theta);
         sg_motordebug.ele_angle = elec_theta;
 
-        #if 0//强拖
+        #if 1//强拖
             {            
                 dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.0f)};
                 alpbet_t uab,uab_q15;
@@ -213,7 +213,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
                 uab = _2r_2s(udq, sg_motordebug.self_ele_theta); 
                 dut01 = _svpwm(uab.alpha,uab.beta);
                 motor_set_pwm(dut01);
-                sg_motordebug.self_ele_theta += 0.31415926f;
+                sg_motordebug.self_ele_theta += 0.0031415926f;
             }
         #else //使用传感器
         {
