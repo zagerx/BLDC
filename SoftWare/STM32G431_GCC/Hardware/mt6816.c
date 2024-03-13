@@ -1,8 +1,8 @@
 #include "spi.h"
 #include "filter.h"
 extern SPI_HandleTypeDef hspi1;
-static unsigned char Spi_TxData[4]={0x83,0x84,0x85,0x00};
-static unsigned char Spi_pRxData[4]={0};
+ unsigned char Spi_TxData[4]={0x83,0x84,0x85,0x00};
+ unsigned char Spi_pRxData[4]={0};
 static lowfilter_t sg_anglefilter;
 
 typedef struct mt6816_data
@@ -17,25 +17,13 @@ static mt6816_data_t sg_mt6816data = {0};
 int32_t rawdata,covdata,filterdata;
 static int16_t column;
 
-static void _mt6816_readregister(unsigned short reg,unsigned char *data)
-{
-
-}
-
-void spi_read(void)
-{
-    HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
-    HAL_SPI_TransmitReceive_DMA(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03);
-    HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);    
-}
 
 void* mt6816_read(void)
 {
     unsigned int AngleIn17bits = 0;
-    HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
-    HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xffff);
-    // HAL_SPI_TransmitReceive_DMA(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03);
-    HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
+    // HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
+    // HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xFF);
+    // HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
 
     AngleIn17bits =(((Spi_pRxData[1]&0x00ff)<<8) | (Spi_pRxData[2]&0x00fc))>>2;
     AngleIn17bits = 16384 - AngleIn17bits;
@@ -53,7 +41,6 @@ void mt6816_init(void)
         HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xffff);
         HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
     }
-    // spi_read();
     sg_mt6816data.raw_buf = &rawdata;
     sg_mt6816data.covdata_buf = &covdata;
     sg_mt6816data.filterdata_buf = &filterdata;
@@ -61,8 +48,4 @@ void mt6816_init(void)
     lowfilter_init(&sg_anglefilter,99);
 }
 
-void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
-{
-    // spi_read();
-}
 

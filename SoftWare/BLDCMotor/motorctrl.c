@@ -62,7 +62,7 @@ void motortctrl_process(void)
     // {
     //     motorprotocol_pause(rec_buf);
     // }
-    // motorprotocol_process();
+    motorprotocol_process();
     switch (g_Motor1.state)
     {
     case MOTOR_INIT:
@@ -78,7 +78,7 @@ void motortctrl_process(void)
         {
             if (!(++g_Motor1.cnt % 15000))
             {
-                g_Motor1.state = MOTOR_STOP;
+                // g_Motor1.state = MOTOR_STOP;
             }
             if (sg_motordebug.motor_stat == 1)
             {
@@ -102,6 +102,7 @@ void motortctrl_process(void)
     }
 }
 /*------------周期性被调用----------------*/
+unsigned int test_angletime = 0;
 void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 {
     float elec_theta,mech_theta;
@@ -198,15 +199,23 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 #endif
 
 #ifdef BOARD_STM32G431
+
+  unsigned int nCycleUsed = 0;
+  __cycleof__("full test",{nCycleUsed = _;}){
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
     mech_theta = _IQ20toF(Q15_Mechtheta);
     mech_theta -= sg_MecThetaOffset;
     elec_theta = mech_theta * MOTOR_PAIR;
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
+  }
+  test_angletime = nCycleUsed/170;
+//   USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/170); 
 
-    #if 1//强拖
+
+    #if 0//强拖
         {            
+            _currmentloop(i_abc,elec_theta);
             dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.0f)};
             alpbet_t uab,uab_q15;
             if (sg_motordebug.self_ele_theta >= _2PI)
@@ -220,7 +229,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
         }
     #else //使用传感器
     {
-        dq_t udq = {0.0f,0.0f,_IQ15(0.0f),_IQ15(0.8f)};
+        dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.8f)};
         alpbet_t uab,uab_q15;
         #if 1/*闭环控制*/
             udq = _currmentloop(i_abc,elec_theta);
@@ -285,7 +294,7 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     sg_motordebug.id = (i_dq.d);
     sg_motordebug.iq = (i_dq.q);
     dq_t udq = {0.0f};
-#if 0
+#if 1
     float tar_id = 0.0f,tar_iq = 0.0f;
     tar_id = sg_motordebug.id_targe;
     tar_iq = sg_motordebug.iq_targe;

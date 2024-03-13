@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccSrinLy.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -19,20 +19,20 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 1
   16              		.text
   17              	.Ltext0:
   18              		.cfi_sections	.debug_frame
-  19              		.section	.text.spi_read,"ax",%progbits
+  19              		.section	.text.mt6816_read,"ax",%progbits
   20              		.align	1
-  21              		.global	spi_read
+  21              		.global	mt6816_read
   22              		.syntax unified
   23              		.thumb
   24              		.thumb_func
-  26              	spi_read:
-  27              	.LFB330:
+  26              	mt6816_read:
+  27              	.LFB329:
   28              		.file 1 "./Hardware/mt6816.c"
    1:./Hardware/mt6816.c **** #include "spi.h"
    2:./Hardware/mt6816.c **** #include "filter.h"
    3:./Hardware/mt6816.c **** extern SPI_HandleTypeDef hspi1;
-   4:./Hardware/mt6816.c **** static unsigned char Spi_TxData[4]={0x83,0x84,0x85,0x00};
-   5:./Hardware/mt6816.c **** static unsigned char Spi_pRxData[4]={0};
+   4:./Hardware/mt6816.c ****  unsigned char Spi_TxData[4]={0x83,0x84,0x85,0x00};
+   5:./Hardware/mt6816.c ****  unsigned char Spi_pRxData[4]={0};
    6:./Hardware/mt6816.c **** static lowfilter_t sg_anglefilter;
    7:./Hardware/mt6816.c **** 
    8:./Hardware/mt6816.c **** typedef struct mt6816_data
@@ -47,423 +47,297 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 1
   17:./Hardware/mt6816.c **** int32_t rawdata,covdata,filterdata;
   18:./Hardware/mt6816.c **** static int16_t column;
   19:./Hardware/mt6816.c **** 
-  20:./Hardware/mt6816.c **** static void _mt6816_readregister(unsigned short reg,unsigned char *data)
-  21:./Hardware/mt6816.c **** {
-  22:./Hardware/mt6816.c **** 
-  23:./Hardware/mt6816.c **** }
-  24:./Hardware/mt6816.c **** 
-  25:./Hardware/mt6816.c **** void spi_read(void)
-  26:./Hardware/mt6816.c **** {
-  29              		.loc 1 26 1 view -0
+  20:./Hardware/mt6816.c **** 
+  21:./Hardware/mt6816.c **** void* mt6816_read(void)
+  22:./Hardware/mt6816.c **** {
+  29              		.loc 1 22 1 view -0
   30              		.cfi_startproc
   31              		@ args = 0, pretend = 0, frame = 0
   32              		@ frame_needed = 0, uses_anonymous_args = 0
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 2
+  33              		@ link register save eliminated.
+  23:./Hardware/mt6816.c ****     unsigned int AngleIn17bits = 0;
+  34              		.loc 1 23 5 view .LVU1
+  35              	.LVL0:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccSrinLy.s 			page 2
 
 
-  33 0000 08B5     		push	{r3, lr}
-  34              	.LCFI0:
-  35              		.cfi_def_cfa_offset 8
-  36              		.cfi_offset 3, -8
-  37              		.cfi_offset 14, -4
-  27:./Hardware/mt6816.c ****     HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
-  38              		.loc 1 27 5 view .LVU1
-  39 0002 0022     		movs	r2, #0
-  40 0004 4FF40041 		mov	r1, #32768
-  41 0008 4FF09040 		mov	r0, #1207959552
-  42 000c FFF7FEFF 		bl	HAL_GPIO_WritePin
-  43              	.LVL0:
-  28:./Hardware/mt6816.c ****     HAL_SPI_TransmitReceive_DMA(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03);
-  44              		.loc 1 28 5 view .LVU2
-  45 0010 0323     		movs	r3, #3
-  46 0012 064A     		ldr	r2, .L3
-  47 0014 0649     		ldr	r1, .L3+4
-  48 0016 0748     		ldr	r0, .L3+8
-  49 0018 FFF7FEFF 		bl	HAL_SPI_TransmitReceive_DMA
-  50              	.LVL1:
-  29:./Hardware/mt6816.c ****     HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);    
-  51              		.loc 1 29 5 view .LVU3
-  52 001c 0122     		movs	r2, #1
-  53 001e 4FF40041 		mov	r1, #32768
-  54 0022 4FF09040 		mov	r0, #1207959552
-  55 0026 FFF7FEFF 		bl	HAL_GPIO_WritePin
-  56              	.LVL2:
-  30:./Hardware/mt6816.c **** }
-  57              		.loc 1 30 1 is_stmt 0 view .LVU4
-  58 002a 08BD     		pop	{r3, pc}
-  59              	.L4:
-  60              		.align	2
-  61              	.L3:
-  62 002c 00000000 		.word	.LANCHOR0
-  63 0030 00000000 		.word	.LANCHOR1
-  64 0034 00000000 		.word	hspi1
-  65              		.cfi_endproc
-  66              	.LFE330:
-  68              		.section	.text.mt6816_read,"ax",%progbits
-  69              		.align	1
-  70              		.global	mt6816_read
-  71              		.syntax unified
-  72              		.thumb
-  73              		.thumb_func
-  75              	mt6816_read:
-  76              	.LFB331:
-  31:./Hardware/mt6816.c **** 
-  32:./Hardware/mt6816.c **** void* mt6816_read(void)
-  33:./Hardware/mt6816.c **** {
-  77              		.loc 1 33 1 is_stmt 1 view -0
-  78              		.cfi_startproc
-  79              		@ args = 0, pretend = 0, frame = 0
-  80              		@ frame_needed = 0, uses_anonymous_args = 0
-  81 0000 10B5     		push	{r4, lr}
-  82              	.LCFI1:
-  83              		.cfi_def_cfa_offset 8
-  84              		.cfi_offset 4, -8
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 3
+  24:./Hardware/mt6816.c ****     // HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
+  25:./Hardware/mt6816.c ****     // HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xFF);
+  26:./Hardware/mt6816.c ****     // HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
+  27:./Hardware/mt6816.c **** 
+  28:./Hardware/mt6816.c ****     AngleIn17bits =(((Spi_pRxData[1]&0x00ff)<<8) | (Spi_pRxData[2]&0x00fc))>>2;
+  36              		.loc 1 28 5 view .LVU2
+  37              		.loc 1 28 34 is_stmt 0 view .LVU3
+  38 0000 0D4A     		ldr	r2, .L2
+  39 0002 5178     		ldrb	r1, [r2, #1]	@ zero_extendqisi2
+  40              		.loc 1 28 64 view .LVU4
+  41 0004 9378     		ldrb	r3, [r2, #2]	@ zero_extendqisi2
+  42              		.loc 1 28 67 view .LVU5
+  43 0006 03F0FC03 		and	r3, r3, #252
+  44              		.loc 1 28 50 view .LVU6
+  45 000a 43EA0123 		orr	r3, r3, r1, lsl #8
+  46              		.loc 1 28 76 view .LVU7
+  47 000e 9B10     		asrs	r3, r3, #2
+  48              	.LVL1:
+  29:./Hardware/mt6816.c ****     AngleIn17bits = 16384 - AngleIn17bits;
+  49              		.loc 1 29 5 is_stmt 1 view .LVU8
+  50              		.loc 1 29 19 is_stmt 0 view .LVU9
+  51 0010 C3F58043 		rsb	r3, r3, #16384
+  52              	.LVL2:
+  30:./Hardware/mt6816.c ****     rawdata = AngleIn17bits;
+  53              		.loc 1 30 5 is_stmt 1 view .LVU10
+  54              		.loc 1 30 13 is_stmt 0 view .LVU11
+  55 0014 094A     		ldr	r2, .L2+4
+  56 0016 1360     		str	r3, [r2]
+  31:./Hardware/mt6816.c ****     covdata = (AngleIn17bits * 0.00038349f) * (1<<20);
+  57              		.loc 1 31 5 is_stmt 1 view .LVU12
+  58              		.loc 1 31 30 is_stmt 0 view .LVU13
+  59 0018 07EE903A 		vmov	s15, r3	@ int
+  60 001c F8EE677A 		vcvt.f32.u32	s15, s15
+  61 0020 9FED077A 		vldr.32	s14, .L2+8
+  62 0024 67EE877A 		vmul.f32	s15, s15, s14
+  63              		.loc 1 31 13 view .LVU14
+  64 0028 FEEEC67A 		vcvt.s32.f32	s15, s15, #20
+  65 002c 054B     		ldr	r3, .L2+12
+  66              	.LVL3:
+  67              		.loc 1 31 13 view .LVU15
+  68 002e C3ED007A 		vstr.32	s15, [r3]	@ int
+  32:./Hardware/mt6816.c ****     return (void*)&sg_mt6816data;
+  69              		.loc 1 32 5 is_stmt 1 view .LVU16
+  33:./Hardware/mt6816.c **** }
+  70              		.loc 1 33 1 is_stmt 0 view .LVU17
+  71 0032 0548     		ldr	r0, .L2+16
+  72 0034 7047     		bx	lr
+  73              	.L3:
+  74 0036 00BF     		.align	2
+  75              	.L2:
+  76 0038 00000000 		.word	.LANCHOR0
+  77 003c 00000000 		.word	.LANCHOR1
+  78 0040 280FC939 		.word	969477928
+  79 0044 00000000 		.word	.LANCHOR2
+  80 0048 00000000 		.word	.LANCHOR3
+  81              		.cfi_endproc
+  82              	.LFE329:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccSrinLy.s 			page 3
 
 
-  85              		.cfi_offset 14, -4
-  86 0002 82B0     		sub	sp, sp, #8
-  87              	.LCFI2:
-  88              		.cfi_def_cfa_offset 16
-  34:./Hardware/mt6816.c ****     unsigned int AngleIn17bits = 0;
-  89              		.loc 1 34 5 view .LVU6
-  90              	.LVL3:
-  35:./Hardware/mt6816.c ****     HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
-  91              		.loc 1 35 5 view .LVU7
-  92 0004 0022     		movs	r2, #0
-  93 0006 4FF40041 		mov	r1, #32768
-  94 000a 4FF09040 		mov	r0, #1207959552
-  95 000e FFF7FEFF 		bl	HAL_GPIO_WritePin
-  96              	.LVL4:
-  36:./Hardware/mt6816.c ****     HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xffff);
-  97              		.loc 1 36 5 view .LVU8
-  98 0012 164C     		ldr	r4, .L7
-  99 0014 4FF6FF73 		movw	r3, #65535
- 100 0018 0093     		str	r3, [sp]
- 101 001a 0323     		movs	r3, #3
- 102 001c 2246     		mov	r2, r4
- 103 001e 1449     		ldr	r1, .L7+4
- 104 0020 1448     		ldr	r0, .L7+8
- 105 0022 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
- 106              	.LVL5:
-  37:./Hardware/mt6816.c ****     // HAL_SPI_TransmitReceive_DMA(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03);
-  38:./Hardware/mt6816.c ****     HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
- 107              		.loc 1 38 5 view .LVU9
- 108 0026 0122     		movs	r2, #1
- 109 0028 4FF40041 		mov	r1, #32768
- 110 002c 4FF09040 		mov	r0, #1207959552
- 111 0030 FFF7FEFF 		bl	HAL_GPIO_WritePin
- 112              	.LVL6:
-  39:./Hardware/mt6816.c **** 
-  40:./Hardware/mt6816.c ****     AngleIn17bits =(((Spi_pRxData[1]&0x00ff)<<8) | (Spi_pRxData[2]&0x00fc))>>2;
- 113              		.loc 1 40 5 view .LVU10
- 114              		.loc 1 40 34 is_stmt 0 view .LVU11
- 115 0034 6278     		ldrb	r2, [r4, #1]	@ zero_extendqisi2
- 116              		.loc 1 40 64 view .LVU12
- 117 0036 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
- 118              		.loc 1 40 67 view .LVU13
- 119 0038 03F0FC03 		and	r3, r3, #252
- 120              		.loc 1 40 50 view .LVU14
- 121 003c 43EA0223 		orr	r3, r3, r2, lsl #8
- 122              		.loc 1 40 76 view .LVU15
- 123 0040 9B10     		asrs	r3, r3, #2
- 124              	.LVL7:
-  41:./Hardware/mt6816.c ****     AngleIn17bits = 16384 - AngleIn17bits;
- 125              		.loc 1 41 5 is_stmt 1 view .LVU16
- 126              		.loc 1 41 19 is_stmt 0 view .LVU17
- 127 0042 C3F58043 		rsb	r3, r3, #16384
- 128              	.LVL8:
-  42:./Hardware/mt6816.c ****     rawdata = AngleIn17bits;
- 129              		.loc 1 42 5 is_stmt 1 view .LVU18
- 130              		.loc 1 42 13 is_stmt 0 view .LVU19
- 131 0046 0C4A     		ldr	r2, .L7+12
- 132 0048 1360     		str	r3, [r2]
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 4
+  84              		.section	.text.mt6816_init,"ax",%progbits
+  85              		.align	1
+  86              		.global	mt6816_init
+  87              		.syntax unified
+  88              		.thumb
+  89              		.thumb_func
+  91              	mt6816_init:
+  92              	.LFB330:
+  34:./Hardware/mt6816.c **** 
+  35:./Hardware/mt6816.c **** void mt6816_init(void)
+  36:./Hardware/mt6816.c **** {
+  93              		.loc 1 36 1 is_stmt 1 view -0
+  94              		.cfi_startproc
+  95              		@ args = 0, pretend = 0, frame = 0
+  96              		@ frame_needed = 0, uses_anonymous_args = 0
+  97 0000 10B5     		push	{r4, lr}
+  98              	.LCFI0:
+  99              		.cfi_def_cfa_offset 8
+ 100              		.cfi_offset 4, -8
+ 101              		.cfi_offset 14, -4
+ 102 0002 82B0     		sub	sp, sp, #8
+ 103              	.LCFI1:
+ 104              		.cfi_def_cfa_offset 16
+  37:./Hardware/mt6816.c ****     for (uint8_t i = 0; i < 10; i++)
+ 105              		.loc 1 37 5 view .LVU19
+ 106              	.LBB2:
+ 107              		.loc 1 37 10 view .LVU20
+ 108              	.LVL4:
+ 109              		.loc 1 37 18 is_stmt 0 view .LVU21
+ 110 0004 0024     		movs	r4, #0
+ 111              		.loc 1 37 5 view .LVU22
+ 112 0006 18E0     		b	.L5
+ 113              	.LVL5:
+ 114              	.L6:
+  38:./Hardware/mt6816.c ****     {    
+  39:./Hardware/mt6816.c ****         /*mt6816 首次上电读取数据错误*/
+  40:./Hardware/mt6816.c ****         HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
+ 115              		.loc 1 40 9 is_stmt 1 discriminator 3 view .LVU23
+ 116 0008 0022     		movs	r2, #0
+ 117 000a 4FF40041 		mov	r1, #32768
+ 118 000e 4FF09040 		mov	r0, #1207959552
+ 119 0012 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 120              	.LVL6:
+  41:./Hardware/mt6816.c ****         HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xffff);
+ 121              		.loc 1 41 9 discriminator 3 view .LVU24
+ 122 0016 4FF6FF73 		movw	r3, #65535
+ 123 001a 0093     		str	r3, [sp]
+ 124 001c 0323     		movs	r3, #3
+ 125 001e 0F4A     		ldr	r2, .L8
+ 126 0020 0F49     		ldr	r1, .L8+4
+ 127 0022 1048     		ldr	r0, .L8+8
+ 128 0024 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
+ 129              	.LVL7:
+  42:./Hardware/mt6816.c ****         HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
+ 130              		.loc 1 42 9 discriminator 3 view .LVU25
+ 131 0028 0122     		movs	r2, #1
+ 132 002a 4FF40041 		mov	r1, #32768
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccSrinLy.s 			page 4
 
 
-  43:./Hardware/mt6816.c ****     covdata = (AngleIn17bits * 0.00038349f) * (1<<20);
- 133              		.loc 1 43 5 is_stmt 1 view .LVU20
- 134              		.loc 1 43 30 is_stmt 0 view .LVU21
- 135 004a 07EE903A 		vmov	s15, r3	@ int
- 136 004e F8EE677A 		vcvt.f32.u32	s15, s15
- 137 0052 9FED0A7A 		vldr.32	s14, .L7+16
- 138 0056 67EE877A 		vmul.f32	s15, s15, s14
- 139              		.loc 1 43 13 view .LVU22
- 140 005a FEEEC67A 		vcvt.s32.f32	s15, s15, #20
- 141 005e 084B     		ldr	r3, .L7+20
- 142              	.LVL9:
- 143              		.loc 1 43 13 view .LVU23
- 144 0060 C3ED007A 		vstr.32	s15, [r3]	@ int
-  44:./Hardware/mt6816.c ****     return (void*)&sg_mt6816data;
- 145              		.loc 1 44 5 is_stmt 1 view .LVU24
-  45:./Hardware/mt6816.c **** }
- 146              		.loc 1 45 1 is_stmt 0 view .LVU25
- 147 0064 0748     		ldr	r0, .L7+24
- 148 0066 02B0     		add	sp, sp, #8
- 149              	.LCFI3:
- 150              		.cfi_def_cfa_offset 8
- 151              		@ sp needed
- 152 0068 10BD     		pop	{r4, pc}
- 153              	.L8:
- 154 006a 00BF     		.align	2
- 155              	.L7:
- 156 006c 00000000 		.word	.LANCHOR0
- 157 0070 00000000 		.word	.LANCHOR1
- 158 0074 00000000 		.word	hspi1
- 159 0078 00000000 		.word	.LANCHOR2
- 160 007c 280FC939 		.word	969477928
- 161 0080 00000000 		.word	.LANCHOR3
- 162 0084 00000000 		.word	.LANCHOR4
- 163              		.cfi_endproc
- 164              	.LFE331:
- 166              		.section	.text.mt6816_init,"ax",%progbits
- 167              		.align	1
- 168              		.global	mt6816_init
- 169              		.syntax unified
- 170              		.thumb
- 171              		.thumb_func
- 173              	mt6816_init:
- 174              	.LFB332:
-  46:./Hardware/mt6816.c **** 
-  47:./Hardware/mt6816.c **** void mt6816_init(void)
-  48:./Hardware/mt6816.c **** {
- 175              		.loc 1 48 1 is_stmt 1 view -0
- 176              		.cfi_startproc
- 177              		@ args = 0, pretend = 0, frame = 0
- 178              		@ frame_needed = 0, uses_anonymous_args = 0
- 179 0000 10B5     		push	{r4, lr}
- 180              	.LCFI4:
- 181              		.cfi_def_cfa_offset 8
- 182              		.cfi_offset 4, -8
- 183              		.cfi_offset 14, -4
- 184 0002 82B0     		sub	sp, sp, #8
- 185              	.LCFI5:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 5
+ 133 002e 4FF09040 		mov	r0, #1207959552
+ 134 0032 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 135              	.LVL8:
+  37:./Hardware/mt6816.c ****     {    
+ 136              		.loc 1 37 33 discriminator 3 view .LVU26
+  37:./Hardware/mt6816.c ****     {    
+ 137              		.loc 1 37 34 is_stmt 0 discriminator 3 view .LVU27
+ 138 0036 0134     		adds	r4, r4, #1
+ 139              	.LVL9:
+  37:./Hardware/mt6816.c ****     {    
+ 140              		.loc 1 37 34 discriminator 3 view .LVU28
+ 141 0038 E4B2     		uxtb	r4, r4
+ 142              	.LVL10:
+ 143              	.L5:
+  37:./Hardware/mt6816.c ****     {    
+ 144              		.loc 1 37 25 is_stmt 1 discriminator 1 view .LVU29
+  37:./Hardware/mt6816.c ****     {    
+ 145              		.loc 1 37 5 is_stmt 0 discriminator 1 view .LVU30
+ 146 003a 092C     		cmp	r4, #9
+ 147 003c E4D9     		bls	.L6
+ 148              	.LBE2:
+  43:./Hardware/mt6816.c ****     }
+  44:./Hardware/mt6816.c ****     sg_mt6816data.raw_buf = &rawdata;
+ 149              		.loc 1 44 5 is_stmt 1 view .LVU31
+ 150              		.loc 1 44 27 is_stmt 0 view .LVU32
+ 151 003e 0A4B     		ldr	r3, .L8+12
+ 152 0040 0A4A     		ldr	r2, .L8+16
+ 153 0042 1A60     		str	r2, [r3]
+  45:./Hardware/mt6816.c ****     sg_mt6816data.covdata_buf = &covdata;
+ 154              		.loc 1 45 5 is_stmt 1 view .LVU33
+ 155              		.loc 1 45 31 is_stmt 0 view .LVU34
+ 156 0044 0A4A     		ldr	r2, .L8+20
+ 157 0046 5A60     		str	r2, [r3, #4]
+  46:./Hardware/mt6816.c ****     sg_mt6816data.filterdata_buf = &filterdata;
+ 158              		.loc 1 46 5 is_stmt 1 view .LVU35
+ 159              		.loc 1 46 34 is_stmt 0 view .LVU36
+ 160 0048 0A4A     		ldr	r2, .L8+24
+ 161 004a 9A60     		str	r2, [r3, #8]
+  47:./Hardware/mt6816.c **** 
+  48:./Hardware/mt6816.c ****     lowfilter_init(&sg_anglefilter,99);
+ 162              		.loc 1 48 5 is_stmt 1 view .LVU37
+ 163 004c 9FED0A0A 		vldr.32	s0, .L8+28
+ 164 0050 0A48     		ldr	r0, .L8+32
+ 165 0052 FFF7FEFF 		bl	lowfilter_init
+ 166              	.LVL11:
+  49:./Hardware/mt6816.c **** }
+ 167              		.loc 1 49 1 is_stmt 0 view .LVU38
+ 168 0056 02B0     		add	sp, sp, #8
+ 169              	.LCFI2:
+ 170              		.cfi_def_cfa_offset 8
+ 171              		@ sp needed
+ 172 0058 10BD     		pop	{r4, pc}
+ 173              	.LVL12:
+ 174              	.L9:
+ 175              		.loc 1 49 1 view .LVU39
+ 176 005a 00BF     		.align	2
+ 177              	.L8:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccSrinLy.s 			page 5
 
 
- 186              		.cfi_def_cfa_offset 16
-  49:./Hardware/mt6816.c ****     for (uint8_t i = 0; i < 10; i++)
- 187              		.loc 1 49 5 view .LVU27
- 188              	.LBB2:
- 189              		.loc 1 49 10 view .LVU28
- 190              	.LVL10:
- 191              		.loc 1 49 18 is_stmt 0 view .LVU29
- 192 0004 0024     		movs	r4, #0
- 193              		.loc 1 49 5 view .LVU30
- 194 0006 18E0     		b	.L10
- 195              	.LVL11:
- 196              	.L11:
-  50:./Hardware/mt6816.c ****     {    
-  51:./Hardware/mt6816.c ****         /*mt6816 首次上电读取数据错误*/
-  52:./Hardware/mt6816.c ****         HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
- 197              		.loc 1 52 9 is_stmt 1 discriminator 3 view .LVU31
- 198 0008 0022     		movs	r2, #0
- 199 000a 4FF40041 		mov	r1, #32768
- 200 000e 4FF09040 		mov	r0, #1207959552
- 201 0012 FFF7FEFF 		bl	HAL_GPIO_WritePin
- 202              	.LVL12:
-  53:./Hardware/mt6816.c ****         HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xffff);
- 203              		.loc 1 53 9 discriminator 3 view .LVU32
- 204 0016 4FF6FF73 		movw	r3, #65535
- 205 001a 0093     		str	r3, [sp]
- 206 001c 0323     		movs	r3, #3
- 207 001e 0F4A     		ldr	r2, .L13
- 208 0020 0F49     		ldr	r1, .L13+4
- 209 0022 1048     		ldr	r0, .L13+8
- 210 0024 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
- 211              	.LVL13:
-  54:./Hardware/mt6816.c ****         HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
- 212              		.loc 1 54 9 discriminator 3 view .LVU33
- 213 0028 0122     		movs	r2, #1
- 214 002a 4FF40041 		mov	r1, #32768
- 215 002e 4FF09040 		mov	r0, #1207959552
- 216 0032 FFF7FEFF 		bl	HAL_GPIO_WritePin
- 217              	.LVL14:
-  49:./Hardware/mt6816.c ****     {    
- 218              		.loc 1 49 33 discriminator 3 view .LVU34
-  49:./Hardware/mt6816.c ****     {    
- 219              		.loc 1 49 34 is_stmt 0 discriminator 3 view .LVU35
- 220 0036 0134     		adds	r4, r4, #1
- 221              	.LVL15:
-  49:./Hardware/mt6816.c ****     {    
- 222              		.loc 1 49 34 discriminator 3 view .LVU36
- 223 0038 E4B2     		uxtb	r4, r4
- 224              	.LVL16:
- 225              	.L10:
-  49:./Hardware/mt6816.c ****     {    
- 226              		.loc 1 49 25 is_stmt 1 discriminator 1 view .LVU37
-  49:./Hardware/mt6816.c ****     {    
- 227              		.loc 1 49 5 is_stmt 0 discriminator 1 view .LVU38
- 228 003a 092C     		cmp	r4, #9
- 229 003c E4D9     		bls	.L11
- 230              	.LBE2:
-  55:./Hardware/mt6816.c ****     }
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 6
+ 178 005c 00000000 		.word	.LANCHOR0
+ 179 0060 00000000 		.word	.LANCHOR4
+ 180 0064 00000000 		.word	hspi1
+ 181 0068 00000000 		.word	.LANCHOR3
+ 182 006c 00000000 		.word	.LANCHOR1
+ 183 0070 00000000 		.word	.LANCHOR2
+ 184 0074 00000000 		.word	.LANCHOR5
+ 185 0078 0000C642 		.word	1120272384
+ 186 007c 00000000 		.word	.LANCHOR6
+ 187              		.cfi_endproc
+ 188              	.LFE330:
+ 190              		.global	filterdata
+ 191              		.global	covdata
+ 192              		.global	rawdata
+ 193              		.global	Spi_pRxData
+ 194              		.global	Spi_TxData
+ 195              		.section	.bss.Spi_pRxData,"aw",%nobits
+ 196              		.align	2
+ 197              		.set	.LANCHOR0,. + 0
+ 200              	Spi_pRxData:
+ 201 0000 00000000 		.space	4
+ 202              		.section	.bss.covdata,"aw",%nobits
+ 203              		.align	2
+ 204              		.set	.LANCHOR2,. + 0
+ 207              	covdata:
+ 208 0000 00000000 		.space	4
+ 209              		.section	.bss.filterdata,"aw",%nobits
+ 210              		.align	2
+ 211              		.set	.LANCHOR5,. + 0
+ 214              	filterdata:
+ 215 0000 00000000 		.space	4
+ 216              		.section	.bss.rawdata,"aw",%nobits
+ 217              		.align	2
+ 218              		.set	.LANCHOR1,. + 0
+ 221              	rawdata:
+ 222 0000 00000000 		.space	4
+ 223              		.section	.bss.sg_anglefilter,"aw",%nobits
+ 224              		.align	2
+ 225              		.set	.LANCHOR6,. + 0
+ 228              	sg_anglefilter:
+ 229 0000 00000000 		.space	8
+ 229      00000000 
+ 230              		.section	.bss.sg_mt6816data,"aw",%nobits
+ 231              		.align	2
+ 232              		.set	.LANCHOR3,. + 0
+ 235              	sg_mt6816data:
+ 236 0000 00000000 		.space	16
+ 236      00000000 
+ 236      00000000 
+ 236      00000000 
+ 237              		.section	.data.Spi_TxData,"aw"
+ 238              		.align	2
+ 239              		.set	.LANCHOR4,. + 0
+ 242              	Spi_TxData:
+ 243 0000 83848500 		.ascii	"\203\204\205\000"
+ 244              		.text
+ 245              	.Letext0:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccSrinLy.s 			page 6
 
 
-  56:./Hardware/mt6816.c ****     // spi_read();
-  57:./Hardware/mt6816.c ****     sg_mt6816data.raw_buf = &rawdata;
- 231              		.loc 1 57 5 is_stmt 1 view .LVU39
- 232              		.loc 1 57 27 is_stmt 0 view .LVU40
- 233 003e 0A4B     		ldr	r3, .L13+12
- 234 0040 0A4A     		ldr	r2, .L13+16
- 235 0042 1A60     		str	r2, [r3]
-  58:./Hardware/mt6816.c ****     sg_mt6816data.covdata_buf = &covdata;
- 236              		.loc 1 58 5 is_stmt 1 view .LVU41
- 237              		.loc 1 58 31 is_stmt 0 view .LVU42
- 238 0044 0A4A     		ldr	r2, .L13+20
- 239 0046 5A60     		str	r2, [r3, #4]
-  59:./Hardware/mt6816.c ****     sg_mt6816data.filterdata_buf = &filterdata;
- 240              		.loc 1 59 5 is_stmt 1 view .LVU43
- 241              		.loc 1 59 34 is_stmt 0 view .LVU44
- 242 0048 0A4A     		ldr	r2, .L13+24
- 243 004a 9A60     		str	r2, [r3, #8]
-  60:./Hardware/mt6816.c **** 
-  61:./Hardware/mt6816.c ****     lowfilter_init(&sg_anglefilter,99);
- 244              		.loc 1 61 5 is_stmt 1 view .LVU45
- 245 004c 9FED0A0A 		vldr.32	s0, .L13+28
- 246 0050 0A48     		ldr	r0, .L13+32
- 247 0052 FFF7FEFF 		bl	lowfilter_init
- 248              	.LVL17:
-  62:./Hardware/mt6816.c **** }
- 249              		.loc 1 62 1 is_stmt 0 view .LVU46
- 250 0056 02B0     		add	sp, sp, #8
- 251              	.LCFI6:
- 252              		.cfi_def_cfa_offset 8
- 253              		@ sp needed
- 254 0058 10BD     		pop	{r4, pc}
- 255              	.LVL18:
- 256              	.L14:
- 257              		.loc 1 62 1 view .LVU47
- 258 005a 00BF     		.align	2
- 259              	.L13:
- 260 005c 00000000 		.word	.LANCHOR0
- 261 0060 00000000 		.word	.LANCHOR1
- 262 0064 00000000 		.word	hspi1
- 263 0068 00000000 		.word	.LANCHOR4
- 264 006c 00000000 		.word	.LANCHOR2
- 265 0070 00000000 		.word	.LANCHOR3
- 266 0074 00000000 		.word	.LANCHOR5
- 267 0078 0000C642 		.word	1120272384
- 268 007c 00000000 		.word	.LANCHOR6
- 269              		.cfi_endproc
- 270              	.LFE332:
- 272              		.section	.text.HAL_SPI_TxRxCpltCallback,"ax",%progbits
- 273              		.align	1
- 274              		.global	HAL_SPI_TxRxCpltCallback
- 275              		.syntax unified
- 276              		.thumb
- 277              		.thumb_func
- 279              	HAL_SPI_TxRxCpltCallback:
- 280              	.LVL19:
- 281              	.LFB333:
-  63:./Hardware/mt6816.c **** 
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 7
-
-
-  64:./Hardware/mt6816.c **** void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
-  65:./Hardware/mt6816.c **** {
- 282              		.loc 1 65 1 is_stmt 1 view -0
- 283              		.cfi_startproc
- 284              		@ args = 0, pretend = 0, frame = 0
- 285              		@ frame_needed = 0, uses_anonymous_args = 0
- 286              		@ link register save eliminated.
-  66:./Hardware/mt6816.c ****     // spi_read();
-  67:./Hardware/mt6816.c **** }
- 287              		.loc 1 67 1 view .LVU49
- 288 0000 7047     		bx	lr
- 289              		.cfi_endproc
- 290              	.LFE333:
- 292              		.global	filterdata
- 293              		.global	covdata
- 294              		.global	rawdata
- 295              		.section	.bss.Spi_pRxData,"aw",%nobits
- 296              		.align	2
- 297              		.set	.LANCHOR0,. + 0
- 300              	Spi_pRxData:
- 301 0000 00000000 		.space	4
- 302              		.section	.bss.covdata,"aw",%nobits
- 303              		.align	2
- 304              		.set	.LANCHOR3,. + 0
- 307              	covdata:
- 308 0000 00000000 		.space	4
- 309              		.section	.bss.filterdata,"aw",%nobits
- 310              		.align	2
- 311              		.set	.LANCHOR5,. + 0
- 314              	filterdata:
- 315 0000 00000000 		.space	4
- 316              		.section	.bss.rawdata,"aw",%nobits
- 317              		.align	2
- 318              		.set	.LANCHOR2,. + 0
- 321              	rawdata:
- 322 0000 00000000 		.space	4
- 323              		.section	.bss.sg_anglefilter,"aw",%nobits
- 324              		.align	2
- 325              		.set	.LANCHOR6,. + 0
- 328              	sg_anglefilter:
- 329 0000 00000000 		.space	8
- 329      00000000 
- 330              		.section	.bss.sg_mt6816data,"aw",%nobits
- 331              		.align	2
- 332              		.set	.LANCHOR4,. + 0
- 335              	sg_mt6816data:
- 336 0000 00000000 		.space	16
- 336      00000000 
- 336      00000000 
- 336      00000000 
- 337              		.section	.data.Spi_TxData,"aw"
- 338              		.align	2
- 339              		.set	.LANCHOR1,. + 0
- 342              	Spi_TxData:
- 343 0000 83848500 		.ascii	"\203\204\205\000"
- 344              		.text
- 345              	.Letext0:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 8
-
-
- 346              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
- 347              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
- 348              		.file 4 "Drivers/CMSIS/Device/ST/STM32G4xx/Include/stm32g431xx.h"
- 349              		.file 5 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_def.h"
- 350              		.file 6 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_gpio.h"
- 351              		.file 7 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_dma.h"
- 352              		.file 8 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_spi.h"
- 353              		.file 9 "../Common/method/filter.h"
- 354              		.file 10 "Inc/spi.h"
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s 			page 9
+ 246              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+ 247              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+ 248              		.file 4 "Drivers/CMSIS/Device/ST/STM32G4xx/Include/stm32g431xx.h"
+ 249              		.file 5 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_def.h"
+ 250              		.file 6 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_gpio.h"
+ 251              		.file 7 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_dma.h"
+ 252              		.file 8 "Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_spi.h"
+ 253              		.file 9 "../Common/method/filter.h"
+ 254              		.file 10 "Inc/spi.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccSrinLy.s 			page 7
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 mt6816.c
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:20     .text.spi_read:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:26     .text.spi_read:00000000 spi_read
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:62     .text.spi_read:0000002c $d
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:69     .text.mt6816_read:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:75     .text.mt6816_read:00000000 mt6816_read
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:156    .text.mt6816_read:0000006c $d
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:167    .text.mt6816_init:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:173    .text.mt6816_init:00000000 mt6816_init
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:260    .text.mt6816_init:0000005c $d
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:273    .text.HAL_SPI_TxRxCpltCallback:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:279    .text.HAL_SPI_TxRxCpltCallback:00000000 HAL_SPI_TxRxCpltCallback
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:314    .bss.filterdata:00000000 filterdata
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:307    .bss.covdata:00000000 covdata
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:321    .bss.rawdata:00000000 rawdata
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:296    .bss.Spi_pRxData:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:300    .bss.Spi_pRxData:00000000 Spi_pRxData
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:303    .bss.covdata:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:310    .bss.filterdata:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:317    .bss.rawdata:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:324    .bss.sg_anglefilter:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:328    .bss.sg_anglefilter:00000000 sg_anglefilter
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:331    .bss.sg_mt6816data:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:335    .bss.sg_mt6816data:00000000 sg_mt6816data
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:338    .data.Spi_TxData:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccxIrCoi.s:342    .data.Spi_TxData:00000000 Spi_TxData
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:20     .text.mt6816_read:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:26     .text.mt6816_read:00000000 mt6816_read
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:76     .text.mt6816_read:00000038 $d
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:85     .text.mt6816_init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:91     .text.mt6816_init:00000000 mt6816_init
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:178    .text.mt6816_init:0000005c $d
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:214    .bss.filterdata:00000000 filterdata
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:207    .bss.covdata:00000000 covdata
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:221    .bss.rawdata:00000000 rawdata
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:200    .bss.Spi_pRxData:00000000 Spi_pRxData
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:242    .data.Spi_TxData:00000000 Spi_TxData
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:196    .bss.Spi_pRxData:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:203    .bss.covdata:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:210    .bss.filterdata:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:217    .bss.rawdata:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:224    .bss.sg_anglefilter:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:228    .bss.sg_anglefilter:00000000 sg_anglefilter
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:231    .bss.sg_mt6816data:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:235    .bss.sg_mt6816data:00000000 sg_mt6816data
+C:\Users\57308\AppData\Local\Temp\ccSrinLy.s:238    .data.Spi_TxData:00000000 $d
 
 UNDEFINED SYMBOLS
 HAL_GPIO_WritePin
-HAL_SPI_TransmitReceive_DMA
-hspi1
 HAL_SPI_TransmitReceive
 lowfilter_init
+hspi1

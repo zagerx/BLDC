@@ -10,6 +10,8 @@
 #include "filter.h"
 #include "IQmathLib.h"
 #include "debuglog.h"
+#include "perf_counter.h"
+
 #include "board.h"
 
 #ifndef BOARD_MOTORCTRL_MODE

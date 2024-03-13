@@ -40,8 +40,8 @@ build/main.o: Src/main.c Inc/main.h \
  ../Common/debuglog/./debuglog_cfg.h \
  ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
  ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
- Hardware/hardware.h ../Common/Perf_counter/perf_counter.h \
- Drivers/CMSIS/Include/cmsis_compiler.h
+ ../Common/Perf_counter/perf_counter.h \
+ Drivers/CMSIS/Include/cmsis_compiler.h Hardware/hardware.h
 Inc/main.h:
 Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
 Inc/stm32g4xx_hal_conf.h:
@@ -98,6 +98,6 @@ Src/../../BLDCMotor/./motorctrl_cfg.h:
 ../Common/debuglog/./debuglog_cfg.h:
 ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
 ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
-Hardware/hardware.h:
 ../Common/Perf_counter/perf_counter.h:
 Drivers/CMSIS/Include/cmsis_compiler.h:
+Hardware/hardware.h:
