@@ -94,15 +94,10 @@ void sysrunning_process(void)
                 break;
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
-
-                // USER_DEBUG_NORMAL("MCB_V06 SYS Runing\r\n");
                 break;
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
             {
-                // sensor_data_t data;
-                // data = *(sensor_data_t *)sensor_user_read(SENSOR_02);
-                // USER_DEBUG_NORMAL("cur theta %d\r\n",(unsigned short)(data.cov_data*1000));              
                 HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);                
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){

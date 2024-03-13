@@ -101,11 +101,17 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED01_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PEPin PEPin */
-  GPIO_InitStruct.Pin = HALL_V1_Pin|HALL_W1_Pin;
+  /*Configure GPIO pin : PtPin */
+  GPIO_InitStruct.Pin = HALL_V1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  HAL_GPIO_Init(HALL_V1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PtPin */
+  GPIO_InitStruct.Pin = HALL_W1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(HALL_W1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = POWER_MAIN_OFF_Pin;
@@ -125,12 +131,14 @@ void gpio_setencoder_power(void)
 {
   HAL_GPIO_WritePin(VCC5V_OUT_EN_GPIO_Port,VCC5V_OUT_EN_Pin,GPIO_PIN_SET);
 }
+uint8_t test_u,test_v,test_w;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   uint8_t u,v,w;
-  u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
+  // u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
   v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
   w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
+  test_u = u;test_v = v;test_w = w;
   hallsection_update(u,v,w);
 }
 /* USER CODE END 2 */

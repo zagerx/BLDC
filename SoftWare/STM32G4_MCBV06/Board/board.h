@@ -52,9 +52,9 @@ typedef enum{
         #define MOTOR_PAIR                  15.0f
 
         /*Ia = (float)ADC1*(float)(3.3f/4096.0f/RA_S/BETA_);*/
-        #define A_VOLITETOCURRENT_FACTOR    (0.0015f)
-        #define B_VOLITETOCURRENT_FACTOR    (0.0035f)
-        #define C_VOLITETOCURRENT_FACTOR    (0.002f)
+        #define A_VOLITETOCURRENT_FACTOR    (50.0f)
+        #define B_VOLITETOCURRENT_FACTOR    (50.0f)
+        #define C_VOLITETOCURRENT_FACTOR    (50.0f)
 
         #define T_PWM                       (100.0f)
         #define U_DC                        (24.0f)

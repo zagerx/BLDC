@@ -63,8 +63,6 @@ void sensor_process(void)
             if (!(g_sensor.tim % g_sensor_arry[sensor_id].cycle))
             {
                 g_data_arry[sensor_id] = *(sensor_data_t *)g_sensor_arry[sensor_id].pf_read();
-                // USER_DEBUG_NORMAL("data %d %d\r\n",g_data_arry[sensor_id].raw_buf[2],\    
-                //                                     (int)(g_data_arry[sensor_id].covdata_buf[2]));                
             }
         }
         break;    
