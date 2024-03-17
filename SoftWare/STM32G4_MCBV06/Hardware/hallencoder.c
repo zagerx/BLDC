@@ -42,7 +42,6 @@ static unsigned char read_hallsection(unsigned char u,unsigned char v,unsigned c
 void hallsection_update(unsigned char u,unsigned char v,unsigned char w)
 {
 #if(HALLSECTION_UPDATE_MODE == HALLSECTION_UPDATE_TI_MODE)
-
     /*返回扇区编号*/
     sg_cur_hallsection = read_hallsection(u,v,w);
     /*清零编码器*/
@@ -81,10 +80,6 @@ void* hallencoder_readangle(void)
     return (void *)(&sg_hcdata);
 #else //编码器+hall
     test_cnt = tim_encode_readcnt();
-    if (test_cnt >4000)
-    {
-        test_cnt = 0;
-    }
     test_refangle = sg_hall_section[sg_cur_hallsection];
     test_rawangle = test_refangle + (float)test_cnt*ENCODER_STEP;
     // test_rawangle = fmod(test_rawangle,6.28f);

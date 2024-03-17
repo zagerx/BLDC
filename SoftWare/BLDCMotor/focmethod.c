@@ -96,11 +96,11 @@ duty_t _svpwm(float ualpha,float ubeta)
 /*---------------Clark�任------------------------*/
  void _3s_2s(abc_t i_abc,alpbet_t *alp_bet)
 {
-    // alpbet_t i_alphabeta;
-    // alp_bet->alpha = 2.0f/3.0f*(i_abc.a - 1.0f/2.0f*i_abc.b - 1.0f/2.0f*i_abc.c);
-    // alp_bet->beta =  2.0f/3.0f*(sqrt3_2*i_abc.b - sqrt3_2*i_abc.c);
-    alp_bet->alpha = i_abc.a;
-    alp_bet->beta = sqrt3/3.0f * (i_abc.b - i_abc.c);
+    alpbet_t i_alphabeta;
+    alp_bet->alpha = 2.0f/3.0f*(i_abc.a - 1.0f/2.0f*i_abc.b - 1.0f/2.0f*i_abc.c);
+    alp_bet->beta =  2.0f/3.0f*(sqrt3_2*i_abc.b - sqrt3_2*i_abc.c);
+    // alp_bet->alpha = i_abc.a;
+    // alp_bet->beta = sqrt3/3.0f * (i_abc.b - i_abc.c);
 }
 /*-------------------Park�任--------------------------------*/
  void _2s_2r(alpbet_t i_alphabeta,float theta,dq_t *dq)
