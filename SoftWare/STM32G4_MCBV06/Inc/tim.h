@@ -53,7 +53,7 @@ void tim_pwm_enable_noirq(void);
 void tim_tigger_adc(void);
 
 void tim_encode_start(void);
-unsigned short tim_encode_readcnt(void);
+short tim_encode_readcnt(void);
 void tim_encode_writecnt(unsigned short cnt);
 void tim_encode_stop(void);
 /* USER CODE END Prototypes */

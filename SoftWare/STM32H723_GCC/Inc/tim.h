@@ -52,7 +52,7 @@ void tim_pwm_enable(void);
 void tim_set_pwm(float _a,float _b,float _c);
 
 void tim_encode_start(void);
-unsigned short tim_encode_readcnt(void);
+short tim_encode_readcnt(void);
 void tim_encode_writecnt(unsigned short cnt);
 void tim_encode_stop(void);
 /* USER CODE END Prototypes */

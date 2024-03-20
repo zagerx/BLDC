@@ -131,19 +131,53 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     elec_theta += ANGLE_COMPENSATA;
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
+    #if 1
+        #if 0
+            dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
+            alpbet_t uab,uab_q15;            
+            if (sg_motordebug.self_ele_theta > 6.28f)
+            {
+                sg_motordebug.self_ele_theta = 0.0f;
+            }
+            _currmentloop(i_abc,sg_motordebug.self_ele_theta);
+            uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
+            dut01 = _svpwm(uab.alpha,uab.beta);
+            motor_set_pwm(dut01);
+            sg_motordebug.self_ele_theta += 0.001f;                
+        #else
+        static unsigned short cnt = 0;
+            dq_t udq = {0.0f,-0.8f,_IQ15(0.0f),_IQ15(0.8f)};
+            alpbet_t uab,uab_q15;
 
-    dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
-    alpbet_t uab,uab_q15;            
-    if (sg_motordebug.self_ele_theta > 6.28f)
-    {
-        sg_motordebug.self_ele_theta = 0.0f;
-    }
-    // sg_motordebug.self_ele_theta = sg_motordebug.ele_angle;
-    _currmentloop(i_abc,sg_motordebug.self_ele_theta);
-    uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
-    dut01 = _svpwm(uab.alpha,uab.beta);
-    motor_set_pwm(dut01);
-    sg_motordebug.self_ele_theta += 0.001f;  
+                        
+            if (sg_motordebug.self_ele_theta < 0.0f)
+            {
+                cnt++;
+                sg_motordebug.self_ele_theta += _2PI;
+            }
+            if (cnt > MOTOR_PAIR*2)
+            {
+                return;
+            }
+
+            _currmentloop(i_abc,sg_motordebug.self_ele_theta);
+            uab = _2r_2s(udq, sg_motordebug.self_ele_theta);
+            dut01 = _svpwm(uab.alpha,uab.beta);
+            motor_set_pwm(dut01);
+            sg_motordebug.self_ele_theta -= 0.001f;               
+        #endif 
+    #else
+        dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.8f)};
+        alpbet_t uab,uab_q15;
+        #if 0/*闭环控制*/
+            udq = _currmentloop(i_abc,elec_theta - PI/2.0F);
+        #else
+            _currmentloop(i_abc,elec_theta - PI/2.0F);
+        #endif
+        uab = _2r_2s(udq, elec_theta);
+        dut01 = _svpwm(uab.alpha,uab.beta);
+        motor_set_pwm(dut01);
+    #endif
 
 #endif
 
@@ -350,7 +384,7 @@ static float _get_angleoffset(void)
         dut01 = _svpwm(uab.alpha,uab.beta);
         motor_set_pwm(dut01);
         HAL_Delay(500);
-        tim_encode_writecnt(0);
+        tim_encode_writecnt(4095);
         theta = 0.0f;
         motor_disable();
         HAL_Delay(500);
