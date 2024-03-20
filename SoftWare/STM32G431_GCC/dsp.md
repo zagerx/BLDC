@@ -35,5 +35,5 @@ $i_c = cos(\theta + \frac{2}{3}\pi) * e^{-j\frac{2\pi}{3}} = cos(\theta + \frac{
 
     $i_{abc} = \frac{3}{2}e^{\frac{2\pi}{3} \theta j}$
 
-
+$\frac{2}{3}$
 

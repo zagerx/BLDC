@@ -103,6 +103,7 @@ void motortctrl_process(void)
 }
 /*------------周期性被调用----------------*/
 unsigned int test_angletime = 0;
+float per_eleangle = 0.0f;
 void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 {
     float elec_theta,mech_theta;
@@ -248,16 +249,17 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
   }
   test_angletime = nCycleUsed/170;
 
-    #if 1//强拖
+    #if 0//强拖
         {            
             _currmentloop(i_abc,elec_theta);
-            #if 0 //正转
+            #if 1 //正转
             dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.0f)};
             alpbet_t uab,uab_q15;
             if (sg_motordebug.self_ele_theta >= _2PI)
             {
                 sg_motordebug.self_ele_theta -= _2PI;
             }
+            udq.q = sg_motordebug.iq_targe;
             uab = _2r_2s(udq, sg_motordebug.self_ele_theta); 
             dut01 = _svpwm(uab.alpha,uab.beta);
             motor_set_pwm(dut01);
@@ -265,6 +267,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
             #else //反转
             dq_t udq = {0.0f,-1.0f,_IQ15(0.0f),_IQ15(0.0f)};
             alpbet_t uab,uab_q15;
+            udq.q = sg_motordebug.iq_targe;
             if (sg_motordebug.self_ele_theta <= 0.0f)
             {
                 sg_motordebug.self_ele_theta += _2PI;
@@ -279,17 +282,19 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     {
         dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.8f)};
         alpbet_t uab,uab_q15;
-        #if 0/*闭环控制*/
+        #if 1/*闭环控制*/
             udq = _currmentloop(i_abc,elec_theta);
         #else
-            _currmentloop(i_abc,elec_theta);
-            udq.d = 0.0f;
+            _currmentloop(i_abc,elec_theta - PI_2);
+            udq.d = sg_motordebug.id_targe;
             udq.q = sg_motordebug.iq_targe;
         #endif
-        elec_theta = _normalize_angle(elec_theta +PI_2);
-        uab = _2r_2s(udq, elec_theta);
+        // elec_theta = _normalize_angle(elec_theta);
+        // uab = _2r_2s(udq, elec_theta);
+        uab = _2r_2s(udq, per_eleangle);
         uab = _limit_voltagecircle(uab);
         motor_set_pwm(_svpwm(uab.alpha,uab.beta));
+        per_eleangle = elec_theta;
     }
     #endif
 #endif
@@ -322,6 +327,7 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     _tempb = i_abc.b;
     _tempc = i_abc.c;
 #ifdef BOARD_STM32G431
+    /*bac*/
     i_abc.a = _tempb;
     i_abc.b = _tempa;
     i_abc.c = _tempc;
