@@ -41,6 +41,9 @@ extern SPI_HandleTypeDef hspi1;
 void MX_SPI1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+void SPI_DMA_Start(void);
+void SPI_DMA_Transfer(void);
+
 
 /* USER CODE END Prototypes */
 

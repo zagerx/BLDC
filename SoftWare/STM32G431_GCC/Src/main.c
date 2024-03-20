@@ -65,7 +65,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/*--------------ÏµÍ³ï¿½ß³ï¿½-------------------*/
+/*--------------ÝµÝ³ï¿½ß³ï¿½-------------------*/
 #define SYSRUNNING_PERCI            (1)
 #define DELAY_1MS                   (1)/SYSRUNNING_PERCI
 #define DELAY_2MS                   (2)/SYSRUNNING_PERCI
@@ -150,7 +150,9 @@ int main(void)
   MX_ADC1_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start_IT(&htim2);
   User_Printf_Init();
   USER_DEBUG_NORMAL("hello world\r\n");
   unsigned int nCycleUsed = 0;
@@ -163,6 +165,7 @@ int main(void)
   protocol_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
   USER_DEBUG_NORMAL("SYS start runing\r\n");
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -174,7 +177,6 @@ int main(void)
     hw_sensor_process();
     motortctrl_process();
     protocol_process();
-
     HAL_Delay(1);
     /* USER CODE END WHILE */
 
