@@ -124,6 +124,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
 #ifdef BOARD_STM32G4_MCB
+
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
     mech_theta = _IQ22toF(Q15_Mechtheta);
     raw_angle = mech_theta;
@@ -183,6 +184,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 #endif
 
 #ifdef BOARD_STM32H723
+
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
     mech_theta = _IQ22toF(Q15_Mechtheta);
     raw_angle = mech_theta;
@@ -246,10 +248,10 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
   }
   test_angletime = nCycleUsed/170;
 
-    #if 0//强拖
+    #if 1//强拖
         {            
             _currmentloop(i_abc,elec_theta);
-            
+            #if 0 //正转
             dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.0f)};
             alpbet_t uab,uab_q15;
             if (sg_motordebug.self_ele_theta >= _2PI)
@@ -260,6 +262,18 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
             dut01 = _svpwm(uab.alpha,uab.beta);
             motor_set_pwm(dut01);
             sg_motordebug.self_ele_theta += 0.0031415926f;
+            #else //反转
+            dq_t udq = {0.0f,-1.0f,_IQ15(0.0f),_IQ15(0.0f)};
+            alpbet_t uab,uab_q15;
+            if (sg_motordebug.self_ele_theta <= 0.0f)
+            {
+                sg_motordebug.self_ele_theta += _2PI;
+            }
+            uab = _2r_2s(udq, sg_motordebug.self_ele_theta); 
+            dut01 = _svpwm(uab.alpha,uab.beta);
+            motor_set_pwm(dut01);
+            sg_motordebug.self_ele_theta -= 0.0031415926f;
+            #endif
         }
     #else //使用传感器
     {
