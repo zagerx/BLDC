@@ -38,6 +38,10 @@ static void sg_debug_clear(void)
     sg_motordebug.iq_targe =0.0f;
 }
 alpbet_t _limit_voltagecircle(alpbet_t raw_uab);
+
+static void g431_angletest(abc_t i_abc);
+
+
 motorctrl_t g_Motor1 = {
     .state = MOTOR_INIT,
     .cnt = 0,
@@ -236,13 +240,21 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 #endif
 
 #ifdef BOARD_STM32G431
+    g431_angletest(i_abc);
+#endif
+    return;
+}
 
+static void g431_angletest(abc_t i_abc)
+{
+    float elec_theta,mech_theta;
+    int32_t Q15_Mechtheta;
+    duty_t dut01;        
   unsigned int nCycleUsed = 0;
   __cycleof__("full test",{nCycleUsed = _;}){
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
     mech_theta = _IQ20toF(Q15_Mechtheta);
     mech_theta -= sg_MecThetaOffset;
-    mech_theta += ANGLE_COMPENSATA;
     elec_theta = mech_theta * MOTOR_PAIR;
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
@@ -250,24 +262,24 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
   test_angletime = nCycleUsed/170;
 
     #if 0//强拖
-        {            
+        {
             _currmentloop(i_abc,elec_theta);
-            #if 1 //正转
-            dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.0f)};
+            #if 0 //正转
+            dq_t udq = {0.0f,0.6f,_IQ15(0.0f),_IQ15(0.0f)};
             alpbet_t uab,uab_q15;
             if (sg_motordebug.self_ele_theta >= _2PI)
             {
                 sg_motordebug.self_ele_theta -= _2PI;
             }
-            udq.q = sg_motordebug.iq_targe;
+            // udq.q = sg_motordebug.iq_targe;
             uab = _2r_2s(udq, sg_motordebug.self_ele_theta); 
             dut01 = _svpwm(uab.alpha,uab.beta);
             motor_set_pwm(dut01);
             sg_motordebug.self_ele_theta += 0.0031415926f;
             #else //反转
-            dq_t udq = {0.0f,-1.0f,_IQ15(0.0f),_IQ15(0.0f)};
+            dq_t udq = {0.0f,-0.6f,_IQ15(0.0f),_IQ15(0.0f)};
             alpbet_t uab,uab_q15;
-            udq.q = sg_motordebug.iq_targe;
+            // udq.q = sg_motordebug.iq_targe; 
             if (sg_motordebug.self_ele_theta <= 0.0f)
             {
                 sg_motordebug.self_ele_theta += _2PI;
@@ -282,24 +294,20 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     {
         dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.8f)};
         alpbet_t uab,uab_q15;
-        #if 1/*闭环控制*/
+        #if 0/*闭环控制*/
             udq = _currmentloop(i_abc,elec_theta);
         #else
             _currmentloop(i_abc,elec_theta - PI_2);
             udq.d = sg_motordebug.id_targe;
             udq.q = sg_motordebug.iq_targe;
         #endif
-        // elec_theta = _normalize_angle(elec_theta);
-        // uab = _2r_2s(udq, elec_theta);
-        uab = _2r_2s(udq, per_eleangle);
+        uab = _2r_2s(udq, elec_theta);
         uab = _limit_voltagecircle(uab);
         motor_set_pwm(_svpwm(uab.alpha,uab.beta));
-        per_eleangle = elec_theta;
     }
     #endif
-#endif
-    return;
 }
+
 alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {  
     float max_voltage = D_MAX_VAL;// 这里应该是你的最大允许电压值，例如对于三相电机通常是直流母线电压的根号3/2倍  
     float voltage_magnitude = sqrt(raw_uab.alpha * raw_uab.alpha + raw_uab.beta * raw_uab.beta); // 计算当前矢量的长度（模）  
@@ -328,15 +336,13 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     _tempc = i_abc.c;
 #ifdef BOARD_STM32G431
     /*bac*/
-    i_abc.a = _tempb;
-    i_abc.b = _tempa;
-    i_abc.c = _tempc;
+    i_abc.a = _tempa;
+    i_abc.b = _tempc;
+    i_abc.c = _tempb;
     sg_motordebug.ia = i_abc.a;
     sg_motordebug.ib = i_abc.b;
     sg_motordebug.ic = i_abc.c;
 
-    // cos(ele_theta)
-    // cosf(ele_theta - _2PI/3.0f)*
 #endif
 
 #ifdef BOARD_STM32G4_MCB
@@ -431,7 +437,7 @@ static float _get_angleoffset(void)
         dut01 = _svpwm(uab.alpha,uab.beta);
         motor_set_pwm(dut01);
         HAL_Delay(500);    
-        // motor_disable();
+        motor_disable();
         HAL_Delay(500);
         int32_t Q15_theta;
         int32_t Q_thetaSum = 0;

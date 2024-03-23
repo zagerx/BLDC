@@ -241,6 +241,7 @@ void adc_stop(void)
 */
 #include "perf_counter.h"
 unsigned int offset_buf[3];
+unsigned int test_eleclooptime = 0;
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     unsigned int adc_vale[3];
@@ -251,5 +252,6 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
   __cycleof__("full test",{nCycleUsed = _;}){
     _50uscycle_process(adc_vale,0.0f);
   }
+  test_eleclooptime = nCycleUsed/170;
 }
 /* USER CODE END 1 */
