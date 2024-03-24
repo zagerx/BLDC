@@ -129,7 +129,6 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
     i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
 #ifdef BOARD_STM32G4_MCB
-
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
     mech_theta = _IQ22toF(Q15_Mechtheta);
     raw_angle = mech_theta;
@@ -244,7 +243,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 #endif
     return;
 }
-
+float test_eletheta = 0.0f;
 static void g431_angletest(abc_t i_abc)
 {
     float elec_theta,mech_theta;
@@ -255,7 +254,19 @@ static void g431_angletest(abc_t i_abc)
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
     mech_theta = _IQ20toF(Q15_Mechtheta);
     mech_theta -= sg_MecThetaOffset;
+    if (sg_motordebug.iq_targe < 0.0f)
+    {
+        mech_theta += 0.15f;
+    }
+    if (sg_motordebug.iq_targe > 0.0f)
+    {
+        mech_theta -= 0.1f;
+    }
+    
+    
+   
     elec_theta = mech_theta * MOTOR_PAIR;
+    test_eletheta = elec_theta;
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
   }
@@ -264,7 +275,7 @@ static void g431_angletest(abc_t i_abc)
     #if 0//强拖
         {
             _currmentloop(i_abc,elec_theta);
-            #if 0 //正转
+            #if 1 //正转
             dq_t udq = {0.0f,0.6f,_IQ15(0.0f),_IQ15(0.0f)};
             alpbet_t uab,uab_q15;
             if (sg_motordebug.self_ele_theta >= _2PI)
@@ -272,6 +283,7 @@ static void g431_angletest(abc_t i_abc)
                 sg_motordebug.self_ele_theta -= _2PI;
             }
             // udq.q = sg_motordebug.iq_targe;
+            sg_motordebug.iq_targe = udq.q;
             uab = _2r_2s(udq, sg_motordebug.self_ele_theta); 
             dut01 = _svpwm(uab.alpha,uab.beta);
             motor_set_pwm(dut01);
@@ -294,16 +306,17 @@ static void g431_angletest(abc_t i_abc)
     {
         dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.8f)};
         alpbet_t uab,uab_q15;
-        #if 0/*闭环控制*/
+        #if 1/*闭环控制*/
             udq = _currmentloop(i_abc,elec_theta);
         #else
-            _currmentloop(i_abc,elec_theta - PI_2);
+            _currmentloop(i_abc,elec_theta);
             udq.d = sg_motordebug.id_targe;
             udq.q = sg_motordebug.iq_targe;
         #endif
         uab = _2r_2s(udq, elec_theta);
         uab = _limit_voltagecircle(uab);
         motor_set_pwm(_svpwm(uab.alpha,uab.beta));
+        per_eleangle = elec_theta;
     }
     #endif
 }
@@ -335,10 +348,10 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     _tempb = i_abc.b;
     _tempc = i_abc.c;
 #ifdef BOARD_STM32G431
-    /*bac*/
-    i_abc.a = _tempa;
-    i_abc.b = _tempc;
-    i_abc.c = _tempb;
+    /*bac acb */
+    i_abc.a = -_tempc;
+    i_abc.b = -_tempb;
+    i_abc.c = -_tempa;
     sg_motordebug.ia = i_abc.a;
     sg_motordebug.ib = i_abc.b;
     sg_motordebug.ic = i_abc.c;
@@ -437,7 +450,7 @@ static float _get_angleoffset(void)
         dut01 = _svpwm(uab.alpha,uab.beta);
         motor_set_pwm(dut01);
         HAL_Delay(500);    
-        motor_disable();
+        // motor_disable();
         HAL_Delay(500);
         int32_t Q15_theta;
         int32_t Q_thetaSum = 0;
