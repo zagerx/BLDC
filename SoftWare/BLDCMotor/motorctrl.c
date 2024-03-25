@@ -306,10 +306,10 @@ static void g431_angletest(abc_t i_abc)
     {
         dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.8f)};
         alpbet_t uab,uab_q15;
-        #if 1/*闭环控制*/
+        #if 0/*闭环控制*/
             udq = _currmentloop(i_abc,elec_theta);
         #else
-            _currmentloop(i_abc,elec_theta);
+            _currmentloop(i_abc,per_eleangle);
             udq.d = sg_motordebug.id_targe;
             udq.q = sg_motordebug.iq_targe;
         #endif
@@ -338,6 +338,7 @@ alpbet_t _limit_voltagecircle(alpbet_t raw_uab) {
     return uab;
 }
 #include "arm_math.h"
+float temp_ia,temp_ib,temp_ic;
 dq_t _currmentloop(abc_t i_abc,float ele_theta)
 {
 #if 1
@@ -348,14 +349,19 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     _tempb = i_abc.b;
     _tempc = i_abc.c;
 #ifdef BOARD_STM32G431
-    /*bac acb */
-    i_abc.a = -_tempc;
+
+    /*bac  */
+    i_abc.a = _tempa;
     i_abc.b = -_tempb;
-    i_abc.c = -_tempa;
+    i_abc.c = _tempc;
     sg_motordebug.ia = i_abc.a;
     sg_motordebug.ib = i_abc.b;
     sg_motordebug.ic = i_abc.c;
 
+    // i_abc.a = -cosf(ele_theta);
+    // i_abc.b = -cosf(ele_theta - _2PI/3.0F);
+    // i_abc.c = -cosf(ele_theta + _2PI/3.0F);
+    ele_theta = ele_theta;
 #endif
 
 #ifdef BOARD_STM32G4_MCB
