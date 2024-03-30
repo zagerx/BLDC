@@ -79,7 +79,7 @@ typedef enum{
 
 #ifdef BOARD_MOTORCTRL_MODE
         #define A_ADCCHANNL_OFFSET          (2121)
-        #define B_ADCCHANNL_OFFSET          (2128)
+        #define B_ADCCHANNL_OFFSET          (2138)
         #define C_ADCCHANNL_OFFSET          (2148)
         #define APHASE_SHUNT                 0.05F
         #define BPHASE_SHUNT                 0.05F
@@ -88,7 +88,7 @@ typedef enum{
 
         /*Ia = (float)ADC1*(float)(3.3f/4096.0f/RA_S/BETA_);*/
         #define A_VOLITETOCURRENT_FACTOR    (0.31f)
-        #define B_VOLITETOCURRENT_FACTOR    (0.54f)
+        #define B_VOLITETOCURRENT_FACTOR    (0.35f)
         #define C_VOLITETOCURRENT_FACTOR    (0.348999f)
 
         #define T_PWM                       (100.0f)

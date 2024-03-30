@@ -123,7 +123,8 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 
     Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
     Ib = (float)b1*(float)B_VOLITETOCURRENT_FACTOR;
-    Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
+    // Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
+    Ic = -Ia - Ib;
     abc_t i_abc;
     i_abc.a = lowfilter_cale(&sg_elefilter[0],Ia);
     i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
@@ -198,7 +199,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
 
-    #if 0//强拖       
+    #if 1//强拖       
         #if 1
             dq_t udq = {0.0f,0.8f,_IQ15(0.0f),_IQ15(0.8f)};
             alpbet_t uab,uab_q15;            
@@ -249,28 +250,12 @@ static void g431_angletest(abc_t i_abc)
     float elec_theta,mech_theta;
     int32_t Q15_Mechtheta;
     duty_t dut01;        
-  unsigned int nCycleUsed = 0;
-  __cycleof__("full test",{nCycleUsed = _;}){
     Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
     mech_theta = _IQ20toF(Q15_Mechtheta);
-    mech_theta -= sg_MecThetaOffset;
-    if (sg_motordebug.iq_targe < 0.0f)
-    {
-        mech_theta += 0.15f;
-    }
-    if (sg_motordebug.iq_targe > 0.0f)
-    {
-        mech_theta -= 0.1f;
-    }
-    
-    
-   
+    mech_theta -= sg_MecThetaOffset;//3.53934f;//
     elec_theta = mech_theta * MOTOR_PAIR;
-    test_eletheta = elec_theta;
     elec_theta = _normalize_angle(elec_theta);
     sg_motordebug.ele_angle = elec_theta;
-  }
-  test_angletime = nCycleUsed/170;
 
     #if 0//强拖
         {
@@ -278,18 +263,18 @@ static void g431_angletest(abc_t i_abc)
             #if 1 //正转
             dq_t udq = {0.0f,0.6f,_IQ15(0.0f),_IQ15(0.0f)};
             alpbet_t uab,uab_q15;
-            if (sg_motordebug.self_ele_theta >= _2PI)
+            if (sg_motordebug.self_ele_theta < -_2PI)
             {
-                sg_motordebug.self_ele_theta -= _2PI;
+                sg_motordebug.self_ele_theta += _2PI;
             }
             // udq.q = sg_motordebug.iq_targe;
             sg_motordebug.iq_targe = udq.q;
             uab = _2r_2s(udq, sg_motordebug.self_ele_theta); 
             dut01 = _svpwm(uab.alpha,uab.beta);
             motor_set_pwm(dut01);
-            sg_motordebug.self_ele_theta += 0.0031415926f;
+            sg_motordebug.self_ele_theta -= 0.0011415926f;
             #else //反转
-            dq_t udq = {0.0f,-0.6f,_IQ15(0.0f),_IQ15(0.0f)};
+            dq_t udq = {0.0f,-0.8f,_IQ15(0.0f),_IQ15(0.0f)};
             alpbet_t uab,uab_q15;
             // udq.q = sg_motordebug.iq_targe; 
             if (sg_motordebug.self_ele_theta <= 0.0f)
@@ -299,24 +284,23 @@ static void g431_angletest(abc_t i_abc)
             uab = _2r_2s(udq, sg_motordebug.self_ele_theta); 
             dut01 = _svpwm(uab.alpha,uab.beta);
             motor_set_pwm(dut01);
-            sg_motordebug.self_ele_theta -= 0.0031415926f;
+            sg_motordebug.self_ele_theta -= 0.0041415926f;
             #endif
         }
     #else //使用传感器
     {
-        dq_t udq = {0.0f,1.0f,_IQ15(0.0f),_IQ15(0.8f)};
+        dq_t udq = {0.0f,0.0f,_IQ15(0.0f),_IQ15(0.8f)};
         alpbet_t uab,uab_q15;
         #if 0/*闭环控制*/
             udq = _currmentloop(i_abc,elec_theta);
         #else
-            _currmentloop(i_abc,per_eleangle);
+            _currmentloop(i_abc,elec_theta);
             udq.d = sg_motordebug.id_targe;
             udq.q = sg_motordebug.iq_targe;
         #endif
-        uab = _2r_2s(udq, elec_theta);
+        uab = _2r_2s(udq, elec_theta - PI_2);
         uab = _limit_voltagecircle(uab);
         motor_set_pwm(_svpwm(uab.alpha,uab.beta));
-        per_eleangle = elec_theta;
     }
     #endif
 }
@@ -352,16 +336,11 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
 
     /*bac  */
     i_abc.a = _tempa;
-    i_abc.b = -_tempb;
-    i_abc.c = _tempc;
+    i_abc.b = _tempc;
+    i_abc.c = _tempb;
     sg_motordebug.ia = i_abc.a;
     sg_motordebug.ib = i_abc.b;
     sg_motordebug.ic = i_abc.c;
-
-    // i_abc.a = -cosf(ele_theta);
-    // i_abc.b = -cosf(ele_theta - _2PI/3.0F);
-    // i_abc.c = -cosf(ele_theta + _2PI/3.0F);
-    ele_theta = ele_theta;
 #endif
 
 #ifdef BOARD_STM32G4_MCB
@@ -421,11 +400,13 @@ static void motor_set_pwm(duty_t temp)
 {
     tim_set_pwm(temp._a,temp._b,temp._c);
 }
+
+float temp_offsettheta = 0.0f;
 static float _get_angleoffset(void)
 {
     motor_enable_noirq();
     /*-----------设置alpha/beta坐标系------------------*/
-    alpbet_t uab = {1.0f,0.0f};
+    alpbet_t uab = {0.6f,0.0f};
     duty_t dut01;
     float theta;
 
@@ -452,19 +433,19 @@ static float _get_angleoffset(void)
 
     #ifdef BOARD_STM32G431
         dq_t udq = {0.0f,1.0f};
-        uab = _2r_2s(udq,-PI_2);
+        uab = _2r_2s(udq,0.0);
         dut01 = _svpwm(uab.alpha,uab.beta);
         motor_set_pwm(dut01);
-        HAL_Delay(500);    
+        HAL_Delay(1500);
         // motor_disable();
-        HAL_Delay(500);
+        HAL_Delay(1000);
         int32_t Q15_theta;
         int32_t Q_thetaSum = 0;
         for (uint8_t i = 0; i < 10; i++)
         {
             Q_thetaSum += ((int32_t*)(sensor_user_read(SENSOR_01,EN_SENSORDATA_COV)))[0];
         }
-        Q15_theta = Q_thetaSum/10;        
+        Q15_theta = Q_thetaSum/10;
         theta = _IQ20toF(Q15_theta);
         return theta;
     #endif
