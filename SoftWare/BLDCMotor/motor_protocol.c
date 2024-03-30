@@ -28,6 +28,7 @@ static void* _set_motorstop(char *str,int32_t iq);
 static void* _set_motorstart(char *str,int32_t iq);
 static void* _set_d_kp(char *str,int32_t kp);
 static void* _set_d_ki(char *str,int32_t ki);
+static void* _set_pidpara_cmd(char *str,int32_t param);
 
 static int _findF_from_str(const char *str, float *val) ;
 static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map, size_t mapSize);
@@ -42,6 +43,7 @@ commandmap_t sg_commandmap[] = {
     {"motor_start",5,_set_motorstart},
     {"mc_setd_kp",6,_set_d_kp},
     {"mc_setd_ki",7,_set_d_ki},
+    {"mc_pid_paraset",8,_set_pidpara_cmd},
 };
 static char *Rx_Buf[62] = {0};
 void motorprotocol_getdata(char *data)
@@ -73,7 +75,7 @@ static void* _set_d_kp(char *str,int32_t kp)
     if (!_findF_from_str(str,&val))
     {
         return 0;
-    }   
+    }
     sg_motordebug.pid_d_kp = val;
     return 0;    
 }
@@ -90,6 +92,7 @@ static void* _set_d_ki(char *str,int32_t ki)
 static void* _set_motorstart(char *str,int32_t iq)
 {
     sg_motordebug.motor_stat = 3;
+    sg_motordebug.pid_Q_out = 0xFF;
     return 0;
 }
 static void* _set_motorstop(char *str,int32_t iq)
@@ -119,6 +122,14 @@ static void* _set_tariq(char *str,int32_t iq)
     sg_motordebug.iq_targe = val;
     return 0;    
 }
+
+static void* _set_pidpara_cmd(char *str,int32_t param)
+{
+    sg_motordebug.motor_stat = 4;
+    return 0;
+}
+
+
 // 查找命令的函数  
 static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map, size_t mapSize) {  
     if (str == NULL) {  

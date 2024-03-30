@@ -365,6 +365,7 @@ void tim_pwm_disable(void)
 
 void tim_tigger_adc(void)
 {
+__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(8390));  
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
 

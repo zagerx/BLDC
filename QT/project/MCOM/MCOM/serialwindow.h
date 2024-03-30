@@ -38,6 +38,10 @@ private slots:
     void sendIqCommand();
 
     void onReadSerialData();
+
+    void on_mc_pidset_clicked();
+
+    void sendParamEnter();
 private:
     Ui::serialwindow *ui;
     QSerialPort *serial;

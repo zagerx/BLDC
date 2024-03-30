@@ -139,7 +139,8 @@ void serialwindow::on_pushButton_clicked()
 /*LineEdit*/
 void serialwindow::on_enter_bt_clicked()
 {
-    sendKpCommand();
+    // sendKpCommand();
+    sendIdCommand();
 }
 
 void serialwindow::on_mc_startBt_clicked()
@@ -207,7 +208,14 @@ void serialwindow::sendKcCommand()
         command += pstr;
         serial->write(command.toLatin1());
     }
-    QTimer::singleShot(10, this, SLOT(sendIdCommand()));
+
+    QTimer::singleShot(10, this, SLOT(sendParamEnter()));
+}
+
+void serialwindow::sendParamEnter()
+{
+    QString command = "mc_pid_paraset:";
+    serial->write(command.toLatin1());
 }
 
 void serialwindow::sendIdCommand()
@@ -241,5 +249,13 @@ void serialwindow::sendIqCommand()
         command += pstr;
         serial->write(command.toLatin1());
     }
+}
+
+
+
+
+void serialwindow::on_mc_pidset_clicked()
+{
+    sendKpCommand();
 }
 

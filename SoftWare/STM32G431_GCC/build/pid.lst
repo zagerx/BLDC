@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s 			page 1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNqXTau.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s 			page 1
   47 000e 0361     		str	r3, [r0, #16]	@ float
   10:../Common/method/pid.c ****     pid->satErr = 0.0f;
   48              		.loc 1 10 5 is_stmt 1 view .LVU9
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s 			page 2
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNqXTau.s 			page 2
 
 
   49              		.loc 1 10 17 is_stmt 0 view .LVU10
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s 			page 1
   97              		.section	.text.pid_contrl,"ax",%progbits
   98              		.align	1
   99              		.global	pid_contrl
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s 			page 3
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNqXTau.s 			page 3
 
 
  100              		.syntax unified
@@ -139,79 +139,126 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s 			page 1
   23:../Common/method/pid.c ****     err = tar - cur;
  113              		.loc 1 23 5 view .LVU26
  114              		.loc 1 23 9 is_stmt 0 view .LVU27
- 115 0000 70EE600A 		vsub.f32	s1, s0, s1
+ 115 0000 30EE600A 		vsub.f32	s0, s0, s1
  116              	.LVL5:
   24:../Common/method/pid.c ****     u_p = pid->kp*err;
  117              		.loc 1 24 5 is_stmt 1 view .LVU28
  118              		.loc 1 24 14 is_stmt 0 view .LVU29
- 119 0004 90ED000A 		vldr.32	s0, [r0]
+ 119 0004 D0ED000A 		vldr.32	s1, [r0]
  120              	.LVL6:
  121              		.loc 1 24 9 view .LVU30
- 122 0008 20EE200A 		vmul.f32	s0, s0, s1
+ 122 0008 20EE800A 		vmul.f32	s0, s1, s0
  123              	.LVL7:
   25:../Common/method/pid.c ****     pid->u_i = pid->u_i + pid->ki*u_p + pid->kc*pid->satErr;
  124              		.loc 1 25 5 is_stmt 1 view .LVU31
  125              		.loc 1 25 19 is_stmt 0 view .LVU32
- 126 000c D0ED047A 		vldr.32	s15, [r0, #16]
+ 126 000c D0ED040A 		vldr.32	s1, [r0, #16]
  127              		.loc 1 25 30 view .LVU33
- 128 0010 90ED017A 		vldr.32	s14, [r0, #4]
+ 128 0010 D0ED017A 		vldr.32	s15, [r0, #4]
  129              		.loc 1 25 34 view .LVU34
- 130 0014 27EE007A 		vmul.f32	s14, s14, s0
+ 130 0014 67EE807A 		vmul.f32	s15, s15, s0
  131              		.loc 1 25 25 view .LVU35
- 132 0018 77EE877A 		vadd.f32	s15, s15, s14
+ 132 0018 70EEA70A 		vadd.f32	s1, s1, s15
  133              		.loc 1 25 44 view .LVU36
- 134 001c 90ED037A 		vldr.32	s14, [r0, #12]
+ 134 001c D0ED037A 		vldr.32	s15, [r0, #12]
  135              		.loc 1 25 52 view .LVU37
- 136 0020 D0ED056A 		vldr.32	s13, [r0, #20]
+ 136 0020 90ED057A 		vldr.32	s14, [r0, #20]
  137              		.loc 1 25 48 view .LVU38
- 138 0024 27EE267A 		vmul.f32	s14, s14, s13
+ 138 0024 67EE877A 		vmul.f32	s15, s15, s14
  139              		.loc 1 25 39 view .LVU39
- 140 0028 77EE877A 		vadd.f32	s15, s15, s14
+ 140 0028 70EEA70A 		vadd.f32	s1, s1, s15
  141              		.loc 1 25 14 view .LVU40
- 142 002c C0ED047A 		vstr.32	s15, [r0, #16]
+ 142 002c C0ED040A 		vstr.32	s1, [r0, #16]
   26:../Common/method/pid.c ****     presat = u_p + pid->u_i;
  143              		.loc 1 26 5 is_stmt 1 view .LVU41
- 144              	.LVL8:
+ 144              		.loc 1 26 12 is_stmt 0 view .LVU42
+ 145 0030 70EE800A 		vadd.f32	s1, s1, s0
+ 146              	.LVL8:
   27:../Common/method/pid.c ****     v_out = presat;
- 145              		.loc 1 27 5 view .LVU42
-  28:../Common/method/pid.c ****     // if(v_out > pid->out_max)
-  29:../Common/method/pid.c ****     // {
-  30:../Common/method/pid.c ****     //     v_out = pid->out_max;
-  31:../Common/method/pid.c ****     //     pid->satErr = v_out - presat;
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s 			page 4
+ 147              		.loc 1 27 5 is_stmt 1 view .LVU43
+  28:../Common/method/pid.c **** 
+  29:../Common/method/pid.c **** 
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNqXTau.s 			page 4
 
 
-  32:../Common/method/pid.c ****     // }
-  33:../Common/method/pid.c ****     // if(v_out < pid->out_min)
-  34:../Common/method/pid.c ****     // {
-  35:../Common/method/pid.c ****     //     v_out = pid->out_min;
-  36:../Common/method/pid.c ****     //     pid->satErr = v_out - presat;
-  37:../Common/method/pid.c ****     // }
-  38:../Common/method/pid.c **** 
-  39:../Common/method/pid.c ****     
-  40:../Common/method/pid.c ****     return v_out;
- 146              		.loc 1 40 5 view .LVU43
-  41:../Common/method/pid.c **** }
- 147              		.loc 1 41 1 is_stmt 0 view .LVU44
- 148 0030 37EE800A 		vadd.f32	s0, s15, s0
- 149              	.LVL9:
- 150              		.loc 1 41 1 view .LVU45
- 151 0034 7047     		bx	lr
- 152              		.cfi_endproc
- 153              	.LFE2:
- 155              		.text
- 156              	.Letext0:
- 157              		.file 2 "../Common/method/./pid.h"
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s 			page 5
+  30:../Common/method/pid.c ****     if(v_out > pid->out_max)
+ 148              		.loc 1 30 5 view .LVU44
+ 149              		.loc 1 30 19 is_stmt 0 view .LVU45
+ 150 0034 038B     		ldrh	r3, [r0, #24]
+ 151 0036 00EE103A 		vmov	s0, r3	@ int
+ 152              	.LVL9:
+ 153              		.loc 1 30 14 view .LVU46
+ 154 003a F8EEC07A 		vcvt.f32.s32	s15, s0
+ 155              		.loc 1 30 7 view .LVU47
+ 156 003e F4EEE07A 		vcmpe.f32	s15, s1
+ 157 0042 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 158 0046 12D5     		bpl	.L11
+  31:../Common/method/pid.c ****     {
+  32:../Common/method/pid.c ****         v_out = pid->out_max;
+ 159              		.loc 1 32 9 is_stmt 1 view .LVU48
+ 160              		.loc 1 32 15 is_stmt 0 view .LVU49
+ 161 0048 B8EE400A 		vcvt.f32.u32	s0, s0
+ 162              	.LVL10:
+ 163              	.L4:
+  33:../Common/method/pid.c ****     }
+  34:../Common/method/pid.c ****     if(v_out < pid->out_min)
+ 164              		.loc 1 34 5 is_stmt 1 view .LVU50
+ 165              		.loc 1 34 19 is_stmt 0 view .LVU51
+ 166 004c 438B     		ldrh	r3, [r0, #26]
+ 167 004e 07EE903A 		vmov	s15, r3	@ int
+ 168              		.loc 1 34 14 view .LVU52
+ 169 0052 B8EEE77A 		vcvt.f32.s32	s14, s15
+ 170              		.loc 1 34 7 view .LVU53
+ 171 0056 B4EEC07A 		vcmpe.f32	s14, s0
+ 172 005a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 173 005e 01DD     		ble	.L6
+  35:../Common/method/pid.c ****     {
+  36:../Common/method/pid.c ****         v_out = pid->out_min;
+ 174              		.loc 1 36 9 is_stmt 1 view .LVU54
+ 175              		.loc 1 36 15 is_stmt 0 view .LVU55
+ 176 0060 B8EE670A 		vcvt.f32.u32	s0, s15
+ 177              	.LVL11:
+ 178              	.L6:
+  37:../Common/method/pid.c ****         // pid->satErr = v_out - presat;
+  38:../Common/method/pid.c ****     }
+  39:../Common/method/pid.c **** 
+  40:../Common/method/pid.c ****         pid->satErr = v_out - presat;
+ 179              		.loc 1 40 9 is_stmt 1 view .LVU56
+ 180              		.loc 1 40 29 is_stmt 0 view .LVU57
+ 181 0064 70EE600A 		vsub.f32	s1, s0, s1
+ 182              	.LVL12:
+ 183              		.loc 1 40 21 view .LVU58
+ 184 0068 C0ED050A 		vstr.32	s1, [r0, #20]
+  41:../Common/method/pid.c ****     
+  42:../Common/method/pid.c ****     return v_out;
+ 185              		.loc 1 42 5 is_stmt 1 view .LVU59
+  43:../Common/method/pid.c **** }
+ 186              		.loc 1 43 1 is_stmt 0 view .LVU60
+ 187 006c 7047     		bx	lr
+ 188              	.LVL13:
+ 189              	.L11:
+  27:../Common/method/pid.c **** 
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNqXTau.s 			page 5
+
+
+ 190              		.loc 1 27 11 view .LVU61
+ 191 006e B0EE600A 		vmov.f32	s0, s1
+ 192 0072 EBE7     		b	.L4
+ 193              		.cfi_endproc
+ 194              	.LFE2:
+ 196              		.text
+ 197              	.Letext0:
+ 198              		.file 2 "../Common/method/./pid.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNqXTau.s 			page 6
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 pid.c
-C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s:20     .text.pid_init:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s:26     .text.pid_init:00000000 pid_init
-C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s:71     .text.pid_reset:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s:77     .text.pid_reset:00000000 pid_reset
-C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s:98     .text.pid_contrl:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc0F5ii4.s:104    .text.pid_contrl:00000000 pid_contrl
+C:\Users\57308\AppData\Local\Temp\ccNqXTau.s:20     .text.pid_init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccNqXTau.s:26     .text.pid_init:00000000 pid_init
+C:\Users\57308\AppData\Local\Temp\ccNqXTau.s:71     .text.pid_reset:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccNqXTau.s:77     .text.pid_reset:00000000 pid_reset
+C:\Users\57308\AppData\Local\Temp\ccNqXTau.s:98     .text.pid_contrl:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccNqXTau.s:104    .text.pid_contrl:00000000 pid_contrl
 
 NO UNDEFINED SYMBOLS
