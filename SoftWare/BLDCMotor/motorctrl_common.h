@@ -16,7 +16,6 @@
 
 typedef struct
 {
-    unsigned char motor_stat;
     float ia;
     float ib;
     float ic;
@@ -52,6 +51,8 @@ typedef struct
     float self_ele_theta;
     int32_t Q15_ele_angle;
     int32_t Q15_mec_angle;
+    int32_t motor_stat;
+
 }motordebug_t;
 
 

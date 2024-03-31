@@ -19,24 +19,20 @@ void pid_reset(pid_cb_t *pid)
 }
 float pid_contrl(pid_cb_t *pid,float tar,float cur)
 {
-    float err = 0.0f,u_p = 0.0f,v_out = 0.0f,presat = 0.0f;
+    float err,u_p,v_out,presat;
     err = tar - cur;
     u_p = pid->kp*err;
     pid->u_i = pid->u_i + pid->ki*u_p + pid->kc*pid->satErr;
-    presat = u_p + pid->u_i;
-    v_out = presat;
-
-
-    if(v_out > pid->out_max)
+    presat = u_p+pid->u_i;
+    if(presat>pid->out_max)
     {
         v_out = pid->out_max;
-    }
-    if(v_out < pid->out_min)
+    }else if(presat < pid->out_min)
     {
         v_out = pid->out_min;
-        // pid->satErr = v_out - presat;
+    }else{
+        v_out = presat;
     }
-
     pid->satErr = v_out - presat;
     
     return v_out;
