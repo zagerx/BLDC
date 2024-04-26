@@ -40,7 +40,7 @@ build/motorctrl.o: ../BLDCMotor/motorctrl.c ../BLDCMotor/./motorctrl.h \
  ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
  ../Common/Perf_counter/perf_counter.h \
  Drivers/CMSIS/Include/cmsis_compiler.h ../BLDCMotor/motorctrl_common.h \
- ../BLDCMotor/./motorctrl_cfg.h Middlewares/ST/ARM/DSP/Inc/arm_math.h
+ ../BLDCMotor/./motorctrl_cfg.h
 ../BLDCMotor/./motorctrl.h:
 ../BLDCMotor/././motorctrl_cfg.h:
 Inc/adc.h:
@@ -94,4 +94,3 @@ Board/board.h:
 Drivers/CMSIS/Include/cmsis_compiler.h:
 ../BLDCMotor/motorctrl_common.h:
 ../BLDCMotor/./motorctrl_cfg.h:
-Middlewares/ST/ARM/DSP/Inc/arm_math.h:

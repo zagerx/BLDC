@@ -42,6 +42,9 @@ private slots:
     void on_mc_pidset_clicked();
 
     void sendParamEnter();
+
+    void on_mc_speed_Bt_clicked();
+
 private:
     Ui::serialwindow *ui;
     QSerialPort *serial;

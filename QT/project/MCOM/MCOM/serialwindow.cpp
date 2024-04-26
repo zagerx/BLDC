@@ -259,3 +259,21 @@ void serialwindow::on_mc_pidset_clicked()
     sendKpCommand();
 }
 
+
+
+void serialwindow::on_mc_speed_Bt_clicked()
+{
+    QLineEdit *line_edit;
+    QString pstr;
+    /*获取iq文本框*/
+    line_edit = ui->Speed_lineEdit;
+    pstr = line_edit->text();
+    if(!pstr.isEmpty())
+    {
+        qDebug() << "send speed";
+        QString command = "mc_tar_speed:";
+        command += pstr;
+        serial->write(command.toLatin1());
+    }
+}
+

@@ -36,11 +36,13 @@ typedef struct
     int32_t Q_id_targe;
     float id_targe;
 
+    float real_speed;
 
     float iq_targe;
     int32_t Q_iq_targe;
     float iq_real;
 
+    float speed_targe;
     float pid_Q_out;
     float Pid_q_kp;
     float pid_q_ki;
@@ -52,7 +54,7 @@ typedef struct
     int32_t Q15_ele_angle;
     int32_t Q15_mec_angle;
     int32_t motor_stat;
-
+    char *motor_statue_To;
 }motordebug_t;
 
 

@@ -46,6 +46,9 @@ public:
     QLabel *label_5;
     QLabel *label_4;
     QPushButton *mc_pidset;
+    QLineEdit *Speed_lineEdit;
+    QLabel *label_6;
+    QPushButton *mc_speed_Bt;
 
     void setupUi(QWidget *serialwindow)
     {
@@ -141,6 +144,15 @@ public:
         mc_pidset = new QPushButton(serialwindow);
         mc_pidset->setObjectName("mc_pidset");
         mc_pidset->setGeometry(QRect(120, 170, 80, 18));
+        Speed_lineEdit = new QLineEdit(serialwindow);
+        Speed_lineEdit->setObjectName("Speed_lineEdit");
+        Speed_lineEdit->setGeometry(QRect(260, 160, 59, 22));
+        label_6 = new QLabel(serialwindow);
+        label_6->setObjectName("label_6");
+        label_6->setGeometry(QRect(230, 160, 29, 23));
+        mc_speed_Bt = new QPushButton(serialwindow);
+        mc_speed_Bt->setObjectName("mc_speed_Bt");
+        mc_speed_Bt->setGeometry(QRect(330, 160, 41, 21));
 
         retranslateUi(serialwindow);
 
@@ -164,6 +176,8 @@ public:
         label_5->setText(QCoreApplication::translate("serialwindow", "tar id", nullptr));
         label_4->setText(QCoreApplication::translate("serialwindow", "tar iq", nullptr));
         mc_pidset->setText(QCoreApplication::translate("serialwindow", "PID\345\217\202\346\225\260\347\241\256\350\256\244", nullptr));
+        label_6->setText(QCoreApplication::translate("serialwindow", "\351\200\237\345\272\246", nullptr));
+        mc_speed_Bt->setText(QCoreApplication::translate("serialwindow", "\347\241\256\350\256\244", nullptr));
     } // retranslateUi
 
 };
