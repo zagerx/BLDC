@@ -1,0 +1,2586 @@
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"_IQNrmpy.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text._IQ31rmpy,"ax",%progbits
+  20              		.align	1
+  21              		.global	_IQ31rmpy
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	_IQ31rmpy:
+  27              	.LVL0:
+  28              	.LFB262:
+  29              		.file 1 "../Common/IQMath/ti/_IQNrmpy.c"
+   1:../Common/IQMath/ti/_IQNrmpy.c **** /*!****************************************************************************
+   2:../Common/IQMath/ti/_IQNrmpy.c ****  *  @file       _IQNrmpy.c
+   3:../Common/IQMath/ti/_IQNrmpy.c ****  *  @brief      Functions to multiply two IQ numbers, returning the product
+   4:../Common/IQMath/ti/_IQNrmpy.c ****  *  in IQ format. The result is rounded but not saturated, so if the product
+   5:../Common/IQMath/ti/_IQNrmpy.c ****  *  is greater than the minimum or maximum values for the given IQ format, 
+   6:../Common/IQMath/ti/_IQNrmpy.c ****  *  the return value wraps around and produces inaccurate results.
+   7:../Common/IQMath/ti/_IQNrmpy.c ****  *
+   8:../Common/IQMath/ti/_IQNrmpy.c ****  *  <hr>
+   9:../Common/IQMath/ti/_IQNrmpy.c ****  ******************************************************************************/
+  10:../Common/IQMath/ti/_IQNrmpy.c **** 
+  11:../Common/IQMath/ti/_IQNrmpy.c **** #include <stdint.h>
+  12:../Common/IQMath/ti/_IQNrmpy.c **** 
+  13:../Common/IQMath/ti/_IQNrmpy.c **** #include "./support/support.h"
+  14:../Common/IQMath/ti/_IQNrmpy.c **** 
+  15:../Common/IQMath/ti/_IQNrmpy.c **** /**
+  16:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQN type, with rounding. 
+  17:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  18:../Common/IQMath/ti/_IQNrmpy.c ****  * @param iqNInput1       IQN type value input to be multiplied.
+  19:../Common/IQMath/ti/_IQNrmpy.c ****  * @param iqNInput2       IQN type value input to be multiplied.
+  20:../Common/IQMath/ti/_IQNrmpy.c ****  * @param q_value         IQ format for result.
+  21:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  22:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQN type result of the multiplication.
+  23:../Common/IQMath/ti/_IQNrmpy.c ****  */
+  24:../Common/IQMath/ti/_IQNrmpy.c **** #if defined (__TI_COMPILER_VERSION__)
+  25:../Common/IQMath/ti/_IQNrmpy.c ****     #pragma FUNC_ALWAYS_INLINE(__IQNrmpy)
+  26:../Common/IQMath/ti/_IQNrmpy.c **** #elif defined(__IAR_SYSTEMS_ICC__)
+  27:../Common/IQMath/ti/_IQNrmpy.c ****     #pragma inline=forced
+  28:../Common/IQMath/ti/_IQNrmpy.c **** #endif
+  29:../Common/IQMath/ti/_IQNrmpy.c **** __STATIC_INLINE int_fast32_t __IQNrmpy(int_fast32_t iqNInput1, int_fast32_t iqNInput2, const int8_t
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 2
+
+
+  30:../Common/IQMath/ti/_IQNrmpy.c **** {
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     int_fast64_t iqNResult;
+  32:../Common/IQMath/ti/_IQNrmpy.c ****     
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = (int_fast64_t)iqNInput1 * (int_fast64_t)iqNInput2;
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+  36:../Common/IQMath/ti/_IQNrmpy.c ****     
+  37:../Common/IQMath/ti/_IQNrmpy.c ****     return (int_fast32_t)iqNResult;
+  38:../Common/IQMath/ti/_IQNrmpy.c **** }
+  39:../Common/IQMath/ti/_IQNrmpy.c **** 
+  40:../Common/IQMath/ti/_IQNrmpy.c **** /**
+  41:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ31 type, with rounding. 
+  42:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  43:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ31 type value input to be multiplied.
+  44:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ31 type value input to be multiplied.
+  45:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  46:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ31 type result of the multiplication.
+  47:../Common/IQMath/ti/_IQNrmpy.c ****  */
+  48:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ31rmpy(int32_t a, int32_t b)
+  49:../Common/IQMath/ti/_IQNrmpy.c **** {
+  30              		.loc 1 49 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  50:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 31);
+  35              		.loc 1 50 5 view .LVU1
+  36              	.LBB64:
+  37              	.LBI64:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+  38              		.loc 1 29 30 view .LVU2
+  39              	.LBB65:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+  40              		.loc 1 31 5 view .LVU3
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+  41              		.loc 1 33 5 view .LVU4
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+  42              		.loc 1 33 17 is_stmt 0 view .LVU5
+  43 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+  44              		.loc 1 33 43 view .LVU6
+  45 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+  46              		.loc 1 33 15 view .LVU7
+  47 0004 00FB03F3 		mul	r3, r0, r3
+  48 0008 01FB0233 		mla	r3, r1, r2, r3
+  49 000c A0FB0101 		umull	r0, r1, r0, r1
+  50              	.LVL1:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+  51              		.loc 1 34 5 is_stmt 1 view .LVU8
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+  52              		.loc 1 34 15 is_stmt 0 view .LVU9
+  53 0010 10F18040 		adds	r0, r0, #1073741824
+  54              	.LVL2:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+  55              		.loc 1 34 15 view .LVU10
+  56 0014 43EB0101 		adc	r1, r3, r1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 3
+
+
+  57              	.LVL3:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+  58              		.loc 1 35 5 is_stmt 1 view .LVU11
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+  59              		.loc 1 35 15 is_stmt 0 view .LVU12
+  60 0018 C00F     		lsrs	r0, r0, #31
+  61              	.LVL4:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+  62              		.loc 1 37 5 is_stmt 1 view .LVU13
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+  63              		.loc 1 37 5 is_stmt 0 view .LVU14
+  64              	.LBE65:
+  65              	.LBE64:
+  51:../Common/IQMath/ti/_IQNrmpy.c **** }
+  66              		.loc 1 51 1 view .LVU15
+  67 001a 40EA4100 		orr	r0, r0, r1, lsl #1
+  68 001e 7047     		bx	lr
+  69              		.cfi_endproc
+  70              	.LFE262:
+  72              		.section	.text._IQ30rmpy,"ax",%progbits
+  73              		.align	1
+  74              		.global	_IQ30rmpy
+  75              		.syntax unified
+  76              		.thumb
+  77              		.thumb_func
+  79              	_IQ30rmpy:
+  80              	.LVL5:
+  81              	.LFB263:
+  52:../Common/IQMath/ti/_IQNrmpy.c **** /**
+  53:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ30 type, with rounding. 
+  54:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  55:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ30 type value input to be multiplied.
+  56:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ30 type value input to be multiplied.
+  57:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  58:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ30 type result of the multiplication.
+  59:../Common/IQMath/ti/_IQNrmpy.c ****  */
+  60:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ30rmpy(int32_t a, int32_t b)
+  61:../Common/IQMath/ti/_IQNrmpy.c **** {
+  82              		.loc 1 61 1 is_stmt 1 view -0
+  83              		.cfi_startproc
+  84              		@ args = 0, pretend = 0, frame = 0
+  85              		@ frame_needed = 0, uses_anonymous_args = 0
+  86              		@ link register save eliminated.
+  62:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 30);
+  87              		.loc 1 62 5 view .LVU17
+  88              	.LBB66:
+  89              	.LBI66:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+  90              		.loc 1 29 30 view .LVU18
+  91              	.LBB67:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+  92              		.loc 1 31 5 view .LVU19
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+  93              		.loc 1 33 5 view .LVU20
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+  94              		.loc 1 33 17 is_stmt 0 view .LVU21
+  95 0000 C217     		asrs	r2, r0, #31
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 4
+
+
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+  96              		.loc 1 33 43 view .LVU22
+  97 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+  98              		.loc 1 33 15 view .LVU23
+  99 0004 00FB03F3 		mul	r3, r0, r3
+ 100 0008 01FB0233 		mla	r3, r1, r2, r3
+ 101 000c A0FB0101 		umull	r0, r1, r0, r1
+ 102              	.LVL6:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 103              		.loc 1 34 5 is_stmt 1 view .LVU24
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 104              		.loc 1 34 15 is_stmt 0 view .LVU25
+ 105 0010 10F10050 		adds	r0, r0, #536870912
+ 106              	.LVL7:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 107              		.loc 1 34 15 view .LVU26
+ 108 0014 43EB0101 		adc	r1, r3, r1
+ 109              	.LVL8:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 110              		.loc 1 35 5 is_stmt 1 view .LVU27
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 111              		.loc 1 35 15 is_stmt 0 view .LVU28
+ 112 0018 800F     		lsrs	r0, r0, #30
+ 113              	.LVL9:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 114              		.loc 1 37 5 is_stmt 1 view .LVU29
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 115              		.loc 1 37 5 is_stmt 0 view .LVU30
+ 116              	.LBE67:
+ 117              	.LBE66:
+  63:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 118              		.loc 1 63 1 view .LVU31
+ 119 001a 40EA8100 		orr	r0, r0, r1, lsl #2
+ 120 001e 7047     		bx	lr
+ 121              		.cfi_endproc
+ 122              	.LFE263:
+ 124              		.section	.text._IQ29rmpy,"ax",%progbits
+ 125              		.align	1
+ 126              		.global	_IQ29rmpy
+ 127              		.syntax unified
+ 128              		.thumb
+ 129              		.thumb_func
+ 131              	_IQ29rmpy:
+ 132              	.LVL10:
+ 133              	.LFB264:
+  64:../Common/IQMath/ti/_IQNrmpy.c **** /**
+  65:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ29 type, with rounding. 
+  66:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  67:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ29 type value input to be multiplied.
+  68:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ29 type value input to be multiplied.
+  69:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  70:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ29 type result of the multiplication.
+  71:../Common/IQMath/ti/_IQNrmpy.c ****  */
+  72:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ29rmpy(int32_t a, int32_t b)
+  73:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 134              		.loc 1 73 1 is_stmt 1 view -0
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 5
+
+
+ 135              		.cfi_startproc
+ 136              		@ args = 0, pretend = 0, frame = 0
+ 137              		@ frame_needed = 0, uses_anonymous_args = 0
+ 138              		@ link register save eliminated.
+  74:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 29);
+ 139              		.loc 1 74 5 view .LVU33
+ 140              	.LBB68:
+ 141              	.LBI68:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 142              		.loc 1 29 30 view .LVU34
+ 143              	.LBB69:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 144              		.loc 1 31 5 view .LVU35
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 145              		.loc 1 33 5 view .LVU36
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 146              		.loc 1 33 17 is_stmt 0 view .LVU37
+ 147 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 148              		.loc 1 33 43 view .LVU38
+ 149 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 150              		.loc 1 33 15 view .LVU39
+ 151 0004 00FB03F3 		mul	r3, r0, r3
+ 152 0008 01FB0233 		mla	r3, r1, r2, r3
+ 153 000c A0FB0101 		umull	r0, r1, r0, r1
+ 154              	.LVL11:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 155              		.loc 1 34 5 is_stmt 1 view .LVU40
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 156              		.loc 1 34 15 is_stmt 0 view .LVU41
+ 157 0010 10F18050 		adds	r0, r0, #268435456
+ 158              	.LVL12:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 159              		.loc 1 34 15 view .LVU42
+ 160 0014 43EB0101 		adc	r1, r3, r1
+ 161              	.LVL13:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 162              		.loc 1 35 5 is_stmt 1 view .LVU43
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 163              		.loc 1 35 15 is_stmt 0 view .LVU44
+ 164 0018 400F     		lsrs	r0, r0, #29
+ 165              	.LVL14:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 166              		.loc 1 37 5 is_stmt 1 view .LVU45
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 167              		.loc 1 37 5 is_stmt 0 view .LVU46
+ 168              	.LBE69:
+ 169              	.LBE68:
+  75:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 170              		.loc 1 75 1 view .LVU47
+ 171 001a 40EAC100 		orr	r0, r0, r1, lsl #3
+ 172 001e 7047     		bx	lr
+ 173              		.cfi_endproc
+ 174              	.LFE264:
+ 176              		.section	.text._IQ28rmpy,"ax",%progbits
+ 177              		.align	1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 6
+
+
+ 178              		.global	_IQ28rmpy
+ 179              		.syntax unified
+ 180              		.thumb
+ 181              		.thumb_func
+ 183              	_IQ28rmpy:
+ 184              	.LVL15:
+ 185              	.LFB265:
+  76:../Common/IQMath/ti/_IQNrmpy.c **** /**
+  77:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ28 type, with rounding. 
+  78:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  79:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ28 type value input to be multiplied.
+  80:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ28 type value input to be multiplied.
+  81:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  82:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ28 type result of the multiplication.
+  83:../Common/IQMath/ti/_IQNrmpy.c ****  */
+  84:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ28rmpy(int32_t a, int32_t b)
+  85:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 186              		.loc 1 85 1 is_stmt 1 view -0
+ 187              		.cfi_startproc
+ 188              		@ args = 0, pretend = 0, frame = 0
+ 189              		@ frame_needed = 0, uses_anonymous_args = 0
+ 190              		@ link register save eliminated.
+  86:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 28);
+ 191              		.loc 1 86 5 view .LVU49
+ 192              	.LBB70:
+ 193              	.LBI70:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 194              		.loc 1 29 30 view .LVU50
+ 195              	.LBB71:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 196              		.loc 1 31 5 view .LVU51
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 197              		.loc 1 33 5 view .LVU52
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 198              		.loc 1 33 17 is_stmt 0 view .LVU53
+ 199 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 200              		.loc 1 33 43 view .LVU54
+ 201 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 202              		.loc 1 33 15 view .LVU55
+ 203 0004 00FB03F3 		mul	r3, r0, r3
+ 204 0008 01FB0233 		mla	r3, r1, r2, r3
+ 205 000c A0FB0101 		umull	r0, r1, r0, r1
+ 206              	.LVL16:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 207              		.loc 1 34 5 is_stmt 1 view .LVU56
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 208              		.loc 1 34 15 is_stmt 0 view .LVU57
+ 209 0010 10F10060 		adds	r0, r0, #134217728
+ 210              	.LVL17:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 211              		.loc 1 34 15 view .LVU58
+ 212 0014 43EB0101 		adc	r1, r3, r1
+ 213              	.LVL18:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 214              		.loc 1 35 5 is_stmt 1 view .LVU59
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 7
+
+
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 215              		.loc 1 35 15 is_stmt 0 view .LVU60
+ 216 0018 000F     		lsrs	r0, r0, #28
+ 217              	.LVL19:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 218              		.loc 1 37 5 is_stmt 1 view .LVU61
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 219              		.loc 1 37 5 is_stmt 0 view .LVU62
+ 220              	.LBE71:
+ 221              	.LBE70:
+  87:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 222              		.loc 1 87 1 view .LVU63
+ 223 001a 40EA0110 		orr	r0, r0, r1, lsl #4
+ 224 001e 7047     		bx	lr
+ 225              		.cfi_endproc
+ 226              	.LFE265:
+ 228              		.section	.text._IQ27rmpy,"ax",%progbits
+ 229              		.align	1
+ 230              		.global	_IQ27rmpy
+ 231              		.syntax unified
+ 232              		.thumb
+ 233              		.thumb_func
+ 235              	_IQ27rmpy:
+ 236              	.LVL20:
+ 237              	.LFB266:
+  88:../Common/IQMath/ti/_IQNrmpy.c **** /**
+  89:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ27 type, with rounding. 
+  90:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  91:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ27 type value input to be multiplied.
+  92:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ27 type value input to be multiplied.
+  93:../Common/IQMath/ti/_IQNrmpy.c ****  *
+  94:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ27 type result of the multiplication.
+  95:../Common/IQMath/ti/_IQNrmpy.c ****  */
+  96:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ27rmpy(int32_t a, int32_t b)
+  97:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 238              		.loc 1 97 1 is_stmt 1 view -0
+ 239              		.cfi_startproc
+ 240              		@ args = 0, pretend = 0, frame = 0
+ 241              		@ frame_needed = 0, uses_anonymous_args = 0
+ 242              		@ link register save eliminated.
+  98:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 27);
+ 243              		.loc 1 98 5 view .LVU65
+ 244              	.LBB72:
+ 245              	.LBI72:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 246              		.loc 1 29 30 view .LVU66
+ 247              	.LBB73:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 248              		.loc 1 31 5 view .LVU67
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 249              		.loc 1 33 5 view .LVU68
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 250              		.loc 1 33 17 is_stmt 0 view .LVU69
+ 251 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 252              		.loc 1 33 43 view .LVU70
+ 253 0002 CB17     		asrs	r3, r1, #31
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 8
+
+
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 254              		.loc 1 33 15 view .LVU71
+ 255 0004 00FB03F3 		mul	r3, r0, r3
+ 256 0008 01FB0233 		mla	r3, r1, r2, r3
+ 257 000c A0FB0101 		umull	r0, r1, r0, r1
+ 258              	.LVL21:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 259              		.loc 1 34 5 is_stmt 1 view .LVU72
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 260              		.loc 1 34 15 is_stmt 0 view .LVU73
+ 261 0010 10F18060 		adds	r0, r0, #67108864
+ 262              	.LVL22:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 263              		.loc 1 34 15 view .LVU74
+ 264 0014 43EB0101 		adc	r1, r3, r1
+ 265              	.LVL23:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 266              		.loc 1 35 5 is_stmt 1 view .LVU75
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 267              		.loc 1 35 15 is_stmt 0 view .LVU76
+ 268 0018 C00E     		lsrs	r0, r0, #27
+ 269              	.LVL24:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 270              		.loc 1 37 5 is_stmt 1 view .LVU77
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 271              		.loc 1 37 5 is_stmt 0 view .LVU78
+ 272              	.LBE73:
+ 273              	.LBE72:
+  99:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 274              		.loc 1 99 1 view .LVU79
+ 275 001a 40EA4110 		orr	r0, r0, r1, lsl #5
+ 276 001e 7047     		bx	lr
+ 277              		.cfi_endproc
+ 278              	.LFE266:
+ 280              		.section	.text._IQ26rmpy,"ax",%progbits
+ 281              		.align	1
+ 282              		.global	_IQ26rmpy
+ 283              		.syntax unified
+ 284              		.thumb
+ 285              		.thumb_func
+ 287              	_IQ26rmpy:
+ 288              	.LVL25:
+ 289              	.LFB267:
+ 100:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 101:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ26 type, with rounding. 
+ 102:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 103:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ26 type value input to be multiplied.
+ 104:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ26 type value input to be multiplied.
+ 105:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 106:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ26 type result of the multiplication.
+ 107:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 108:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ26rmpy(int32_t a, int32_t b)
+ 109:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 290              		.loc 1 109 1 is_stmt 1 view -0
+ 291              		.cfi_startproc
+ 292              		@ args = 0, pretend = 0, frame = 0
+ 293              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 9
+
+
+ 294              		@ link register save eliminated.
+ 110:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 26);
+ 295              		.loc 1 110 5 view .LVU81
+ 296              	.LBB74:
+ 297              	.LBI74:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 298              		.loc 1 29 30 view .LVU82
+ 299              	.LBB75:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 300              		.loc 1 31 5 view .LVU83
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 301              		.loc 1 33 5 view .LVU84
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 302              		.loc 1 33 17 is_stmt 0 view .LVU85
+ 303 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 304              		.loc 1 33 43 view .LVU86
+ 305 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 306              		.loc 1 33 15 view .LVU87
+ 307 0004 00FB03F3 		mul	r3, r0, r3
+ 308 0008 01FB0233 		mla	r3, r1, r2, r3
+ 309 000c A0FB0101 		umull	r0, r1, r0, r1
+ 310              	.LVL26:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 311              		.loc 1 34 5 is_stmt 1 view .LVU88
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 312              		.loc 1 34 15 is_stmt 0 view .LVU89
+ 313 0010 10F10070 		adds	r0, r0, #33554432
+ 314              	.LVL27:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 315              		.loc 1 34 15 view .LVU90
+ 316 0014 43EB0101 		adc	r1, r3, r1
+ 317              	.LVL28:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 318              		.loc 1 35 5 is_stmt 1 view .LVU91
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 319              		.loc 1 35 15 is_stmt 0 view .LVU92
+ 320 0018 800E     		lsrs	r0, r0, #26
+ 321              	.LVL29:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 322              		.loc 1 37 5 is_stmt 1 view .LVU93
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 323              		.loc 1 37 5 is_stmt 0 view .LVU94
+ 324              	.LBE75:
+ 325              	.LBE74:
+ 111:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 326              		.loc 1 111 1 view .LVU95
+ 327 001a 40EA8110 		orr	r0, r0, r1, lsl #6
+ 328 001e 7047     		bx	lr
+ 329              		.cfi_endproc
+ 330              	.LFE267:
+ 332              		.section	.text._IQ25rmpy,"ax",%progbits
+ 333              		.align	1
+ 334              		.global	_IQ25rmpy
+ 335              		.syntax unified
+ 336              		.thumb
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 10
+
+
+ 337              		.thumb_func
+ 339              	_IQ25rmpy:
+ 340              	.LVL30:
+ 341              	.LFB268:
+ 112:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 113:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ25 type, with rounding. 
+ 114:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 115:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ25 type value input to be multiplied.
+ 116:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ25 type value input to be multiplied.
+ 117:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 118:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ25 type result of the multiplication.
+ 119:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 120:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ25rmpy(int32_t a, int32_t b)
+ 121:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 342              		.loc 1 121 1 is_stmt 1 view -0
+ 343              		.cfi_startproc
+ 344              		@ args = 0, pretend = 0, frame = 0
+ 345              		@ frame_needed = 0, uses_anonymous_args = 0
+ 346              		@ link register save eliminated.
+ 122:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 25);
+ 347              		.loc 1 122 5 view .LVU97
+ 348              	.LBB76:
+ 349              	.LBI76:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 350              		.loc 1 29 30 view .LVU98
+ 351              	.LBB77:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 352              		.loc 1 31 5 view .LVU99
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 353              		.loc 1 33 5 view .LVU100
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 354              		.loc 1 33 17 is_stmt 0 view .LVU101
+ 355 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 356              		.loc 1 33 43 view .LVU102
+ 357 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 358              		.loc 1 33 15 view .LVU103
+ 359 0004 00FB03F3 		mul	r3, r0, r3
+ 360 0008 01FB0233 		mla	r3, r1, r2, r3
+ 361 000c A0FB0101 		umull	r0, r1, r0, r1
+ 362              	.LVL31:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 363              		.loc 1 34 5 is_stmt 1 view .LVU104
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 364              		.loc 1 34 15 is_stmt 0 view .LVU105
+ 365 0010 10F18070 		adds	r0, r0, #16777216
+ 366              	.LVL32:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 367              		.loc 1 34 15 view .LVU106
+ 368 0014 43EB0101 		adc	r1, r3, r1
+ 369              	.LVL33:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 370              		.loc 1 35 5 is_stmt 1 view .LVU107
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 371              		.loc 1 35 15 is_stmt 0 view .LVU108
+ 372 0018 400E     		lsrs	r0, r0, #25
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 11
+
+
+ 373              	.LVL34:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 374              		.loc 1 37 5 is_stmt 1 view .LVU109
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 375              		.loc 1 37 5 is_stmt 0 view .LVU110
+ 376              	.LBE77:
+ 377              	.LBE76:
+ 123:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 378              		.loc 1 123 1 view .LVU111
+ 379 001a 40EAC110 		orr	r0, r0, r1, lsl #7
+ 380 001e 7047     		bx	lr
+ 381              		.cfi_endproc
+ 382              	.LFE268:
+ 384              		.section	.text._IQ24rmpy,"ax",%progbits
+ 385              		.align	1
+ 386              		.global	_IQ24rmpy
+ 387              		.syntax unified
+ 388              		.thumb
+ 389              		.thumb_func
+ 391              	_IQ24rmpy:
+ 392              	.LVL35:
+ 393              	.LFB269:
+ 124:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 125:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ24 type, with rounding. 
+ 126:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 127:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ24 type value input to be multiplied.
+ 128:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ24 type value input to be multiplied.
+ 129:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 130:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ24 type result of the multiplication.
+ 131:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 132:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ24rmpy(int32_t a, int32_t b)
+ 133:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 394              		.loc 1 133 1 is_stmt 1 view -0
+ 395              		.cfi_startproc
+ 396              		@ args = 0, pretend = 0, frame = 0
+ 397              		@ frame_needed = 0, uses_anonymous_args = 0
+ 398              		@ link register save eliminated.
+ 134:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 24);
+ 399              		.loc 1 134 5 view .LVU113
+ 400              	.LBB78:
+ 401              	.LBI78:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 402              		.loc 1 29 30 view .LVU114
+ 403              	.LBB79:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 404              		.loc 1 31 5 view .LVU115
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 405              		.loc 1 33 5 view .LVU116
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 406              		.loc 1 33 17 is_stmt 0 view .LVU117
+ 407 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 408              		.loc 1 33 43 view .LVU118
+ 409 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 410              		.loc 1 33 15 view .LVU119
+ 411 0004 00FB03F3 		mul	r3, r0, r3
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 12
+
+
+ 412 0008 01FB0233 		mla	r3, r1, r2, r3
+ 413 000c A0FB0101 		umull	r0, r1, r0, r1
+ 414              	.LVL36:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 415              		.loc 1 34 5 is_stmt 1 view .LVU120
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 416              		.loc 1 34 15 is_stmt 0 view .LVU121
+ 417 0010 10F50000 		adds	r0, r0, #8388608
+ 418              	.LVL37:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 419              		.loc 1 34 15 view .LVU122
+ 420 0014 43EB0101 		adc	r1, r3, r1
+ 421              	.LVL38:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 422              		.loc 1 35 5 is_stmt 1 view .LVU123
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 423              		.loc 1 35 15 is_stmt 0 view .LVU124
+ 424 0018 000E     		lsrs	r0, r0, #24
+ 425              	.LVL39:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 426              		.loc 1 37 5 is_stmt 1 view .LVU125
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 427              		.loc 1 37 5 is_stmt 0 view .LVU126
+ 428              	.LBE79:
+ 429              	.LBE78:
+ 135:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 430              		.loc 1 135 1 view .LVU127
+ 431 001a 40EA0120 		orr	r0, r0, r1, lsl #8
+ 432 001e 7047     		bx	lr
+ 433              		.cfi_endproc
+ 434              	.LFE269:
+ 436              		.section	.text._IQ23rmpy,"ax",%progbits
+ 437              		.align	1
+ 438              		.global	_IQ23rmpy
+ 439              		.syntax unified
+ 440              		.thumb
+ 441              		.thumb_func
+ 443              	_IQ23rmpy:
+ 444              	.LVL40:
+ 445              	.LFB270:
+ 136:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 137:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ23 type, with rounding. 
+ 138:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 139:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ23 type value input to be multiplied.
+ 140:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ23 type value input to be multiplied.
+ 141:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 142:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ23 type result of the multiplication.
+ 143:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 144:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ23rmpy(int32_t a, int32_t b)
+ 145:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 446              		.loc 1 145 1 is_stmt 1 view -0
+ 447              		.cfi_startproc
+ 448              		@ args = 0, pretend = 0, frame = 0
+ 449              		@ frame_needed = 0, uses_anonymous_args = 0
+ 450              		@ link register save eliminated.
+ 146:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 23);
+ 451              		.loc 1 146 5 view .LVU129
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 13
+
+
+ 452              	.LBB80:
+ 453              	.LBI80:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 454              		.loc 1 29 30 view .LVU130
+ 455              	.LBB81:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 456              		.loc 1 31 5 view .LVU131
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 457              		.loc 1 33 5 view .LVU132
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 458              		.loc 1 33 17 is_stmt 0 view .LVU133
+ 459 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 460              		.loc 1 33 43 view .LVU134
+ 461 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 462              		.loc 1 33 15 view .LVU135
+ 463 0004 00FB03F3 		mul	r3, r0, r3
+ 464 0008 01FB0233 		mla	r3, r1, r2, r3
+ 465 000c A0FB0101 		umull	r0, r1, r0, r1
+ 466              	.LVL41:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 467              		.loc 1 34 5 is_stmt 1 view .LVU136
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 468              		.loc 1 34 15 is_stmt 0 view .LVU137
+ 469 0010 10F58000 		adds	r0, r0, #4194304
+ 470              	.LVL42:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 471              		.loc 1 34 15 view .LVU138
+ 472 0014 43EB0101 		adc	r1, r3, r1
+ 473              	.LVL43:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 474              		.loc 1 35 5 is_stmt 1 view .LVU139
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 475              		.loc 1 35 15 is_stmt 0 view .LVU140
+ 476 0018 C00D     		lsrs	r0, r0, #23
+ 477              	.LVL44:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 478              		.loc 1 37 5 is_stmt 1 view .LVU141
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 479              		.loc 1 37 5 is_stmt 0 view .LVU142
+ 480              	.LBE81:
+ 481              	.LBE80:
+ 147:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 482              		.loc 1 147 1 view .LVU143
+ 483 001a 40EA4120 		orr	r0, r0, r1, lsl #9
+ 484 001e 7047     		bx	lr
+ 485              		.cfi_endproc
+ 486              	.LFE270:
+ 488              		.section	.text._IQ22rmpy,"ax",%progbits
+ 489              		.align	1
+ 490              		.global	_IQ22rmpy
+ 491              		.syntax unified
+ 492              		.thumb
+ 493              		.thumb_func
+ 495              	_IQ22rmpy:
+ 496              	.LVL45:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 14
+
+
+ 497              	.LFB271:
+ 148:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 149:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ22 type, with rounding. 
+ 150:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 151:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ22 type value input to be multiplied.
+ 152:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ22 type value input to be multiplied.
+ 153:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 154:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ22 type result of the multiplication.
+ 155:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 156:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ22rmpy(int32_t a, int32_t b)
+ 157:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 498              		.loc 1 157 1 is_stmt 1 view -0
+ 499              		.cfi_startproc
+ 500              		@ args = 0, pretend = 0, frame = 0
+ 501              		@ frame_needed = 0, uses_anonymous_args = 0
+ 502              		@ link register save eliminated.
+ 158:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 22);
+ 503              		.loc 1 158 5 view .LVU145
+ 504              	.LBB82:
+ 505              	.LBI82:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 506              		.loc 1 29 30 view .LVU146
+ 507              	.LBB83:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 508              		.loc 1 31 5 view .LVU147
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 509              		.loc 1 33 5 view .LVU148
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 510              		.loc 1 33 17 is_stmt 0 view .LVU149
+ 511 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 512              		.loc 1 33 43 view .LVU150
+ 513 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 514              		.loc 1 33 15 view .LVU151
+ 515 0004 00FB03F3 		mul	r3, r0, r3
+ 516 0008 01FB0233 		mla	r3, r1, r2, r3
+ 517 000c A0FB0101 		umull	r0, r1, r0, r1
+ 518              	.LVL46:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 519              		.loc 1 34 5 is_stmt 1 view .LVU152
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 520              		.loc 1 34 15 is_stmt 0 view .LVU153
+ 521 0010 10F50010 		adds	r0, r0, #2097152
+ 522              	.LVL47:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 523              		.loc 1 34 15 view .LVU154
+ 524 0014 43EB0101 		adc	r1, r3, r1
+ 525              	.LVL48:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 526              		.loc 1 35 5 is_stmt 1 view .LVU155
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 527              		.loc 1 35 15 is_stmt 0 view .LVU156
+ 528 0018 800D     		lsrs	r0, r0, #22
+ 529              	.LVL49:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 530              		.loc 1 37 5 is_stmt 1 view .LVU157
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 15
+
+
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 531              		.loc 1 37 5 is_stmt 0 view .LVU158
+ 532              	.LBE83:
+ 533              	.LBE82:
+ 159:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 534              		.loc 1 159 1 view .LVU159
+ 535 001a 40EA8120 		orr	r0, r0, r1, lsl #10
+ 536 001e 7047     		bx	lr
+ 537              		.cfi_endproc
+ 538              	.LFE271:
+ 540              		.section	.text._IQ21rmpy,"ax",%progbits
+ 541              		.align	1
+ 542              		.global	_IQ21rmpy
+ 543              		.syntax unified
+ 544              		.thumb
+ 545              		.thumb_func
+ 547              	_IQ21rmpy:
+ 548              	.LVL50:
+ 549              	.LFB272:
+ 160:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 161:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ21 type, with rounding. 
+ 162:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 163:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ21 type value input to be multiplied.
+ 164:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ21 type value input to be multiplied.
+ 165:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 166:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ21 type result of the multiplication.
+ 167:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 168:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ21rmpy(int32_t a, int32_t b)
+ 169:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 550              		.loc 1 169 1 is_stmt 1 view -0
+ 551              		.cfi_startproc
+ 552              		@ args = 0, pretend = 0, frame = 0
+ 553              		@ frame_needed = 0, uses_anonymous_args = 0
+ 554              		@ link register save eliminated.
+ 170:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 21);
+ 555              		.loc 1 170 5 view .LVU161
+ 556              	.LBB84:
+ 557              	.LBI84:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 558              		.loc 1 29 30 view .LVU162
+ 559              	.LBB85:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 560              		.loc 1 31 5 view .LVU163
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 561              		.loc 1 33 5 view .LVU164
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 562              		.loc 1 33 17 is_stmt 0 view .LVU165
+ 563 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 564              		.loc 1 33 43 view .LVU166
+ 565 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 566              		.loc 1 33 15 view .LVU167
+ 567 0004 00FB03F3 		mul	r3, r0, r3
+ 568 0008 01FB0233 		mla	r3, r1, r2, r3
+ 569 000c A0FB0101 		umull	r0, r1, r0, r1
+ 570              	.LVL51:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 16
+
+
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 571              		.loc 1 34 5 is_stmt 1 view .LVU168
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 572              		.loc 1 34 15 is_stmt 0 view .LVU169
+ 573 0010 10F58010 		adds	r0, r0, #1048576
+ 574              	.LVL52:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 575              		.loc 1 34 15 view .LVU170
+ 576 0014 43EB0101 		adc	r1, r3, r1
+ 577              	.LVL53:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 578              		.loc 1 35 5 is_stmt 1 view .LVU171
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 579              		.loc 1 35 15 is_stmt 0 view .LVU172
+ 580 0018 400D     		lsrs	r0, r0, #21
+ 581              	.LVL54:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 582              		.loc 1 37 5 is_stmt 1 view .LVU173
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 583              		.loc 1 37 5 is_stmt 0 view .LVU174
+ 584              	.LBE85:
+ 585              	.LBE84:
+ 171:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 586              		.loc 1 171 1 view .LVU175
+ 587 001a 40EAC120 		orr	r0, r0, r1, lsl #11
+ 588 001e 7047     		bx	lr
+ 589              		.cfi_endproc
+ 590              	.LFE272:
+ 592              		.section	.text._IQ20rmpy,"ax",%progbits
+ 593              		.align	1
+ 594              		.global	_IQ20rmpy
+ 595              		.syntax unified
+ 596              		.thumb
+ 597              		.thumb_func
+ 599              	_IQ20rmpy:
+ 600              	.LVL55:
+ 601              	.LFB273:
+ 172:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 173:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ20 type, with rounding. 
+ 174:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 175:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ20 type value input to be multiplied.
+ 176:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ20 type value input to be multiplied.
+ 177:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 178:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ20 type result of the multiplication.
+ 179:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 180:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ20rmpy(int32_t a, int32_t b)
+ 181:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 602              		.loc 1 181 1 is_stmt 1 view -0
+ 603              		.cfi_startproc
+ 604              		@ args = 0, pretend = 0, frame = 0
+ 605              		@ frame_needed = 0, uses_anonymous_args = 0
+ 606              		@ link register save eliminated.
+ 182:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 20);
+ 607              		.loc 1 182 5 view .LVU177
+ 608              	.LBB86:
+ 609              	.LBI86:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 17
+
+
+ 610              		.loc 1 29 30 view .LVU178
+ 611              	.LBB87:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 612              		.loc 1 31 5 view .LVU179
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 613              		.loc 1 33 5 view .LVU180
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 614              		.loc 1 33 17 is_stmt 0 view .LVU181
+ 615 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 616              		.loc 1 33 43 view .LVU182
+ 617 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 618              		.loc 1 33 15 view .LVU183
+ 619 0004 00FB03F3 		mul	r3, r0, r3
+ 620 0008 01FB0233 		mla	r3, r1, r2, r3
+ 621 000c A0FB0101 		umull	r0, r1, r0, r1
+ 622              	.LVL56:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 623              		.loc 1 34 5 is_stmt 1 view .LVU184
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 624              		.loc 1 34 15 is_stmt 0 view .LVU185
+ 625 0010 10F50020 		adds	r0, r0, #524288
+ 626              	.LVL57:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 627              		.loc 1 34 15 view .LVU186
+ 628 0014 43EB0101 		adc	r1, r3, r1
+ 629              	.LVL58:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 630              		.loc 1 35 5 is_stmt 1 view .LVU187
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 631              		.loc 1 35 15 is_stmt 0 view .LVU188
+ 632 0018 000D     		lsrs	r0, r0, #20
+ 633              	.LVL59:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 634              		.loc 1 37 5 is_stmt 1 view .LVU189
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 635              		.loc 1 37 5 is_stmt 0 view .LVU190
+ 636              	.LBE87:
+ 637              	.LBE86:
+ 183:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 638              		.loc 1 183 1 view .LVU191
+ 639 001a 40EA0130 		orr	r0, r0, r1, lsl #12
+ 640 001e 7047     		bx	lr
+ 641              		.cfi_endproc
+ 642              	.LFE273:
+ 644              		.section	.text._IQ19rmpy,"ax",%progbits
+ 645              		.align	1
+ 646              		.global	_IQ19rmpy
+ 647              		.syntax unified
+ 648              		.thumb
+ 649              		.thumb_func
+ 651              	_IQ19rmpy:
+ 652              	.LVL60:
+ 653              	.LFB274:
+ 184:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 185:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ19 type, with rounding. 
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 18
+
+
+ 186:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 187:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ19 type value input to be multiplied.
+ 188:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ19 type value input to be multiplied.
+ 189:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 190:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ19 type result of the multiplication.
+ 191:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 192:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ19rmpy(int32_t a, int32_t b)
+ 193:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 654              		.loc 1 193 1 is_stmt 1 view -0
+ 655              		.cfi_startproc
+ 656              		@ args = 0, pretend = 0, frame = 0
+ 657              		@ frame_needed = 0, uses_anonymous_args = 0
+ 658              		@ link register save eliminated.
+ 194:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 19);
+ 659              		.loc 1 194 5 view .LVU193
+ 660              	.LBB88:
+ 661              	.LBI88:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 662              		.loc 1 29 30 view .LVU194
+ 663              	.LBB89:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 664              		.loc 1 31 5 view .LVU195
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 665              		.loc 1 33 5 view .LVU196
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 666              		.loc 1 33 17 is_stmt 0 view .LVU197
+ 667 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 668              		.loc 1 33 43 view .LVU198
+ 669 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 670              		.loc 1 33 15 view .LVU199
+ 671 0004 00FB03F3 		mul	r3, r0, r3
+ 672 0008 01FB0233 		mla	r3, r1, r2, r3
+ 673 000c A0FB0101 		umull	r0, r1, r0, r1
+ 674              	.LVL61:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 675              		.loc 1 34 5 is_stmt 1 view .LVU200
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 676              		.loc 1 34 15 is_stmt 0 view .LVU201
+ 677 0010 10F58020 		adds	r0, r0, #262144
+ 678              	.LVL62:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 679              		.loc 1 34 15 view .LVU202
+ 680 0014 43EB0101 		adc	r1, r3, r1
+ 681              	.LVL63:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 682              		.loc 1 35 5 is_stmt 1 view .LVU203
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 683              		.loc 1 35 15 is_stmt 0 view .LVU204
+ 684 0018 C00C     		lsrs	r0, r0, #19
+ 685              	.LVL64:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 686              		.loc 1 37 5 is_stmt 1 view .LVU205
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 687              		.loc 1 37 5 is_stmt 0 view .LVU206
+ 688              	.LBE89:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 19
+
+
+ 689              	.LBE88:
+ 195:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 690              		.loc 1 195 1 view .LVU207
+ 691 001a 40EA4130 		orr	r0, r0, r1, lsl #13
+ 692 001e 7047     		bx	lr
+ 693              		.cfi_endproc
+ 694              	.LFE274:
+ 696              		.section	.text._IQ18rmpy,"ax",%progbits
+ 697              		.align	1
+ 698              		.global	_IQ18rmpy
+ 699              		.syntax unified
+ 700              		.thumb
+ 701              		.thumb_func
+ 703              	_IQ18rmpy:
+ 704              	.LVL65:
+ 705              	.LFB275:
+ 196:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 197:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ18 type, with rounding. 
+ 198:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 199:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ18 type value input to be multiplied.
+ 200:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ18 type value input to be multiplied.
+ 201:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 202:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ18 type result of the multiplication.
+ 203:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 204:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ18rmpy(int32_t a, int32_t b)
+ 205:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 706              		.loc 1 205 1 is_stmt 1 view -0
+ 707              		.cfi_startproc
+ 708              		@ args = 0, pretend = 0, frame = 0
+ 709              		@ frame_needed = 0, uses_anonymous_args = 0
+ 710              		@ link register save eliminated.
+ 206:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 18);
+ 711              		.loc 1 206 5 view .LVU209
+ 712              	.LBB90:
+ 713              	.LBI90:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 714              		.loc 1 29 30 view .LVU210
+ 715              	.LBB91:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 716              		.loc 1 31 5 view .LVU211
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 717              		.loc 1 33 5 view .LVU212
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 718              		.loc 1 33 17 is_stmt 0 view .LVU213
+ 719 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 720              		.loc 1 33 43 view .LVU214
+ 721 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 722              		.loc 1 33 15 view .LVU215
+ 723 0004 00FB03F3 		mul	r3, r0, r3
+ 724 0008 01FB0233 		mla	r3, r1, r2, r3
+ 725 000c A0FB0101 		umull	r0, r1, r0, r1
+ 726              	.LVL66:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 727              		.loc 1 34 5 is_stmt 1 view .LVU216
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 20
+
+
+ 728              		.loc 1 34 15 is_stmt 0 view .LVU217
+ 729 0010 10F50030 		adds	r0, r0, #131072
+ 730              	.LVL67:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 731              		.loc 1 34 15 view .LVU218
+ 732 0014 43EB0101 		adc	r1, r3, r1
+ 733              	.LVL68:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 734              		.loc 1 35 5 is_stmt 1 view .LVU219
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 735              		.loc 1 35 15 is_stmt 0 view .LVU220
+ 736 0018 800C     		lsrs	r0, r0, #18
+ 737              	.LVL69:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 738              		.loc 1 37 5 is_stmt 1 view .LVU221
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 739              		.loc 1 37 5 is_stmt 0 view .LVU222
+ 740              	.LBE91:
+ 741              	.LBE90:
+ 207:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 742              		.loc 1 207 1 view .LVU223
+ 743 001a 40EA8130 		orr	r0, r0, r1, lsl #14
+ 744 001e 7047     		bx	lr
+ 745              		.cfi_endproc
+ 746              	.LFE275:
+ 748              		.section	.text._IQ17rmpy,"ax",%progbits
+ 749              		.align	1
+ 750              		.global	_IQ17rmpy
+ 751              		.syntax unified
+ 752              		.thumb
+ 753              		.thumb_func
+ 755              	_IQ17rmpy:
+ 756              	.LVL70:
+ 757              	.LFB276:
+ 208:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 209:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ17 type, with rounding. 
+ 210:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 211:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ17 type value input to be multiplied.
+ 212:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ17 type value input to be multiplied.
+ 213:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 214:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ17 type result of the multiplication.
+ 215:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 216:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ17rmpy(int32_t a, int32_t b)
+ 217:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 758              		.loc 1 217 1 is_stmt 1 view -0
+ 759              		.cfi_startproc
+ 760              		@ args = 0, pretend = 0, frame = 0
+ 761              		@ frame_needed = 0, uses_anonymous_args = 0
+ 762              		@ link register save eliminated.
+ 218:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 17);
+ 763              		.loc 1 218 5 view .LVU225
+ 764              	.LBB92:
+ 765              	.LBI92:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 766              		.loc 1 29 30 view .LVU226
+ 767              	.LBB93:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 21
+
+
+ 768              		.loc 1 31 5 view .LVU227
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 769              		.loc 1 33 5 view .LVU228
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 770              		.loc 1 33 17 is_stmt 0 view .LVU229
+ 771 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 772              		.loc 1 33 43 view .LVU230
+ 773 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 774              		.loc 1 33 15 view .LVU231
+ 775 0004 00FB03F3 		mul	r3, r0, r3
+ 776 0008 01FB0233 		mla	r3, r1, r2, r3
+ 777 000c A0FB0101 		umull	r0, r1, r0, r1
+ 778              	.LVL71:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 779              		.loc 1 34 5 is_stmt 1 view .LVU232
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 780              		.loc 1 34 15 is_stmt 0 view .LVU233
+ 781 0010 10F58030 		adds	r0, r0, #65536
+ 782              	.LVL72:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 783              		.loc 1 34 15 view .LVU234
+ 784 0014 43EB0101 		adc	r1, r3, r1
+ 785              	.LVL73:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 786              		.loc 1 35 5 is_stmt 1 view .LVU235
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 787              		.loc 1 35 15 is_stmt 0 view .LVU236
+ 788 0018 400C     		lsrs	r0, r0, #17
+ 789              	.LVL74:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 790              		.loc 1 37 5 is_stmt 1 view .LVU237
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 791              		.loc 1 37 5 is_stmt 0 view .LVU238
+ 792              	.LBE93:
+ 793              	.LBE92:
+ 219:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 794              		.loc 1 219 1 view .LVU239
+ 795 001a 40EAC130 		orr	r0, r0, r1, lsl #15
+ 796 001e 7047     		bx	lr
+ 797              		.cfi_endproc
+ 798              	.LFE276:
+ 800              		.section	.text._IQ16rmpy,"ax",%progbits
+ 801              		.align	1
+ 802              		.global	_IQ16rmpy
+ 803              		.syntax unified
+ 804              		.thumb
+ 805              		.thumb_func
+ 807              	_IQ16rmpy:
+ 808              	.LVL75:
+ 809              	.LFB277:
+ 220:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 221:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ16 type, with rounding. 
+ 222:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 223:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ16 type value input to be multiplied.
+ 224:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ16 type value input to be multiplied.
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 22
+
+
+ 225:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 226:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ16 type result of the multiplication.
+ 227:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 228:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ16rmpy(int32_t a, int32_t b)
+ 229:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 810              		.loc 1 229 1 is_stmt 1 view -0
+ 811              		.cfi_startproc
+ 812              		@ args = 0, pretend = 0, frame = 0
+ 813              		@ frame_needed = 0, uses_anonymous_args = 0
+ 814              		@ link register save eliminated.
+ 230:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 16);
+ 815              		.loc 1 230 5 view .LVU241
+ 816              	.LBB94:
+ 817              	.LBI94:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 818              		.loc 1 29 30 view .LVU242
+ 819              	.LBB95:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 820              		.loc 1 31 5 view .LVU243
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 821              		.loc 1 33 5 view .LVU244
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 822              		.loc 1 33 17 is_stmt 0 view .LVU245
+ 823 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 824              		.loc 1 33 43 view .LVU246
+ 825 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 826              		.loc 1 33 15 view .LVU247
+ 827 0004 00FB03F3 		mul	r3, r0, r3
+ 828 0008 01FB0233 		mla	r3, r1, r2, r3
+ 829 000c A0FB0101 		umull	r0, r1, r0, r1
+ 830              	.LVL76:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 831              		.loc 1 34 5 is_stmt 1 view .LVU248
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 832              		.loc 1 34 15 is_stmt 0 view .LVU249
+ 833 0010 10F50040 		adds	r0, r0, #32768
+ 834              	.LVL77:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 835              		.loc 1 34 15 view .LVU250
+ 836 0014 43EB0101 		adc	r1, r3, r1
+ 837              	.LVL78:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 838              		.loc 1 35 5 is_stmt 1 view .LVU251
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 839              		.loc 1 35 15 is_stmt 0 view .LVU252
+ 840 0018 000C     		lsrs	r0, r0, #16
+ 841              	.LVL79:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 842              		.loc 1 37 5 is_stmt 1 view .LVU253
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 843              		.loc 1 37 5 is_stmt 0 view .LVU254
+ 844              	.LBE95:
+ 845              	.LBE94:
+ 231:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 846              		.loc 1 231 1 view .LVU255
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 23
+
+
+ 847 001a 40EA0140 		orr	r0, r0, r1, lsl #16
+ 848 001e 7047     		bx	lr
+ 849              		.cfi_endproc
+ 850              	.LFE277:
+ 852              		.section	.text._IQ15rmpy,"ax",%progbits
+ 853              		.align	1
+ 854              		.global	_IQ15rmpy
+ 855              		.syntax unified
+ 856              		.thumb
+ 857              		.thumb_func
+ 859              	_IQ15rmpy:
+ 860              	.LVL80:
+ 861              	.LFB278:
+ 232:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 233:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ15 type, with rounding. 
+ 234:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 235:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ15 type value input to be multiplied.
+ 236:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ15 type value input to be multiplied.
+ 237:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 238:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ15 type result of the multiplication.
+ 239:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 240:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ15rmpy(int32_t a, int32_t b)
+ 241:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 862              		.loc 1 241 1 is_stmt 1 view -0
+ 863              		.cfi_startproc
+ 864              		@ args = 0, pretend = 0, frame = 0
+ 865              		@ frame_needed = 0, uses_anonymous_args = 0
+ 866              		@ link register save eliminated.
+ 242:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 15);
+ 867              		.loc 1 242 5 view .LVU257
+ 868              	.LBB96:
+ 869              	.LBI96:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 870              		.loc 1 29 30 view .LVU258
+ 871              	.LBB97:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 872              		.loc 1 31 5 view .LVU259
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 873              		.loc 1 33 5 view .LVU260
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 874              		.loc 1 33 17 is_stmt 0 view .LVU261
+ 875 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 876              		.loc 1 33 43 view .LVU262
+ 877 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 878              		.loc 1 33 15 view .LVU263
+ 879 0004 00FB03F3 		mul	r3, r0, r3
+ 880 0008 01FB0233 		mla	r3, r1, r2, r3
+ 881 000c A0FB0101 		umull	r0, r1, r0, r1
+ 882              	.LVL81:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 883              		.loc 1 34 5 is_stmt 1 view .LVU264
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 884              		.loc 1 34 15 is_stmt 0 view .LVU265
+ 885 0010 10F58040 		adds	r0, r0, #16384
+ 886              	.LVL82:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 24
+
+
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 887              		.loc 1 34 15 view .LVU266
+ 888 0014 43EB0101 		adc	r1, r3, r1
+ 889              	.LVL83:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 890              		.loc 1 35 5 is_stmt 1 view .LVU267
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 891              		.loc 1 35 15 is_stmt 0 view .LVU268
+ 892 0018 C00B     		lsrs	r0, r0, #15
+ 893              	.LVL84:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 894              		.loc 1 37 5 is_stmt 1 view .LVU269
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 895              		.loc 1 37 5 is_stmt 0 view .LVU270
+ 896              	.LBE97:
+ 897              	.LBE96:
+ 243:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 898              		.loc 1 243 1 view .LVU271
+ 899 001a 40EA4140 		orr	r0, r0, r1, lsl #17
+ 900 001e 7047     		bx	lr
+ 901              		.cfi_endproc
+ 902              	.LFE278:
+ 904              		.section	.text._IQ14rmpy,"ax",%progbits
+ 905              		.align	1
+ 906              		.global	_IQ14rmpy
+ 907              		.syntax unified
+ 908              		.thumb
+ 909              		.thumb_func
+ 911              	_IQ14rmpy:
+ 912              	.LVL85:
+ 913              	.LFB279:
+ 244:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 245:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ14 type, with rounding. 
+ 246:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 247:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ14 type value input to be multiplied.
+ 248:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ14 type value input to be multiplied.
+ 249:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 250:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ14 type result of the multiplication.
+ 251:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 252:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ14rmpy(int32_t a, int32_t b)
+ 253:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 914              		.loc 1 253 1 is_stmt 1 view -0
+ 915              		.cfi_startproc
+ 916              		@ args = 0, pretend = 0, frame = 0
+ 917              		@ frame_needed = 0, uses_anonymous_args = 0
+ 918              		@ link register save eliminated.
+ 254:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 14);
+ 919              		.loc 1 254 5 view .LVU273
+ 920              	.LBB98:
+ 921              	.LBI98:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 922              		.loc 1 29 30 view .LVU274
+ 923              	.LBB99:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 924              		.loc 1 31 5 view .LVU275
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 925              		.loc 1 33 5 view .LVU276
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 25
+
+
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 926              		.loc 1 33 17 is_stmt 0 view .LVU277
+ 927 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 928              		.loc 1 33 43 view .LVU278
+ 929 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 930              		.loc 1 33 15 view .LVU279
+ 931 0004 00FB03F3 		mul	r3, r0, r3
+ 932 0008 01FB0233 		mla	r3, r1, r2, r3
+ 933 000c A0FB0101 		umull	r0, r1, r0, r1
+ 934              	.LVL86:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 935              		.loc 1 34 5 is_stmt 1 view .LVU280
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 936              		.loc 1 34 15 is_stmt 0 view .LVU281
+ 937 0010 10F50050 		adds	r0, r0, #8192
+ 938              	.LVL87:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 939              		.loc 1 34 15 view .LVU282
+ 940 0014 43EB0101 		adc	r1, r3, r1
+ 941              	.LVL88:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 942              		.loc 1 35 5 is_stmt 1 view .LVU283
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 943              		.loc 1 35 15 is_stmt 0 view .LVU284
+ 944 0018 800B     		lsrs	r0, r0, #14
+ 945              	.LVL89:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 946              		.loc 1 37 5 is_stmt 1 view .LVU285
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 947              		.loc 1 37 5 is_stmt 0 view .LVU286
+ 948              	.LBE99:
+ 949              	.LBE98:
+ 255:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 950              		.loc 1 255 1 view .LVU287
+ 951 001a 40EA8140 		orr	r0, r0, r1, lsl #18
+ 952 001e 7047     		bx	lr
+ 953              		.cfi_endproc
+ 954              	.LFE279:
+ 956              		.section	.text._IQ13rmpy,"ax",%progbits
+ 957              		.align	1
+ 958              		.global	_IQ13rmpy
+ 959              		.syntax unified
+ 960              		.thumb
+ 961              		.thumb_func
+ 963              	_IQ13rmpy:
+ 964              	.LVL90:
+ 965              	.LFB280:
+ 256:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 257:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ13 type, with rounding. 
+ 258:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 259:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ13 type value input to be multiplied.
+ 260:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ13 type value input to be multiplied.
+ 261:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 262:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ13 type result of the multiplication.
+ 263:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 26
+
+
+ 264:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ13rmpy(int32_t a, int32_t b)
+ 265:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 966              		.loc 1 265 1 is_stmt 1 view -0
+ 967              		.cfi_startproc
+ 968              		@ args = 0, pretend = 0, frame = 0
+ 969              		@ frame_needed = 0, uses_anonymous_args = 0
+ 970              		@ link register save eliminated.
+ 266:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 13);
+ 971              		.loc 1 266 5 view .LVU289
+ 972              	.LBB100:
+ 973              	.LBI100:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 974              		.loc 1 29 30 view .LVU290
+ 975              	.LBB101:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 976              		.loc 1 31 5 view .LVU291
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 977              		.loc 1 33 5 view .LVU292
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 978              		.loc 1 33 17 is_stmt 0 view .LVU293
+ 979 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 980              		.loc 1 33 43 view .LVU294
+ 981 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 982              		.loc 1 33 15 view .LVU295
+ 983 0004 00FB03F3 		mul	r3, r0, r3
+ 984 0008 01FB0233 		mla	r3, r1, r2, r3
+ 985 000c A0FB0101 		umull	r0, r1, r0, r1
+ 986              	.LVL91:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 987              		.loc 1 34 5 is_stmt 1 view .LVU296
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 988              		.loc 1 34 15 is_stmt 0 view .LVU297
+ 989 0010 10F58050 		adds	r0, r0, #4096
+ 990              	.LVL92:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 991              		.loc 1 34 15 view .LVU298
+ 992 0014 43EB0101 		adc	r1, r3, r1
+ 993              	.LVL93:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 994              		.loc 1 35 5 is_stmt 1 view .LVU299
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 995              		.loc 1 35 15 is_stmt 0 view .LVU300
+ 996 0018 400B     		lsrs	r0, r0, #13
+ 997              	.LVL94:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 998              		.loc 1 37 5 is_stmt 1 view .LVU301
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 999              		.loc 1 37 5 is_stmt 0 view .LVU302
+ 1000              	.LBE101:
+ 1001              	.LBE100:
+ 267:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1002              		.loc 1 267 1 view .LVU303
+ 1003 001a 40EAC140 		orr	r0, r0, r1, lsl #19
+ 1004 001e 7047     		bx	lr
+ 1005              		.cfi_endproc
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 27
+
+
+ 1006              	.LFE280:
+ 1008              		.section	.text._IQ12rmpy,"ax",%progbits
+ 1009              		.align	1
+ 1010              		.global	_IQ12rmpy
+ 1011              		.syntax unified
+ 1012              		.thumb
+ 1013              		.thumb_func
+ 1015              	_IQ12rmpy:
+ 1016              	.LVL95:
+ 1017              	.LFB281:
+ 268:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 269:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ12 type, with rounding. 
+ 270:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 271:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ12 type value input to be multiplied.
+ 272:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ12 type value input to be multiplied.
+ 273:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 274:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ12 type result of the multiplication.
+ 275:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 276:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ12rmpy(int32_t a, int32_t b)
+ 277:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1018              		.loc 1 277 1 is_stmt 1 view -0
+ 1019              		.cfi_startproc
+ 1020              		@ args = 0, pretend = 0, frame = 0
+ 1021              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1022              		@ link register save eliminated.
+ 278:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 12);
+ 1023              		.loc 1 278 5 view .LVU305
+ 1024              	.LBB102:
+ 1025              	.LBI102:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1026              		.loc 1 29 30 view .LVU306
+ 1027              	.LBB103:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1028              		.loc 1 31 5 view .LVU307
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1029              		.loc 1 33 5 view .LVU308
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1030              		.loc 1 33 17 is_stmt 0 view .LVU309
+ 1031 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1032              		.loc 1 33 43 view .LVU310
+ 1033 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1034              		.loc 1 33 15 view .LVU311
+ 1035 0004 00FB03F3 		mul	r3, r0, r3
+ 1036 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1037 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1038              	.LVL96:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1039              		.loc 1 34 5 is_stmt 1 view .LVU312
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1040              		.loc 1 34 15 is_stmt 0 view .LVU313
+ 1041 0010 10F50060 		adds	r0, r0, #2048
+ 1042              	.LVL97:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1043              		.loc 1 34 15 view .LVU314
+ 1044 0014 43EB0101 		adc	r1, r3, r1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 28
+
+
+ 1045              	.LVL98:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1046              		.loc 1 35 5 is_stmt 1 view .LVU315
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1047              		.loc 1 35 15 is_stmt 0 view .LVU316
+ 1048 0018 000B     		lsrs	r0, r0, #12
+ 1049              	.LVL99:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1050              		.loc 1 37 5 is_stmt 1 view .LVU317
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1051              		.loc 1 37 5 is_stmt 0 view .LVU318
+ 1052              	.LBE103:
+ 1053              	.LBE102:
+ 279:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1054              		.loc 1 279 1 view .LVU319
+ 1055 001a 40EA0150 		orr	r0, r0, r1, lsl #20
+ 1056 001e 7047     		bx	lr
+ 1057              		.cfi_endproc
+ 1058              	.LFE281:
+ 1060              		.section	.text._IQ11rmpy,"ax",%progbits
+ 1061              		.align	1
+ 1062              		.global	_IQ11rmpy
+ 1063              		.syntax unified
+ 1064              		.thumb
+ 1065              		.thumb_func
+ 1067              	_IQ11rmpy:
+ 1068              	.LVL100:
+ 1069              	.LFB282:
+ 280:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 281:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ11 type, with rounding. 
+ 282:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 283:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ11 type value input to be multiplied.
+ 284:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ11 type value input to be multiplied.
+ 285:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 286:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ11 type result of the multiplication.
+ 287:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 288:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ11rmpy(int32_t a, int32_t b)
+ 289:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1070              		.loc 1 289 1 is_stmt 1 view -0
+ 1071              		.cfi_startproc
+ 1072              		@ args = 0, pretend = 0, frame = 0
+ 1073              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1074              		@ link register save eliminated.
+ 290:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 11);
+ 1075              		.loc 1 290 5 view .LVU321
+ 1076              	.LBB104:
+ 1077              	.LBI104:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1078              		.loc 1 29 30 view .LVU322
+ 1079              	.LBB105:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1080              		.loc 1 31 5 view .LVU323
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1081              		.loc 1 33 5 view .LVU324
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1082              		.loc 1 33 17 is_stmt 0 view .LVU325
+ 1083 0000 C217     		asrs	r2, r0, #31
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 29
+
+
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1084              		.loc 1 33 43 view .LVU326
+ 1085 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1086              		.loc 1 33 15 view .LVU327
+ 1087 0004 00FB03F3 		mul	r3, r0, r3
+ 1088 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1089 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1090              	.LVL101:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1091              		.loc 1 34 5 is_stmt 1 view .LVU328
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1092              		.loc 1 34 15 is_stmt 0 view .LVU329
+ 1093 0010 10F58060 		adds	r0, r0, #1024
+ 1094              	.LVL102:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1095              		.loc 1 34 15 view .LVU330
+ 1096 0014 43EB0101 		adc	r1, r3, r1
+ 1097              	.LVL103:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1098              		.loc 1 35 5 is_stmt 1 view .LVU331
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1099              		.loc 1 35 15 is_stmt 0 view .LVU332
+ 1100 0018 C00A     		lsrs	r0, r0, #11
+ 1101              	.LVL104:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1102              		.loc 1 37 5 is_stmt 1 view .LVU333
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1103              		.loc 1 37 5 is_stmt 0 view .LVU334
+ 1104              	.LBE105:
+ 1105              	.LBE104:
+ 291:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1106              		.loc 1 291 1 view .LVU335
+ 1107 001a 40EA4150 		orr	r0, r0, r1, lsl #21
+ 1108 001e 7047     		bx	lr
+ 1109              		.cfi_endproc
+ 1110              	.LFE282:
+ 1112              		.section	.text._IQ10rmpy,"ax",%progbits
+ 1113              		.align	1
+ 1114              		.global	_IQ10rmpy
+ 1115              		.syntax unified
+ 1116              		.thumb
+ 1117              		.thumb_func
+ 1119              	_IQ10rmpy:
+ 1120              	.LVL105:
+ 1121              	.LFB283:
+ 292:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 293:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ10 type, with rounding. 
+ 294:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 295:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ10 type value input to be multiplied.
+ 296:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ10 type value input to be multiplied.
+ 297:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 298:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ10 type result of the multiplication.
+ 299:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 300:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ10rmpy(int32_t a, int32_t b)
+ 301:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1122              		.loc 1 301 1 is_stmt 1 view -0
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 30
+
+
+ 1123              		.cfi_startproc
+ 1124              		@ args = 0, pretend = 0, frame = 0
+ 1125              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1126              		@ link register save eliminated.
+ 302:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 10);
+ 1127              		.loc 1 302 5 view .LVU337
+ 1128              	.LBB106:
+ 1129              	.LBI106:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1130              		.loc 1 29 30 view .LVU338
+ 1131              	.LBB107:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1132              		.loc 1 31 5 view .LVU339
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1133              		.loc 1 33 5 view .LVU340
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1134              		.loc 1 33 17 is_stmt 0 view .LVU341
+ 1135 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1136              		.loc 1 33 43 view .LVU342
+ 1137 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1138              		.loc 1 33 15 view .LVU343
+ 1139 0004 00FB03F3 		mul	r3, r0, r3
+ 1140 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1141 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1142              	.LVL106:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1143              		.loc 1 34 5 is_stmt 1 view .LVU344
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1144              		.loc 1 34 15 is_stmt 0 view .LVU345
+ 1145 0010 10F50070 		adds	r0, r0, #512
+ 1146              	.LVL107:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1147              		.loc 1 34 15 view .LVU346
+ 1148 0014 43EB0101 		adc	r1, r3, r1
+ 1149              	.LVL108:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1150              		.loc 1 35 5 is_stmt 1 view .LVU347
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1151              		.loc 1 35 15 is_stmt 0 view .LVU348
+ 1152 0018 800A     		lsrs	r0, r0, #10
+ 1153              	.LVL109:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1154              		.loc 1 37 5 is_stmt 1 view .LVU349
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1155              		.loc 1 37 5 is_stmt 0 view .LVU350
+ 1156              	.LBE107:
+ 1157              	.LBE106:
+ 303:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1158              		.loc 1 303 1 view .LVU351
+ 1159 001a 40EA8150 		orr	r0, r0, r1, lsl #22
+ 1160 001e 7047     		bx	lr
+ 1161              		.cfi_endproc
+ 1162              	.LFE283:
+ 1164              		.section	.text._IQ9rmpy,"ax",%progbits
+ 1165              		.align	1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 31
+
+
+ 1166              		.global	_IQ9rmpy
+ 1167              		.syntax unified
+ 1168              		.thumb
+ 1169              		.thumb_func
+ 1171              	_IQ9rmpy:
+ 1172              	.LVL110:
+ 1173              	.LFB284:
+ 304:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 305:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ9 type, with rounding. 
+ 306:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 307:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ9 type value input to be multiplied.
+ 308:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ9 type value input to be multiplied.
+ 309:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 310:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ9 type result of the multiplication.
+ 311:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 312:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ9rmpy(int32_t a, int32_t b)
+ 313:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1174              		.loc 1 313 1 is_stmt 1 view -0
+ 1175              		.cfi_startproc
+ 1176              		@ args = 0, pretend = 0, frame = 0
+ 1177              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1178              		@ link register save eliminated.
+ 314:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 9);
+ 1179              		.loc 1 314 5 view .LVU353
+ 1180              	.LBB108:
+ 1181              	.LBI108:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1182              		.loc 1 29 30 view .LVU354
+ 1183              	.LBB109:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1184              		.loc 1 31 5 view .LVU355
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1185              		.loc 1 33 5 view .LVU356
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1186              		.loc 1 33 17 is_stmt 0 view .LVU357
+ 1187 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1188              		.loc 1 33 43 view .LVU358
+ 1189 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1190              		.loc 1 33 15 view .LVU359
+ 1191 0004 00FB03F3 		mul	r3, r0, r3
+ 1192 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1193 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1194              	.LVL111:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1195              		.loc 1 34 5 is_stmt 1 view .LVU360
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1196              		.loc 1 34 15 is_stmt 0 view .LVU361
+ 1197 0010 10F58070 		adds	r0, r0, #256
+ 1198              	.LVL112:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1199              		.loc 1 34 15 view .LVU362
+ 1200 0014 43EB0101 		adc	r1, r3, r1
+ 1201              	.LVL113:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1202              		.loc 1 35 5 is_stmt 1 view .LVU363
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 32
+
+
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1203              		.loc 1 35 15 is_stmt 0 view .LVU364
+ 1204 0018 400A     		lsrs	r0, r0, #9
+ 1205              	.LVL114:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1206              		.loc 1 37 5 is_stmt 1 view .LVU365
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1207              		.loc 1 37 5 is_stmt 0 view .LVU366
+ 1208              	.LBE109:
+ 1209              	.LBE108:
+ 315:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1210              		.loc 1 315 1 view .LVU367
+ 1211 001a 40EAC150 		orr	r0, r0, r1, lsl #23
+ 1212 001e 7047     		bx	lr
+ 1213              		.cfi_endproc
+ 1214              	.LFE284:
+ 1216              		.section	.text._IQ8rmpy,"ax",%progbits
+ 1217              		.align	1
+ 1218              		.global	_IQ8rmpy
+ 1219              		.syntax unified
+ 1220              		.thumb
+ 1221              		.thumb_func
+ 1223              	_IQ8rmpy:
+ 1224              	.LVL115:
+ 1225              	.LFB285:
+ 316:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 317:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ8 type, with rounding. 
+ 318:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 319:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ8 type value input to be multiplied.
+ 320:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ8 type value input to be multiplied.
+ 321:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 322:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ8 type result of the multiplication.
+ 323:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 324:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ8rmpy(int32_t a, int32_t b)
+ 325:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1226              		.loc 1 325 1 is_stmt 1 view -0
+ 1227              		.cfi_startproc
+ 1228              		@ args = 0, pretend = 0, frame = 0
+ 1229              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1230              		@ link register save eliminated.
+ 326:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 8);
+ 1231              		.loc 1 326 5 view .LVU369
+ 1232              	.LBB110:
+ 1233              	.LBI110:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1234              		.loc 1 29 30 view .LVU370
+ 1235              	.LBB111:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1236              		.loc 1 31 5 view .LVU371
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1237              		.loc 1 33 5 view .LVU372
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1238              		.loc 1 33 17 is_stmt 0 view .LVU373
+ 1239 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1240              		.loc 1 33 43 view .LVU374
+ 1241 0002 CB17     		asrs	r3, r1, #31
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 33
+
+
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1242              		.loc 1 33 15 view .LVU375
+ 1243 0004 00FB03F3 		mul	r3, r0, r3
+ 1244 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1245 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1246              	.LVL116:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1247              		.loc 1 34 5 is_stmt 1 view .LVU376
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1248              		.loc 1 34 15 is_stmt 0 view .LVU377
+ 1249 0010 8030     		adds	r0, r0, #128
+ 1250              	.LVL117:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1251              		.loc 1 34 15 view .LVU378
+ 1252 0012 43EB0101 		adc	r1, r3, r1
+ 1253              	.LVL118:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1254              		.loc 1 35 5 is_stmt 1 view .LVU379
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1255              		.loc 1 35 15 is_stmt 0 view .LVU380
+ 1256 0016 000A     		lsrs	r0, r0, #8
+ 1257              	.LVL119:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1258              		.loc 1 37 5 is_stmt 1 view .LVU381
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1259              		.loc 1 37 5 is_stmt 0 view .LVU382
+ 1260              	.LBE111:
+ 1261              	.LBE110:
+ 327:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1262              		.loc 1 327 1 view .LVU383
+ 1263 0018 40EA0160 		orr	r0, r0, r1, lsl #24
+ 1264 001c 7047     		bx	lr
+ 1265              		.cfi_endproc
+ 1266              	.LFE285:
+ 1268              		.section	.text._IQ7rmpy,"ax",%progbits
+ 1269              		.align	1
+ 1270              		.global	_IQ7rmpy
+ 1271              		.syntax unified
+ 1272              		.thumb
+ 1273              		.thumb_func
+ 1275              	_IQ7rmpy:
+ 1276              	.LVL120:
+ 1277              	.LFB286:
+ 328:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 329:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ7 type, with rounding. 
+ 330:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 331:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ7 type value input to be multiplied.
+ 332:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ7 type value input to be multiplied.
+ 333:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 334:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ7 type result of the multiplication.
+ 335:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 336:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ7rmpy(int32_t a, int32_t b)
+ 337:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1278              		.loc 1 337 1 is_stmt 1 view -0
+ 1279              		.cfi_startproc
+ 1280              		@ args = 0, pretend = 0, frame = 0
+ 1281              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 34
+
+
+ 1282              		@ link register save eliminated.
+ 338:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 7);
+ 1283              		.loc 1 338 5 view .LVU385
+ 1284              	.LBB112:
+ 1285              	.LBI112:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1286              		.loc 1 29 30 view .LVU386
+ 1287              	.LBB113:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1288              		.loc 1 31 5 view .LVU387
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1289              		.loc 1 33 5 view .LVU388
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1290              		.loc 1 33 17 is_stmt 0 view .LVU389
+ 1291 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1292              		.loc 1 33 43 view .LVU390
+ 1293 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1294              		.loc 1 33 15 view .LVU391
+ 1295 0004 00FB03F3 		mul	r3, r0, r3
+ 1296 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1297 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1298              	.LVL121:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1299              		.loc 1 34 5 is_stmt 1 view .LVU392
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1300              		.loc 1 34 15 is_stmt 0 view .LVU393
+ 1301 0010 4030     		adds	r0, r0, #64
+ 1302              	.LVL122:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1303              		.loc 1 34 15 view .LVU394
+ 1304 0012 43EB0101 		adc	r1, r3, r1
+ 1305              	.LVL123:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1306              		.loc 1 35 5 is_stmt 1 view .LVU395
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1307              		.loc 1 35 15 is_stmt 0 view .LVU396
+ 1308 0016 C009     		lsrs	r0, r0, #7
+ 1309              	.LVL124:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1310              		.loc 1 37 5 is_stmt 1 view .LVU397
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1311              		.loc 1 37 5 is_stmt 0 view .LVU398
+ 1312              	.LBE113:
+ 1313              	.LBE112:
+ 339:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1314              		.loc 1 339 1 view .LVU399
+ 1315 0018 40EA4160 		orr	r0, r0, r1, lsl #25
+ 1316 001c 7047     		bx	lr
+ 1317              		.cfi_endproc
+ 1318              	.LFE286:
+ 1320              		.section	.text._IQ6rmpy,"ax",%progbits
+ 1321              		.align	1
+ 1322              		.global	_IQ6rmpy
+ 1323              		.syntax unified
+ 1324              		.thumb
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 35
+
+
+ 1325              		.thumb_func
+ 1327              	_IQ6rmpy:
+ 1328              	.LVL125:
+ 1329              	.LFB287:
+ 340:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 341:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ6 type, with rounding. 
+ 342:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 343:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ6 type value input to be multiplied.
+ 344:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ6 type value input to be multiplied.
+ 345:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 346:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ6 type result of the multiplication.
+ 347:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 348:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ6rmpy(int32_t a, int32_t b)
+ 349:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1330              		.loc 1 349 1 is_stmt 1 view -0
+ 1331              		.cfi_startproc
+ 1332              		@ args = 0, pretend = 0, frame = 0
+ 1333              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1334              		@ link register save eliminated.
+ 350:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 6);
+ 1335              		.loc 1 350 5 view .LVU401
+ 1336              	.LBB114:
+ 1337              	.LBI114:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1338              		.loc 1 29 30 view .LVU402
+ 1339              	.LBB115:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1340              		.loc 1 31 5 view .LVU403
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1341              		.loc 1 33 5 view .LVU404
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1342              		.loc 1 33 17 is_stmt 0 view .LVU405
+ 1343 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1344              		.loc 1 33 43 view .LVU406
+ 1345 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1346              		.loc 1 33 15 view .LVU407
+ 1347 0004 00FB03F3 		mul	r3, r0, r3
+ 1348 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1349 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1350              	.LVL126:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1351              		.loc 1 34 5 is_stmt 1 view .LVU408
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1352              		.loc 1 34 15 is_stmt 0 view .LVU409
+ 1353 0010 2030     		adds	r0, r0, #32
+ 1354              	.LVL127:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1355              		.loc 1 34 15 view .LVU410
+ 1356 0012 43EB0101 		adc	r1, r3, r1
+ 1357              	.LVL128:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1358              		.loc 1 35 5 is_stmt 1 view .LVU411
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1359              		.loc 1 35 15 is_stmt 0 view .LVU412
+ 1360 0016 8009     		lsrs	r0, r0, #6
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 36
+
+
+ 1361              	.LVL129:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1362              		.loc 1 37 5 is_stmt 1 view .LVU413
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1363              		.loc 1 37 5 is_stmt 0 view .LVU414
+ 1364              	.LBE115:
+ 1365              	.LBE114:
+ 351:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1366              		.loc 1 351 1 view .LVU415
+ 1367 0018 40EA8160 		orr	r0, r0, r1, lsl #26
+ 1368 001c 7047     		bx	lr
+ 1369              		.cfi_endproc
+ 1370              	.LFE287:
+ 1372              		.section	.text._IQ5rmpy,"ax",%progbits
+ 1373              		.align	1
+ 1374              		.global	_IQ5rmpy
+ 1375              		.syntax unified
+ 1376              		.thumb
+ 1377              		.thumb_func
+ 1379              	_IQ5rmpy:
+ 1380              	.LVL130:
+ 1381              	.LFB288:
+ 352:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 353:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ5 type, with rounding. 
+ 354:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 355:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ5 type value input to be multiplied.
+ 356:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ5 type value input to be multiplied.
+ 357:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 358:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ5 type result of the multiplication.
+ 359:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 360:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ5rmpy(int32_t a, int32_t b)
+ 361:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1382              		.loc 1 361 1 is_stmt 1 view -0
+ 1383              		.cfi_startproc
+ 1384              		@ args = 0, pretend = 0, frame = 0
+ 1385              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1386              		@ link register save eliminated.
+ 362:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 5);
+ 1387              		.loc 1 362 5 view .LVU417
+ 1388              	.LBB116:
+ 1389              	.LBI116:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1390              		.loc 1 29 30 view .LVU418
+ 1391              	.LBB117:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1392              		.loc 1 31 5 view .LVU419
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1393              		.loc 1 33 5 view .LVU420
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1394              		.loc 1 33 17 is_stmt 0 view .LVU421
+ 1395 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1396              		.loc 1 33 43 view .LVU422
+ 1397 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1398              		.loc 1 33 15 view .LVU423
+ 1399 0004 00FB03F3 		mul	r3, r0, r3
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 37
+
+
+ 1400 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1401 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1402              	.LVL131:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1403              		.loc 1 34 5 is_stmt 1 view .LVU424
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1404              		.loc 1 34 15 is_stmt 0 view .LVU425
+ 1405 0010 1030     		adds	r0, r0, #16
+ 1406              	.LVL132:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1407              		.loc 1 34 15 view .LVU426
+ 1408 0012 43EB0101 		adc	r1, r3, r1
+ 1409              	.LVL133:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1410              		.loc 1 35 5 is_stmt 1 view .LVU427
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1411              		.loc 1 35 15 is_stmt 0 view .LVU428
+ 1412 0016 4009     		lsrs	r0, r0, #5
+ 1413              	.LVL134:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1414              		.loc 1 37 5 is_stmt 1 view .LVU429
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1415              		.loc 1 37 5 is_stmt 0 view .LVU430
+ 1416              	.LBE117:
+ 1417              	.LBE116:
+ 363:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1418              		.loc 1 363 1 view .LVU431
+ 1419 0018 40EAC160 		orr	r0, r0, r1, lsl #27
+ 1420 001c 7047     		bx	lr
+ 1421              		.cfi_endproc
+ 1422              	.LFE288:
+ 1424              		.section	.text._IQ4rmpy,"ax",%progbits
+ 1425              		.align	1
+ 1426              		.global	_IQ4rmpy
+ 1427              		.syntax unified
+ 1428              		.thumb
+ 1429              		.thumb_func
+ 1431              	_IQ4rmpy:
+ 1432              	.LVL135:
+ 1433              	.LFB289:
+ 364:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 365:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ4 type, with rounding. 
+ 366:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 367:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ4 type value input to be multiplied.
+ 368:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ4 type value input to be multiplied.
+ 369:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 370:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ4 type result of the multiplication.
+ 371:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 372:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ4rmpy(int32_t a, int32_t b)
+ 373:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1434              		.loc 1 373 1 is_stmt 1 view -0
+ 1435              		.cfi_startproc
+ 1436              		@ args = 0, pretend = 0, frame = 0
+ 1437              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1438              		@ link register save eliminated.
+ 374:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 4);
+ 1439              		.loc 1 374 5 view .LVU433
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 38
+
+
+ 1440              	.LBB118:
+ 1441              	.LBI118:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1442              		.loc 1 29 30 view .LVU434
+ 1443              	.LBB119:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1444              		.loc 1 31 5 view .LVU435
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1445              		.loc 1 33 5 view .LVU436
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1446              		.loc 1 33 17 is_stmt 0 view .LVU437
+ 1447 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1448              		.loc 1 33 43 view .LVU438
+ 1449 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1450              		.loc 1 33 15 view .LVU439
+ 1451 0004 00FB03F3 		mul	r3, r0, r3
+ 1452 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1453 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1454              	.LVL136:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1455              		.loc 1 34 5 is_stmt 1 view .LVU440
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1456              		.loc 1 34 15 is_stmt 0 view .LVU441
+ 1457 0010 0830     		adds	r0, r0, #8
+ 1458              	.LVL137:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1459              		.loc 1 34 15 view .LVU442
+ 1460 0012 43EB0101 		adc	r1, r3, r1
+ 1461              	.LVL138:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1462              		.loc 1 35 5 is_stmt 1 view .LVU443
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1463              		.loc 1 35 15 is_stmt 0 view .LVU444
+ 1464 0016 0009     		lsrs	r0, r0, #4
+ 1465              	.LVL139:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1466              		.loc 1 37 5 is_stmt 1 view .LVU445
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1467              		.loc 1 37 5 is_stmt 0 view .LVU446
+ 1468              	.LBE119:
+ 1469              	.LBE118:
+ 375:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1470              		.loc 1 375 1 view .LVU447
+ 1471 0018 40EA0170 		orr	r0, r0, r1, lsl #28
+ 1472 001c 7047     		bx	lr
+ 1473              		.cfi_endproc
+ 1474              	.LFE289:
+ 1476              		.section	.text._IQ3rmpy,"ax",%progbits
+ 1477              		.align	1
+ 1478              		.global	_IQ3rmpy
+ 1479              		.syntax unified
+ 1480              		.thumb
+ 1481              		.thumb_func
+ 1483              	_IQ3rmpy:
+ 1484              	.LVL140:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 39
+
+
+ 1485              	.LFB290:
+ 376:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 377:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ3 type, with rounding. 
+ 378:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 379:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ3 type value input to be multiplied.
+ 380:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ3 type value input to be multiplied.
+ 381:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 382:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ3 type result of the multiplication.
+ 383:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 384:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ3rmpy(int32_t a, int32_t b)
+ 385:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1486              		.loc 1 385 1 is_stmt 1 view -0
+ 1487              		.cfi_startproc
+ 1488              		@ args = 0, pretend = 0, frame = 0
+ 1489              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1490              		@ link register save eliminated.
+ 386:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 3);
+ 1491              		.loc 1 386 5 view .LVU449
+ 1492              	.LBB120:
+ 1493              	.LBI120:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1494              		.loc 1 29 30 view .LVU450
+ 1495              	.LBB121:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1496              		.loc 1 31 5 view .LVU451
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1497              		.loc 1 33 5 view .LVU452
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1498              		.loc 1 33 17 is_stmt 0 view .LVU453
+ 1499 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1500              		.loc 1 33 43 view .LVU454
+ 1501 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1502              		.loc 1 33 15 view .LVU455
+ 1503 0004 00FB03F3 		mul	r3, r0, r3
+ 1504 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1505 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1506              	.LVL141:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1507              		.loc 1 34 5 is_stmt 1 view .LVU456
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1508              		.loc 1 34 15 is_stmt 0 view .LVU457
+ 1509 0010 0430     		adds	r0, r0, #4
+ 1510              	.LVL142:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1511              		.loc 1 34 15 view .LVU458
+ 1512 0012 43EB0101 		adc	r1, r3, r1
+ 1513              	.LVL143:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1514              		.loc 1 35 5 is_stmt 1 view .LVU459
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1515              		.loc 1 35 15 is_stmt 0 view .LVU460
+ 1516 0016 C008     		lsrs	r0, r0, #3
+ 1517              	.LVL144:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1518              		.loc 1 37 5 is_stmt 1 view .LVU461
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 40
+
+
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1519              		.loc 1 37 5 is_stmt 0 view .LVU462
+ 1520              	.LBE121:
+ 1521              	.LBE120:
+ 387:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1522              		.loc 1 387 1 view .LVU463
+ 1523 0018 40EA4170 		orr	r0, r0, r1, lsl #29
+ 1524 001c 7047     		bx	lr
+ 1525              		.cfi_endproc
+ 1526              	.LFE290:
+ 1528              		.section	.text._IQ2rmpy,"ax",%progbits
+ 1529              		.align	1
+ 1530              		.global	_IQ2rmpy
+ 1531              		.syntax unified
+ 1532              		.thumb
+ 1533              		.thumb_func
+ 1535              	_IQ2rmpy:
+ 1536              	.LVL145:
+ 1537              	.LFB291:
+ 388:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 389:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ2 type, with rounding. 
+ 390:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 391:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ2 type value input to be multiplied.
+ 392:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ2 type value input to be multiplied.
+ 393:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 394:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ2 type result of the multiplication.
+ 395:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 396:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ2rmpy(int32_t a, int32_t b)
+ 397:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1538              		.loc 1 397 1 is_stmt 1 view -0
+ 1539              		.cfi_startproc
+ 1540              		@ args = 0, pretend = 0, frame = 0
+ 1541              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1542              		@ link register save eliminated.
+ 398:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 2);
+ 1543              		.loc 1 398 5 view .LVU465
+ 1544              	.LBB122:
+ 1545              	.LBI122:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1546              		.loc 1 29 30 view .LVU466
+ 1547              	.LBB123:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1548              		.loc 1 31 5 view .LVU467
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1549              		.loc 1 33 5 view .LVU468
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1550              		.loc 1 33 17 is_stmt 0 view .LVU469
+ 1551 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1552              		.loc 1 33 43 view .LVU470
+ 1553 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1554              		.loc 1 33 15 view .LVU471
+ 1555 0004 00FB03F3 		mul	r3, r0, r3
+ 1556 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1557 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1558              	.LVL146:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 41
+
+
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1559              		.loc 1 34 5 is_stmt 1 view .LVU472
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1560              		.loc 1 34 15 is_stmt 0 view .LVU473
+ 1561 0010 0230     		adds	r0, r0, #2
+ 1562              	.LVL147:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1563              		.loc 1 34 15 view .LVU474
+ 1564 0012 43EB0101 		adc	r1, r3, r1
+ 1565              	.LVL148:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1566              		.loc 1 35 5 is_stmt 1 view .LVU475
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1567              		.loc 1 35 15 is_stmt 0 view .LVU476
+ 1568 0016 8008     		lsrs	r0, r0, #2
+ 1569              	.LVL149:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1570              		.loc 1 37 5 is_stmt 1 view .LVU477
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1571              		.loc 1 37 5 is_stmt 0 view .LVU478
+ 1572              	.LBE123:
+ 1573              	.LBE122:
+ 399:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1574              		.loc 1 399 1 view .LVU479
+ 1575 0018 40EA8170 		orr	r0, r0, r1, lsl #30
+ 1576 001c 7047     		bx	lr
+ 1577              		.cfi_endproc
+ 1578              	.LFE291:
+ 1580              		.section	.text._IQ1rmpy,"ax",%progbits
+ 1581              		.align	1
+ 1582              		.global	_IQ1rmpy
+ 1583              		.syntax unified
+ 1584              		.thumb
+ 1585              		.thumb_func
+ 1587              	_IQ1rmpy:
+ 1588              	.LVL150:
+ 1589              	.LFB292:
+ 400:../Common/IQMath/ti/_IQNrmpy.c **** /**
+ 401:../Common/IQMath/ti/_IQNrmpy.c ****  * @brief Multiply two values of IQ1 type, with rounding. 
+ 402:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 403:../Common/IQMath/ti/_IQNrmpy.c ****  * @param a               IQ1 type value input to be multiplied.
+ 404:../Common/IQMath/ti/_IQNrmpy.c ****  * @param b               IQ1 type value input to be multiplied.
+ 405:../Common/IQMath/ti/_IQNrmpy.c ****  *
+ 406:../Common/IQMath/ti/_IQNrmpy.c ****  * @return                IQ1 type result of the multiplication.
+ 407:../Common/IQMath/ti/_IQNrmpy.c ****  */
+ 408:../Common/IQMath/ti/_IQNrmpy.c **** int32_t _IQ1rmpy(int32_t a, int32_t b)
+ 409:../Common/IQMath/ti/_IQNrmpy.c **** {
+ 1590              		.loc 1 409 1 is_stmt 1 view -0
+ 1591              		.cfi_startproc
+ 1592              		@ args = 0, pretend = 0, frame = 0
+ 1593              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1594              		@ link register save eliminated.
+ 410:../Common/IQMath/ti/_IQNrmpy.c ****     return __IQNrmpy(a, b, 1);
+ 1595              		.loc 1 410 5 view .LVU481
+ 1596              	.LBB124:
+ 1597              	.LBI124:
+  29:../Common/IQMath/ti/_IQNrmpy.c **** {
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 42
+
+
+ 1598              		.loc 1 29 30 view .LVU482
+ 1599              	.LBB125:
+  31:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1600              		.loc 1 31 5 view .LVU483
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1601              		.loc 1 33 5 view .LVU484
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1602              		.loc 1 33 17 is_stmt 0 view .LVU485
+ 1603 0000 C217     		asrs	r2, r0, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1604              		.loc 1 33 43 view .LVU486
+ 1605 0002 CB17     		asrs	r3, r1, #31
+  33:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult + ((uint_fast32_t)1 << (q_value - 1));
+ 1606              		.loc 1 33 15 view .LVU487
+ 1607 0004 00FB03F3 		mul	r3, r0, r3
+ 1608 0008 01FB0233 		mla	r3, r1, r2, r3
+ 1609 000c A0FB0101 		umull	r0, r1, r0, r1
+ 1610              	.LVL151:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1611              		.loc 1 34 5 is_stmt 1 view .LVU488
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1612              		.loc 1 34 15 is_stmt 0 view .LVU489
+ 1613 0010 0130     		adds	r0, r0, #1
+ 1614              	.LVL152:
+  34:../Common/IQMath/ti/_IQNrmpy.c ****     iqNResult = iqNResult >> q_value;
+ 1615              		.loc 1 34 15 view .LVU490
+ 1616 0012 43EB0101 		adc	r1, r3, r1
+ 1617              	.LVL153:
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1618              		.loc 1 35 5 is_stmt 1 view .LVU491
+  35:../Common/IQMath/ti/_IQNrmpy.c ****     
+ 1619              		.loc 1 35 15 is_stmt 0 view .LVU492
+ 1620 0016 4008     		lsrs	r0, r0, #1
+ 1621              	.LVL154:
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1622              		.loc 1 37 5 is_stmt 1 view .LVU493
+  37:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1623              		.loc 1 37 5 is_stmt 0 view .LVU494
+ 1624              	.LBE125:
+ 1625              	.LBE124:
+ 411:../Common/IQMath/ti/_IQNrmpy.c **** }
+ 1626              		.loc 1 411 1 view .LVU495
+ 1627 0018 40EAC170 		orr	r0, r0, r1, lsl #31
+ 1628 001c 7047     		bx	lr
+ 1629              		.cfi_endproc
+ 1630              	.LFE292:
+ 1632              		.text
+ 1633              	.Letext0:
+ 1634              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+ 1635              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+ 1636              		.file 4 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\stdint.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 43
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 _IQNrmpy.c
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:20     .text._IQ31rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:26     .text._IQ31rmpy:00000000 _IQ31rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:73     .text._IQ30rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:79     .text._IQ30rmpy:00000000 _IQ30rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:125    .text._IQ29rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:131    .text._IQ29rmpy:00000000 _IQ29rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:177    .text._IQ28rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:183    .text._IQ28rmpy:00000000 _IQ28rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:229    .text._IQ27rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:235    .text._IQ27rmpy:00000000 _IQ27rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:281    .text._IQ26rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:287    .text._IQ26rmpy:00000000 _IQ26rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:333    .text._IQ25rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:339    .text._IQ25rmpy:00000000 _IQ25rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:385    .text._IQ24rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:391    .text._IQ24rmpy:00000000 _IQ24rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:437    .text._IQ23rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:443    .text._IQ23rmpy:00000000 _IQ23rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:489    .text._IQ22rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:495    .text._IQ22rmpy:00000000 _IQ22rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:541    .text._IQ21rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:547    .text._IQ21rmpy:00000000 _IQ21rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:593    .text._IQ20rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:599    .text._IQ20rmpy:00000000 _IQ20rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:645    .text._IQ19rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:651    .text._IQ19rmpy:00000000 _IQ19rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:697    .text._IQ18rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:703    .text._IQ18rmpy:00000000 _IQ18rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:749    .text._IQ17rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:755    .text._IQ17rmpy:00000000 _IQ17rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:801    .text._IQ16rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:807    .text._IQ16rmpy:00000000 _IQ16rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:853    .text._IQ15rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:859    .text._IQ15rmpy:00000000 _IQ15rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:905    .text._IQ14rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:911    .text._IQ14rmpy:00000000 _IQ14rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:957    .text._IQ13rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:963    .text._IQ13rmpy:00000000 _IQ13rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1009   .text._IQ12rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1015   .text._IQ12rmpy:00000000 _IQ12rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1061   .text._IQ11rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1067   .text._IQ11rmpy:00000000 _IQ11rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1113   .text._IQ10rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1119   .text._IQ10rmpy:00000000 _IQ10rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1165   .text._IQ9rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1171   .text._IQ9rmpy:00000000 _IQ9rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1217   .text._IQ8rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1223   .text._IQ8rmpy:00000000 _IQ8rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1269   .text._IQ7rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1275   .text._IQ7rmpy:00000000 _IQ7rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1321   .text._IQ6rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1327   .text._IQ6rmpy:00000000 _IQ6rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1373   .text._IQ5rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1379   .text._IQ5rmpy:00000000 _IQ5rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1425   .text._IQ4rmpy:00000000 $t
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cceHdCih.s 			page 44
+
+
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1431   .text._IQ4rmpy:00000000 _IQ4rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1477   .text._IQ3rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1483   .text._IQ3rmpy:00000000 _IQ3rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1529   .text._IQ2rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1535   .text._IQ2rmpy:00000000 _IQ2rmpy
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1581   .text._IQ1rmpy:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cceHdCih.s:1587   .text._IQ1rmpy:00000000 _IQ1rmpy
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,132 @@
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccLzZp4u.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"hardware.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.hw_init,"ax",%progbits
+  20              		.align	1
+  21              		.global	hw_init
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	hw_init:
+  27              	.LFB0:
+  28              		.file 1 "./Hardware/hardware.c"
+   1:./Hardware/hardware.c **** #include "hardware_cfg.h"
+   2:./Hardware/hardware.c **** 
+   3:./Hardware/hardware.c **** #undef NULL
+   4:./Hardware/hardware.c **** #define NULL 0
+   5:./Hardware/hardware.c **** static sensor_t sg_sensor_mt6816 = {
+   6:./Hardware/hardware.c ****         .pf_read = as5047_read,
+   7:./Hardware/hardware.c ****         .pf_write = NULL,
+   8:./Hardware/hardware.c ****         .pf_init = as5047_init,
+   9:./Hardware/hardware.c ****         .cycle = 0,
+  10:./Hardware/hardware.c ****         .status = EN_SENSOR_INIT
+  11:./Hardware/hardware.c **** };
+  12:./Hardware/hardware.c **** 
+  13:./Hardware/hardware.c **** void hw_init(void)
+  14:./Hardware/hardware.c **** {
+  29              		.loc 1 14 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  15:./Hardware/hardware.c ****     sensor_register(&sg_sensor_mt6816,SENSOR_01);
+  38              		.loc 1 15 5 view .LVU1
+  39 0002 0021     		movs	r1, #0
+  40 0004 0148     		ldr	r0, .L3
+  41 0006 FFF7FEFF 		bl	sensor_register
+  42              	.LVL0:
+  16:./Hardware/hardware.c **** }
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccLzZp4u.s 			page 2
+
+
+  43              		.loc 1 16 1 is_stmt 0 view .LVU2
+  44 000a 08BD     		pop	{r3, pc}
+  45              	.L4:
+  46              		.align	2
+  47              	.L3:
+  48 000c 00000000 		.word	.LANCHOR0
+  49              		.cfi_endproc
+  50              	.LFE0:
+  52              		.section	.text.hw_sensor_process,"ax",%progbits
+  53              		.align	1
+  54              		.global	hw_sensor_process
+  55              		.syntax unified
+  56              		.thumb
+  57              		.thumb_func
+  59              	hw_sensor_process:
+  60              	.LFB1:
+  17:./Hardware/hardware.c **** 
+  18:./Hardware/hardware.c **** void hw_sensor_process(void)
+  19:./Hardware/hardware.c **** {
+  61              		.loc 1 19 1 is_stmt 1 view -0
+  62              		.cfi_startproc
+  63              		@ args = 0, pretend = 0, frame = 0
+  64              		@ frame_needed = 0, uses_anonymous_args = 0
+  65 0000 08B5     		push	{r3, lr}
+  66              	.LCFI1:
+  67              		.cfi_def_cfa_offset 8
+  68              		.cfi_offset 3, -8
+  69              		.cfi_offset 14, -4
+  20:./Hardware/hardware.c ****     sensor_process();
+  70              		.loc 1 20 5 view .LVU4
+  71 0002 FFF7FEFF 		bl	sensor_process
+  72              	.LVL1:
+  21:./Hardware/hardware.c **** }
+  73              		.loc 1 21 1 is_stmt 0 view .LVU5
+  74 0006 08BD     		pop	{r3, pc}
+  75              		.cfi_endproc
+  76              	.LFE1:
+  78              		.section	.data.sg_sensor_mt6816,"aw"
+  79              		.align	2
+  80              		.set	.LANCHOR0,. + 0
+  83              	sg_sensor_mt6816:
+  84 0000 0000     		.short	0
+  85 0002 00       		.byte	0
+  86 0003 00       		.space	1
+  87 0004 00000000 		.word	as5047_read
+  88 0008 00000000 		.word	0
+  89 000c 00000000 		.word	as5047_init
+  90              		.text
+  91              	.Letext0:
+  92              		.file 2 "../Sensor/sensor.h"
+  93              		.file 3 "./Board/board.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccLzZp4u.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 hardware.c
+C:\Users\57308\AppData\Local\Temp\ccLzZp4u.s:20     .text.hw_init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccLzZp4u.s:26     .text.hw_init:00000000 hw_init
+C:\Users\57308\AppData\Local\Temp\ccLzZp4u.s:48     .text.hw_init:0000000c $d
+C:\Users\57308\AppData\Local\Temp\ccLzZp4u.s:53     .text.hw_sensor_process:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccLzZp4u.s:59     .text.hw_sensor_process:00000000 hw_sensor_process
+C:\Users\57308\AppData\Local\Temp\ccLzZp4u.s:79     .data.sg_sensor_mt6816:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccLzZp4u.s:83     .data.sg_sensor_mt6816:00000000 sg_sensor_mt6816
+
+UNDEFINED SYMBOLS
+sensor_register
+sensor_process
+as5047_read
+as5047_init

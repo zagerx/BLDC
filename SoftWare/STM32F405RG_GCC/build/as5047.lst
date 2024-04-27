@@ -1,0 +1,406 @@
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"as5047.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.Parity_bit_Calculate,"ax",%progbits
+  20              		.align	1
+  21              		.global	Parity_bit_Calculate
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	Parity_bit_Calculate:
+  27              	.LVL0:
+  28              	.LFB235:
+  29              		.file 1 "./Hardware/as5047.c"
+   1:./Hardware/as5047.c **** #include "as5047.h"
+   2:./Hardware/as5047.c **** #include "spi.h"
+   3:./Hardware/as5047.c **** #include "gpio.h"
+   4:./Hardware/as5047.c **** 
+   5:./Hardware/as5047.c **** 
+   6:./Hardware/as5047.c **** 
+   7:./Hardware/as5047.c **** typedef struct as5047_data
+   8:./Hardware/as5047.c **** {
+   9:./Hardware/as5047.c ****     int32_t *raw_buf;
+  10:./Hardware/as5047.c ****     int32_t *covdata_buf;
+  11:./Hardware/as5047.c ****     int32_t *filterdata_buf;
+  12:./Hardware/as5047.c ****     int16_t buf_column;
+  13:./Hardware/as5047.c **** }as5047_data_t;
+  14:./Hardware/as5047.c **** static as5047_data_t sg_as5047data = {0};
+  15:./Hardware/as5047.c **** int32_t rawdata,covdata,filterdata;
+  16:./Hardware/as5047.c **** static int16_t column;
+  17:./Hardware/as5047.c **** 
+  18:./Hardware/as5047.c **** 
+  19:./Hardware/as5047.c **** //计算奇偶函数
+  20:./Hardware/as5047.c **** uint16_t Parity_bit_Calculate(uint16_t data_2_cal)
+  21:./Hardware/as5047.c **** {
+  30              		.loc 1 21 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  22:./Hardware/as5047.c **** 	uint16_t parity_bit_value=0;
+  35              		.loc 1 22 2 view .LVU1
+  23:./Hardware/as5047.c **** 	while(data_2_cal != 0)
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s 			page 2
+
+
+  36              		.loc 1 23 2 view .LVU2
+  22:./Hardware/as5047.c **** 	uint16_t parity_bit_value=0;
+  37              		.loc 1 22 11 is_stmt 0 view .LVU3
+  38 0000 0023     		movs	r3, #0
+  39              		.loc 1 23 7 view .LVU4
+  40 0002 01E0     		b	.L2
+  41              	.LVL1:
+  42              	.L3:
+  24:./Hardware/as5047.c **** 	{
+  25:./Hardware/as5047.c **** 		parity_bit_value ^= data_2_cal; 
+  43              		.loc 1 25 3 is_stmt 1 view .LVU5
+  44              		.loc 1 25 20 is_stmt 0 view .LVU6
+  45 0004 4340     		eors	r3, r3, r0
+  46              	.LVL2:
+  26:./Hardware/as5047.c **** 		data_2_cal >>=1;
+  47              		.loc 1 26 3 is_stmt 1 view .LVU7
+  48              		.loc 1 26 14 is_stmt 0 view .LVU8
+  49 0006 4008     		lsrs	r0, r0, #1
+  50              	.LVL3:
+  51              	.L2:
+  23:./Hardware/as5047.c **** 	while(data_2_cal != 0)
+  52              		.loc 1 23 7 is_stmt 1 view .LVU9
+  53 0008 0028     		cmp	r0, #0
+  54 000a FBD1     		bne	.L3
+  27:./Hardware/as5047.c **** 	}
+  28:./Hardware/as5047.c **** 	return (parity_bit_value & 0x1); 
+  55              		.loc 1 28 2 view .LVU10
+  29:./Hardware/as5047.c **** }
+  56              		.loc 1 29 1 is_stmt 0 view .LVU11
+  57 000c 03F00100 		and	r0, r3, #1
+  58              	.LVL4:
+  59              		.loc 1 29 1 view .LVU12
+  60 0010 7047     		bx	lr
+  61              		.cfi_endproc
+  62              	.LFE235:
+  64              		.section	.text.SPI_ReadWrite_OneByte,"ax",%progbits
+  65              		.align	1
+  66              		.global	SPI_ReadWrite_OneByte
+  67              		.syntax unified
+  68              		.thumb
+  69              		.thumb_func
+  71              	SPI_ReadWrite_OneByte:
+  72              	.LVL5:
+  73              	.LFB236:
+  30:./Hardware/as5047.c **** //SPI发送读取函数
+  31:./Hardware/as5047.c **** uint16_t SPI_ReadWrite_OneByte(uint16_t _txdata)
+  32:./Hardware/as5047.c **** {
+  74              		.loc 1 32 1 is_stmt 1 view -0
+  75              		.cfi_startproc
+  76              		@ args = 0, pretend = 0, frame = 16
+  77              		@ frame_needed = 0, uses_anonymous_args = 0
+  78              		.loc 1 32 1 is_stmt 0 view .LVU14
+  79 0000 00B5     		push	{lr}
+  80              	.LCFI0:
+  81              		.cfi_def_cfa_offset 4
+  82              		.cfi_offset 14, -4
+  83 0002 87B0     		sub	sp, sp, #28
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s 			page 3
+
+
+  84              	.LCFI1:
+  85              		.cfi_def_cfa_offset 32
+  86 0004 ADF80E00 		strh	r0, [sp, #14]	@ movhi
+  33:./Hardware/as5047.c **** 
+  34:./Hardware/as5047.c **** 	HAL_GPIO_WritePin(SPI3_SOFTCS_GPIO_Port,SPI3_SOFTCS_Pin,GPIO_PIN_RESET);	//cs拉低
+  87              		.loc 1 34 2 is_stmt 1 view .LVU15
+  88 0008 0022     		movs	r2, #0
+  89 000a 0121     		movs	r1, #1
+  90 000c 0D48     		ldr	r0, .L7
+  91              	.LVL6:
+  92              		.loc 1 34 2 is_stmt 0 view .LVU16
+  93 000e FFF7FEFF 		bl	HAL_GPIO_WritePin
+  94              	.LVL7:
+  35:./Hardware/as5047.c **** 	uint16_t rxdata;
+  95              		.loc 1 35 2 is_stmt 1 view .LVU17
+  36:./Hardware/as5047.c **** 	if(HAL_SPI_TransmitReceive(&hspi3,(uint8_t *)&_txdata,(uint8_t *)&rxdata,1,1000) !=HAL_OK)
+  96              		.loc 1 36 2 view .LVU18
+  97              		.loc 1 36 5 is_stmt 0 view .LVU19
+  98 0012 4FF47A73 		mov	r3, #1000
+  99 0016 0093     		str	r3, [sp]
+ 100 0018 0123     		movs	r3, #1
+ 101 001a 0DF11602 		add	r2, sp, #22
+ 102 001e 0DF10E01 		add	r1, sp, #14
+ 103 0022 0948     		ldr	r0, .L7+4
+ 104 0024 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
+ 105              	.LVL8:
+ 106              		.loc 1 36 4 view .LVU20
+ 107 0028 10B1     		cbz	r0, .L5
+  37:./Hardware/as5047.c ****     {
+  38:./Hardware/as5047.c ****         rxdata=0;
+ 108              		.loc 1 38 9 is_stmt 1 view .LVU21
+ 109              		.loc 1 38 15 is_stmt 0 view .LVU22
+ 110 002a 0023     		movs	r3, #0
+ 111 002c ADF81630 		strh	r3, [sp, #22]	@ movhi
+ 112              	.L5:
+  39:./Hardware/as5047.c ****     }
+  40:./Hardware/as5047.c **** 	HAL_GPIO_WritePin(SPI3_SOFTCS_GPIO_Port,SPI3_SOFTCS_Pin,GPIO_PIN_SET);
+ 113              		.loc 1 40 2 is_stmt 1 view .LVU23
+ 114 0030 0122     		movs	r2, #1
+ 115 0032 1146     		mov	r1, r2
+ 116 0034 0348     		ldr	r0, .L7
+ 117 0036 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 118              	.LVL9:
+  41:./Hardware/as5047.c **** 	return rxdata;
+ 119              		.loc 1 41 2 view .LVU24
+  42:./Hardware/as5047.c **** }
+ 120              		.loc 1 42 1 is_stmt 0 view .LVU25
+ 121 003a BDF81600 		ldrh	r0, [sp, #22]
+ 122 003e 07B0     		add	sp, sp, #28
+ 123              	.LCFI2:
+ 124              		.cfi_def_cfa_offset 4
+ 125              		@ sp needed
+ 126 0040 5DF804FB 		ldr	pc, [sp], #4
+ 127              	.L8:
+ 128              		.align	2
+ 129              	.L7:
+ 130 0044 00000240 		.word	1073872896
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s 			page 4
+
+
+ 131 0048 00000000 		.word	hspi3
+ 132              		.cfi_endproc
+ 133              	.LFE236:
+ 135              		.section	.text.as5047_read,"ax",%progbits
+ 136              		.align	1
+ 137              		.global	as5047_read
+ 138              		.syntax unified
+ 139              		.thumb
+ 140              		.thumb_func
+ 142              	as5047_read:
+ 143              	.LFB237:
+  43:./Hardware/as5047.c **** void* as5047_read(void)
+  44:./Hardware/as5047.c **** {
+ 144              		.loc 1 44 1 is_stmt 1 view -0
+ 145              		.cfi_startproc
+ 146              		@ args = 0, pretend = 0, frame = 0
+ 147              		@ frame_needed = 0, uses_anonymous_args = 0
+ 148 0000 08B5     		push	{r3, lr}
+ 149              	.LCFI3:
+ 150              		.cfi_def_cfa_offset 8
+ 151              		.cfi_offset 3, -8
+ 152              		.cfi_offset 14, -4
+  45:./Hardware/as5047.c ****     uint16_t add = 0;
+ 153              		.loc 1 45 5 view .LVU27
+ 154              	.LVL10:
+  46:./Hardware/as5047.c **** 	uint16_t data;
+ 155              		.loc 1 46 2 view .LVU28
+  47:./Hardware/as5047.c ****     add = ANGLEUNC;
+ 156              		.loc 1 47 5 view .LVU29
+  48:./Hardware/as5047.c **** 	add |= 0x4000;	//读指令 bit14 置1
+ 157              		.loc 1 48 2 view .LVU30
+  49:./Hardware/as5047.c **** 	if(Parity_bit_Calculate(add)==1) 
+ 158              		.loc 1 49 2 view .LVU31
+ 159              		.loc 1 49 5 is_stmt 0 view .LVU32
+ 160 0002 47F6FE70 		movw	r0, #32766
+ 161 0006 FFF7FEFF 		bl	Parity_bit_Calculate
+ 162              	.LVL11:
+ 163              		.loc 1 49 4 view .LVU33
+ 164 000a 0128     		cmp	r0, #1
+ 165 000c 13D0     		beq	.L11
+  48:./Hardware/as5047.c **** 	add |= 0x4000;	//读指令 bit14 置1
+ 166              		.loc 1 48 6 view .LVU34
+ 167 000e 47F6FE70 		movw	r0, #32766
+ 168              	.L10:
+ 169              	.LVL12:
+  50:./Hardware/as5047.c ****     {
+  51:./Hardware/as5047.c ****         add=add|0x8000; //如果前15位 1的个数位偶数，则Bit15 置1
+  52:./Hardware/as5047.c ****     }
+  53:./Hardware/as5047.c **** 	SPI_ReadWrite_OneByte(add);		//发送一条指令，不管读回的数据
+ 170              		.loc 1 53 2 is_stmt 1 view .LVU35
+ 171 0012 FFF7FEFF 		bl	SPI_ReadWrite_OneByte
+ 172              	.LVL13:
+  54:./Hardware/as5047.c ****     data=SPI_ReadWrite_OneByte(0x4000); //发送一条空指令，读取上一次指令返回的数
+ 173              		.loc 1 54 5 view .LVU36
+ 174              		.loc 1 54 10 is_stmt 0 view .LVU37
+ 175 0016 4FF48040 		mov	r0, #16384
+ 176 001a FFF7FEFF 		bl	SPI_ReadWrite_OneByte
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s 			page 5
+
+
+ 177              	.LVL14:
+  55:./Hardware/as5047.c **** 	data &=0x3fff;
+ 178              		.loc 1 55 2 is_stmt 1 view .LVU38
+ 179              		.loc 1 55 7 is_stmt 0 view .LVU39
+ 180 001e C0F30D00 		ubfx	r0, r0, #0, #14
+ 181              	.LVL15:
+  56:./Hardware/as5047.c ****     rawdata = data;
+ 182              		.loc 1 56 5 is_stmt 1 view .LVU40
+ 183              		.loc 1 56 13 is_stmt 0 view .LVU41
+ 184 0022 064B     		ldr	r3, .L13
+ 185 0024 1860     		str	r0, [r3]
+  57:./Hardware/as5047.c ****     covdata = data * 402;
+ 186              		.loc 1 57 5 is_stmt 1 view .LVU42
+ 187              		.loc 1 57 20 is_stmt 0 view .LVU43
+ 188 0026 4FF4C973 		mov	r3, #402
+ 189 002a 03FB00F0 		mul	r0, r3, r0
+ 190              	.LVL16:
+ 191              		.loc 1 57 13 view .LVU44
+ 192 002e 044B     		ldr	r3, .L13+4
+ 193 0030 1860     		str	r0, [r3]
+  58:./Hardware/as5047.c **** 	return (void *)&sg_as5047data;
+ 194              		.loc 1 58 2 is_stmt 1 view .LVU45
+  59:./Hardware/as5047.c **** }
+ 195              		.loc 1 59 1 is_stmt 0 view .LVU46
+ 196 0032 0448     		ldr	r0, .L13+8
+ 197 0034 08BD     		pop	{r3, pc}
+ 198              	.LVL17:
+ 199              	.L11:
+  51:./Hardware/as5047.c ****     }
+ 200              		.loc 1 51 12 view .LVU47
+ 201 0036 4FF6FE70 		movw	r0, #65534
+ 202 003a EAE7     		b	.L10
+ 203              	.L14:
+ 204              		.align	2
+ 205              	.L13:
+ 206 003c 00000000 		.word	.LANCHOR0
+ 207 0040 00000000 		.word	.LANCHOR1
+ 208 0044 00000000 		.word	.LANCHOR2
+ 209              		.cfi_endproc
+ 210              	.LFE237:
+ 212              		.section	.text.as5047_init,"ax",%progbits
+ 213              		.align	1
+ 214              		.global	as5047_init
+ 215              		.syntax unified
+ 216              		.thumb
+ 217              		.thumb_func
+ 219              	as5047_init:
+ 220              	.LFB238:
+  60:./Hardware/as5047.c **** 
+  61:./Hardware/as5047.c **** void as5047_init(void)
+  62:./Hardware/as5047.c **** {
+ 221              		.loc 1 62 1 is_stmt 1 view -0
+ 222              		.cfi_startproc
+ 223              		@ args = 0, pretend = 0, frame = 0
+ 224              		@ frame_needed = 0, uses_anonymous_args = 0
+ 225              		@ link register save eliminated.
+  63:./Hardware/as5047.c ****     // for (uint8_t i = 0; i < 10; i++)
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s 			page 6
+
+
+  64:./Hardware/as5047.c ****     // {    
+  65:./Hardware/as5047.c ****     //     /*mt6816 首次上电读取数据错误*/
+  66:./Hardware/as5047.c ****     //     HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
+  67:./Hardware/as5047.c ****     //     HAL_SPI_TransmitReceive(&hspi1, &Spi_TxData[0], &Spi_pRxData[0],0x03,0xffff);
+  68:./Hardware/as5047.c ****     //     HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
+  69:./Hardware/as5047.c ****     // }
+  70:./Hardware/as5047.c ****     sg_as5047data.raw_buf = &rawdata;
+ 226              		.loc 1 70 5 view .LVU49
+ 227              		.loc 1 70 27 is_stmt 0 view .LVU50
+ 228 0000 034B     		ldr	r3, .L16
+ 229 0002 044A     		ldr	r2, .L16+4
+ 230 0004 1A60     		str	r2, [r3]
+  71:./Hardware/as5047.c ****     sg_as5047data.covdata_buf = &covdata;
+ 231              		.loc 1 71 5 is_stmt 1 view .LVU51
+ 232              		.loc 1 71 31 is_stmt 0 view .LVU52
+ 233 0006 044A     		ldr	r2, .L16+8
+ 234 0008 5A60     		str	r2, [r3, #4]
+  72:./Hardware/as5047.c ****     sg_as5047data.filterdata_buf = &filterdata;
+ 235              		.loc 1 72 5 is_stmt 1 view .LVU53
+ 236              		.loc 1 72 34 is_stmt 0 view .LVU54
+ 237 000a 044A     		ldr	r2, .L16+12
+ 238 000c 9A60     		str	r2, [r3, #8]
+  73:./Hardware/as5047.c **** 
+  74:./Hardware/as5047.c **** }
+ 239              		.loc 1 74 1 view .LVU55
+ 240 000e 7047     		bx	lr
+ 241              	.L17:
+ 242              		.align	2
+ 243              	.L16:
+ 244 0010 00000000 		.word	.LANCHOR2
+ 245 0014 00000000 		.word	.LANCHOR0
+ 246 0018 00000000 		.word	.LANCHOR1
+ 247 001c 00000000 		.word	.LANCHOR3
+ 248              		.cfi_endproc
+ 249              	.LFE238:
+ 251              		.global	filterdata
+ 252              		.global	covdata
+ 253              		.global	rawdata
+ 254              		.section	.bss.covdata,"aw",%nobits
+ 255              		.align	2
+ 256              		.set	.LANCHOR1,. + 0
+ 259              	covdata:
+ 260 0000 00000000 		.space	4
+ 261              		.section	.bss.filterdata,"aw",%nobits
+ 262              		.align	2
+ 263              		.set	.LANCHOR3,. + 0
+ 266              	filterdata:
+ 267 0000 00000000 		.space	4
+ 268              		.section	.bss.rawdata,"aw",%nobits
+ 269              		.align	2
+ 270              		.set	.LANCHOR0,. + 0
+ 273              	rawdata:
+ 274 0000 00000000 		.space	4
+ 275              		.section	.bss.sg_as5047data,"aw",%nobits
+ 276              		.align	2
+ 277              		.set	.LANCHOR2,. + 0
+ 280              	sg_as5047data:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s 			page 7
+
+
+ 281 0000 00000000 		.space	16
+ 281      00000000 
+ 281      00000000 
+ 281      00000000 
+ 282              		.text
+ 283              	.Letext0:
+ 284              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+ 285              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+ 286              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f405xx.h"
+ 287              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 288              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 289              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 290              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h"
+ 291              		.file 9 "Inc/spi.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 as5047.c
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:20     .text.Parity_bit_Calculate:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:26     .text.Parity_bit_Calculate:00000000 Parity_bit_Calculate
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:65     .text.SPI_ReadWrite_OneByte:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:71     .text.SPI_ReadWrite_OneByte:00000000 SPI_ReadWrite_OneByte
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:130    .text.SPI_ReadWrite_OneByte:00000044 $d
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:136    .text.as5047_read:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:142    .text.as5047_read:00000000 as5047_read
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:206    .text.as5047_read:0000003c $d
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:213    .text.as5047_init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:219    .text.as5047_init:00000000 as5047_init
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:244    .text.as5047_init:00000010 $d
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:266    .bss.filterdata:00000000 filterdata
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:259    .bss.covdata:00000000 covdata
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:273    .bss.rawdata:00000000 rawdata
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:255    .bss.covdata:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:262    .bss.filterdata:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:269    .bss.rawdata:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:276    .bss.sg_as5047data:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccj1Hrgn.s:280    .bss.sg_as5047data:00000000 sg_as5047data
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_SPI_TransmitReceive
+hspi3

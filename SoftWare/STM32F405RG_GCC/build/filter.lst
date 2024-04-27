@@ -1,0 +1,121 @@
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccuuP8hn.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"filter.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.lowfilter_init,"ax",%progbits
+  20              		.align	1
+  21              		.global	lowfilter_init
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	lowfilter_init:
+  27              	.LVL0:
+  28              	.LFB0:
+  29              		.file 1 "../Common/method/filter.c"
+   1:../Common/method/filter.c **** #include "./filter.h"
+   2:../Common/method/filter.c **** #include "./method_cfg.h"
+   3:../Common/method/filter.c **** void lowfilter_init(lowfilter_t *pfilter,float freq)
+   4:../Common/method/filter.c **** {
+  30              		.loc 1 4 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+   5:../Common/method/filter.c ****     pfilter->freq = 1.0f/freq;
+  35              		.loc 1 5 5 view .LVU1
+  36              		.loc 1 5 25 is_stmt 0 view .LVU2
+  37 0000 B7EE007A 		vmov.f32	s14, #1.0e+0
+  38 0004 C7EE007A 		vdiv.f32	s15, s14, s0
+  39              		.loc 1 5 19 view .LVU3
+  40 0008 C0ED007A 		vstr.32	s15, [r0]
+   6:../Common/method/filter.c ****     pfilter->pre_val = 0.0f;
+  41              		.loc 1 6 5 is_stmt 1 view .LVU4
+  42              		.loc 1 6 22 is_stmt 0 view .LVU5
+  43 000c 0023     		movs	r3, #0
+  44 000e 4360     		str	r3, [r0, #4]	@ float
+   7:../Common/method/filter.c **** }
+  45              		.loc 1 7 1 view .LVU6
+  46 0010 7047     		bx	lr
+  47              		.cfi_endproc
+  48              	.LFE0:
+  50              		.section	.text.lowfilter_cale,"ax",%progbits
+  51              		.align	1
+  52              		.global	lowfilter_cale
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccuuP8hn.s 			page 2
+
+
+  53              		.syntax unified
+  54              		.thumb
+  55              		.thumb_func
+  57              	lowfilter_cale:
+  58              	.LVL1:
+  59              	.LFB1:
+   8:../Common/method/filter.c **** 
+   9:../Common/method/filter.c **** float lowfilter_cale(lowfilter_t *pfilter,float val)
+  10:../Common/method/filter.c **** {
+  60              		.loc 1 10 1 is_stmt 1 view -0
+  61              		.cfi_startproc
+  62              		@ args = 0, pretend = 0, frame = 0
+  63              		@ frame_needed = 0, uses_anonymous_args = 0
+  64              		@ link register save eliminated.
+  11:../Common/method/filter.c ****     float curval = 0.0f;
+  65              		.loc 1 11 5 view .LVU8
+  12:../Common/method/filter.c ****     curval =   pfilter->freq * val  + (1.0f-pfilter->freq) * pfilter->pre_val ;
+  66              		.loc 1 12 5 view .LVU9
+  67              		.loc 1 12 23 is_stmt 0 view .LVU10
+  68 0000 90ED007A 		vldr.32	s14, [r0]
+  69              		.loc 1 12 30 view .LVU11
+  70 0004 27EE000A 		vmul.f32	s0, s14, s0
+  71              	.LVL2:
+  72              		.loc 1 12 44 view .LVU12
+  73 0008 F7EE007A 		vmov.f32	s15, #1.0e+0
+  74 000c 77EEC77A 		vsub.f32	s15, s15, s14
+  75              		.loc 1 12 69 view .LVU13
+  76 0010 90ED017A 		vldr.32	s14, [r0, #4]
+  77              		.loc 1 12 60 view .LVU14
+  78 0014 67EE877A 		vmul.f32	s15, s15, s14
+  79              		.loc 1 12 12 view .LVU15
+  80 0018 30EE270A 		vadd.f32	s0, s0, s15
+  81              	.LVL3:
+  13:../Common/method/filter.c ****     pfilter->pre_val = curval;
+  82              		.loc 1 13 5 is_stmt 1 view .LVU16
+  83              		.loc 1 13 22 is_stmt 0 view .LVU17
+  84 001c 80ED010A 		vstr.32	s0, [r0, #4]
+  14:../Common/method/filter.c ****     return curval;
+  85              		.loc 1 14 5 is_stmt 1 view .LVU18
+  15:../Common/method/filter.c **** }
+  86              		.loc 1 15 1 is_stmt 0 view .LVU19
+  87 0020 7047     		bx	lr
+  88              		.cfi_endproc
+  89              	.LFE1:
+  91              		.text
+  92              	.Letext0:
+  93              		.file 2 "../Common/method/./filter.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccuuP8hn.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 filter.c
+C:\Users\57308\AppData\Local\Temp\ccuuP8hn.s:20     .text.lowfilter_init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccuuP8hn.s:26     .text.lowfilter_init:00000000 lowfilter_init
+C:\Users\57308\AppData\Local\Temp\ccuuP8hn.s:51     .text.lowfilter_cale:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccuuP8hn.s:57     .text.lowfilter_cale:00000000 lowfilter_cale
+
+NO UNDEFINED SYMBOLS
