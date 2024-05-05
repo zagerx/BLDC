@@ -32,7 +32,10 @@ build/main.o: Src/main.c Inc/main.h \
  ../Common/debuglog/./debuglog_cfg.h \
  ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
  ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
- Hardware/as5047.h
+ Hardware/as5047.h ../Sensor/sensor.h ../Sensor/sensor_cfg.h \
+ Board/board.h Hardware/hardware.h ../BLDCMotor/motorctrl.h \
+ ../BLDCMotor/./motorctrl_cfg.h ../Common/method/pid.h \
+ ../Common/method/filter.h ../Common/IQMath/ti/IQmathLib.h
 Inc/main.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 Inc/stm32f4xx_hal_conf.h:
@@ -75,3 +78,12 @@ Inc/gpio.h:
 ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
 ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
 Hardware/as5047.h:
+../Sensor/sensor.h:
+../Sensor/sensor_cfg.h:
+Board/board.h:
+Hardware/hardware.h:
+../BLDCMotor/motorctrl.h:
+../BLDCMotor/./motorctrl_cfg.h:
+../Common/method/pid.h:
+../Common/method/filter.h:
+../Common/IQMath/ti/IQmathLib.h:

@@ -27,6 +27,9 @@
 /* USER CODE BEGIN Includes */
 #include "debuglog.h"
 #include "as5047.h"
+#include "sensor.h"
+#include "hardware.h"
+#include "motorctrl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
