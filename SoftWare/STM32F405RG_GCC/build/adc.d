@@ -28,6 +28,7 @@ build/adc.o: Src/adc.c Inc/adc.h Inc/main.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../BLDCMotor/motorctrl.h ../BLDCMotor/./motorctrl_cfg.h Inc/tim.h \
  ../Sensor/sensor.h ../Sensor/sensor_cfg.h Board/board.h \
  ../Common/method/pid.h ../Common/method/filter.h \
@@ -68,6 +69,7 @@ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
+Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 ../BLDCMotor/motorctrl.h:
 ../BLDCMotor/./motorctrl_cfg.h:
 Inc/tim.h:

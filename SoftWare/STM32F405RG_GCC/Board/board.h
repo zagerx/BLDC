@@ -78,9 +78,9 @@ typedef enum{
 #define BOARD_MOTORCTRL_MODE
 
 #ifdef BOARD_MOTORCTRL_MODE
-        #define A_ADCCHANNL_OFFSET          (2121)
-        #define B_ADCCHANNL_OFFSET          (2138)
-        #define C_ADCCHANNL_OFFSET          (2148)
+        #define A_ADCCHANNL_OFFSET          (2121+140)
+        #define B_ADCCHANNL_OFFSET          (2138+140)
+        #define C_ADCCHANNL_OFFSET          (2148+140)
         #define APHASE_SHUNT                 0.05F
         #define BPHASE_SHUNT                 0.05F
         #define CPHASE_SHUNT                 0.06F

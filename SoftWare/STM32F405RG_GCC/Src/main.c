@@ -19,8 +19,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dma.h"
 #include "spi.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -30,6 +32,7 @@
 #include "sensor.h"
 #include "hardware.h"
 #include "motorctrl.h"
+#include "protocol.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -101,7 +104,6 @@ void sysrunning_process(void)
                 HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
-                // protocol02_process();
             }
         default:
             break;
@@ -137,13 +139,17 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SPI3_Init();
   MX_TIM1_Init();
   MX_ADC2_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   User_Printf_Init();
   USER_DEBUG_NORMAL("F405 Hello world\r\n");
   hw_init();
+  protocol_init();
+
   HAL_Delay(1500);
   /* USER CODE END 2 */
 

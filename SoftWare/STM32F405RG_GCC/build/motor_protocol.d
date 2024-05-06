@@ -28,13 +28,15 @@ build/motor_protocol.o: ../BLDCMotor/motor_protocol.c \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
- Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc/tim.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h Inc/tim.h \
  ../Sensor/sensor.h ../Sensor/sensor_cfg.h Board/board.h \
  ../Common/method/pid.h ../Common/method/filter.h \
  ../Common/IQMath/ti/IQmathLib.h ../Common/debuglog/debuglog.h \
  ../Common/debuglog/./debuglog_cfg.h \
  ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
- ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h
+ ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
+ ../BLDCMotor/motor_protocol.h ../protocol/protocol.h
 ../BLDCMotor/motorctrl_common.h:
 ../BLDCMotor/./motorctrl_cfg.h:
 Inc/adc.h:
@@ -70,6 +72,7 @@ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
+Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 Inc/tim.h:
 ../Sensor/sensor.h:
 ../Sensor/sensor_cfg.h:
@@ -81,3 +84,5 @@ Board/board.h:
 ../Common/debuglog/./debuglog_cfg.h:
 ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h:
 ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h:
+../BLDCMotor/motor_protocol.h:
+../protocol/protocol.h:

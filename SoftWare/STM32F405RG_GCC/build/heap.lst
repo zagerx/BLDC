@@ -1,0 +1,1165 @@
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"heap.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.heap_init,"ax",%progbits
+  20              		.align	1
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	heap_init:
+  26              	.LFB5:
+  27              		.file 1 "../Common/data_structures/heap.c"
+   1:../Common/data_structures/heap.c **** 
+   2:../Common/data_structures/heap.c **** #include <stdlib.h>
+   3:../Common/data_structures/heap.c **** #include "stdint.h"
+   4:../Common/data_structures/heap.c **** 
+   5:../Common/data_structures/heap.c **** #if 1
+   6:../Common/data_structures/heap.c **** 
+   7:../Common/data_structures/heap.c **** #define user_assert_param(expr) ((void)0U)
+   8:../Common/data_structures/heap.c **** 
+   9:../Common/data_structures/heap.c **** #define TOTAL_HEAP_SIZE                    ((size_t)4096)
+  10:../Common/data_structures/heap.c **** #define BYTE_ALIGNMENT			8
+  11:../Common/data_structures/heap.c **** #if BYTE_ALIGNMENT == 8
+  12:../Common/data_structures/heap.c **** 	#define BYTE_ALIGNMENT_MASK ( 0x0007 )
+  13:../Common/data_structures/heap.c **** #endif
+  14:../Common/data_structures/heap.c **** 
+  15:../Common/data_structures/heap.c **** #define heapMINIMUM_BLOCK_SIZE	( ( size_t ) ( heap_structSize << 1 ) )
+  16:../Common/data_structures/heap.c **** 
+  17:../Common/data_structures/heap.c **** #define BITS_PER_BYTE		( ( size_t ) 8 )
+  18:../Common/data_structures/heap.c **** 
+  19:../Common/data_structures/heap.c **** 
+  20:../Common/data_structures/heap.c **** static uint8_t ucHeap[ TOTAL_HEAP_SIZE ];
+  21:../Common/data_structures/heap.c **** 
+  22:../Common/data_structures/heap.c **** typedef struct block_link
+  23:../Common/data_structures/heap.c **** {
+  24:../Common/data_structures/heap.c **** 	struct block_link *p_next_freeblock;	
+  25:../Common/data_structures/heap.c **** 	size_t xBlockSize;						
+  26:../Common/data_structures/heap.c **** } blocklink_t;
+  27:../Common/data_structures/heap.c **** 
+  28:../Common/data_structures/heap.c **** 
+  29:../Common/data_structures/heap.c **** static void insert_block_into_freeList( blocklink_t *pblockto_insert );
+  30:../Common/data_structures/heap.c **** static void heap_init( void );
+  31:../Common/data_structures/heap.c **** 
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 2
+
+
+  32:../Common/data_structures/heap.c **** static const size_t heap_structSize	= ( sizeof( blocklink_t ) + ( ( size_t ) ( BYTE_ALIGNMENT - 1 )
+  33:../Common/data_structures/heap.c **** 
+  34:../Common/data_structures/heap.c **** static blocklink_t pstart, *pend = NULL;
+  35:../Common/data_structures/heap.c **** 
+  36:../Common/data_structures/heap.c **** static size_t free_bytes_remaining = 0U;
+  37:../Common/data_structures/heap.c **** static size_t minimum_everfreebytes_remaining = 0U;
+  38:../Common/data_structures/heap.c **** 
+  39:../Common/data_structures/heap.c **** static size_t block_allocatedbit = 0;
+  40:../Common/data_structures/heap.c **** 
+  41:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+  42:../Common/data_structures/heap.c **** 
+  43:../Common/data_structures/heap.c **** void *heap_malloc( size_t wanted_size )
+  44:../Common/data_structures/heap.c **** {
+  45:../Common/data_structures/heap.c ****     blocklink_t *pxBlock, *p_previous_block, *p_new_blocklink;
+  46:../Common/data_structures/heap.c ****     void *p_return = NULL;
+  47:../Common/data_structures/heap.c **** 	// vTaskSuspendAll();
+  48:../Common/data_structures/heap.c **** 	{
+  49:../Common/data_structures/heap.c **** 		if( pend == NULL )
+  50:../Common/data_structures/heap.c **** 		{
+  51:../Common/data_structures/heap.c **** 			heap_init();
+  52:../Common/data_structures/heap.c **** 		}
+  53:../Common/data_structures/heap.c **** 		if( ( wanted_size & block_allocatedbit ) == 0 )
+  54:../Common/data_structures/heap.c **** 		{
+  55:../Common/data_structures/heap.c **** 			if( wanted_size > 0 )
+  56:../Common/data_structures/heap.c **** 			{
+  57:../Common/data_structures/heap.c **** 				wanted_size += heap_structSize;
+  58:../Common/data_structures/heap.c **** 				if( ( wanted_size & BYTE_ALIGNMENT_MASK ) != 0x00 )
+  59:../Common/data_structures/heap.c **** 				{
+  60:../Common/data_structures/heap.c **** 					wanted_size += ( BYTE_ALIGNMENT - ( wanted_size & BYTE_ALIGNMENT_MASK ) );
+  61:../Common/data_structures/heap.c **** 					user_assert_param( ( wanted_size & BYTE_ALIGNMENT_MASK ) == 0 );
+  62:../Common/data_structures/heap.c **** 				}
+  63:../Common/data_structures/heap.c **** 			}
+  64:../Common/data_structures/heap.c **** 
+  65:../Common/data_structures/heap.c **** 			if( ( wanted_size > 0 ) && ( wanted_size <= free_bytes_remaining ) )
+  66:../Common/data_structures/heap.c **** 			{
+  67:../Common/data_structures/heap.c **** 				p_previous_block = &pstart;
+  68:../Common/data_structures/heap.c **** 				pxBlock = pstart.p_next_freeblock;
+  69:../Common/data_structures/heap.c **** 				while( ( pxBlock->xBlockSize < wanted_size ) && ( pxBlock->p_next_freeblock != NULL ) )
+  70:../Common/data_structures/heap.c **** 				{
+  71:../Common/data_structures/heap.c **** 					p_previous_block = pxBlock;
+  72:../Common/data_structures/heap.c **** 					pxBlock = pxBlock->p_next_freeblock;
+  73:../Common/data_structures/heap.c **** 				}
+  74:../Common/data_structures/heap.c **** 
+  75:../Common/data_structures/heap.c **** 				if( pxBlock != pend )
+  76:../Common/data_structures/heap.c **** 				{
+  77:../Common/data_structures/heap.c **** 					p_return = ( void * ) ( ( ( uint8_t * ) p_previous_block->p_next_freeblock ) + heap_structSize
+  78:../Common/data_structures/heap.c **** 
+  79:../Common/data_structures/heap.c **** 					p_previous_block->p_next_freeblock = pxBlock->p_next_freeblock;
+  80:../Common/data_structures/heap.c **** 
+  81:../Common/data_structures/heap.c **** 					if( ( pxBlock->xBlockSize - wanted_size ) > heapMINIMUM_BLOCK_SIZE )
+  82:../Common/data_structures/heap.c **** 					{
+  83:../Common/data_structures/heap.c **** 						p_new_blocklink = ( void * ) ( ( ( uint8_t * ) pxBlock ) + wanted_size );
+  84:../Common/data_structures/heap.c **** 						user_assert_param( ( ( ( size_t ) p_new_blocklink ) & BYTE_ALIGNMENT_MASK ) == 0 );
+  85:../Common/data_structures/heap.c **** 
+  86:../Common/data_structures/heap.c **** 						p_new_blocklink->xBlockSize = pxBlock->xBlockSize - wanted_size;
+  87:../Common/data_structures/heap.c **** 						pxBlock->xBlockSize = wanted_size;
+  88:../Common/data_structures/heap.c **** 
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 3
+
+
+  89:../Common/data_structures/heap.c **** 						insert_block_into_freeList( p_new_blocklink );
+  90:../Common/data_structures/heap.c **** 					}
+  91:../Common/data_structures/heap.c **** 
+  92:../Common/data_structures/heap.c **** 					free_bytes_remaining -= pxBlock->xBlockSize;
+  93:../Common/data_structures/heap.c **** 
+  94:../Common/data_structures/heap.c **** 					if( free_bytes_remaining < minimum_everfreebytes_remaining )
+  95:../Common/data_structures/heap.c **** 					{
+  96:../Common/data_structures/heap.c **** 						minimum_everfreebytes_remaining = free_bytes_remaining;
+  97:../Common/data_structures/heap.c **** 					}
+  98:../Common/data_structures/heap.c **** 					pxBlock->xBlockSize |= block_allocatedbit;
+  99:../Common/data_structures/heap.c **** 					pxBlock->p_next_freeblock = NULL;
+ 100:../Common/data_structures/heap.c **** 				}
+ 101:../Common/data_structures/heap.c **** 			}
+ 102:../Common/data_structures/heap.c **** 		}
+ 103:../Common/data_structures/heap.c **** 	}
+ 104:../Common/data_structures/heap.c **** 	// ( void ) xTaskResumeAll();
+ 105:../Common/data_structures/heap.c **** 
+ 106:../Common/data_structures/heap.c **** 	#if( configUSE_MALLOC_FAILED_HOOK == 1 )
+ 107:../Common/data_structures/heap.c **** 	{
+ 108:../Common/data_structures/heap.c **** 		if( p_return == NULL )
+ 109:../Common/data_structures/heap.c **** 		{
+ 110:../Common/data_structures/heap.c **** 			extern void vApplicationMallocFailedHook( void );
+ 111:../Common/data_structures/heap.c **** 			vApplicationMallocFailedHook();
+ 112:../Common/data_structures/heap.c **** 		}
+ 113:../Common/data_structures/heap.c **** 		else
+ 114:../Common/data_structures/heap.c **** 		{
+ 115:../Common/data_structures/heap.c **** 			
+ 116:../Common/data_structures/heap.c **** 		}
+ 117:../Common/data_structures/heap.c **** 	}
+ 118:../Common/data_structures/heap.c **** 	#endif
+ 119:../Common/data_structures/heap.c **** 
+ 120:../Common/data_structures/heap.c **** 	user_assert_param( ( ( ( size_t ) p_return ) & ( size_t ) BYTE_ALIGNMENT_MASK ) == 0 );
+ 121:../Common/data_structures/heap.c **** 	return p_return;
+ 122:../Common/data_structures/heap.c **** }
+ 123:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 124:../Common/data_structures/heap.c **** 
+ 125:../Common/data_structures/heap.c **** void heap_free( void *pv )
+ 126:../Common/data_structures/heap.c **** {
+ 127:../Common/data_structures/heap.c **** uint8_t *puc = ( uint8_t * ) pv;
+ 128:../Common/data_structures/heap.c **** blocklink_t *pxLink;
+ 129:../Common/data_structures/heap.c **** 
+ 130:../Common/data_structures/heap.c **** 	if( pv != NULL )
+ 131:../Common/data_structures/heap.c **** 	{
+ 132:../Common/data_structures/heap.c **** 		puc -= heap_structSize;
+ 133:../Common/data_structures/heap.c **** 
+ 134:../Common/data_structures/heap.c **** 		pxLink = ( void * ) puc;
+ 135:../Common/data_structures/heap.c **** 
+ 136:../Common/data_structures/heap.c **** 		user_assert_param( ( pxLink->xBlockSize & block_allocatedbit ) != 0 );
+ 137:../Common/data_structures/heap.c **** 		user_assert_param( pxLink->p_next_freeblock == NULL );
+ 138:../Common/data_structures/heap.c **** 
+ 139:../Common/data_structures/heap.c **** 		if( ( pxLink->xBlockSize & block_allocatedbit ) != 0 )
+ 140:../Common/data_structures/heap.c **** 		{
+ 141:../Common/data_structures/heap.c **** 			if( pxLink->p_next_freeblock == NULL )
+ 142:../Common/data_structures/heap.c **** 			{
+ 143:../Common/data_structures/heap.c **** 				pxLink->xBlockSize &= ~block_allocatedbit;
+ 144:../Common/data_structures/heap.c **** 
+ 145:../Common/data_structures/heap.c **** 				// vTaskSuspendAll();
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 4
+
+
+ 146:../Common/data_structures/heap.c **** 				{
+ 147:../Common/data_structures/heap.c **** 					free_bytes_remaining += pxLink->xBlockSize;
+ 148:../Common/data_structures/heap.c **** 					// traceFREE( pv, pxLink->xBlockSize );
+ 149:../Common/data_structures/heap.c **** 					insert_block_into_freeList( ( ( blocklink_t * ) pxLink ) );
+ 150:../Common/data_structures/heap.c **** 				}
+ 151:../Common/data_structures/heap.c **** 				// ( void ) xTaskResumeAll();
+ 152:../Common/data_structures/heap.c **** 			}
+ 153:../Common/data_structures/heap.c **** 		}
+ 154:../Common/data_structures/heap.c **** 	}
+ 155:../Common/data_structures/heap.c **** }
+ 156:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 157:../Common/data_structures/heap.c **** 
+ 158:../Common/data_structures/heap.c **** size_t heap_get_freeheap_size( void )
+ 159:../Common/data_structures/heap.c **** {
+ 160:../Common/data_structures/heap.c **** 	return free_bytes_remaining;
+ 161:../Common/data_structures/heap.c **** }
+ 162:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 163:../Common/data_structures/heap.c **** 
+ 164:../Common/data_structures/heap.c **** size_t heap_get_minimumever_freeheapsize( void )
+ 165:../Common/data_structures/heap.c **** {
+ 166:../Common/data_structures/heap.c **** 	return minimum_everfreebytes_remaining;
+ 167:../Common/data_structures/heap.c **** }
+ 168:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 169:../Common/data_structures/heap.c **** 
+ 170:../Common/data_structures/heap.c **** void vPortInitialiseBlocks( void )
+ 171:../Common/data_structures/heap.c **** {
+ 172:../Common/data_structures/heap.c **** }
+ 173:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 174:../Common/data_structures/heap.c **** 
+ 175:../Common/data_structures/heap.c **** static void heap_init( void )
+ 176:../Common/data_structures/heap.c **** {
+  28              		.loc 1 176 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+ 177:../Common/data_structures/heap.c **** blocklink_t *p_first_freeblock;
+  33              		.loc 1 177 1 view .LVU1
+ 178:../Common/data_structures/heap.c **** uint8_t *p_ucaligned_heap;
+  34              		.loc 1 178 1 view .LVU2
+ 179:../Common/data_structures/heap.c **** size_t uxaddress;
+  35              		.loc 1 179 1 view .LVU3
+ 180:../Common/data_structures/heap.c **** size_t xTotalHeapSize = TOTAL_HEAP_SIZE;
+  36              		.loc 1 180 1 view .LVU4
+  37              	.LVL0:
+ 181:../Common/data_structures/heap.c **** 
+ 182:../Common/data_structures/heap.c **** 	uxaddress = ( size_t ) ucHeap;
+  38              		.loc 1 182 2 view .LVU5
+  39              		.loc 1 182 12 is_stmt 0 view .LVU6
+  40 0000 124A     		ldr	r2, .L4
+  41              	.LVL1:
+ 183:../Common/data_structures/heap.c **** 
+ 184:../Common/data_structures/heap.c **** 	if( ( uxaddress & BYTE_ALIGNMENT_MASK ) != 0 )
+  42              		.loc 1 184 2 is_stmt 1 view .LVU7
+  43              		.loc 1 184 4 is_stmt 0 view .LVU8
+  44 0002 12F0070F 		tst	r2, #7
+  45 0006 1ED0     		beq	.L3
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 5
+
+
+ 185:../Common/data_structures/heap.c **** 	{
+ 186:../Common/data_structures/heap.c **** 		uxaddress += ( BYTE_ALIGNMENT - 1 );
+  46              		.loc 1 186 3 is_stmt 1 view .LVU9
+  47              		.loc 1 186 13 is_stmt 0 view .LVU10
+  48 0008 D11D     		adds	r1, r2, #7
+  49              	.LVL2:
+ 187:../Common/data_structures/heap.c **** 		uxaddress &= ~( ( size_t ) BYTE_ALIGNMENT_MASK );
+  50              		.loc 1 187 3 is_stmt 1 view .LVU11
+  51              		.loc 1 187 13 is_stmt 0 view .LVU12
+  52 000a 21F00701 		bic	r1, r1, #7
+  53              	.LVL3:
+ 188:../Common/data_structures/heap.c **** 		xTotalHeapSize -= uxaddress - ( size_t ) ucHeap;
+  54              		.loc 1 188 3 is_stmt 1 view .LVU13
+  55              		.loc 1 188 18 is_stmt 0 view .LVU14
+  56 000e C1F58053 		rsb	r3, r1, #4096
+  57 0012 1344     		add	r3, r3, r2
+  58              	.LVL4:
+ 187:../Common/data_structures/heap.c **** 		uxaddress &= ~( ( size_t ) BYTE_ALIGNMENT_MASK );
+  59              		.loc 1 187 13 view .LVU15
+  60 0014 0A46     		mov	r2, r1
+  61              	.LVL5:
+  62              	.L2:
+ 189:../Common/data_structures/heap.c **** 	}
+ 190:../Common/data_structures/heap.c **** 
+ 191:../Common/data_structures/heap.c **** 	p_ucaligned_heap = ( uint8_t * ) uxaddress;
+  63              		.loc 1 191 2 is_stmt 1 view .LVU16
+ 192:../Common/data_structures/heap.c **** 
+ 193:../Common/data_structures/heap.c **** 	pstart.p_next_freeblock = ( void * ) p_ucaligned_heap;
+  64              		.loc 1 193 2 view .LVU17
+  65              		.loc 1 193 26 is_stmt 0 view .LVU18
+  66 0016 0E48     		ldr	r0, .L4+4
+  67 0018 0260     		str	r2, [r0]
+ 194:../Common/data_structures/heap.c **** 	pstart.xBlockSize = ( size_t ) 0;
+  68              		.loc 1 194 2 is_stmt 1 view .LVU19
+  69              		.loc 1 194 20 is_stmt 0 view .LVU20
+  70 001a 0021     		movs	r1, #0
+  71 001c 4160     		str	r1, [r0, #4]
+ 195:../Common/data_structures/heap.c **** 
+ 196:../Common/data_structures/heap.c **** 
+ 197:../Common/data_structures/heap.c **** 	uxaddress = ( ( size_t ) p_ucaligned_heap ) + xTotalHeapSize;
+  72              		.loc 1 197 2 is_stmt 1 view .LVU21
+  73              		.loc 1 197 12 is_stmt 0 view .LVU22
+  74 001e 1344     		add	r3, r3, r2
+  75              	.LVL6:
+ 198:../Common/data_structures/heap.c **** 	uxaddress -= heap_structSize;
+  76              		.loc 1 198 2 is_stmt 1 view .LVU23
+  77              		.loc 1 198 12 is_stmt 0 view .LVU24
+  78 0020 083B     		subs	r3, r3, #8
+  79              	.LVL7:
+ 199:../Common/data_structures/heap.c **** 	uxaddress &= ~( ( size_t ) BYTE_ALIGNMENT_MASK );
+  80              		.loc 1 199 2 is_stmt 1 view .LVU25
+  81              		.loc 1 199 12 is_stmt 0 view .LVU26
+  82 0022 23F00703 		bic	r3, r3, #7
+  83              	.LVL8:
+ 200:../Common/data_structures/heap.c **** 	pend = ( void * ) uxaddress;
+  84              		.loc 1 200 2 is_stmt 1 view .LVU27
+  85              		.loc 1 200 7 is_stmt 0 view .LVU28
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 6
+
+
+  86 0026 0B48     		ldr	r0, .L4+8
+  87 0028 0360     		str	r3, [r0]
+ 201:../Common/data_structures/heap.c **** 	pend->xBlockSize = 0;
+  88              		.loc 1 201 2 is_stmt 1 view .LVU29
+  89              		.loc 1 201 19 is_stmt 0 view .LVU30
+  90 002a 5960     		str	r1, [r3, #4]
+ 202:../Common/data_structures/heap.c **** 	pend->p_next_freeblock = NULL;
+  91              		.loc 1 202 2 is_stmt 1 view .LVU31
+  92              		.loc 1 202 25 is_stmt 0 view .LVU32
+  93 002c 1960     		str	r1, [r3]
+ 203:../Common/data_structures/heap.c **** 
+ 204:../Common/data_structures/heap.c **** 	p_first_freeblock = ( void * ) p_ucaligned_heap;
+  94              		.loc 1 204 2 is_stmt 1 view .LVU33
+  95              	.LVL9:
+ 205:../Common/data_structures/heap.c **** 	p_first_freeblock->xBlockSize = uxaddress - ( size_t ) p_first_freeblock;
+  96              		.loc 1 205 2 view .LVU34
+  97              		.loc 1 205 44 is_stmt 0 view .LVU35
+  98 002e 991A     		subs	r1, r3, r2
+  99              		.loc 1 205 32 view .LVU36
+ 100 0030 5160     		str	r1, [r2, #4]
+ 206:../Common/data_structures/heap.c **** 	p_first_freeblock->p_next_freeblock = pend;
+ 101              		.loc 1 206 2 is_stmt 1 view .LVU37
+ 102              		.loc 1 206 38 is_stmt 0 view .LVU38
+ 103 0032 1360     		str	r3, [r2]
+ 207:../Common/data_structures/heap.c **** 
+ 208:../Common/data_structures/heap.c **** 	minimum_everfreebytes_remaining = p_first_freeblock->xBlockSize;
+ 104              		.loc 1 208 2 is_stmt 1 view .LVU39
+ 105              		.loc 1 208 34 is_stmt 0 view .LVU40
+ 106 0034 084B     		ldr	r3, .L4+12
+ 107              	.LVL10:
+ 108              		.loc 1 208 34 view .LVU41
+ 109 0036 1960     		str	r1, [r3]
+ 209:../Common/data_structures/heap.c **** 	free_bytes_remaining = p_first_freeblock->xBlockSize;
+ 110              		.loc 1 209 2 is_stmt 1 view .LVU42
+ 111              		.loc 1 209 23 is_stmt 0 view .LVU43
+ 112 0038 084B     		ldr	r3, .L4+16
+ 113 003a 1960     		str	r1, [r3]
+ 210:../Common/data_structures/heap.c **** 
+ 211:../Common/data_structures/heap.c **** 	block_allocatedbit = ( ( size_t ) 1 ) << ( ( sizeof( size_t ) * BITS_PER_BYTE ) - 1 );
+ 114              		.loc 1 211 2 is_stmt 1 view .LVU44
+ 115              		.loc 1 211 21 is_stmt 0 view .LVU45
+ 116 003c 084B     		ldr	r3, .L4+20
+ 117 003e 4FF00042 		mov	r2, #-2147483648
+ 118              	.LVL11:
+ 119              		.loc 1 211 21 view .LVU46
+ 120 0042 1A60     		str	r2, [r3]
+ 212:../Common/data_structures/heap.c **** }
+ 121              		.loc 1 212 1 view .LVU47
+ 122 0044 7047     		bx	lr
+ 123              	.LVL12:
+ 124              	.L3:
+ 180:../Common/data_structures/heap.c **** 
+ 125              		.loc 1 180 8 view .LVU48
+ 126 0046 4FF48053 		mov	r3, #4096
+ 127 004a E4E7     		b	.L2
+ 128              	.L5:
+ 129              		.align	2
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 7
+
+
+ 130              	.L4:
+ 131 004c 00000000 		.word	ucHeap
+ 132 0050 00000000 		.word	.LANCHOR0
+ 133 0054 00000000 		.word	.LANCHOR1
+ 134 0058 00000000 		.word	.LANCHOR2
+ 135 005c 00000000 		.word	.LANCHOR3
+ 136 0060 00000000 		.word	.LANCHOR4
+ 137              		.cfi_endproc
+ 138              	.LFE5:
+ 140              		.section	.text.insert_block_into_freeList,"ax",%progbits
+ 141              		.align	1
+ 142              		.syntax unified
+ 143              		.thumb
+ 144              		.thumb_func
+ 146              	insert_block_into_freeList:
+ 147              	.LVL13:
+ 148              	.LFB6:
+ 213:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 214:../Common/data_structures/heap.c **** 
+ 215:../Common/data_structures/heap.c **** static void insert_block_into_freeList( blocklink_t *pblockto_insert )
+ 216:../Common/data_structures/heap.c **** {
+ 149              		.loc 1 216 1 is_stmt 1 view -0
+ 150              		.cfi_startproc
+ 151              		@ args = 0, pretend = 0, frame = 0
+ 152              		@ frame_needed = 0, uses_anonymous_args = 0
+ 153              		@ link register save eliminated.
+ 217:../Common/data_structures/heap.c ****     blocklink_t *pxIterator;
+ 154              		.loc 1 217 5 view .LVU50
+ 218:../Common/data_structures/heap.c ****     uint8_t *puc;
+ 155              		.loc 1 218 5 view .LVU51
+ 219:../Common/data_structures/heap.c **** 
+ 220:../Common/data_structures/heap.c **** 	for( pxIterator = &pstart; pxIterator->p_next_freeblock < pblockto_insert; pxIterator = pxIterator
+ 156              		.loc 1 220 2 view .LVU52
+ 157              		.loc 1 220 18 is_stmt 0 view .LVU53
+ 158 0000 164B     		ldr	r3, .L21
+ 159              	.LVL14:
+ 160              	.L7:
+ 161              		.loc 1 220 29 is_stmt 1 discriminator 1 view .LVU54
+ 162 0002 1A46     		mov	r2, r3
+ 163              		.loc 1 220 39 is_stmt 0 discriminator 1 view .LVU55
+ 164 0004 1B68     		ldr	r3, [r3]
+ 165              	.LVL15:
+ 166              		.loc 1 220 2 discriminator 1 view .LVU56
+ 167 0006 8342     		cmp	r3, r0
+ 168 0008 FBD3     		bcc	.L7
+ 221:../Common/data_structures/heap.c **** 	{
+ 222:../Common/data_structures/heap.c **** 		/* Nothing to do here, just iterate to the right position. */
+ 223:../Common/data_structures/heap.c **** 	}
+ 224:../Common/data_structures/heap.c **** 
+ 225:../Common/data_structures/heap.c **** 	puc = ( uint8_t * ) pxIterator;
+ 169              		.loc 1 225 2 is_stmt 1 view .LVU57
+ 170              	.LVL16:
+ 226:../Common/data_structures/heap.c **** 	if( ( puc + pxIterator->xBlockSize ) == ( uint8_t * ) pblockto_insert )
+ 171              		.loc 1 226 2 view .LVU58
+ 172              		.loc 1 226 24 is_stmt 0 view .LVU59
+ 173 000a 5168     		ldr	r1, [r2, #4]
+ 174              		.loc 1 226 12 view .LVU60
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 8
+
+
+ 175 000c 02EB010C 		add	ip, r2, r1
+ 176              		.loc 1 226 4 view .LVU61
+ 177 0010 8445     		cmp	ip, r0
+ 178 0012 09D0     		beq	.L19
+ 179              	.L8:
+ 227:../Common/data_structures/heap.c **** 	{
+ 228:../Common/data_structures/heap.c **** 		pxIterator->xBlockSize += pblockto_insert->xBlockSize;
+ 229:../Common/data_structures/heap.c **** 		pblockto_insert = pxIterator;
+ 230:../Common/data_structures/heap.c **** 	}
+ 231:../Common/data_structures/heap.c **** 	puc = ( uint8_t * ) pblockto_insert;
+ 180              		.loc 1 231 2 is_stmt 1 view .LVU62
+ 181              	.LVL17:
+ 232:../Common/data_structures/heap.c **** 	if( ( puc + pblockto_insert->xBlockSize ) == ( uint8_t * ) pxIterator->p_next_freeblock )
+ 182              		.loc 1 232 2 view .LVU63
+ 183              		.loc 1 232 29 is_stmt 0 view .LVU64
+ 184 0014 4168     		ldr	r1, [r0, #4]
+ 185              		.loc 1 232 12 view .LVU65
+ 186 0016 00EB010C 		add	ip, r0, r1
+ 187              		.loc 1 232 4 view .LVU66
+ 188 001a 6345     		cmp	r3, ip
+ 189 001c 09D0     		beq	.L20
+ 233:../Common/data_structures/heap.c **** 	{
+ 234:../Common/data_structures/heap.c **** 		if( pxIterator->p_next_freeblock != pend )
+ 235:../Common/data_structures/heap.c **** 		{
+ 236:../Common/data_structures/heap.c **** 			/* Form one big block from the two blocks. */
+ 237:../Common/data_structures/heap.c **** 			pblockto_insert->xBlockSize += pxIterator->p_next_freeblock->xBlockSize;
+ 238:../Common/data_structures/heap.c **** 			pblockto_insert->p_next_freeblock = pxIterator->p_next_freeblock->p_next_freeblock;
+ 239:../Common/data_structures/heap.c **** 		}
+ 240:../Common/data_structures/heap.c **** 		else
+ 241:../Common/data_structures/heap.c **** 		{
+ 242:../Common/data_structures/heap.c **** 			pblockto_insert->p_next_freeblock = pend;
+ 243:../Common/data_structures/heap.c **** 		}
+ 244:../Common/data_structures/heap.c **** 	}
+ 245:../Common/data_structures/heap.c **** 	else
+ 246:../Common/data_structures/heap.c **** 	{
+ 247:../Common/data_structures/heap.c **** 		pblockto_insert->p_next_freeblock = pxIterator->p_next_freeblock;
+ 190              		.loc 1 247 3 is_stmt 1 view .LVU67
+ 191              		.loc 1 247 37 is_stmt 0 view .LVU68
+ 192 001e 0360     		str	r3, [r0]
+ 248:../Common/data_structures/heap.c **** 	}
+ 249:../Common/data_structures/heap.c **** 	if( pxIterator != pblockto_insert )
+ 193              		.loc 1 249 2 is_stmt 1 view .LVU69
+ 194              		.loc 1 249 4 is_stmt 0 view .LVU70
+ 195 0020 9042     		cmp	r0, r2
+ 196 0022 19D0     		beq	.L16
+ 250:../Common/data_structures/heap.c **** 	{
+ 251:../Common/data_structures/heap.c **** 		pxIterator->p_next_freeblock = pblockto_insert;
+ 197              		.loc 1 251 3 is_stmt 1 view .LVU71
+ 198              		.loc 1 251 32 is_stmt 0 view .LVU72
+ 199 0024 1060     		str	r0, [r2]
+ 200 0026 7047     		bx	lr
+ 201              	.LVL18:
+ 202              	.L19:
+ 228:../Common/data_structures/heap.c **** 		pblockto_insert = pxIterator;
+ 203              		.loc 1 228 3 is_stmt 1 view .LVU73
+ 228:../Common/data_structures/heap.c **** 		pblockto_insert = pxIterator;
+ 204              		.loc 1 228 44 is_stmt 0 view .LVU74
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 9
+
+
+ 205 0028 4068     		ldr	r0, [r0, #4]
+ 206              	.LVL19:
+ 228:../Common/data_structures/heap.c **** 		pblockto_insert = pxIterator;
+ 207              		.loc 1 228 26 view .LVU75
+ 208 002a 0144     		add	r1, r1, r0
+ 209 002c 5160     		str	r1, [r2, #4]
+ 229:../Common/data_structures/heap.c **** 	}
+ 210              		.loc 1 229 3 is_stmt 1 view .LVU76
+ 211              	.LVL20:
+ 229:../Common/data_structures/heap.c **** 	}
+ 212              		.loc 1 229 19 is_stmt 0 view .LVU77
+ 213 002e 1046     		mov	r0, r2
+ 214 0030 F0E7     		b	.L8
+ 215              	.LVL21:
+ 216              	.L20:
+ 216:../Common/data_structures/heap.c ****     blocklink_t *pxIterator;
+ 217              		.loc 1 216 1 view .LVU78
+ 218 0032 10B4     		push	{r4}
+ 219              	.LCFI0:
+ 220              		.cfi_def_cfa_offset 4
+ 221              		.cfi_offset 4, -4
+ 234:../Common/data_structures/heap.c **** 		{
+ 222              		.loc 1 234 3 is_stmt 1 view .LVU79
+ 234:../Common/data_structures/heap.c **** 		{
+ 223              		.loc 1 234 36 is_stmt 0 view .LVU80
+ 224 0034 0A4C     		ldr	r4, .L21+4
+ 225 0036 2468     		ldr	r4, [r4]
+ 234:../Common/data_structures/heap.c **** 		{
+ 226              		.loc 1 234 5 view .LVU81
+ 227 0038 A342     		cmp	r3, r4
+ 228 003a 0BD0     		beq	.L10
+ 237:../Common/data_structures/heap.c **** 			pblockto_insert->p_next_freeblock = pxIterator->p_next_freeblock->p_next_freeblock;
+ 229              		.loc 1 237 4 is_stmt 1 view .LVU82
+ 237:../Common/data_structures/heap.c **** 			pblockto_insert->p_next_freeblock = pxIterator->p_next_freeblock->p_next_freeblock;
+ 230              		.loc 1 237 63 is_stmt 0 view .LVU83
+ 231 003c 5B68     		ldr	r3, [r3, #4]
+ 237:../Common/data_structures/heap.c **** 			pblockto_insert->p_next_freeblock = pxIterator->p_next_freeblock->p_next_freeblock;
+ 232              		.loc 1 237 32 view .LVU84
+ 233 003e 1944     		add	r1, r1, r3
+ 234 0040 4160     		str	r1, [r0, #4]
+ 238:../Common/data_structures/heap.c **** 		}
+ 235              		.loc 1 238 4 is_stmt 1 view .LVU85
+ 238:../Common/data_structures/heap.c **** 		}
+ 236              		.loc 1 238 50 is_stmt 0 view .LVU86
+ 237 0042 1368     		ldr	r3, [r2]
+ 238:../Common/data_structures/heap.c **** 		}
+ 238              		.loc 1 238 68 view .LVU87
+ 239 0044 1B68     		ldr	r3, [r3]
+ 238:../Common/data_structures/heap.c **** 		}
+ 240              		.loc 1 238 38 view .LVU88
+ 241 0046 0360     		str	r3, [r0]
+ 242              	.L11:
+ 249:../Common/data_structures/heap.c **** 	{
+ 243              		.loc 1 249 2 is_stmt 1 view .LVU89
+ 249:../Common/data_structures/heap.c **** 	{
+ 244              		.loc 1 249 4 is_stmt 0 view .LVU90
+ 245 0048 9042     		cmp	r0, r2
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 10
+
+
+ 246 004a 00D0     		beq	.L6
+ 247              		.loc 1 251 3 is_stmt 1 view .LVU91
+ 248              		.loc 1 251 32 is_stmt 0 view .LVU92
+ 249 004c 1060     		str	r0, [r2]
+ 250              	.L6:
+ 252:../Common/data_structures/heap.c **** 	}
+ 253:../Common/data_structures/heap.c **** }
+ 251              		.loc 1 253 1 view .LVU93
+ 252 004e 5DF8044B 		ldr	r4, [sp], #4
+ 253              	.LCFI1:
+ 254              		.cfi_remember_state
+ 255              		.cfi_restore 4
+ 256              		.cfi_def_cfa_offset 0
+ 257 0052 7047     		bx	lr
+ 258              	.L10:
+ 259              	.LCFI2:
+ 260              		.cfi_restore_state
+ 242:../Common/data_structures/heap.c **** 		}
+ 261              		.loc 1 242 4 is_stmt 1 view .LVU94
+ 242:../Common/data_structures/heap.c **** 		}
+ 262              		.loc 1 242 38 is_stmt 0 view .LVU95
+ 263 0054 0460     		str	r4, [r0]
+ 264 0056 F7E7     		b	.L11
+ 265              	.L16:
+ 266              	.LCFI3:
+ 267              		.cfi_def_cfa_offset 0
+ 268              		.cfi_restore 4
+ 242:../Common/data_structures/heap.c **** 		}
+ 269              		.loc 1 242 38 view .LVU96
+ 270 0058 7047     		bx	lr
+ 271              	.L22:
+ 272 005a 00BF     		.align	2
+ 273              	.L21:
+ 274 005c 00000000 		.word	.LANCHOR0
+ 275 0060 00000000 		.word	.LANCHOR1
+ 276              		.cfi_endproc
+ 277              	.LFE6:
+ 279              		.section	.text.heap_malloc,"ax",%progbits
+ 280              		.align	1
+ 281              		.global	heap_malloc
+ 282              		.syntax unified
+ 283              		.thumb
+ 284              		.thumb_func
+ 286              	heap_malloc:
+ 287              	.LVL22:
+ 288              	.LFB0:
+  44:../Common/data_structures/heap.c ****     blocklink_t *pxBlock, *p_previous_block, *p_new_blocklink;
+ 289              		.loc 1 44 1 is_stmt 1 view -0
+ 290              		.cfi_startproc
+ 291              		@ args = 0, pretend = 0, frame = 0
+ 292              		@ frame_needed = 0, uses_anonymous_args = 0
+  44:../Common/data_structures/heap.c ****     blocklink_t *pxBlock, *p_previous_block, *p_new_blocklink;
+ 293              		.loc 1 44 1 is_stmt 0 view .LVU98
+ 294 0000 70B5     		push	{r4, r5, r6, lr}
+ 295              	.LCFI4:
+ 296              		.cfi_def_cfa_offset 16
+ 297              		.cfi_offset 4, -16
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 11
+
+
+ 298              		.cfi_offset 5, -12
+ 299              		.cfi_offset 6, -8
+ 300              		.cfi_offset 14, -4
+ 301 0002 0546     		mov	r5, r0
+  45:../Common/data_structures/heap.c ****     void *p_return = NULL;
+ 302              		.loc 1 45 5 is_stmt 1 view .LVU99
+  46:../Common/data_structures/heap.c **** 	// vTaskSuspendAll();
+ 303              		.loc 1 46 5 view .LVU100
+ 304              	.LVL23:
+  49:../Common/data_structures/heap.c **** 		{
+ 305              		.loc 1 49 3 view .LVU101
+  49:../Common/data_structures/heap.c **** 		{
+ 306              		.loc 1 49 12 is_stmt 0 view .LVU102
+ 307 0004 274B     		ldr	r3, .L39
+ 308 0006 1B68     		ldr	r3, [r3]
+  49:../Common/data_structures/heap.c **** 		{
+ 309              		.loc 1 49 5 view .LVU103
+ 310 0008 A3B1     		cbz	r3, .L37
+ 311              	.LVL24:
+ 312              	.L24:
+  53:../Common/data_structures/heap.c **** 		{
+ 313              		.loc 1 53 3 is_stmt 1 view .LVU104
+  53:../Common/data_structures/heap.c **** 		{
+ 314              		.loc 1 53 21 is_stmt 0 view .LVU105
+ 315 000a 274B     		ldr	r3, .L39+4
+ 316 000c 1B68     		ldr	r3, [r3]
+  53:../Common/data_structures/heap.c **** 		{
+ 317              		.loc 1 53 5 view .LVU106
+ 318 000e 1D42     		tst	r5, r3
+ 319 0010 40D1     		bne	.L31
+  55:../Common/data_structures/heap.c **** 			{
+ 320              		.loc 1 55 4 is_stmt 1 view .LVU107
+  55:../Common/data_structures/heap.c **** 			{
+ 321              		.loc 1 55 6 is_stmt 0 view .LVU108
+ 322 0012 35B1     		cbz	r5, .L26
+  57:../Common/data_structures/heap.c **** 				if( ( wanted_size & BYTE_ALIGNMENT_MASK ) != 0x00 )
+ 323              		.loc 1 57 5 is_stmt 1 view .LVU109
+  57:../Common/data_structures/heap.c **** 				if( ( wanted_size & BYTE_ALIGNMENT_MASK ) != 0x00 )
+ 324              		.loc 1 57 17 is_stmt 0 view .LVU110
+ 325 0014 0835     		adds	r5, r5, #8
+ 326              	.LVL25:
+  58:../Common/data_structures/heap.c **** 				{
+ 327              		.loc 1 58 5 is_stmt 1 view .LVU111
+  58:../Common/data_structures/heap.c **** 				{
+ 328              		.loc 1 58 7 is_stmt 0 view .LVU112
+ 329 0016 15F0070F 		tst	r5, #7
+ 330 001a 02D0     		beq	.L26
+  60:../Common/data_structures/heap.c **** 					user_assert_param( ( wanted_size & BYTE_ALIGNMENT_MASK ) == 0 );
+ 331              		.loc 1 60 6 is_stmt 1 view .LVU113
+  60:../Common/data_structures/heap.c **** 					user_assert_param( ( wanted_size & BYTE_ALIGNMENT_MASK ) == 0 );
+ 332              		.loc 1 60 18 is_stmt 0 view .LVU114
+ 333 001c 25F00705 		bic	r5, r5, #7
+ 334              	.LVL26:
+  60:../Common/data_structures/heap.c **** 					user_assert_param( ( wanted_size & BYTE_ALIGNMENT_MASK ) == 0 );
+ 335              		.loc 1 60 18 view .LVU115
+ 336 0020 0835     		adds	r5, r5, #8
+ 337              	.LVL27:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 12
+
+
+ 338              	.L26:
+  61:../Common/data_structures/heap.c **** 				}
+ 339              		.loc 1 61 6 is_stmt 1 view .LVU116
+  65:../Common/data_structures/heap.c **** 			{
+ 340              		.loc 1 65 4 view .LVU117
+  65:../Common/data_structures/heap.c **** 			{
+ 341              		.loc 1 65 6 is_stmt 0 view .LVU118
+ 342 0022 002D     		cmp	r5, #0
+ 343 0024 38D0     		beq	.L32
+  65:../Common/data_structures/heap.c **** 			{
+ 344              		.loc 1 65 45 discriminator 1 view .LVU119
+ 345 0026 214B     		ldr	r3, .L39+8
+ 346 0028 1B68     		ldr	r3, [r3]
+  65:../Common/data_structures/heap.c **** 			{
+ 347              		.loc 1 65 28 discriminator 1 view .LVU120
+ 348 002a AB42     		cmp	r3, r5
+ 349 002c 36D3     		bcc	.L33
+  67:../Common/data_structures/heap.c **** 				pxBlock = pstart.p_next_freeblock;
+ 350              		.loc 1 67 5 is_stmt 1 view .LVU121
+ 351              	.LVL28:
+  68:../Common/data_structures/heap.c **** 				while( ( pxBlock->xBlockSize < wanted_size ) && ( pxBlock->p_next_freeblock != NULL ) )
+ 352              		.loc 1 68 5 view .LVU122
+  68:../Common/data_structures/heap.c **** 				while( ( pxBlock->xBlockSize < wanted_size ) && ( pxBlock->p_next_freeblock != NULL ) )
+ 353              		.loc 1 68 13 is_stmt 0 view .LVU123
+ 354 002e 204A     		ldr	r2, .L39+12
+ 355 0030 1468     		ldr	r4, [r2]
+ 356              	.LVL29:
+  69:../Common/data_structures/heap.c **** 				{
+ 357              		.loc 1 69 5 is_stmt 1 view .LVU124
+  69:../Common/data_structures/heap.c **** 				{
+ 358              		.loc 1 69 10 is_stmt 0 view .LVU125
+ 359 0032 04E0     		b	.L28
+ 360              	.LVL30:
+ 361              	.L37:
+  51:../Common/data_structures/heap.c **** 		}
+ 362              		.loc 1 51 4 is_stmt 1 view .LVU126
+ 363 0034 FFF7FEFF 		bl	heap_init
+ 364              	.LVL31:
+  51:../Common/data_structures/heap.c **** 		}
+ 365              		.loc 1 51 4 is_stmt 0 view .LVU127
+ 366 0038 E7E7     		b	.L24
+ 367              	.LVL32:
+ 368              	.L34:
+  71:../Common/data_structures/heap.c **** 					pxBlock = pxBlock->p_next_freeblock;
+ 369              		.loc 1 71 23 view .LVU128
+ 370 003a 2246     		mov	r2, r4
+ 371              	.LVL33:
+  72:../Common/data_structures/heap.c **** 				}
+ 372              		.loc 1 72 14 view .LVU129
+ 373 003c 1C46     		mov	r4, r3
+ 374              	.LVL34:
+ 375              	.L28:
+  69:../Common/data_structures/heap.c **** 				{
+ 376              		.loc 1 69 10 is_stmt 1 view .LVU130
+  69:../Common/data_structures/heap.c **** 				{
+ 377              		.loc 1 69 21 is_stmt 0 view .LVU131
+ 378 003e 6368     		ldr	r3, [r4, #4]
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 13
+
+
+  69:../Common/data_structures/heap.c **** 				{
+ 379              		.loc 1 69 10 view .LVU132
+ 380 0040 AB42     		cmp	r3, r5
+ 381 0042 02D2     		bcs	.L27
+  69:../Common/data_structures/heap.c **** 				{
+ 382              		.loc 1 69 62 discriminator 1 view .LVU133
+ 383 0044 2368     		ldr	r3, [r4]
+  69:../Common/data_structures/heap.c **** 				{
+ 384              		.loc 1 69 50 discriminator 1 view .LVU134
+ 385 0046 002B     		cmp	r3, #0
+ 386 0048 F7D1     		bne	.L34
+ 387              	.L27:
+  75:../Common/data_structures/heap.c **** 				{
+ 388              		.loc 1 75 5 is_stmt 1 view .LVU135
+  75:../Common/data_structures/heap.c **** 				{
+ 389              		.loc 1 75 17 is_stmt 0 view .LVU136
+ 390 004a 164B     		ldr	r3, .L39
+ 391 004c 1B68     		ldr	r3, [r3]
+  75:../Common/data_structures/heap.c **** 				{
+ 392              		.loc 1 75 7 view .LVU137
+ 393 004e A342     		cmp	r3, r4
+ 394 0050 26D0     		beq	.L35
+  77:../Common/data_structures/heap.c **** 
+ 395              		.loc 1 77 6 is_stmt 1 view .LVU138
+  77:../Common/data_structures/heap.c **** 
+ 396              		.loc 1 77 62 is_stmt 0 view .LVU139
+ 397 0052 1668     		ldr	r6, [r2]
+  77:../Common/data_structures/heap.c **** 
+ 398              		.loc 1 77 15 view .LVU140
+ 399 0054 0836     		adds	r6, r6, #8
+ 400              	.LVL35:
+  79:../Common/data_structures/heap.c **** 
+ 401              		.loc 1 79 6 is_stmt 1 view .LVU141
+  79:../Common/data_structures/heap.c **** 
+ 402              		.loc 1 79 50 is_stmt 0 view .LVU142
+ 403 0056 2368     		ldr	r3, [r4]
+  79:../Common/data_structures/heap.c **** 
+ 404              		.loc 1 79 41 view .LVU143
+ 405 0058 1360     		str	r3, [r2]
+  81:../Common/data_structures/heap.c **** 					{
+ 406              		.loc 1 81 6 is_stmt 1 view .LVU144
+  81:../Common/data_structures/heap.c **** 					{
+ 407              		.loc 1 81 19 is_stmt 0 view .LVU145
+ 408 005a 6368     		ldr	r3, [r4, #4]
+  81:../Common/data_structures/heap.c **** 					{
+ 409              		.loc 1 81 32 view .LVU146
+ 410 005c 5B1B     		subs	r3, r3, r5
+  81:../Common/data_structures/heap.c **** 					{
+ 411              		.loc 1 81 8 view .LVU147
+ 412 005e 102B     		cmp	r3, #16
+ 413 0060 12D8     		bhi	.L38
+ 414              	.LVL36:
+ 415              	.L29:
+  92:../Common/data_structures/heap.c **** 
+ 416              		.loc 1 92 6 is_stmt 1 view .LVU148
+  92:../Common/data_structures/heap.c **** 
+ 417              		.loc 1 92 37 is_stmt 0 view .LVU149
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 14
+
+
+ 418 0062 6268     		ldr	r2, [r4, #4]
+  92:../Common/data_structures/heap.c **** 
+ 419              		.loc 1 92 27 view .LVU150
+ 420 0064 1149     		ldr	r1, .L39+8
+ 421 0066 0B68     		ldr	r3, [r1]
+ 422 0068 9B1A     		subs	r3, r3, r2
+ 423 006a 0B60     		str	r3, [r1]
+  94:../Common/data_structures/heap.c **** 					{
+ 424              		.loc 1 94 6 is_stmt 1 view .LVU151
+  94:../Common/data_structures/heap.c **** 					{
+ 425              		.loc 1 94 31 is_stmt 0 view .LVU152
+ 426 006c 1149     		ldr	r1, .L39+16
+ 427 006e 0968     		ldr	r1, [r1]
+  94:../Common/data_structures/heap.c **** 					{
+ 428              		.loc 1 94 8 view .LVU153
+ 429 0070 8B42     		cmp	r3, r1
+ 430 0072 01D2     		bcs	.L30
+  96:../Common/data_structures/heap.c **** 					}
+ 431              		.loc 1 96 7 is_stmt 1 view .LVU154
+  96:../Common/data_structures/heap.c **** 					}
+ 432              		.loc 1 96 39 is_stmt 0 view .LVU155
+ 433 0074 0F49     		ldr	r1, .L39+16
+ 434 0076 0B60     		str	r3, [r1]
+ 435              	.L30:
+  98:../Common/data_structures/heap.c **** 					pxBlock->p_next_freeblock = NULL;
+ 436              		.loc 1 98 6 is_stmt 1 view .LVU156
+  98:../Common/data_structures/heap.c **** 					pxBlock->p_next_freeblock = NULL;
+ 437              		.loc 1 98 26 is_stmt 0 view .LVU157
+ 438 0078 0B4B     		ldr	r3, .L39+4
+ 439 007a 1B68     		ldr	r3, [r3]
+ 440 007c 1343     		orrs	r3, r3, r2
+ 441 007e 6360     		str	r3, [r4, #4]
+  99:../Common/data_structures/heap.c **** 				}
+ 442              		.loc 1 99 6 is_stmt 1 view .LVU158
+  99:../Common/data_structures/heap.c **** 				}
+ 443              		.loc 1 99 32 is_stmt 0 view .LVU159
+ 444 0080 0023     		movs	r3, #0
+ 445 0082 2360     		str	r3, [r4]
+ 446              	.LVL37:
+ 447              	.L23:
+ 122:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 448              		.loc 1 122 1 view .LVU160
+ 449 0084 3046     		mov	r0, r6
+ 450 0086 70BD     		pop	{r4, r5, r6, pc}
+ 451              	.LVL38:
+ 452              	.L38:
+  83:../Common/data_structures/heap.c **** 						user_assert_param( ( ( ( size_t ) p_new_blocklink ) & BYTE_ALIGNMENT_MASK ) == 0 );
+ 453              		.loc 1 83 7 is_stmt 1 view .LVU161
+  83:../Common/data_structures/heap.c **** 						user_assert_param( ( ( ( size_t ) p_new_blocklink ) & BYTE_ALIGNMENT_MASK ) == 0 );
+ 454              		.loc 1 83 23 is_stmt 0 view .LVU162
+ 455 0088 6019     		adds	r0, r4, r5
+ 456              	.LVL39:
+  84:../Common/data_structures/heap.c **** 
+ 457              		.loc 1 84 7 is_stmt 1 view .LVU163
+  86:../Common/data_structures/heap.c **** 						pxBlock->xBlockSize = wanted_size;
+ 458              		.loc 1 86 7 view .LVU164
+  86:../Common/data_structures/heap.c **** 						pxBlock->xBlockSize = wanted_size;
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 15
+
+
+ 459              		.loc 1 86 35 is_stmt 0 view .LVU165
+ 460 008a 4360     		str	r3, [r0, #4]
+  87:../Common/data_structures/heap.c **** 
+ 461              		.loc 1 87 7 is_stmt 1 view .LVU166
+  87:../Common/data_structures/heap.c **** 
+ 462              		.loc 1 87 27 is_stmt 0 view .LVU167
+ 463 008c 6560     		str	r5, [r4, #4]
+  89:../Common/data_structures/heap.c **** 					}
+ 464              		.loc 1 89 7 is_stmt 1 view .LVU168
+ 465 008e FFF7FEFF 		bl	insert_block_into_freeList
+ 466              	.LVL40:
+  89:../Common/data_structures/heap.c **** 					}
+ 467              		.loc 1 89 7 is_stmt 0 view .LVU169
+ 468 0092 E6E7     		b	.L29
+ 469              	.LVL41:
+ 470              	.L31:
+  46:../Common/data_structures/heap.c **** 	// vTaskSuspendAll();
+ 471              		.loc 1 46 11 view .LVU170
+ 472 0094 0026     		movs	r6, #0
+ 473 0096 F5E7     		b	.L23
+ 474              	.L32:
+  46:../Common/data_structures/heap.c **** 	// vTaskSuspendAll();
+ 475              		.loc 1 46 11 view .LVU171
+ 476 0098 0026     		movs	r6, #0
+ 477 009a F3E7     		b	.L23
+ 478              	.L33:
+ 479 009c 0026     		movs	r6, #0
+ 480 009e F1E7     		b	.L23
+ 481              	.LVL42:
+ 482              	.L35:
+  46:../Common/data_structures/heap.c **** 	// vTaskSuspendAll();
+ 483              		.loc 1 46 11 view .LVU172
+ 484 00a0 0026     		movs	r6, #0
+ 120:../Common/data_structures/heap.c **** 	return p_return;
+ 485              		.loc 1 120 2 is_stmt 1 view .LVU173
+ 121:../Common/data_structures/heap.c **** }
+ 486              		.loc 1 121 2 view .LVU174
+ 121:../Common/data_structures/heap.c **** }
+ 487              		.loc 1 121 9 is_stmt 0 view .LVU175
+ 488 00a2 EFE7     		b	.L23
+ 489              	.L40:
+ 490              		.align	2
+ 491              	.L39:
+ 492 00a4 00000000 		.word	.LANCHOR1
+ 493 00a8 00000000 		.word	.LANCHOR4
+ 494 00ac 00000000 		.word	.LANCHOR3
+ 495 00b0 00000000 		.word	.LANCHOR0
+ 496 00b4 00000000 		.word	.LANCHOR2
+ 497              		.cfi_endproc
+ 498              	.LFE0:
+ 500              		.section	.text.heap_free,"ax",%progbits
+ 501              		.align	1
+ 502              		.global	heap_free
+ 503              		.syntax unified
+ 504              		.thumb
+ 505              		.thumb_func
+ 507              	heap_free:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 16
+
+
+ 508              	.LVL43:
+ 509              	.LFB1:
+ 126:../Common/data_structures/heap.c **** uint8_t *puc = ( uint8_t * ) pv;
+ 510              		.loc 1 126 1 is_stmt 1 view -0
+ 511              		.cfi_startproc
+ 512              		@ args = 0, pretend = 0, frame = 0
+ 513              		@ frame_needed = 0, uses_anonymous_args = 0
+ 127:../Common/data_structures/heap.c **** blocklink_t *pxLink;
+ 514              		.loc 1 127 1 view .LVU177
+ 128:../Common/data_structures/heap.c **** 
+ 515              		.loc 1 128 1 view .LVU178
+ 130:../Common/data_structures/heap.c **** 	{
+ 516              		.loc 1 130 2 view .LVU179
+ 130:../Common/data_structures/heap.c **** 	{
+ 517              		.loc 1 130 4 is_stmt 0 view .LVU180
+ 518 0000 B8B1     		cbz	r0, .L44
+ 519 0002 0346     		mov	r3, r0
+ 132:../Common/data_structures/heap.c **** 
+ 520              		.loc 1 132 3 is_stmt 1 view .LVU181
+ 132:../Common/data_structures/heap.c **** 
+ 521              		.loc 1 132 7 is_stmt 0 view .LVU182
+ 522 0004 0838     		subs	r0, r0, #8
+ 523              	.LVL44:
+ 134:../Common/data_structures/heap.c **** 
+ 524              		.loc 1 134 3 is_stmt 1 view .LVU183
+ 136:../Common/data_structures/heap.c **** 		user_assert_param( pxLink->p_next_freeblock == NULL );
+ 525              		.loc 1 136 3 view .LVU184
+ 137:../Common/data_structures/heap.c **** 
+ 526              		.loc 1 137 3 view .LVU185
+ 139:../Common/data_structures/heap.c **** 		{
+ 527              		.loc 1 139 3 view .LVU186
+ 139:../Common/data_structures/heap.c **** 		{
+ 528              		.loc 1 139 15 is_stmt 0 view .LVU187
+ 529 0006 53F8042C 		ldr	r2, [r3, #-4]
+ 139:../Common/data_structures/heap.c **** 		{
+ 530              		.loc 1 139 28 view .LVU188
+ 531 000a 0A49     		ldr	r1, .L48
+ 532 000c 0968     		ldr	r1, [r1]
+ 139:../Common/data_structures/heap.c **** 		{
+ 533              		.loc 1 139 5 view .LVU189
+ 534 000e 0A42     		tst	r2, r1
+ 535 0010 0FD0     		beq	.L44
+ 126:../Common/data_structures/heap.c **** uint8_t *puc = ( uint8_t * ) pv;
+ 536              		.loc 1 126 1 view .LVU190
+ 537 0012 10B5     		push	{r4, lr}
+ 538              	.LCFI5:
+ 539              		.cfi_def_cfa_offset 8
+ 540              		.cfi_offset 4, -8
+ 541              		.cfi_offset 14, -4
+ 141:../Common/data_structures/heap.c **** 			{
+ 542              		.loc 1 141 4 is_stmt 1 view .LVU191
+ 141:../Common/data_structures/heap.c **** 			{
+ 543              		.loc 1 141 6 is_stmt 0 view .LVU192
+ 544 0014 53F8084C 		ldr	r4, [r3, #-8]
+ 545 0018 04B1     		cbz	r4, .L47
+ 546              	.LVL45:
+ 547              	.L41:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 17
+
+
+ 155:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 548              		.loc 1 155 1 view .LVU193
+ 549 001a 10BD     		pop	{r4, pc}
+ 550              	.LVL46:
+ 551              	.L47:
+ 143:../Common/data_structures/heap.c **** 
+ 552              		.loc 1 143 5 is_stmt 1 view .LVU194
+ 143:../Common/data_structures/heap.c **** 
+ 553              		.loc 1 143 24 is_stmt 0 view .LVU195
+ 554 001c 22EA0102 		bic	r2, r2, r1
+ 555 0020 43F8042C 		str	r2, [r3, #-4]
+ 147:../Common/data_structures/heap.c **** 					// traceFREE( pv, pxLink->xBlockSize );
+ 556              		.loc 1 147 6 is_stmt 1 view .LVU196
+ 147:../Common/data_structures/heap.c **** 					// traceFREE( pv, pxLink->xBlockSize );
+ 557              		.loc 1 147 27 is_stmt 0 view .LVU197
+ 558 0024 0449     		ldr	r1, .L48+4
+ 559 0026 0B68     		ldr	r3, [r1]
+ 560              	.LVL47:
+ 147:../Common/data_structures/heap.c **** 					// traceFREE( pv, pxLink->xBlockSize );
+ 561              		.loc 1 147 27 view .LVU198
+ 562 0028 1A44     		add	r2, r2, r3
+ 563 002a 0A60     		str	r2, [r1]
+ 149:../Common/data_structures/heap.c **** 				}
+ 564              		.loc 1 149 6 is_stmt 1 view .LVU199
+ 565 002c FFF7FEFF 		bl	insert_block_into_freeList
+ 566              	.LVL48:
+ 155:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 567              		.loc 1 155 1 is_stmt 0 view .LVU200
+ 568 0030 F3E7     		b	.L41
+ 569              	.LVL49:
+ 570              	.L44:
+ 571              	.LCFI6:
+ 572              		.cfi_def_cfa_offset 0
+ 573              		.cfi_restore 4
+ 574              		.cfi_restore 14
+ 155:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 575              		.loc 1 155 1 view .LVU201
+ 576 0032 7047     		bx	lr
+ 577              	.L49:
+ 578              		.align	2
+ 579              	.L48:
+ 580 0034 00000000 		.word	.LANCHOR4
+ 581 0038 00000000 		.word	.LANCHOR3
+ 582              		.cfi_endproc
+ 583              	.LFE1:
+ 585              		.section	.text.heap_get_freeheap_size,"ax",%progbits
+ 586              		.align	1
+ 587              		.global	heap_get_freeheap_size
+ 588              		.syntax unified
+ 589              		.thumb
+ 590              		.thumb_func
+ 592              	heap_get_freeheap_size:
+ 593              	.LFB2:
+ 159:../Common/data_structures/heap.c **** 	return free_bytes_remaining;
+ 594              		.loc 1 159 1 is_stmt 1 view -0
+ 595              		.cfi_startproc
+ 596              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 18
+
+
+ 597              		@ frame_needed = 0, uses_anonymous_args = 0
+ 598              		@ link register save eliminated.
+ 160:../Common/data_structures/heap.c **** }
+ 599              		.loc 1 160 2 view .LVU203
+ 161:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 600              		.loc 1 161 1 is_stmt 0 view .LVU204
+ 601 0000 014B     		ldr	r3, .L51
+ 602 0002 1868     		ldr	r0, [r3]
+ 603 0004 7047     		bx	lr
+ 604              	.L52:
+ 605 0006 00BF     		.align	2
+ 606              	.L51:
+ 607 0008 00000000 		.word	.LANCHOR3
+ 608              		.cfi_endproc
+ 609              	.LFE2:
+ 611              		.section	.text.heap_get_minimumever_freeheapsize,"ax",%progbits
+ 612              		.align	1
+ 613              		.global	heap_get_minimumever_freeheapsize
+ 614              		.syntax unified
+ 615              		.thumb
+ 616              		.thumb_func
+ 618              	heap_get_minimumever_freeheapsize:
+ 619              	.LFB3:
+ 165:../Common/data_structures/heap.c **** 	return minimum_everfreebytes_remaining;
+ 620              		.loc 1 165 1 is_stmt 1 view -0
+ 621              		.cfi_startproc
+ 622              		@ args = 0, pretend = 0, frame = 0
+ 623              		@ frame_needed = 0, uses_anonymous_args = 0
+ 624              		@ link register save eliminated.
+ 166:../Common/data_structures/heap.c **** }
+ 625              		.loc 1 166 2 view .LVU206
+ 167:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ 626              		.loc 1 167 1 is_stmt 0 view .LVU207
+ 627 0000 014B     		ldr	r3, .L54
+ 628 0002 1868     		ldr	r0, [r3]
+ 629 0004 7047     		bx	lr
+ 630              	.L55:
+ 631 0006 00BF     		.align	2
+ 632              	.L54:
+ 633 0008 00000000 		.word	.LANCHOR2
+ 634              		.cfi_endproc
+ 635              	.LFE3:
+ 637              		.section	.text.vPortInitialiseBlocks,"ax",%progbits
+ 638              		.align	1
+ 639              		.global	vPortInitialiseBlocks
+ 640              		.syntax unified
+ 641              		.thumb
+ 642              		.thumb_func
+ 644              	vPortInitialiseBlocks:
+ 645              	.LFB4:
+ 171:../Common/data_structures/heap.c **** }
+ 646              		.loc 1 171 1 is_stmt 1 view -0
+ 647              		.cfi_startproc
+ 648              		@ args = 0, pretend = 0, frame = 0
+ 649              		@ frame_needed = 0, uses_anonymous_args = 0
+ 650              		@ link register save eliminated.
+ 172:../Common/data_structures/heap.c **** /*-----------------------------------------------------------*/
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 19
+
+
+ 651              		.loc 1 172 1 view .LVU209
+ 652 0000 7047     		bx	lr
+ 653              		.cfi_endproc
+ 654              	.LFE4:
+ 656              		.section	.bss.block_allocatedbit,"aw",%nobits
+ 657              		.align	2
+ 658              		.set	.LANCHOR4,. + 0
+ 661              	block_allocatedbit:
+ 662 0000 00000000 		.space	4
+ 663              		.section	.bss.free_bytes_remaining,"aw",%nobits
+ 664              		.align	2
+ 665              		.set	.LANCHOR3,. + 0
+ 668              	free_bytes_remaining:
+ 669 0000 00000000 		.space	4
+ 670              		.section	.bss.minimum_everfreebytes_remaining,"aw",%nobits
+ 671              		.align	2
+ 672              		.set	.LANCHOR2,. + 0
+ 675              	minimum_everfreebytes_remaining:
+ 676 0000 00000000 		.space	4
+ 677              		.section	.bss.pend,"aw",%nobits
+ 678              		.align	2
+ 679              		.set	.LANCHOR1,. + 0
+ 682              	pend:
+ 683 0000 00000000 		.space	4
+ 684              		.section	.bss.pstart,"aw",%nobits
+ 685              		.align	2
+ 686              		.set	.LANCHOR0,. + 0
+ 689              	pstart:
+ 690 0000 00000000 		.space	8
+ 690      00000000 
+ 691              		.section	.bss.ucHeap,"aw",%nobits
+ 692              		.align	2
+ 695              	ucHeap:
+ 696 0000 00000000 		.space	4096
+ 696      00000000 
+ 696      00000000 
+ 696      00000000 
+ 696      00000000 
+ 697              		.text
+ 698              	.Letext0:
+ 699              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\lib\\gcc\\arm-none-eabi\\10.3.1\\inclu
+ 700              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+ 701              		.file 4 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s 			page 20
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 heap.c
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:20     .text.heap_init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:25     .text.heap_init:00000000 heap_init
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:131    .text.heap_init:0000004c $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:695    .bss.ucHeap:00000000 ucHeap
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:141    .text.insert_block_into_freeList:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:146    .text.insert_block_into_freeList:00000000 insert_block_into_freeList
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:274    .text.insert_block_into_freeList:0000005c $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:280    .text.heap_malloc:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:286    .text.heap_malloc:00000000 heap_malloc
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:492    .text.heap_malloc:000000a4 $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:501    .text.heap_free:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:507    .text.heap_free:00000000 heap_free
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:580    .text.heap_free:00000034 $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:586    .text.heap_get_freeheap_size:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:592    .text.heap_get_freeheap_size:00000000 heap_get_freeheap_size
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:607    .text.heap_get_freeheap_size:00000008 $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:612    .text.heap_get_minimumever_freeheapsize:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:618    .text.heap_get_minimumever_freeheapsize:00000000 heap_get_minimumever_freeheapsize
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:633    .text.heap_get_minimumever_freeheapsize:00000008 $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:638    .text.vPortInitialiseBlocks:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:644    .text.vPortInitialiseBlocks:00000000 vPortInitialiseBlocks
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:657    .bss.block_allocatedbit:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:661    .bss.block_allocatedbit:00000000 block_allocatedbit
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:664    .bss.free_bytes_remaining:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:668    .bss.free_bytes_remaining:00000000 free_bytes_remaining
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:671    .bss.minimum_everfreebytes_remaining:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:675    .bss.minimum_everfreebytes_remaining:00000000 minimum_everfreebytes_remaining
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:678    .bss.pend:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:682    .bss.pend:00000000 pend
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:685    .bss.pstart:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:689    .bss.pstart:00000000 pstart
+C:\Users\57308\AppData\Local\Temp\ccX9VmP8.s:692    .bss.ucHeap:00000000 $d
+
+NO UNDEFINED SYMBOLS

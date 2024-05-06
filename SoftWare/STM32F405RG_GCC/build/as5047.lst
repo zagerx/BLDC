@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -19,16 +19,15 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 1
   16              		.text
   17              	.Ltext0:
   18              		.cfi_sections	.debug_frame
-  19              		.section	.text.encoder_set_error,"ax",%progbits
+  19              		.section	.text.ams_parity,"ax",%progbits
   20              		.align	1
-  21              		.global	encoder_set_error
-  22              		.syntax unified
-  23              		.thumb
-  24              		.thumb_func
-  26              	encoder_set_error:
-  27              	.LVL0:
-  28              	.LFB239:
-  29              		.file 1 "./Hardware/as5047.c"
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	ams_parity:
+  26              	.LVL0:
+  27              	.LFB244:
+  28              		.file 1 "./Hardware/as5047.c"
    1:./Hardware/as5047.c **** #include "as5047.h"
    2:./Hardware/as5047.c **** #include "spi.h"
    3:./Hardware/as5047.c **** #include "gpio.h"
@@ -46,39 +45,39 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 1
   15:./Hardware/as5047.c **** static as5047_data_t sg_as5047data = {0};
   16:./Hardware/as5047.c **** int32_t rawdata,covdata,filterdata;
   17:./Hardware/as5047.c **** static int16_t column;
-  18:./Hardware/as5047.c **** typedef enum
-  19:./Hardware/as5047.c **** {
-  20:./Hardware/as5047.c **** 	MODE_INCREMENTAL = 0,
-  21:./Hardware/as5047.c **** 	MODE_SPI_AS5047P,
-  22:./Hardware/as5047.c **** 	MODE_SPI_MT6701,
-  23:./Hardware/as5047.c **** 	MODE_SPI_MA730,
-  24:./Hardware/as5047.c **** 	MODE_SPI_TLE5012B,
-  25:./Hardware/as5047.c **** } ENCODER_enum;
+  18:./Hardware/as5047.c **** // typedef enum
+  19:./Hardware/as5047.c **** // {
+  20:./Hardware/as5047.c **** // 	MODE_INCREMENTAL = 0,
+  21:./Hardware/as5047.c **** // 	MODE_SPI_AS5047P,
+  22:./Hardware/as5047.c **** // 	MODE_SPI_MT6701,
+  23:./Hardware/as5047.c **** // 	MODE_SPI_MA730,
+  24:./Hardware/as5047.c **** // 	MODE_SPI_TLE5012B,
+  25:./Hardware/as5047.c **** // } ENCODER_enum;
   26:./Hardware/as5047.c **** 
   27:./Hardware/as5047.c **** typedef struct 
   28:./Hardware/as5047.c **** {
-  29:./Hardware/as5047.c **** 	ENCODER_enum  mode;
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 2
+  29:./Hardware/as5047.c **** 	// ENCODER_enum  mode;
+  30:./Hardware/as5047.c **** 	// float  calib_range;        // Accuracy required to pass encoder cpr check
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 2
 
 
-  30:./Hardware/as5047.c **** 	float  calib_range;        // Accuracy required to pass encoder cpr check
-  31:./Hardware/as5047.c **** 	float  calib_scan_distance;// rad electrical
-  32:./Hardware/as5047.c **** 	float  calib_scan_omega;   // rad/s electrical
+  31:./Hardware/as5047.c **** 	// float  calib_scan_distance;// rad electrical
+  32:./Hardware/as5047.c **** 	// float  calib_scan_omega;   // rad/s electrical
   33:./Hardware/as5047.c **** 	float  bandwidth;          //编码器带宽，和cpr成正比
   34:./Hardware/as5047.c **** 	int32_t  phase_offset;     //编码器和转子电角度之间的相位差，run_offset_calibratio
   35:./Hardware/as5047.c **** 	float  phase_offset_float; //编码器和转子电角度之间的相位差浮点部分，run_offse
   36:./Hardware/as5047.c **** 	int32_t  cpr;              //每圈编码器的脉冲数
-  37:./Hardware/as5047.c **** 	float  index_offset;
-  38:./Hardware/as5047.c **** 	bool  use_index;           //是否使用编码器索引信号
-  39:./Hardware/as5047.c **** 	bool  pre_calibrated;      // If true, this means the offset stored in
+  37:./Hardware/as5047.c **** 	// float  index_offset;
+  38:./Hardware/as5047.c **** 	// bool  use_index;           //是否使用编码器索引信号
+  39:./Hardware/as5047.c **** 	// bool  pre_calibrated;      // If true, this means the offset stored in
   40:./Hardware/as5047.c **** 	                           // configuration is valid and does not need
   41:./Hardware/as5047.c ****                              // be determined by run_offset_calibration.
   42:./Hardware/as5047.c ****                              // In this case the encoder will enter ready
   43:./Hardware/as5047.c ****                              // state as soon as the index is found.
   44:./Hardware/as5047.c **** 	int32_t  direction;        //电机转动方向，run_offset_calibration()校准这个参数
-  45:./Hardware/as5047.c **** 	bool  use_index_offset;
+  45:./Hardware/as5047.c **** 	// bool  use_index_offset;
   46:./Hardware/as5047.c **** 	bool  enable_phase_interpolation; // Use velocity to interpolate inside the count state
-  47:./Hardware/as5047.c **** 	bool find_idx_on_lockin_only;     // Only be sensitive during lockin scan constant vel state
+  47:./Hardware/as5047.c **** 	// bool find_idx_on_lockin_only;     // Only be sensitive during lockin scan constant vel state
   48:./Hardware/as5047.c **** 	float phase_;              //最终用于计算的当前电角度，范围-Pi~Pi。
   49:./Hardware/as5047.c **** 	float phase_vel_;          //最终用于计算的当前电角速度，单位rad/s。
   50:./Hardware/as5047.c **** } ENCODER_CONFIG;
@@ -94,10 +93,10 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 1
   60:./Hardware/as5047.c **** #define  ENCODER_cpr                   16384     //AS5047P=MT6701=16384,TLE5012B=32768, MODE_INCREM
   61:./Hardware/as5047.c **** #define  ENCODER_bandwidth             1000      //默认1000，hall电机的cpr比较小，可设�
   62:./Hardware/as5047.c **** #define M_PI  3.14159265358979323846f
-  63:./Hardware/as5047.c **** #define  MOTOR_pole_pairs                          7    //电机极对数
+  63:./Hardware/as5047.c **** #define  MOTOR_pole_pairs                          1    //电机极对数
   64:./Hardware/as5047.c **** #define CURRENT_MEAS_PERIOD ( (float)2*TIM_1_8_PERIOD_CLOCKS*(TIM_1_8_RCR+1) / (float)TIM_1_8_CLOCK
-  65:./Hardware/as5047.c **** static const float current_meas_period = CURRENT_MEAS_PERIOD;
-  66:./Hardware/as5047.c **** 
+  65:./Hardware/as5047.c **** //  const float current_meas_period = CURRENT_MEAS_PERIOD;
+  66:./Hardware/as5047.c **** const float current_meas_period = 0.0001f;
   67:./Hardware/as5047.c **** ENCODER_CONFIG   encoder_config;
   68:./Hardware/as5047.c **** 
   69:./Hardware/as5047.c **** static float pll_kp_ = 0.0f;   // [count/s / count]
@@ -118,10 +117,10 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 1
   84:./Hardware/as5047.c **** 	float intval = nearbyintf(x / y);
   85:./Hardware/as5047.c **** #endif
   86:./Hardware/as5047.c **** 	return x - intval * y;
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 3
-
-
   87:./Hardware/as5047.c **** }
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 3
+
+
   88:./Hardware/as5047.c **** static inline float fmodf_pos(float x, float y) {
   89:./Hardware/as5047.c **** 	float res = wrap_pm(x, y);
   90:./Hardware/as5047.c **** 	if (res < 0) res += y;
@@ -143,94 +142,19 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 1
  106:./Hardware/as5047.c **** 
  107:./Hardware/as5047.c **** void encoder_set_error(uint32_t error) 
  108:./Hardware/as5047.c **** {
-  30              		.loc 1 108 1 view -0
-  31              		.cfi_startproc
-  32              		@ args = 0, pretend = 0, frame = 0
-  33              		@ frame_needed = 0, uses_anonymous_args = 0
-  34              		@ link register save eliminated.
  109:./Hardware/as5047.c **** 	vel_estimate_valid_ = false;
-  35              		.loc 1 109 2 view .LVU1
-  36              		.loc 1 109 22 is_stmt 0 view .LVU2
-  37 0000 0023     		movs	r3, #0
-  38 0002 024A     		ldr	r2, .L2
-  39 0004 1370     		strb	r3, [r2]
  110:./Hardware/as5047.c **** 	pos_estimate_valid_ = false;
-  40              		.loc 1 110 2 is_stmt 1 view .LVU3
-  41              		.loc 1 110 22 is_stmt 0 view .LVU4
-  42 0006 024A     		ldr	r2, .L2+4
-  43 0008 1370     		strb	r3, [r2]
  111:./Hardware/as5047.c **** 	// set_error(error);
  112:./Hardware/as5047.c **** }
-  44              		.loc 1 112 1 view .LVU5
-  45 000a 7047     		bx	lr
-  46              	.L3:
-  47              		.align	2
-  48              	.L2:
-  49 000c 00000000 		.word	.LANCHOR0
-  50 0010 00000000 		.word	.LANCHOR1
-  51              		.cfi_endproc
-  52              	.LFE239:
-  54              		.section	.text.update_pll_gains,"ax",%progbits
-  55              		.align	1
-  56              		.global	update_pll_gains
-  57              		.syntax unified
-  58              		.thumb
-  59              		.thumb_func
-  61              	update_pll_gains:
-  62              	.LFB240:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 4
-
-
  113:./Hardware/as5047.c **** /*****************************************************************************/
  114:./Hardware/as5047.c **** void update_pll_gains(void)
  115:./Hardware/as5047.c **** {
-  63              		.loc 1 115 1 is_stmt 1 view -0
-  64              		.cfi_startproc
-  65              		@ args = 0, pretend = 0, frame = 0
-  66              		@ frame_needed = 0, uses_anonymous_args = 0
-  67              		@ link register save eliminated.
  116:./Hardware/as5047.c **** 	pll_kp_ = 2.0f * encoder_config.bandwidth;  // basic conversion to discrete time
-  68              		.loc 1 116 2 view .LVU7
-  69              		.loc 1 116 33 is_stmt 0 view .LVU8
-  70 0000 084B     		ldr	r3, .L5
-  71 0002 D3ED047A 		vldr.32	s15, [r3, #16]
-  72              		.loc 1 116 17 view .LVU9
-  73 0006 77EEA77A 		vadd.f32	s15, s15, s15
-  74              		.loc 1 116 10 view .LVU10
-  75 000a 074B     		ldr	r3, .L5+4
-  76 000c C3ED007A 		vstr.32	s15, [r3]
  117:./Hardware/as5047.c **** 	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
-  77              		.loc 1 117 2 is_stmt 1 view .LVU11
-  78              		.loc 1 117 29 is_stmt 0 view .LVU12
-  79 0010 67EEA77A 		vmul.f32	s15, s15, s15
-  80              		.loc 1 117 18 view .LVU13
-  81 0014 B5EE007A 		vmov.f32	s14, #2.5e-1
-  82 0018 67EE877A 		vmul.f32	s15, s15, s14
-  83              		.loc 1 117 10 view .LVU14
-  84 001c 034B     		ldr	r3, .L5+8
-  85 001e C3ED007A 		vstr.32	s15, [r3]
  118:./Hardware/as5047.c **** 	// Check that we don't get problems with discrete time approximation
  119:./Hardware/as5047.c **** 	// if (!(current_meas_period * pll_kp_ < 1.0f))
  120:./Hardware/as5047.c **** 		// encoder_set_error(ERROR_UNSTABLE_GAIN);
  121:./Hardware/as5047.c **** }
-  86              		.loc 1 121 1 view .LVU15
-  87 0022 7047     		bx	lr
-  88              	.L6:
-  89              		.align	2
-  90              	.L5:
-  91 0024 00000000 		.word	.LANCHOR2
-  92 0028 00000000 		.word	.LANCHOR3
-  93 002c 00000000 		.word	.LANCHOR4
-  94              		.cfi_endproc
-  95              	.LFE240:
-  97              		.section	.text.run_offset_calibration,"ax",%progbits
-  98              		.align	1
-  99              		.global	run_offset_calibration
- 100              		.syntax unified
- 101              		.thumb
- 102              		.thumb_func
- 104              	run_offset_calibration:
- 105              	.LFB241:
  122:./Hardware/as5047.c **** /*****************************************************************************/
  123:./Hardware/as5047.c **** 
  124:./Hardware/as5047.c **** /*****************************************************************************/
@@ -238,1292 +162,1456 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 1
  126:./Hardware/as5047.c **** // @brief Turns the motor in one direction for a bit and then in the other
  127:./Hardware/as5047.c **** // direction in order to find the offset between the electrical phase 0
  128:./Hardware/as5047.c **** // and the encoder state 0.
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 5
-
-
  129:./Hardware/as5047.c **** bool run_offset_calibration(void)
  130:./Hardware/as5047.c **** {
- 106              		.loc 1 130 1 is_stmt 1 view -0
- 107              		.cfi_startproc
- 108              		@ args = 0, pretend = 0, frame = 0
- 109              		@ frame_needed = 0, uses_anonymous_args = 0
- 110              		@ link register save eliminated.
  131:./Hardware/as5047.c **** 	uint32_t  i;
- 111              		.loc 1 131 2 view .LVU17
  132:./Hardware/as5047.c **** 	const float start_lock_duration = 1.0f;	
- 112              		.loc 1 132 2 view .LVU18
- 113              	.LVL1:
- 133:./Hardware/as5047.c **** 	encoder_config.direction = 1;
- 114              		.loc 1 133 2 view .LVU19
- 115              		.loc 1 133 27 is_stmt 0 view .LVU20
- 116 0000 044B     		ldr	r3, .L8
- 117 0002 0120     		movs	r0, #1
- 118 0004 9862     		str	r0, [r3, #40]
- 134:./Hardware/as5047.c **** 	encoder_config.phase_offset = 23406;
- 119              		.loc 1 134 2 is_stmt 1 view .LVU21
- 120              		.loc 1 134 30 is_stmt 0 view .LVU22
- 121 0006 45F66E32 		movw	r2, #23406
- 122 000a 5A61     		str	r2, [r3, #20]
- 135:./Hardware/as5047.c **** 	encoder_config.phase_offset_float = 0.56f;
- 123              		.loc 1 135 2 is_stmt 1 view .LVU23
- 124              		.loc 1 135 36 is_stmt 0 view .LVU24
- 125 000c 024A     		ldr	r2, .L8+4
- 126 000e 9A61     		str	r2, [r3, #24]	@ float
- 136:./Hardware/as5047.c **** 	return true;
- 127              		.loc 1 136 2 is_stmt 1 view .LVU25
- 137:./Hardware/as5047.c **** }
- 128              		.loc 1 137 1 is_stmt 0 view .LVU26
- 129 0010 7047     		bx	lr
- 130              	.L9:
- 131 0012 00BF     		.align	2
- 132              	.L8:
- 133 0014 00000000 		.word	.LANCHOR2
- 134 0018 295C0F3F 		.word	1057971241
- 135              		.cfi_endproc
- 136              	.LFE241:
- 138              		.section	.text.MagneticSensor_Init,"ax",%progbits
- 139              		.align	1
- 140              		.global	MagneticSensor_Init
- 141              		.syntax unified
- 142              		.thumb
- 143              		.thumb_func
- 145              	MagneticSensor_Init:
- 146              	.LFB242:
- 138:./Hardware/as5047.c **** //初始化三种SPI接口的编码器的参数, 初始化I2C接口或者SPI接口
- 139:./Hardware/as5047.c **** void MagneticSensor_Init(void)
- 140:./Hardware/as5047.c **** {
- 147              		.loc 1 140 1 is_stmt 1 view -0
- 148              		.cfi_startproc
- 149              		@ args = 0, pretend = 0, frame = 0
- 150              		@ frame_needed = 0, uses_anonymous_args = 0
- 151 0000 08B5     		push	{r3, lr}
- 152              	.LCFI0:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 6
+ 133:./Hardware/as5047.c **** 
+ 134:./Hardware/as5047.c **** 	return true;
+ 135:./Hardware/as5047.c **** }
+ 136:./Hardware/as5047.c **** //初始化三种SPI接口的编码器的参数, 初始化I2C接口或者SPI接口
+ 137:./Hardware/as5047.c **** void MagneticSensor_Init(void)
+ 138:./Hardware/as5047.c **** {
+ 139:./Hardware/as5047.c **** 	//读取flash内保存的参数
+ 140:./Hardware/as5047.c **** 	// encoder_config.mode = ENCODER_mode;  //选择编码器型号，参数设置宏定义在MyProjec
+ 141:./Hardware/as5047.c **** 	// ENCODER_cpr = ENCODER_cpr;    //编码器cpr
+ 142:./Hardware/as5047.c **** 	encoder_config.bandwidth = ENCODER_bandwidth;   //编码器带宽
+ 143:./Hardware/as5047.c **** 	// encoder_config.calib_range = 0.02f; // Accuracy required to pass encoder cpr check  2%误差
+ 144:./Hardware/as5047.c **** 	// encoder_config.calib_scan_distance = 16.0f * M_PI; // rad electrical    校准的时候正反�
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 4
 
 
- 153              		.cfi_def_cfa_offset 8
- 154              		.cfi_offset 3, -8
- 155              		.cfi_offset 14, -4
- 141:./Hardware/as5047.c **** 	//读取flash内保存的参数
- 142:./Hardware/as5047.c **** 	encoder_config.mode = ENCODER_mode;  //选择编码器型号，参数设置宏定义在MyProject.h
- 156              		.loc 1 142 2 view .LVU28
- 157              		.loc 1 142 22 is_stmt 0 view .LVU29
- 158 0002 114B     		ldr	r3, .L12
- 159 0004 0121     		movs	r1, #1
- 160 0006 1970     		strb	r1, [r3]
- 143:./Hardware/as5047.c **** 	encoder_config.cpr = ENCODER_cpr;    //编码器cpr
- 161              		.loc 1 143 2 is_stmt 1 view .LVU30
- 162              		.loc 1 143 21 is_stmt 0 view .LVU31
- 163 0008 4FF48042 		mov	r2, #16384
- 164 000c DA61     		str	r2, [r3, #28]
- 144:./Hardware/as5047.c **** 	encoder_config.bandwidth = ENCODER_bandwidth;   //编码器带宽
- 165              		.loc 1 144 2 is_stmt 1 view .LVU32
- 166              		.loc 1 144 27 is_stmt 0 view .LVU33
- 167 000e 0F4A     		ldr	r2, .L12+4
- 168 0010 1A61     		str	r2, [r3, #16]	@ float
- 145:./Hardware/as5047.c **** 	encoder_config.calib_range = 0.02f; // Accuracy required to pass encoder cpr check  2%误差
- 169              		.loc 1 145 2 is_stmt 1 view .LVU34
- 170              		.loc 1 145 29 is_stmt 0 view .LVU35
- 171 0012 0F4A     		ldr	r2, .L12+8
- 172 0014 5A60     		str	r2, [r3, #4]	@ float
- 146:./Hardware/as5047.c **** 	encoder_config.calib_scan_distance = 16.0f * M_PI; // rad electrical    校准的时候正反转8�
- 173              		.loc 1 146 2 is_stmt 1 view .LVU36
- 174              		.loc 1 146 37 is_stmt 0 view .LVU37
- 175 0016 0F4A     		ldr	r2, .L12+12
- 176 0018 9A60     		str	r2, [r3, #8]	@ float
- 147:./Hardware/as5047.c **** 	encoder_config.calib_scan_omega = 4.0f * M_PI;     // rad/s electrical  转速2个极对数/秒，
- 177              		.loc 1 147 2 is_stmt 1 view .LVU38
- 178              		.loc 1 147 34 is_stmt 0 view .LVU39
- 179 001a 0F4A     		ldr	r2, .L12+16
- 180 001c DA60     		str	r2, [r3, #12]	@ float
- 148:./Hardware/as5047.c **** 	encoder_config.phase_offset = 0;        // Offset between encoder count and rotor electrical phase
- 181              		.loc 1 148 2 is_stmt 1 view .LVU40
- 182              		.loc 1 148 30 is_stmt 0 view .LVU41
- 183 001e 0022     		movs	r2, #0
- 184 0020 5A61     		str	r2, [r3, #20]
- 149:./Hardware/as5047.c **** 	encoder_config.phase_offset_float = 0.0f; // Sub-count phase alignment offset
- 185              		.loc 1 149 2 is_stmt 1 view .LVU42
- 186              		.loc 1 149 36 is_stmt 0 view .LVU43
- 187 0022 0020     		movs	r0, #0
- 188 0024 9861     		str	r0, [r3, #24]	@ float
- 150:./Hardware/as5047.c **** 	encoder_config.index_offset = 0.0f;
- 189              		.loc 1 150 2 is_stmt 1 view .LVU44
- 190              		.loc 1 150 30 is_stmt 0 view .LVU45
- 191 0026 1862     		str	r0, [r3, #32]	@ float
- 151:./Hardware/as5047.c **** 	encoder_config.use_index = false;
- 192              		.loc 1 151 2 is_stmt 1 view .LVU46
- 193              		.loc 1 151 27 is_stmt 0 view .LVU47
- 194 0028 83F82420 		strb	r2, [r3, #36]
- 152:./Hardware/as5047.c **** 	encoder_config.pre_calibrated = false;
- 195              		.loc 1 152 2 is_stmt 1 view .LVU48
- 196              		.loc 1 152 32 is_stmt 0 view .LVU49
- 197 002c 83F82520 		strb	r2, [r3, #37]
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 7
-
-
- 153:./Hardware/as5047.c **** 	encoder_config.direction = 0; // direction with respect to motor
- 198              		.loc 1 153 2 is_stmt 1 view .LVU50
- 199              		.loc 1 153 27 is_stmt 0 view .LVU51
- 200 0030 9A62     		str	r2, [r3, #40]
- 154:./Hardware/as5047.c **** 	encoder_config.use_index_offset = true;
- 201              		.loc 1 154 2 is_stmt 1 view .LVU52
- 202              		.loc 1 154 34 is_stmt 0 view .LVU53
- 203 0032 83F82C10 		strb	r1, [r3, #44]
- 155:./Hardware/as5047.c **** 	encoder_config.enable_phase_interpolation = true; // Use velocity to interpolate inside the count 
- 204              		.loc 1 155 2 is_stmt 1 view .LVU54
- 205              		.loc 1 155 44 is_stmt 0 view .LVU55
- 206 0036 83F82D10 		strb	r1, [r3, #45]
- 156:./Hardware/as5047.c **** 	encoder_config.find_idx_on_lockin_only = false; // Only be sensitive during lockin scan constant v
- 207              		.loc 1 156 2 is_stmt 1 view .LVU56
- 208              		.loc 1 156 41 is_stmt 0 view .LVU57
- 209 003a 83F82E20 		strb	r2, [r3, #46]
- 157:./Hardware/as5047.c **** 	
- 158:./Hardware/as5047.c **** 	update_pll_gains();    //锁相环参数整定
- 210              		.loc 1 158 2 is_stmt 1 view .LVU58
- 211 003e FFF7FEFF 		bl	update_pll_gains
- 212              	.LVL2:
- 159:./Hardware/as5047.c **** 	run_offset_calibration();
- 213              		.loc 1 159 2 view .LVU59
- 214 0042 FFF7FEFF 		bl	run_offset_calibration
- 215              	.LVL3:
- 160:./Hardware/as5047.c ****     // SPI3_Init_(SPI_CPOL_Low);    //AS5047P
+ 145:./Hardware/as5047.c **** 	// encoder_config.calib_scan_omega = 4.0f * M_PI;     // rad/s electrical  转速2个极对数/秒
+ 146:./Hardware/as5047.c **** 
+ 147:./Hardware/as5047.c **** 	encoder_config.phase_offset = 0;        // Offset between encoder count and rotor electrical phase
+ 148:./Hardware/as5047.c **** 	encoder_config.phase_offset_float = 0.0f; // Sub-count phase alignment offset
+ 149:./Hardware/as5047.c **** 	encoder_config.enable_phase_interpolation = true; // Use velocity to interpolate inside the count 
+ 150:./Hardware/as5047.c **** 
+ 151:./Hardware/as5047.c **** 	encoder_config.direction = 1;
+ 152:./Hardware/as5047.c **** 	encoder_config.phase_offset = 23406;
+ 153:./Hardware/as5047.c **** 	encoder_config.phase_offset_float = 0.56f;
+ 154:./Hardware/as5047.c **** 
+ 155:./Hardware/as5047.c **** 
+ 156:./Hardware/as5047.c **** 	pll_kp_ = 2.0f * ENCODER_bandwidth;  // basic conversion to discrete time
+ 157:./Hardware/as5047.c **** 	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
+ 158:./Hardware/as5047.c **** 
+ 159:./Hardware/as5047.c **** 	// update_pll_gains();    //锁相环参数整定
+ 160:./Hardware/as5047.c **** 	// run_offset_calibration();
  161:./Hardware/as5047.c **** 
  162:./Hardware/as5047.c **** }
- 216              		.loc 1 162 1 is_stmt 0 view .LVU60
- 217 0046 08BD     		pop	{r3, pc}
- 218              	.L13:
- 219              		.align	2
- 220              	.L12:
- 221 0048 00000000 		.word	.LANCHOR2
- 222 004c 00007A44 		.word	1148846080
- 223 0050 0AD7A33C 		.word	1017370378
- 224 0054 DB0F4942 		.word	1112084443
- 225 0058 DB0F4941 		.word	1095307227
- 226              		.cfi_endproc
- 227              	.LFE242:
- 229              		.section	.text.encoder_update,"ax",%progbits
- 230              		.align	1
- 231              		.global	encoder_update
- 232              		.syntax unified
- 233              		.thumb
- 234              		.thumb_func
- 236              	encoder_update:
- 237              	.LVL4:
- 238              	.LFB243:
  163:./Hardware/as5047.c **** 
  164:./Hardware/as5047.c **** 
  165:./Hardware/as5047.c **** /****************************************************************************/
  166:./Hardware/as5047.c **** bool encoder_update(int32_t raw)
  167:./Hardware/as5047.c **** {
- 239              		.loc 1 167 1 is_stmt 1 view -0
- 240              		.cfi_startproc
- 241              		@ args = 0, pretend = 0, frame = 0
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 8
-
-
- 242              		@ frame_needed = 0, uses_anonymous_args = 0
- 243              		.loc 1 167 1 is_stmt 0 view .LVU62
- 244 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
- 245              	.LCFI1:
- 246              		.cfi_def_cfa_offset 24
- 247              		.cfi_offset 3, -24
- 248              		.cfi_offset 4, -20
- 249              		.cfi_offset 5, -16
- 250              		.cfi_offset 6, -12
- 251              		.cfi_offset 7, -8
- 252              		.cfi_offset 14, -4
- 253 0002 2DED088B 		vpush.64	{d8, d9, d10, d11}
- 254              	.LCFI2:
- 255              		.cfi_def_cfa_offset 56
- 256              		.cfi_offset 80, -56
- 257              		.cfi_offset 81, -52
- 258              		.cfi_offset 82, -48
- 259              		.cfi_offset 83, -44
- 260              		.cfi_offset 84, -40
- 261              		.cfi_offset 85, -36
- 262              		.cfi_offset 86, -32
- 263              		.cfi_offset 87, -28
- 264 0006 0446     		mov	r4, r0
  168:./Hardware/as5047.c **** 	int32_t delta_enc = 0;
- 265              		.loc 1 168 2 is_stmt 1 view .LVU63
- 266              	.LVL5:
  169:./Hardware/as5047.c **** 	int32_t pos_abs_latched; //LATCH
- 267              		.loc 1 169 2 view .LVU64
  170:./Hardware/as5047.c **** 	static int32_t shadow_count_ = 0;   //编码器累计计数。
- 268              		.loc 1 170 2 view .LVU65
- 171:./Hardware/as5047.c **** 	 int32_t count_in_cpr_ = 0;   //编码器当前计数值。
- 269              		.loc 1 171 3 view .LVU66
- 172:./Hardware/as5047.c **** 	 float interpolation_ = 0.0f; //编码器当前插补值。
- 270              		.loc 1 172 3 view .LVU67
+ 171:./Hardware/as5047.c ****     int32_t count_in_cpr_ = 0;   //编码器当前计数值。
+ 172:./Hardware/as5047.c ****     float interpolation_ = 0.0f; //编码器当前插补值。
  173:./Hardware/as5047.c **** 	static float pos_estimate_counts_ = 0.0f;  //当前估算的位置值，单位[count]   
- 271              		.loc 1 173 2 view .LVU68
  174:./Hardware/as5047.c **** 	static float pos_cpr_counts_ = 0.0f;       //当前约束在cpr范围内的位置值，单位[coun
- 272              		.loc 1 174 2 view .LVU69
  175:./Hardware/as5047.c **** 	static float vel_estimate_counts_ = 0.0f;  //当前估算转速，单位[count/s]
- 273              		.loc 1 175 2 view .LVU70
  176:./Hardware/as5047.c **** 
  177:./Hardware/as5047.c **** 	pos_abs_latched = raw;
- 274              		.loc 1 177 2 view .LVU71
  178:./Hardware/as5047.c **** 
  179:./Hardware/as5047.c **** 	delta_enc = pos_abs_latched - count_in_cpr_; //LATCH
- 275              		.loc 1 179 2 view .LVU72
  180:./Hardware/as5047.c **** 	delta_enc = mod(delta_enc, encoder_config.cpr);
- 276              		.loc 1 180 2 view .LVU73
- 277              		.loc 1 180 43 is_stmt 0 view .LVU74
- 278 0008 7D4B     		ldr	r3, .L37
- 279 000a DA69     		ldr	r2, [r3, #28]
- 280              	.LVL6:
+ 181:./Hardware/as5047.c **** 	if(delta_enc > encoder_config.cpr/2)
+ 182:./Hardware/as5047.c **** 	{
+ 183:./Hardware/as5047.c ****         delta_enc -= encoder_config.cpr;
+ 184:./Hardware/as5047.c ****     }
+ 185:./Hardware/as5047.c ****     shadow_count_ += delta_enc;
+ 186:./Hardware/as5047.c ****     count_in_cpr_ = pos_abs_latched;
+ 187:./Hardware/as5047.c **** 	
+ 188:./Hardware/as5047.c **** 	// Memory for pos_circular
+ 189:./Hardware/as5047.c **** 	float pos_cpr_counts_last = pos_cpr_counts_;
+ 190:./Hardware/as5047.c **** 	
+ 191:./Hardware/as5047.c **** 	// run pll (for now pll is in units of encoder counts)
+ 192:./Hardware/as5047.c **** 	// Predict current pos
+ 193:./Hardware/as5047.c **** 	pos_estimate_counts_ += current_meas_period * vel_estimate_counts_;
+ 194:./Hardware/as5047.c **** 	pos_cpr_counts_      += current_meas_period * vel_estimate_counts_;
+ 195:./Hardware/as5047.c **** 	
+ 196:./Hardware/as5047.c **** 	// discrete phase detector
+ 197:./Hardware/as5047.c **** 	float delta_pos_counts = (float)(shadow_count_ - (int32_t)pos_estimate_counts_);
+ 198:./Hardware/as5047.c **** 	float delta_pos_cpr_counts = (float)(count_in_cpr_ - (int32_t)pos_cpr_counts_);
+ 199:./Hardware/as5047.c **** 	delta_pos_cpr_counts = wrap_pm(delta_pos_cpr_counts, (float)(ENCODER_cpr));
+ 200:./Hardware/as5047.c **** 	// pll feedback
+ 201:./Hardware/as5047.c **** 	pos_estimate_counts_ += current_meas_period * pll_kp_ * delta_pos_counts;
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 5
+
+
+ 202:./Hardware/as5047.c **** 	pos_cpr_counts_ += current_meas_period * pll_kp_ * delta_pos_cpr_counts;
+ 203:./Hardware/as5047.c **** 	pos_cpr_counts_ = fmodf_pos(pos_cpr_counts_, (float)(ENCODER_cpr));
+ 204:./Hardware/as5047.c **** 	vel_estimate_counts_ += current_meas_period * pll_ki_ * delta_pos_cpr_counts;
+ 205:./Hardware/as5047.c **** 	uint8_t snap_to_zero_vel = false;
+ 206:./Hardware/as5047.c **** 	if (fabsf(vel_estimate_counts_) < 0.5f * current_meas_period * pll_ki_)
+ 207:./Hardware/as5047.c **** 	{
+ 208:./Hardware/as5047.c **** 		vel_estimate_counts_ = 0.0f;  //align delta-sigma on zero to prevent jitter
+ 209:./Hardware/as5047.c **** 		snap_to_zero_vel = true;
+ 210:./Hardware/as5047.c **** 	}
+ 211:./Hardware/as5047.c **** 	
+ 212:./Hardware/as5047.c **** 	// Outputs from Encoder for Controller
+ 213:./Hardware/as5047.c **** 	pos_estimate_ = pos_estimate_counts_ / (float)ENCODER_cpr;
+ 214:./Hardware/as5047.c **** 	vel_estimate_ = vel_estimate_counts_ / (float)ENCODER_cpr;
+ 215:./Hardware/as5047.c **** 
+ 216:./Hardware/as5047.c **** 	//// run encoder count interpolation
+ 217:./Hardware/as5047.c **** 	int32_t corrected_enc = count_in_cpr_ - encoder_config.phase_offset;
+ 218:./Hardware/as5047.c **** 	// if we are stopped, make sure we don't randomly drift
+ 219:./Hardware/as5047.c **** 	if(snap_to_zero_vel || !encoder_config.enable_phase_interpolation)
+ 220:./Hardware/as5047.c **** 	{
+ 221:./Hardware/as5047.c **** 		interpolation_ = 0.5f;
+ 222:./Hardware/as5047.c **** 		// reset interpolation if encoder edge comes
+ 223:./Hardware/as5047.c ****     // TODO: This isn't correct. At high velocities the first phase in this count may very well not
+ 224:./Hardware/as5047.c **** 	}
+ 225:./Hardware/as5047.c **** 	else if(delta_enc > 0){
+ 226:./Hardware/as5047.c **** 		interpolation_ = 0.0f;
+ 227:./Hardware/as5047.c **** 	}else if(delta_enc < 0){
+ 228:./Hardware/as5047.c **** 		interpolation_ = 1.0f;
+ 229:./Hardware/as5047.c **** 	}
+ 230:./Hardware/as5047.c **** 	else {
+ 231:./Hardware/as5047.c **** 		// Interpolate (predict) between encoder counts using vel_estimate,
+ 232:./Hardware/as5047.c **** 		interpolation_ += current_meas_period * vel_estimate_counts_;
+ 233:./Hardware/as5047.c **** 		// don't allow interpolation indicated position outside of [enc, enc+1)
+ 234:./Hardware/as5047.c **** 		if (interpolation_ > 1.0f) interpolation_ = 1.0f;
+ 235:./Hardware/as5047.c **** 		if (interpolation_ < 0.0f) interpolation_ = 0.0f;
+ 236:./Hardware/as5047.c **** 	}
+ 237:./Hardware/as5047.c **** 	float interpolated_enc = corrected_enc + interpolation_;
+ 238:./Hardware/as5047.c **** 	
+ 239:./Hardware/as5047.c **** 	//// compute electrical phase
+ 240:./Hardware/as5047.c **** 	//TODO avoid recomputing elec_rad_per_enc every time
+ 241:./Hardware/as5047.c **** 	float elec_rad_per_enc = MOTOR_pole_pairs  * 2 * M_PI * (1.0f / (float)(ENCODER_cpr));
+ 242:./Hardware/as5047.c **** 	float ph = elec_rad_per_enc * (interpolated_enc - encoder_config.phase_offset_float);
+ 243:./Hardware/as5047.c **** 
+ 244:./Hardware/as5047.c **** 	encoder_config.phase_ = wrap_pm_pi(ph) * encoder_config.direction;
+ 245:./Hardware/as5047.c **** 	encoder_config.phase_vel_ = (2*M_PI) * vel_estimate_ * MOTOR_pole_pairs  * encoder_config.directio
+ 246:./Hardware/as5047.c **** 
+ 247:./Hardware/as5047.c **** 	return 1;
+ 248:./Hardware/as5047.c **** }
+ 249:./Hardware/as5047.c **** /****************************************************************************/
+ 250:./Hardware/as5047.c **** //SPI发送读取函数
+ 251:./Hardware/as5047.c **** static uint8_t ams_parity(uint16_t v)
+ 252:./Hardware/as5047.c **** {
+  29              		.loc 1 252 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+ 253:./Hardware/as5047.c **** 	v ^= v >> 8;
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 6
+
+
+  34              		.loc 1 253 2 view .LVU1
+  35              		.loc 1 253 4 is_stmt 0 view .LVU2
+  36 0000 80EA1020 		eor	r0, r0, r0, lsr #8
+  37              	.LVL1:
+ 254:./Hardware/as5047.c **** 	v ^= v >> 4;
+  38              		.loc 1 254 2 is_stmt 1 view .LVU3
+  39              		.loc 1 254 4 is_stmt 0 view .LVU4
+  40 0004 80EA1010 		eor	r0, r0, r0, lsr #4
+  41              	.LVL2:
+ 255:./Hardware/as5047.c **** 	v ^= v >> 2;
+  42              		.loc 1 255 2 is_stmt 1 view .LVU5
+  43              		.loc 1 255 4 is_stmt 0 view .LVU6
+  44 0008 80EA9000 		eor	r0, r0, r0, lsr #2
+  45              	.LVL3:
+ 256:./Hardware/as5047.c **** 	v ^= v >> 1;
+  46              		.loc 1 256 2 is_stmt 1 view .LVU7
+  47              		.loc 1 256 4 is_stmt 0 view .LVU8
+  48 000c 80EA5000 		eor	r0, r0, r0, lsr #1
+  49              	.LVL4:
+ 257:./Hardware/as5047.c **** 	return v & 1;
+  50              		.loc 1 257 2 is_stmt 1 view .LVU9
+ 258:./Hardware/as5047.c **** }
+  51              		.loc 1 258 1 is_stmt 0 view .LVU10
+  52 0010 00F00100 		and	r0, r0, #1
+  53              	.LVL5:
+  54              		.loc 1 258 1 view .LVU11
+  55 0014 7047     		bx	lr
+  56              		.cfi_endproc
+  57              	.LFE244:
+  59              		.section	.text.encoder_set_error,"ax",%progbits
+  60              		.align	1
+  61              		.global	encoder_set_error
+  62              		.syntax unified
+  63              		.thumb
+  64              		.thumb_func
+  66              	encoder_set_error:
+  67              	.LVL6:
+  68              	.LFB239:
+ 108:./Hardware/as5047.c **** 	vel_estimate_valid_ = false;
+  69              		.loc 1 108 1 is_stmt 1 view -0
+  70              		.cfi_startproc
+  71              		@ args = 0, pretend = 0, frame = 0
+  72              		@ frame_needed = 0, uses_anonymous_args = 0
+  73              		@ link register save eliminated.
+ 109:./Hardware/as5047.c **** 	pos_estimate_valid_ = false;
+  74              		.loc 1 109 2 view .LVU13
+ 109:./Hardware/as5047.c **** 	pos_estimate_valid_ = false;
+  75              		.loc 1 109 22 is_stmt 0 view .LVU14
+  76 0000 0023     		movs	r3, #0
+  77 0002 024A     		ldr	r2, .L3
+  78 0004 1370     		strb	r3, [r2]
+ 110:./Hardware/as5047.c **** 	// set_error(error);
+  79              		.loc 1 110 2 is_stmt 1 view .LVU15
+ 110:./Hardware/as5047.c **** 	// set_error(error);
+  80              		.loc 1 110 22 is_stmt 0 view .LVU16
+  81 0006 024A     		ldr	r2, .L3+4
+  82 0008 1370     		strb	r3, [r2]
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 7
+
+
+ 112:./Hardware/as5047.c **** /*****************************************************************************/
+  83              		.loc 1 112 1 view .LVU17
+  84 000a 7047     		bx	lr
+  85              	.L4:
+  86              		.align	2
+  87              	.L3:
+  88 000c 00000000 		.word	.LANCHOR0
+  89 0010 00000000 		.word	.LANCHOR1
+  90              		.cfi_endproc
+  91              	.LFE239:
+  93              		.section	.text.update_pll_gains,"ax",%progbits
+  94              		.align	1
+  95              		.global	update_pll_gains
+  96              		.syntax unified
+  97              		.thumb
+  98              		.thumb_func
+ 100              	update_pll_gains:
+ 101              	.LFB240:
+ 115:./Hardware/as5047.c **** 	pll_kp_ = 2.0f * encoder_config.bandwidth;  // basic conversion to discrete time
+ 102              		.loc 1 115 1 is_stmt 1 view -0
+ 103              		.cfi_startproc
+ 104              		@ args = 0, pretend = 0, frame = 0
+ 105              		@ frame_needed = 0, uses_anonymous_args = 0
+ 106              		@ link register save eliminated.
+ 116:./Hardware/as5047.c **** 	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
+ 107              		.loc 1 116 2 view .LVU19
+ 116:./Hardware/as5047.c **** 	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
+ 108              		.loc 1 116 33 is_stmt 0 view .LVU20
+ 109 0000 084B     		ldr	r3, .L6
+ 110 0002 D3ED007A 		vldr.32	s15, [r3]
+ 116:./Hardware/as5047.c **** 	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
+ 111              		.loc 1 116 17 view .LVU21
+ 112 0006 77EEA77A 		vadd.f32	s15, s15, s15
+ 116:./Hardware/as5047.c **** 	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
+ 113              		.loc 1 116 10 view .LVU22
+ 114 000a 074B     		ldr	r3, .L6+4
+ 115 000c C3ED007A 		vstr.32	s15, [r3]
+ 117:./Hardware/as5047.c **** 	// Check that we don't get problems with discrete time approximation
+ 116              		.loc 1 117 2 is_stmt 1 view .LVU23
+ 117:./Hardware/as5047.c **** 	// Check that we don't get problems with discrete time approximation
+ 117              		.loc 1 117 29 is_stmt 0 view .LVU24
+ 118 0010 67EEA77A 		vmul.f32	s15, s15, s15
+ 117:./Hardware/as5047.c **** 	// Check that we don't get problems with discrete time approximation
+ 119              		.loc 1 117 18 view .LVU25
+ 120 0014 B5EE007A 		vmov.f32	s14, #2.5e-1
+ 121 0018 67EE877A 		vmul.f32	s15, s15, s14
+ 117:./Hardware/as5047.c **** 	// Check that we don't get problems with discrete time approximation
+ 122              		.loc 1 117 10 view .LVU26
+ 123 001c 034B     		ldr	r3, .L6+8
+ 124 001e C3ED007A 		vstr.32	s15, [r3]
+ 121:./Hardware/as5047.c **** /*****************************************************************************/
+ 125              		.loc 1 121 1 view .LVU27
+ 126 0022 7047     		bx	lr
+ 127              	.L7:
+ 128              		.align	2
+ 129              	.L6:
+ 130 0024 00000000 		.word	.LANCHOR2
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 8
+
+
+ 131 0028 00000000 		.word	.LANCHOR3
+ 132 002c 00000000 		.word	.LANCHOR4
+ 133              		.cfi_endproc
+ 134              	.LFE240:
+ 136              		.section	.text.run_offset_calibration,"ax",%progbits
+ 137              		.align	1
+ 138              		.global	run_offset_calibration
+ 139              		.syntax unified
+ 140              		.thumb
+ 141              		.thumb_func
+ 143              	run_offset_calibration:
+ 144              	.LFB241:
+ 130:./Hardware/as5047.c **** 	uint32_t  i;
+ 145              		.loc 1 130 1 is_stmt 1 view -0
+ 146              		.cfi_startproc
+ 147              		@ args = 0, pretend = 0, frame = 0
+ 148              		@ frame_needed = 0, uses_anonymous_args = 0
+ 149              		@ link register save eliminated.
+ 131:./Hardware/as5047.c **** 	const float start_lock_duration = 1.0f;	
+ 150              		.loc 1 131 2 view .LVU29
+ 132:./Hardware/as5047.c **** 
+ 151              		.loc 1 132 2 view .LVU30
+ 152              	.LVL7:
+ 134:./Hardware/as5047.c **** }
+ 153              		.loc 1 134 2 view .LVU31
+ 135:./Hardware/as5047.c **** //初始化三种SPI接口的编码器的参数, 初始化I2C接口或者SPI接口
+ 154              		.loc 1 135 1 is_stmt 0 view .LVU32
+ 155 0000 0120     		movs	r0, #1
+ 156 0002 7047     		bx	lr
+ 157              		.cfi_endproc
+ 158              	.LFE241:
+ 160              		.section	.text.MagneticSensor_Init,"ax",%progbits
+ 161              		.align	1
+ 162              		.global	MagneticSensor_Init
+ 163              		.syntax unified
+ 164              		.thumb
+ 165              		.thumb_func
+ 167              	MagneticSensor_Init:
+ 168              	.LFB242:
+ 138:./Hardware/as5047.c **** 	//读取flash内保存的参数
+ 169              		.loc 1 138 1 is_stmt 1 view -0
+ 170              		.cfi_startproc
+ 171              		@ args = 0, pretend = 0, frame = 0
+ 172              		@ frame_needed = 0, uses_anonymous_args = 0
+ 173              		@ link register save eliminated.
+ 142:./Hardware/as5047.c **** 	// encoder_config.calib_range = 0.02f; // Accuracy required to pass encoder cpr check  2%误差
+ 174              		.loc 1 142 2 view .LVU34
+ 142:./Hardware/as5047.c **** 	// encoder_config.calib_range = 0.02f; // Accuracy required to pass encoder cpr check  2%误差
+ 175              		.loc 1 142 27 is_stmt 0 view .LVU35
+ 176 0000 0A4B     		ldr	r3, .L10
+ 177 0002 0B4A     		ldr	r2, .L10+4
+ 178 0004 1A60     		str	r2, [r3]	@ float
+ 147:./Hardware/as5047.c **** 	encoder_config.phase_offset_float = 0.0f; // Sub-count phase alignment offset
+ 179              		.loc 1 147 2 is_stmt 1 view .LVU36
+ 147:./Hardware/as5047.c **** 	encoder_config.phase_offset_float = 0.0f; // Sub-count phase alignment offset
+ 180              		.loc 1 147 30 is_stmt 0 view .LVU37
+ 181 0006 0022     		movs	r2, #0
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 9
+
+
+ 182 0008 5A60     		str	r2, [r3, #4]
+ 148:./Hardware/as5047.c **** 	encoder_config.enable_phase_interpolation = true; // Use velocity to interpolate inside the count 
+ 183              		.loc 1 148 2 is_stmt 1 view .LVU38
+ 148:./Hardware/as5047.c **** 	encoder_config.enable_phase_interpolation = true; // Use velocity to interpolate inside the count 
+ 184              		.loc 1 148 36 is_stmt 0 view .LVU39
+ 185 000a 0022     		movs	r2, #0
+ 186 000c 9A60     		str	r2, [r3, #8]	@ float
+ 149:./Hardware/as5047.c **** 
+ 187              		.loc 1 149 2 is_stmt 1 view .LVU40
+ 149:./Hardware/as5047.c **** 
+ 188              		.loc 1 149 44 is_stmt 0 view .LVU41
+ 189 000e 0122     		movs	r2, #1
+ 190 0010 1A75     		strb	r2, [r3, #20]
+ 151:./Hardware/as5047.c **** 	encoder_config.phase_offset = 23406;
+ 191              		.loc 1 151 2 is_stmt 1 view .LVU42
+ 151:./Hardware/as5047.c **** 	encoder_config.phase_offset = 23406;
+ 192              		.loc 1 151 27 is_stmt 0 view .LVU43
+ 193 0012 1A61     		str	r2, [r3, #16]
+ 152:./Hardware/as5047.c **** 	encoder_config.phase_offset_float = 0.56f;
+ 194              		.loc 1 152 2 is_stmt 1 view .LVU44
+ 152:./Hardware/as5047.c **** 	encoder_config.phase_offset_float = 0.56f;
+ 195              		.loc 1 152 30 is_stmt 0 view .LVU45
+ 196 0014 45F66E32 		movw	r2, #23406
+ 197 0018 5A60     		str	r2, [r3, #4]
+ 153:./Hardware/as5047.c **** 
+ 198              		.loc 1 153 2 is_stmt 1 view .LVU46
+ 153:./Hardware/as5047.c **** 
+ 199              		.loc 1 153 36 is_stmt 0 view .LVU47
+ 200 001a 064A     		ldr	r2, .L10+8
+ 201 001c 9A60     		str	r2, [r3, #8]	@ float
+ 156:./Hardware/as5047.c **** 	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
+ 202              		.loc 1 156 2 is_stmt 1 view .LVU48
+ 156:./Hardware/as5047.c **** 	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
+ 203              		.loc 1 156 10 is_stmt 0 view .LVU49
+ 204 001e 064B     		ldr	r3, .L10+12
+ 205 0020 064A     		ldr	r2, .L10+16
+ 206 0022 1A60     		str	r2, [r3]	@ float
+ 157:./Hardware/as5047.c **** 
+ 207              		.loc 1 157 2 is_stmt 1 view .LVU50
+ 157:./Hardware/as5047.c **** 
+ 208              		.loc 1 157 10 is_stmt 0 view .LVU51
+ 209 0024 064B     		ldr	r3, .L10+20
+ 210 0026 074A     		ldr	r2, .L10+24
+ 211 0028 1A60     		str	r2, [r3]	@ float
+ 162:./Hardware/as5047.c **** 
+ 212              		.loc 1 162 1 view .LVU52
+ 213 002a 7047     		bx	lr
+ 214              	.L11:
+ 215              		.align	2
+ 216              	.L10:
+ 217 002c 00000000 		.word	.LANCHOR2
+ 218 0030 00007A44 		.word	1148846080
+ 219 0034 295C0F3F 		.word	1057971241
+ 220 0038 00000000 		.word	.LANCHOR3
+ 221 003c 0000FA44 		.word	1157234688
+ 222 0040 00000000 		.word	.LANCHOR4
+ 223 0044 00247449 		.word	1232348160
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 10
+
+
+ 224              		.cfi_endproc
+ 225              	.LFE242:
+ 227              		.section	.text.encoder_update,"ax",%progbits
+ 228              		.align	1
+ 229              		.global	encoder_update
+ 230              		.syntax unified
+ 231              		.thumb
+ 232              		.thumb_func
+ 234              	encoder_update:
+ 235              	.LVL8:
+ 236              	.LFB243:
+ 167:./Hardware/as5047.c **** 	int32_t delta_enc = 0;
+ 237              		.loc 1 167 1 is_stmt 1 view -0
+ 238              		.cfi_startproc
+ 239              		@ args = 0, pretend = 0, frame = 0
+ 240              		@ frame_needed = 0, uses_anonymous_args = 0
+ 167:./Hardware/as5047.c **** 	int32_t delta_enc = 0;
+ 241              		.loc 1 167 1 is_stmt 0 view .LVU54
+ 242 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 243              	.LCFI0:
+ 244              		.cfi_def_cfa_offset 24
+ 245              		.cfi_offset 3, -24
+ 246              		.cfi_offset 4, -20
+ 247              		.cfi_offset 5, -16
+ 248              		.cfi_offset 6, -12
+ 249              		.cfi_offset 7, -8
+ 250              		.cfi_offset 14, -4
+ 251 0002 2DED0A8B 		vpush.64	{d8, d9, d10, d11, d12}
+ 252              	.LCFI1:
+ 253              		.cfi_def_cfa_offset 64
+ 254              		.cfi_offset 80, -64
+ 255              		.cfi_offset 81, -60
+ 256              		.cfi_offset 82, -56
+ 257              		.cfi_offset 83, -52
+ 258              		.cfi_offset 84, -48
+ 259              		.cfi_offset 85, -44
+ 260              		.cfi_offset 86, -40
+ 261              		.cfi_offset 87, -36
+ 262              		.cfi_offset 88, -32
+ 263              		.cfi_offset 89, -28
+ 264 0006 0446     		mov	r4, r0
+ 168:./Hardware/as5047.c **** 	int32_t pos_abs_latched; //LATCH
+ 265              		.loc 1 168 2 is_stmt 1 view .LVU55
+ 266              	.LVL9:
+ 169:./Hardware/as5047.c **** 	static int32_t shadow_count_ = 0;   //编码器累计计数。
+ 267              		.loc 1 169 2 view .LVU56
+ 170:./Hardware/as5047.c ****     int32_t count_in_cpr_ = 0;   //编码器当前计数值。
+ 268              		.loc 1 170 2 view .LVU57
+ 171:./Hardware/as5047.c ****     float interpolation_ = 0.0f; //编码器当前插补值。
+ 269              		.loc 1 171 5 view .LVU58
+ 172:./Hardware/as5047.c **** 	static float pos_estimate_counts_ = 0.0f;  //当前估算的位置值，单位[count]   
+ 270              		.loc 1 172 5 view .LVU59
+ 173:./Hardware/as5047.c **** 	static float pos_cpr_counts_ = 0.0f;       //当前约束在cpr范围内的位置值，单位[coun
+ 271              		.loc 1 173 2 view .LVU60
+ 174:./Hardware/as5047.c **** 	static float vel_estimate_counts_ = 0.0f;  //当前估算转速，单位[count/s]
+ 272              		.loc 1 174 2 view .LVU61
+ 175:./Hardware/as5047.c **** 
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 11
+
+
+ 273              		.loc 1 175 2 view .LVU62
+ 177:./Hardware/as5047.c **** 
+ 274              		.loc 1 177 2 view .LVU63
+ 179:./Hardware/as5047.c **** 	delta_enc = mod(delta_enc, encoder_config.cpr);
+ 275              		.loc 1 179 2 view .LVU64
+ 180:./Hardware/as5047.c **** 	if(delta_enc > encoder_config.cpr/2)
+ 276              		.loc 1 180 2 view .LVU65
+ 180:./Hardware/as5047.c **** 	if(delta_enc > encoder_config.cpr/2)
+ 277              		.loc 1 180 43 is_stmt 0 view .LVU66
+ 278 0008 784B     		ldr	r3, .L35
+ 279 000a DB68     		ldr	r3, [r3, #12]
+ 280              	.LVL10:
  281              	.LBB25:
  282              	.LBI25:
   99:./Hardware/as5047.c **** {
- 283              		.loc 1 99 19 is_stmt 1 view .LVU75
+ 283              		.loc 1 99 19 is_stmt 1 view .LVU67
  284              	.LBB26:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 9
-
-
  101:./Hardware/as5047.c **** 	if (r < 0) r += divisor;
- 285              		.loc 1 101 2 view .LVU76
+ 285              		.loc 1 101 2 view .LVU68
  101:./Hardware/as5047.c **** 	if (r < 0) r += divisor;
- 286              		.loc 1 101 6 is_stmt 0 view .LVU77
- 287 000c 90FBF2F5 		sdiv	r5, r0, r2
- 288 0010 02FB1505 		mls	r5, r2, r5, r0
- 289              	.LVL7:
+ 286              		.loc 1 101 6 is_stmt 0 view .LVU69
+ 287 000c 90FBF3F5 		sdiv	r5, r0, r3
+ 288 0010 03FB1505 		mls	r5, r3, r5, r0
+ 289              	.LVL11:
  102:./Hardware/as5047.c **** 	return r;
- 290              		.loc 1 102 2 is_stmt 1 view .LVU78
+ 290              		.loc 1 102 2 is_stmt 1 view .LVU70
  102:./Hardware/as5047.c **** 	return r;
- 291              		.loc 1 102 5 is_stmt 0 view .LVU79
+ 291              		.loc 1 102 5 is_stmt 0 view .LVU71
  292 0014 002D     		cmp	r5, #0
- 293 0016 7ADB     		blt	.L34
- 294              	.L15:
+ 293 0016 7ADB     		blt	.L32
+ 294              	.L13:
  103:./Hardware/as5047.c **** }
- 295              		.loc 1 103 2 is_stmt 1 view .LVU80
- 296              	.LVL8:
+ 295              		.loc 1 103 2 is_stmt 1 view .LVU72
+ 296              	.LVL12:
  103:./Hardware/as5047.c **** }
- 297              		.loc 1 103 2 is_stmt 0 view .LVU81
+ 297              		.loc 1 103 2 is_stmt 0 view .LVU73
  298              	.LBE26:
  299              	.LBE25:
- 181:./Hardware/as5047.c **** 	if(delta_enc > encoder_config.cpr/2)
- 300              		.loc 1 181 2 is_stmt 1 view .LVU82
- 301              		.loc 1 181 35 is_stmt 0 view .LVU83
- 302 0018 02EBD273 		add	r3, r2, r2, lsr #31
- 303              		.loc 1 181 4 view .LVU84
- 304 001c B5EB630F 		cmp	r5, r3, asr #1
- 305 0020 00DD     		ble	.L16
- 182:./Hardware/as5047.c **** 	delta_enc -= encoder_config.cpr;
- 306              		.loc 1 182 2 is_stmt 1 view .LVU85
- 307              		.loc 1 182 12 is_stmt 0 view .LVU86
- 308 0022 AD1A     		subs	r5, r5, r2
- 309              	.LVL9:
- 310              	.L16:
- 183:./Hardware/as5047.c **** 	shadow_count_ += delta_enc;
- 311              		.loc 1 183 2 is_stmt 1 view .LVU87
- 312              		.loc 1 183 16 is_stmt 0 view .LVU88
- 313 0024 7749     		ldr	r1, .L37+4
- 314 0026 0B68     		ldr	r3, [r1]
+ 181:./Hardware/as5047.c **** 	{
+ 300              		.loc 1 181 2 is_stmt 1 view .LVU74
+ 181:./Hardware/as5047.c **** 	{
+ 301              		.loc 1 181 35 is_stmt 0 view .LVU75
+ 302 0018 03EBD372 		add	r2, r3, r3, lsr #31
+ 181:./Hardware/as5047.c **** 	{
+ 303              		.loc 1 181 4 view .LVU76
+ 304 001c B5EB620F 		cmp	r5, r2, asr #1
+ 305 0020 00DD     		ble	.L14
+ 183:./Hardware/as5047.c ****     }
+ 306              		.loc 1 183 9 is_stmt 1 view .LVU77
+ 183:./Hardware/as5047.c ****     }
+ 307              		.loc 1 183 19 is_stmt 0 view .LVU78
+ 308 0022 ED1A     		subs	r5, r5, r3
+ 309              	.LVL13:
+ 310              	.L14:
+ 185:./Hardware/as5047.c ****     count_in_cpr_ = pos_abs_latched;
+ 311              		.loc 1 185 5 is_stmt 1 view .LVU79
+ 185:./Hardware/as5047.c ****     count_in_cpr_ = pos_abs_latched;
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 12
+
+
+ 312              		.loc 1 185 19 is_stmt 0 view .LVU80
+ 313 0024 724A     		ldr	r2, .L35+4
+ 314 0026 1368     		ldr	r3, [r2]
  315 0028 2B44     		add	r3, r3, r5
- 316 002a 0B60     		str	r3, [r1]
- 184:./Hardware/as5047.c **** 	count_in_cpr_ = pos_abs_latched;
- 317              		.loc 1 184 2 is_stmt 1 view .LVU89
- 318              	.LVL10:
- 185:./Hardware/as5047.c **** 	
- 186:./Hardware/as5047.c **** 	// Memory for pos_circular
- 187:./Hardware/as5047.c **** 	float pos_cpr_counts_last = pos_cpr_counts_;
- 319              		.loc 1 187 2 view .LVU90
- 320              		.loc 1 187 8 is_stmt 0 view .LVU91
- 321 002c 764E     		ldr	r6, .L37+8
+ 316 002a 1360     		str	r3, [r2]
+ 186:./Hardware/as5047.c **** 	
+ 317              		.loc 1 186 5 is_stmt 1 view .LVU81
+ 318              	.LVL14:
+ 189:./Hardware/as5047.c **** 	
+ 319              		.loc 1 189 2 view .LVU82
+ 189:./Hardware/as5047.c **** 	
+ 320              		.loc 1 189 8 is_stmt 0 view .LVU83
+ 321 002c 714E     		ldr	r6, .L35+8
  322 002e D6ED007A 		vldr.32	s15, [r6]
- 323              	.LVL11:
- 188:./Hardware/as5047.c **** 	
- 189:./Hardware/as5047.c **** 	// run pll (for now pll is in units of encoder counts)
- 190:./Hardware/as5047.c **** 	// Predict current pos
- 191:./Hardware/as5047.c **** 	pos_estimate_counts_ += current_meas_period * vel_estimate_counts_;
- 324              		.loc 1 191 2 is_stmt 1 view .LVU92
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 10
-
-
- 325              		.loc 1 191 46 is_stmt 0 view .LVU93
- 326 0032 7649     		ldr	r1, .L37+12
- 327 0034 D1ED00AA 		vldr.32	s21, [r1]
- 328 0038 DFED75BA 		vldr.32	s23, .L37+16
- 329 003c 2AEEAB8A 		vmul.f32	s16, s21, s23
- 330              		.loc 1 191 23 view .LVU94
- 331 0040 744F     		ldr	r7, .L37+20
- 332 0042 97ED00BA 		vldr.32	s22, [r7]
- 333 0046 38EE0BBA 		vadd.f32	s22, s16, s22
- 334 004a 87ED00BA 		vstr.32	s22, [r7]
- 192:./Hardware/as5047.c **** 	pos_cpr_counts_      += current_meas_period * vel_estimate_counts_;
- 335              		.loc 1 192 2 is_stmt 1 view .LVU95
- 336              		.loc 1 192 23 is_stmt 0 view .LVU96
+ 323              	.LVL15:
+ 193:./Hardware/as5047.c **** 	pos_cpr_counts_      += current_meas_period * vel_estimate_counts_;
+ 324              		.loc 1 193 2 is_stmt 1 view .LVU84
+ 193:./Hardware/as5047.c **** 	pos_cpr_counts_      += current_meas_period * vel_estimate_counts_;
+ 325              		.loc 1 193 46 is_stmt 0 view .LVU85
+ 326 0032 714A     		ldr	r2, .L35+12
+ 327 0034 D2ED00AA 		vldr.32	s21, [r2]
+ 328 0038 9FED70CA 		vldr.32	s24, .L35+16
+ 329 003c 2AEE8C8A 		vmul.f32	s16, s21, s24
+ 193:./Hardware/as5047.c **** 	pos_cpr_counts_      += current_meas_period * vel_estimate_counts_;
+ 330              		.loc 1 193 23 view .LVU86
+ 331 0040 6F4F     		ldr	r7, .L35+20
+ 332 0042 D7ED008A 		vldr.32	s17, [r7]
+ 333 0046 78EE288A 		vadd.f32	s17, s16, s17
+ 334 004a C7ED008A 		vstr.32	s17, [r7]
+ 194:./Hardware/as5047.c **** 	
+ 335              		.loc 1 194 2 is_stmt 1 view .LVU87
+ 194:./Hardware/as5047.c **** 	
+ 336              		.loc 1 194 23 is_stmt 0 view .LVU88
  337 004e 38EE278A 		vadd.f32	s16, s16, s15
  338 0052 86ED008A 		vstr.32	s16, [r6]
- 193:./Hardware/as5047.c **** 	
- 194:./Hardware/as5047.c **** 	// discrete phase detector
- 195:./Hardware/as5047.c **** 	float delta_pos_counts = (float)(shadow_count_ - (int32_t)pos_estimate_counts_);
- 339              		.loc 1 195 2 is_stmt 1 view .LVU97
- 340              		.loc 1 195 51 is_stmt 0 view .LVU98
- 341 0056 BDEECB9A 		vcvt.s32.f32	s18, s22
- 342              		.loc 1 195 49 view .LVU99
- 343 005a 19EE101A 		vmov	r1, s18	@ int
- 344 005e 5B1A     		subs	r3, r3, r1
- 345              		.loc 1 195 8 view .LVU100
- 346 0060 07EE903A 		vmov	s15, r3	@ int
- 347              	.LVL12:
- 348              		.loc 1 195 8 view .LVU101
- 349 0064 B8EEE79A 		vcvt.f32.s32	s18, s15
- 350              	.LVL13:
- 196:./Hardware/as5047.c **** 	float delta_pos_cpr_counts = (float)(count_in_cpr_ - (int32_t)pos_cpr_counts_);
- 351              		.loc 1 196 2 is_stmt 1 view .LVU102
- 352              		.loc 1 196 55 is_stmt 0 view .LVU103
- 353 0068 FDEEC89A 		vcvt.s32.f32	s19, s16
- 354              		.loc 1 196 53 view .LVU104
- 355 006c 19EE903A 		vmov	r3, s19	@ int
- 356 0070 E31A     		subs	r3, r4, r3
- 357 0072 09EE903A 		vmov	s19, r3	@ int
- 358              		.loc 1 196 8 view .LVU105
- 359 0076 B8EEE9AA 		vcvt.f32.s32	s20, s19
- 360              	.LVL14:
- 197:./Hardware/as5047.c **** 	delta_pos_cpr_counts = wrap_pm(delta_pos_cpr_counts, (float)(encoder_config.cpr));
- 361              		.loc 1 197 2 is_stmt 1 view .LVU106
- 362              		.loc 1 197 25 is_stmt 0 view .LVU107
- 363 007a 07EE902A 		vmov	s15, r2	@ int
- 364 007e F8EEE78A 		vcvt.f32.s32	s17, s15
- 365              	.LVL15:
- 366              	.LBB28:
- 367              	.LBI28:
+ 197:./Hardware/as5047.c **** 	float delta_pos_cpr_counts = (float)(count_in_cpr_ - (int32_t)pos_cpr_counts_);
+ 339              		.loc 1 197 2 is_stmt 1 view .LVU89
+ 197:./Hardware/as5047.c **** 	float delta_pos_cpr_counts = (float)(count_in_cpr_ - (int32_t)pos_cpr_counts_);
+ 340              		.loc 1 197 51 is_stmt 0 view .LVU90
+ 341 0056 BDEEE89A 		vcvt.s32.f32	s18, s17
+ 197:./Hardware/as5047.c **** 	float delta_pos_cpr_counts = (float)(count_in_cpr_ - (int32_t)pos_cpr_counts_);
+ 342              		.loc 1 197 49 view .LVU91
+ 343 005a 19EE102A 		vmov	r2, s18	@ int
+ 344 005e 9B1A     		subs	r3, r3, r2
+ 345 0060 09EE103A 		vmov	s18, r3	@ int
+ 197:./Hardware/as5047.c **** 	float delta_pos_cpr_counts = (float)(count_in_cpr_ - (int32_t)pos_cpr_counts_);
+ 346              		.loc 1 197 8 view .LVU92
+ 347 0064 B8EEC99A 		vcvt.f32.s32	s18, s18
+ 348              	.LVL16:
+ 198:./Hardware/as5047.c **** 	delta_pos_cpr_counts = wrap_pm(delta_pos_cpr_counts, (float)(ENCODER_cpr));
+ 349              		.loc 1 198 2 is_stmt 1 view .LVU93
+ 198:./Hardware/as5047.c **** 	delta_pos_cpr_counts = wrap_pm(delta_pos_cpr_counts, (float)(ENCODER_cpr));
+ 350              		.loc 1 198 55 is_stmt 0 view .LVU94
+ 351 0068 FDEEC89A 		vcvt.s32.f32	s19, s16
+ 198:./Hardware/as5047.c **** 	delta_pos_cpr_counts = wrap_pm(delta_pos_cpr_counts, (float)(ENCODER_cpr));
+ 352              		.loc 1 198 53 view .LVU95
+ 353 006c 19EE903A 		vmov	r3, s19	@ int
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 13
+
+
+ 354 0070 E31A     		subs	r3, r4, r3
+ 355 0072 09EE903A 		vmov	s19, r3	@ int
+ 198:./Hardware/as5047.c **** 	delta_pos_cpr_counts = wrap_pm(delta_pos_cpr_counts, (float)(ENCODER_cpr));
+ 356              		.loc 1 198 8 view .LVU96
+ 357 0076 B8EEE9AA 		vcvt.f32.s32	s20, s19
+ 358              	.LVL17:
+ 199:./Hardware/as5047.c **** 	// pll feedback
+ 359              		.loc 1 199 2 is_stmt 1 view .LVU97
+ 360              	.LBB28:
+ 361              	.LBI28:
   80:./Hardware/as5047.c **** #ifdef FPU_FPV4
- 368              		.loc 1 80 21 is_stmt 1 view .LVU108
- 369              	.LBB29:
+ 362              		.loc 1 80 21 view .LVU98
+ 363              	.LBB29:
   84:./Hardware/as5047.c **** #endif
- 370              		.loc 1 84 2 view .LVU109
+ 364              		.loc 1 84 2 view .LVU99
   84:./Hardware/as5047.c **** #endif
- 371              		.loc 1 84 17 is_stmt 0 view .LVU110
- 372 0082 8AEE280A 		vdiv.f32	s0, s20, s17
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 11
+ 365              		.loc 1 84 17 is_stmt 0 view .LVU100
+ 366 007a DFED62BA 		vldr.32	s23, .L35+24
+ 367 007e 2AEE2B0A 		vmul.f32	s0, s20, s23
+ 368 0082 FFF7FEFF 		bl	nearbyintf
+ 369              	.LVL18:
+  86:./Hardware/as5047.c **** }
+ 370              		.loc 1 86 2 is_stmt 1 view .LVU101
+  86:./Hardware/as5047.c **** }
+ 371              		.loc 1 86 20 is_stmt 0 view .LVU102
+ 372 0086 9FED60BA 		vldr.32	s22, .L35+28
+ 373 008a 60EE0B9A 		vmul.f32	s19, s0, s22
+  86:./Hardware/as5047.c **** }
+ 374              		.loc 1 86 11 view .LVU103
+ 375 008e 7AEE699A 		vsub.f32	s19, s20, s19
+ 376              	.LVL19:
+  86:./Hardware/as5047.c **** }
+ 377              		.loc 1 86 11 view .LVU104
+ 378              	.LBE29:
+ 379              	.LBE28:
+ 201:./Hardware/as5047.c **** 	pos_cpr_counts_ += current_meas_period * pll_kp_ * delta_pos_cpr_counts;
+ 380              		.loc 1 201 2 is_stmt 1 view .LVU105
+ 201:./Hardware/as5047.c **** 	pos_cpr_counts_ += current_meas_period * pll_kp_ * delta_pos_cpr_counts;
+ 381              		.loc 1 201 46 is_stmt 0 view .LVU106
+ 382 0092 5E4B     		ldr	r3, .L35+32
+ 383 0094 D3ED007A 		vldr.32	s15, [r3]
+ 384 0098 67EE8C7A 		vmul.f32	s15, s15, s24
+ 201:./Hardware/as5047.c **** 	pos_cpr_counts_ += current_meas_period * pll_kp_ * delta_pos_cpr_counts;
+ 385              		.loc 1 201 56 view .LVU107
+ 386 009c 27EE899A 		vmul.f32	s18, s15, s18
+ 387              	.LVL20:
+ 201:./Hardware/as5047.c **** 	pos_cpr_counts_ += current_meas_period * pll_kp_ * delta_pos_cpr_counts;
+ 388              		.loc 1 201 23 view .LVU108
+ 389 00a0 78EE898A 		vadd.f32	s17, s17, s18
+ 390 00a4 C7ED008A 		vstr.32	s17, [r7]
+ 202:./Hardware/as5047.c **** 	pos_cpr_counts_ = fmodf_pos(pos_cpr_counts_, (float)(ENCODER_cpr));
+ 391              		.loc 1 202 2 is_stmt 1 view .LVU109
+ 202:./Hardware/as5047.c **** 	pos_cpr_counts_ = fmodf_pos(pos_cpr_counts_, (float)(ENCODER_cpr));
+ 392              		.loc 1 202 51 is_stmt 0 view .LVU110
+ 393 00a8 67EEA97A 		vmul.f32	s15, s15, s19
+ 202:./Hardware/as5047.c **** 	pos_cpr_counts_ = fmodf_pos(pos_cpr_counts_, (float)(ENCODER_cpr));
+ 394              		.loc 1 202 18 view .LVU111
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 14
 
 
- 373 0086 FFF7FEFF 		bl	nearbyintf
- 374              	.LVL16:
-  86:./Hardware/as5047.c **** }
- 375              		.loc 1 86 2 is_stmt 1 view .LVU111
-  86:./Hardware/as5047.c **** }
- 376              		.loc 1 86 20 is_stmt 0 view .LVU112
- 377 008a 68EE809A 		vmul.f32	s19, s17, s0
-  86:./Hardware/as5047.c **** }
- 378              		.loc 1 86 11 view .LVU113
- 379 008e 7AEE699A 		vsub.f32	s19, s20, s19
- 380              	.LVL17:
-  86:./Hardware/as5047.c **** }
- 381              		.loc 1 86 11 view .LVU114
- 382              	.LBE29:
- 383              	.LBE28:
- 198:./Hardware/as5047.c **** 	// pll feedback
- 199:./Hardware/as5047.c **** 	pos_estimate_counts_ += current_meas_period * pll_kp_ * delta_pos_counts;
- 384              		.loc 1 199 2 is_stmt 1 view .LVU115
- 385              		.loc 1 199 46 is_stmt 0 view .LVU116
- 386 0092 614B     		ldr	r3, .L37+24
- 387 0094 D3ED007A 		vldr.32	s15, [r3]
- 388 0098 67EEAB7A 		vmul.f32	s15, s15, s23
- 389              		.loc 1 199 56 view .LVU117
- 390 009c 27EE899A 		vmul.f32	s18, s15, s18
- 391              	.LVL18:
- 392              		.loc 1 199 23 view .LVU118
- 393 00a0 3BEE099A 		vadd.f32	s18, s22, s18
- 394 00a4 87ED009A 		vstr.32	s18, [r7]
- 200:./Hardware/as5047.c **** 	pos_cpr_counts_ += current_meas_period * pll_kp_ * delta_pos_cpr_counts;
- 395              		.loc 1 200 2 is_stmt 1 view .LVU119
- 396              		.loc 1 200 51 is_stmt 0 view .LVU120
- 397 00a8 67EEA97A 		vmul.f32	s15, s15, s19
- 398              		.loc 1 200 18 view .LVU121
- 399 00ac 38EE278A 		vadd.f32	s16, s16, s15
- 400 00b0 86ED008A 		vstr.32	s16, [r6]
- 201:./Hardware/as5047.c **** 	pos_cpr_counts_ = fmodf_pos(pos_cpr_counts_, (float)(encoder_config.cpr));
- 401              		.loc 1 201 2 is_stmt 1 view .LVU122
- 402              	.LVL19:
- 403              	.LBB30:
- 404              	.LBI30:
+ 395 00ac 38EE278A 		vadd.f32	s16, s16, s15
+ 396 00b0 86ED008A 		vstr.32	s16, [r6]
+ 203:./Hardware/as5047.c **** 	vel_estimate_counts_ += current_meas_period * pll_ki_ * delta_pos_cpr_counts;
+ 397              		.loc 1 203 2 is_stmt 1 view .LVU112
+ 398              	.LVL21:
+ 399              	.LBB30:
+ 400              	.LBI30:
   88:./Hardware/as5047.c **** 	float res = wrap_pm(x, y);
- 405              		.loc 1 88 21 view .LVU123
- 406              	.LBB31:
+ 401              		.loc 1 88 21 view .LVU113
+ 402              	.LBB31:
   89:./Hardware/as5047.c **** 	if (res < 0) res += y;
- 407              		.loc 1 89 2 view .LVU124
- 408              	.LBB32:
- 409              	.LBI32:
+ 403              		.loc 1 89 2 view .LVU114
+ 404              	.LBB32:
+ 405              	.LBI32:
   80:./Hardware/as5047.c **** #ifdef FPU_FPV4
- 410              		.loc 1 80 21 view .LVU125
- 411              	.LBB33:
+ 406              		.loc 1 80 21 view .LVU115
+ 407              	.LBB33:
   84:./Hardware/as5047.c **** #endif
- 412              		.loc 1 84 2 view .LVU126
+ 408              		.loc 1 84 2 view .LVU116
   84:./Hardware/as5047.c **** #endif
- 413              		.loc 1 84 17 is_stmt 0 view .LVU127
- 414 00b4 88EE280A 		vdiv.f32	s0, s16, s17
- 415 00b8 FFF7FEFF 		bl	nearbyintf
- 416              	.LVL20:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 12
-
-
+ 409              		.loc 1 84 17 is_stmt 0 view .LVU117
+ 410 00b4 28EE2B0A 		vmul.f32	s0, s16, s23
+ 411 00b8 FFF7FEFF 		bl	nearbyintf
+ 412              	.LVL22:
   86:./Hardware/as5047.c **** }
- 417              		.loc 1 86 2 is_stmt 1 view .LVU128
+ 413              		.loc 1 86 2 is_stmt 1 view .LVU118
   86:./Hardware/as5047.c **** }
- 418              		.loc 1 86 20 is_stmt 0 view .LVU129
- 419 00bc 28EE800A 		vmul.f32	s0, s17, s0
- 420              	.LVL21:
+ 414              		.loc 1 86 20 is_stmt 0 view .LVU119
+ 415 00bc 20EE0B0A 		vmul.f32	s0, s0, s22
+ 416              	.LVL23:
   86:./Hardware/as5047.c **** }
- 421              		.loc 1 86 11 view .LVU130
- 422 00c0 38EE408A 		vsub.f32	s16, s16, s0
- 423              	.LVL22:
+ 417              		.loc 1 86 11 view .LVU120
+ 418 00c0 38EE408A 		vsub.f32	s16, s16, s0
+ 419              	.LVL24:
   86:./Hardware/as5047.c **** }
- 424              		.loc 1 86 11 view .LVU131
- 425              	.LBE33:
- 426              	.LBE32:
+ 420              		.loc 1 86 11 view .LVU121
+ 421              	.LBE33:
+ 422              	.LBE32:
   90:./Hardware/as5047.c **** 	return res;
- 427              		.loc 1 90 2 is_stmt 1 view .LVU132
+ 423              		.loc 1 90 2 is_stmt 1 view .LVU122
   90:./Hardware/as5047.c **** 	return res;
- 428              		.loc 1 90 5 is_stmt 0 view .LVU133
- 429 00c4 B5EEC08A 		vcmpe.f32	s16, #0
- 430 00c8 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 431 00cc 21D4     		bmi	.L35
- 432              	.L17:
+ 424              		.loc 1 90 5 is_stmt 0 view .LVU123
+ 425 00c4 B5EEC08A 		vcmpe.f32	s16, #0
+ 426 00c8 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 427 00cc 21D4     		bmi	.L33
+ 428              	.L15:
   91:./Hardware/as5047.c **** }
- 433              		.loc 1 91 2 is_stmt 1 view .LVU134
- 434              	.LVL23:
+ 429              		.loc 1 91 2 is_stmt 1 view .LVU124
+ 430              	.LVL25:
   91:./Hardware/as5047.c **** }
- 435              		.loc 1 91 2 is_stmt 0 view .LVU135
- 436              	.LBE31:
- 437              	.LBE30:
- 438              		.loc 1 201 18 view .LVU136
- 439 00ce 4E4B     		ldr	r3, .L37+8
- 440 00d0 83ED008A 		vstr.32	s16, [r3]
- 202:./Hardware/as5047.c **** 	vel_estimate_counts_ += current_meas_period * pll_ki_ * delta_pos_cpr_counts;
- 441              		.loc 1 202 2 is_stmt 1 view .LVU137
- 442              		.loc 1 202 46 is_stmt 0 view .LVU138
- 443 00d4 514B     		ldr	r3, .L37+28
- 444 00d6 D3ED007A 		vldr.32	s15, [r3]
- 445 00da 9FED4D0A 		vldr.32	s0, .L37+16
- 446 00de 27EE800A 		vmul.f32	s0, s15, s0
- 447              		.loc 1 202 56 view .LVU139
- 448 00e2 60EE299A 		vmul.f32	s19, s0, s19
- 449              	.LVL24:
- 450              		.loc 1 202 23 view .LVU140
- 451 00e6 7AEEA99A 		vadd.f32	s19, s21, s19
- 452 00ea 484B     		ldr	r3, .L37+12
- 453 00ec C3ED009A 		vstr.32	s19, [r3]
- 203:./Hardware/as5047.c **** 	uint8_t snap_to_zero_vel = false;
- 454              		.loc 1 203 2 is_stmt 1 view .LVU141
- 455              	.LVL25:
- 204:./Hardware/as5047.c **** 	if (fabsf(vel_estimate_counts_) < 0.5f * current_meas_period * pll_ki_)
- 456              		.loc 1 204 2 view .LVU142
- 457              		.loc 1 204 6 is_stmt 0 view .LVU143
- 458 00f0 F0EEE99A 		vabs.f32	s19, s19
- 459              		.loc 1 204 63 view .LVU144
- 460 00f4 9FED4A7A 		vldr.32	s14, .L37+32
- 461 00f8 67EE877A 		vmul.f32	s15, s15, s14
- 462              		.loc 1 204 5 view .LVU145
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 13
+ 431              		.loc 1 91 2 is_stmt 0 view .LVU125
+ 432              	.LBE31:
+ 433              	.LBE30:
+ 203:./Hardware/as5047.c **** 	vel_estimate_counts_ += current_meas_period * pll_ki_ * delta_pos_cpr_counts;
+ 434              		.loc 1 203 18 view .LVU126
+ 435 00ce 494B     		ldr	r3, .L35+8
+ 436 00d0 83ED008A 		vstr.32	s16, [r3]
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 15
 
 
- 463 00fc F4EEE79A 		vcmpe.f32	s19, s15
- 464 0100 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 465 0104 08D5     		bpl	.L32
- 205:./Hardware/as5047.c **** 	{
- 206:./Hardware/as5047.c **** 		vel_estimate_counts_ = 0.0f;  //align delta-sigma on zero to prevent jitter
- 466              		.loc 1 206 3 is_stmt 1 view .LVU146
- 467              		.loc 1 206 24 is_stmt 0 view .LVU147
- 468 0106 0022     		movs	r2, #0
- 469 0108 1A60     		str	r2, [r3]	@ float
- 207:./Hardware/as5047.c **** 		snap_to_zero_vel = true;
- 470              		.loc 1 207 3 is_stmt 1 view .LVU148
- 471              	.LVL26:
- 472              		.loc 1 207 20 is_stmt 0 view .LVU149
- 473 010a 0123     		movs	r3, #1
- 474 010c 05E0     		b	.L19
- 475              	.LVL27:
- 476              	.L34:
- 477              	.LBB35:
- 478              	.LBB27:
+ 204:./Hardware/as5047.c **** 	uint8_t snap_to_zero_vel = false;
+ 437              		.loc 1 204 2 is_stmt 1 view .LVU127
+ 204:./Hardware/as5047.c **** 	uint8_t snap_to_zero_vel = false;
+ 438              		.loc 1 204 46 is_stmt 0 view .LVU128
+ 439 00d4 4E4B     		ldr	r3, .L35+36
+ 440 00d6 D3ED007A 		vldr.32	s15, [r3]
+ 441 00da 9FED480A 		vldr.32	s0, .L35+16
+ 442 00de 27EE800A 		vmul.f32	s0, s15, s0
+ 204:./Hardware/as5047.c **** 	uint8_t snap_to_zero_vel = false;
+ 443              		.loc 1 204 56 view .LVU129
+ 444 00e2 60EE299A 		vmul.f32	s19, s0, s19
+ 445              	.LVL26:
+ 204:./Hardware/as5047.c **** 	uint8_t snap_to_zero_vel = false;
+ 446              		.loc 1 204 23 view .LVU130
+ 447 00e6 7AEEA99A 		vadd.f32	s19, s21, s19
+ 448 00ea 434B     		ldr	r3, .L35+12
+ 449 00ec C3ED009A 		vstr.32	s19, [r3]
+ 205:./Hardware/as5047.c **** 	if (fabsf(vel_estimate_counts_) < 0.5f * current_meas_period * pll_ki_)
+ 450              		.loc 1 205 2 is_stmt 1 view .LVU131
+ 451              	.LVL27:
+ 206:./Hardware/as5047.c **** 	{
+ 452              		.loc 1 206 2 view .LVU132
+ 206:./Hardware/as5047.c **** 	{
+ 453              		.loc 1 206 6 is_stmt 0 view .LVU133
+ 454 00f0 F0EEE99A 		vabs.f32	s19, s19
+ 206:./Hardware/as5047.c **** 	{
+ 455              		.loc 1 206 63 view .LVU134
+ 456 00f4 9FED477A 		vldr.32	s14, .L35+40
+ 457 00f8 67EE877A 		vmul.f32	s15, s15, s14
+ 206:./Hardware/as5047.c **** 	{
+ 458              		.loc 1 206 5 view .LVU135
+ 459 00fc F4EEE79A 		vcmpe.f32	s19, s15
+ 460 0100 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 461 0104 08D5     		bpl	.L30
+ 208:./Hardware/as5047.c **** 		snap_to_zero_vel = true;
+ 462              		.loc 1 208 3 is_stmt 1 view .LVU136
+ 208:./Hardware/as5047.c **** 		snap_to_zero_vel = true;
+ 463              		.loc 1 208 24 is_stmt 0 view .LVU137
+ 464 0106 0022     		movs	r2, #0
+ 465 0108 1A60     		str	r2, [r3]	@ float
+ 209:./Hardware/as5047.c **** 	}
+ 466              		.loc 1 209 3 is_stmt 1 view .LVU138
+ 467              	.LVL28:
+ 209:./Hardware/as5047.c **** 	}
+ 468              		.loc 1 209 20 is_stmt 0 view .LVU139
+ 469 010a 0123     		movs	r3, #1
+ 470 010c 05E0     		b	.L17
+ 471              	.LVL29:
+ 472              	.L32:
+ 473              	.LBB35:
+ 474              	.LBB27:
  102:./Hardware/as5047.c **** 	return r;
- 479              		.loc 1 102 13 is_stmt 1 view .LVU150
+ 475              		.loc 1 102 13 is_stmt 1 view .LVU140
  102:./Hardware/as5047.c **** 	return r;
- 480              		.loc 1 102 15 is_stmt 0 view .LVU151
- 481 010e 1544     		add	r5, r5, r2
- 482              	.LVL28:
+ 476              		.loc 1 102 15 is_stmt 0 view .LVU141
+ 477 010e 1D44     		add	r5, r5, r3
+ 478              	.LVL30:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 16
+
+
  102:./Hardware/as5047.c **** 	return r;
- 483              		.loc 1 102 15 view .LVU152
- 484 0110 82E7     		b	.L15
- 485              	.LVL29:
- 486              	.L35:
+ 479              		.loc 1 102 15 view .LVU142
+ 480 0110 82E7     		b	.L13
+ 481              	.LVL31:
+ 482              	.L33:
  102:./Hardware/as5047.c **** 	return r;
- 487              		.loc 1 102 15 view .LVU153
- 488              	.LBE27:
- 489              	.LBE35:
- 490              	.LBB36:
- 491              	.LBB34:
+ 483              		.loc 1 102 15 view .LVU143
+ 484              	.LBE27:
+ 485              	.LBE35:
+ 486              	.LBB36:
+ 487              	.LBB34:
   90:./Hardware/as5047.c **** 	return res;
- 492              		.loc 1 90 15 is_stmt 1 view .LVU154
+ 488              		.loc 1 90 15 is_stmt 1 view .LVU144
   90:./Hardware/as5047.c **** 	return res;
- 493              		.loc 1 90 19 is_stmt 0 view .LVU155
- 494 0112 38EE288A 		vadd.f32	s16, s16, s17
- 495              	.LVL30:
+ 489              		.loc 1 90 19 is_stmt 0 view .LVU145
+ 490 0112 38EE0B8A 		vadd.f32	s16, s16, s22
+ 491              	.LVL32:
   90:./Hardware/as5047.c **** 	return res;
- 496              		.loc 1 90 19 view .LVU156
- 497 0116 DAE7     		b	.L17
- 498              	.LVL31:
- 499              	.L32:
+ 492              		.loc 1 90 19 view .LVU146
+ 493 0116 DAE7     		b	.L15
+ 494              	.LVL33:
+ 495              	.L30:
   90:./Hardware/as5047.c **** 	return res;
- 500              		.loc 1 90 19 view .LVU157
- 501              	.LBE34:
- 502              	.LBE36:
- 203:./Hardware/as5047.c **** 	if (fabsf(vel_estimate_counts_) < 0.5f * current_meas_period * pll_ki_)
- 503              		.loc 1 203 10 view .LVU158
- 504 0118 0023     		movs	r3, #0
- 505              	.LVL32:
- 506              	.L19:
- 208:./Hardware/as5047.c **** 	}
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 14
+ 496              		.loc 1 90 19 view .LVU147
+ 497              	.LBE34:
+ 498              	.LBE36:
+ 205:./Hardware/as5047.c **** 	if (fabsf(vel_estimate_counts_) < 0.5f * current_meas_period * pll_ki_)
+ 499              		.loc 1 205 10 view .LVU148
+ 500 0118 0023     		movs	r3, #0
+ 501              	.LVL34:
+ 502              	.L17:
+ 213:./Hardware/as5047.c **** 	vel_estimate_ = vel_estimate_counts_ / (float)ENCODER_cpr;
+ 503              		.loc 1 213 2 is_stmt 1 view .LVU149
+ 213:./Hardware/as5047.c **** 	vel_estimate_ = vel_estimate_counts_ / (float)ENCODER_cpr;
+ 504              		.loc 1 213 39 is_stmt 0 view .LVU150
+ 505 011a 9FED3A7A 		vldr.32	s14, .L35+24
+ 506 011e 68EE877A 		vmul.f32	s15, s17, s14
+ 213:./Hardware/as5047.c **** 	vel_estimate_ = vel_estimate_counts_ / (float)ENCODER_cpr;
+ 507              		.loc 1 213 16 view .LVU151
+ 508 0122 3D4A     		ldr	r2, .L35+44
+ 509 0124 C2ED007A 		vstr.32	s15, [r2]
+ 214:./Hardware/as5047.c **** 
+ 510              		.loc 1 214 2 is_stmt 1 view .LVU152
+ 214:./Hardware/as5047.c **** 
+ 511              		.loc 1 214 39 is_stmt 0 view .LVU153
+ 512 0128 334A     		ldr	r2, .L35+12
+ 513 012a D2ED007A 		vldr.32	s15, [r2]
+ 514 012e 67EE878A 		vmul.f32	s17, s15, s14
+ 214:./Hardware/as5047.c **** 
+ 515              		.loc 1 214 16 view .LVU154
+ 516 0132 3A4A     		ldr	r2, .L35+48
+ 517 0134 C2ED008A 		vstr.32	s17, [r2]
+ 217:./Hardware/as5047.c **** 	// if we are stopped, make sure we don't randomly drift
+ 518              		.loc 1 217 2 is_stmt 1 view .LVU155
+ 217:./Hardware/as5047.c **** 	// if we are stopped, make sure we don't randomly drift
+ 519              		.loc 1 217 56 is_stmt 0 view .LVU156
+ 520 0138 2C4A     		ldr	r2, .L35
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 17
 
 
- 209:./Hardware/as5047.c **** 	
- 210:./Hardware/as5047.c **** 	// Outputs from Encoder for Controller
- 211:./Hardware/as5047.c **** 	pos_estimate_ = pos_estimate_counts_ / (float)encoder_config.cpr;
- 507              		.loc 1 211 2 is_stmt 1 view .LVU159
- 508              		.loc 1 211 39 is_stmt 0 view .LVU160
- 509 011a C9EE287A 		vdiv.f32	s15, s18, s17
- 510              		.loc 1 211 16 view .LVU161
- 511 011e 414A     		ldr	r2, .L37+36
- 512 0120 C2ED007A 		vstr.32	s15, [r2]
- 212:./Hardware/as5047.c **** 	vel_estimate_ = vel_estimate_counts_ / (float)encoder_config.cpr;
- 513              		.loc 1 212 2 is_stmt 1 view .LVU162
- 514              		.loc 1 212 39 is_stmt 0 view .LVU163
- 515 0124 394A     		ldr	r2, .L37+12
- 516 0126 D2ED007A 		vldr.32	s15, [r2]
- 517 012a 87EEA89A 		vdiv.f32	s18, s15, s17
- 518              		.loc 1 212 16 view .LVU164
- 519 012e 3E4A     		ldr	r2, .L37+40
- 520 0130 82ED009A 		vstr.32	s18, [r2]
- 213:./Hardware/as5047.c **** 
- 214:./Hardware/as5047.c **** 	//// run encoder count interpolation
- 215:./Hardware/as5047.c **** 	int32_t corrected_enc = count_in_cpr_ - encoder_config.phase_offset;
- 521              		.loc 1 215 2 is_stmt 1 view .LVU165
- 522              		.loc 1 215 56 is_stmt 0 view .LVU166
- 523 0134 324A     		ldr	r2, .L37
- 524 0136 5069     		ldr	r0, [r2, #20]
- 525              		.loc 1 215 10 view .LVU167
- 526 0138 221A     		subs	r2, r4, r0
- 527 013a 08EE102A 		vmov	s16, r2	@ int
- 528              	.LVL33:
- 216:./Hardware/as5047.c **** 	// if we are stopped, make sure we don't randomly drift
- 217:./Hardware/as5047.c **** 	if(snap_to_zero_vel || !encoder_config.enable_phase_interpolation)
- 529              		.loc 1 217 2 is_stmt 1 view .LVU168
- 530              		.loc 1 217 4 is_stmt 0 view .LVU169
- 531 013e 1BBB     		cbnz	r3, .L24
- 532              		.loc 1 217 40 discriminator 1 view .LVU170
- 533 0140 2F4B     		ldr	r3, .L37
- 534              	.LVL34:
- 535              		.loc 1 217 40 discriminator 1 view .LVU171
- 536 0142 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
- 537              		.loc 1 217 22 discriminator 1 view .LVU172
- 538 0146 002B     		cmp	r3, #0
- 539 0148 53D0     		beq	.L25
- 218:./Hardware/as5047.c **** 	{
- 219:./Hardware/as5047.c **** 		interpolation_ = 0.5f;
- 220:./Hardware/as5047.c **** 		// reset interpolation if encoder edge comes
- 221:./Hardware/as5047.c ****     // TODO: This isn't correct. At high velocities the first phase in this count may very well not
- 222:./Hardware/as5047.c **** 	}
- 223:./Hardware/as5047.c **** 	else if(delta_enc > 0){
- 540              		.loc 1 223 7 is_stmt 1 view .LVU173
- 541              		.loc 1 223 9 is_stmt 0 view .LVU174
- 542 014a 002D     		cmp	r5, #0
- 543 014c 02DD     		ble	.L36
- 224:./Hardware/as5047.c **** 		interpolation_ = 0.0f;
- 544              		.loc 1 224 18 view .LVU175
- 545 014e DFED377A 		vldr.32	s15, .L37+44
- 546 0152 1BE0     		b	.L21
- 547              	.L36:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 15
+ 521 013a 5068     		ldr	r0, [r2, #4]
+ 217:./Hardware/as5047.c **** 	// if we are stopped, make sure we don't randomly drift
+ 522              		.loc 1 217 10 view .LVU157
+ 523 013c 221A     		subs	r2, r4, r0
+ 524 013e 08EE102A 		vmov	s16, r2	@ int
+ 525              	.LVL35:
+ 219:./Hardware/as5047.c **** 	{
+ 526              		.loc 1 219 2 is_stmt 1 view .LVU158
+ 219:./Hardware/as5047.c **** 	{
+ 527              		.loc 1 219 4 is_stmt 0 view .LVU159
+ 528 0142 13BB     		cbnz	r3, .L22
+ 219:./Hardware/as5047.c **** 	{
+ 529              		.loc 1 219 40 discriminator 1 view .LVU160
+ 530 0144 294B     		ldr	r3, .L35
+ 531              	.LVL36:
+ 219:./Hardware/as5047.c **** 	{
+ 532              		.loc 1 219 40 discriminator 1 view .LVU161
+ 533 0146 1B7D     		ldrb	r3, [r3, #20]	@ zero_extendqisi2
+ 219:./Hardware/as5047.c **** 	{
+ 534              		.loc 1 219 22 discriminator 1 view .LVU162
+ 535 0148 002B     		cmp	r3, #0
+ 536 014a 49D0     		beq	.L23
+ 225:./Hardware/as5047.c **** 		interpolation_ = 0.0f;
+ 537              		.loc 1 225 7 is_stmt 1 view .LVU163
+ 225:./Hardware/as5047.c **** 		interpolation_ = 0.0f;
+ 538              		.loc 1 225 9 is_stmt 0 view .LVU164
+ 539 014c 002D     		cmp	r5, #0
+ 540 014e 02DD     		ble	.L34
+ 226:./Hardware/as5047.c **** 	}else if(delta_enc < 0){
+ 541              		.loc 1 226 18 view .LVU165
+ 542 0150 DFED337A 		vldr.32	s15, .L35+52
+ 543 0154 1BE0     		b	.L19
+ 544              	.L34:
+ 227:./Hardware/as5047.c **** 		interpolation_ = 1.0f;
+ 545              		.loc 1 227 8 is_stmt 1 view .LVU166
+ 227:./Hardware/as5047.c **** 		interpolation_ = 1.0f;
+ 546              		.loc 1 227 10 is_stmt 0 view .LVU167
+ 547 0156 46DB     		blt	.L25
+ 232:./Hardware/as5047.c **** 		// don't allow interpolation indicated position outside of [enc, enc+1)
+ 548              		.loc 1 232 3 is_stmt 1 view .LVU168
+ 232:./Hardware/as5047.c **** 		// don't allow interpolation indicated position outside of [enc, enc+1)
+ 549              		.loc 1 232 41 is_stmt 0 view .LVU169
+ 550 0158 9FED287A 		vldr.32	s14, .L35+16
+ 551 015c 67EE877A 		vmul.f32	s15, s15, s14
+ 232:./Hardware/as5047.c **** 		// don't allow interpolation indicated position outside of [enc, enc+1)
+ 552              		.loc 1 232 18 view .LVU170
+ 553 0160 9FED2F7A 		vldr.32	s14, .L35+52
+ 554 0164 77EE877A 		vadd.f32	s15, s15, s14
+ 555              	.LVL37:
+ 234:./Hardware/as5047.c **** 		if (interpolation_ < 0.0f) interpolation_ = 0.0f;
+ 556              		.loc 1 234 3 is_stmt 1 view .LVU171
+ 234:./Hardware/as5047.c **** 		if (interpolation_ < 0.0f) interpolation_ = 0.0f;
+ 557              		.loc 1 234 6 is_stmt 0 view .LVU172
+ 558 0168 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 559 016c F4EEC77A 		vcmpe.f32	s15, s14
+ 560 0170 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 561 0174 01DD     		ble	.L20
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 18
 
 
- 225:./Hardware/as5047.c **** 	}else if(delta_enc < 0){
- 548              		.loc 1 225 8 is_stmt 1 view .LVU176
- 549              		.loc 1 225 10 is_stmt 0 view .LVU177
- 550 0154 50DB     		blt	.L27
- 226:./Hardware/as5047.c **** 		interpolation_ = 1.0f;
- 227:./Hardware/as5047.c **** 	}
- 228:./Hardware/as5047.c **** 	else {
- 229:./Hardware/as5047.c **** 		// Interpolate (predict) between encoder counts using vel_estimate,
- 230:./Hardware/as5047.c **** 		interpolation_ += current_meas_period * vel_estimate_counts_;
- 551              		.loc 1 230 3 is_stmt 1 view .LVU178
- 552              		.loc 1 230 41 is_stmt 0 view .LVU179
- 553 0156 9FED2E7A 		vldr.32	s14, .L37+16
- 554 015a 67EE877A 		vmul.f32	s15, s15, s14
- 555              		.loc 1 230 18 view .LVU180
- 556 015e 9FED337A 		vldr.32	s14, .L37+44
- 557 0162 77EE877A 		vadd.f32	s15, s15, s14
- 558              	.LVL35:
- 231:./Hardware/as5047.c **** 		// don't allow interpolation indicated position outside of [enc, enc+1)
- 232:./Hardware/as5047.c **** 		if (interpolation_ > 1.0f) interpolation_ = 1.0f;
- 559              		.loc 1 232 3 is_stmt 1 view .LVU181
- 560              		.loc 1 232 6 is_stmt 0 view .LVU182
- 561 0166 B7EE007A 		vmov.f32	s14, #1.0e+0
- 562 016a F4EEC77A 		vcmpe.f32	s15, s14
- 563 016e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 564 0172 01DD     		ble	.L22
- 565              		.loc 1 232 45 view .LVU183
- 566 0174 F0EE477A 		vmov.f32	s15, s14
- 567              	.LVL36:
- 568              	.L22:
- 233:./Hardware/as5047.c **** 		if (interpolation_ < 0.0f) interpolation_ = 0.0f;
- 569              		.loc 1 233 3 is_stmt 1 view .LVU184
- 570              		.loc 1 233 6 is_stmt 0 view .LVU185
- 571 0178 F5EEC07A 		vcmpe.f32	s15, #0
- 572 017c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 573 0180 04D5     		bpl	.L21
- 574              		.loc 1 233 45 view .LVU186
- 575 0182 DFED2A7A 		vldr.32	s15, .L37+44
- 576              	.LVL37:
- 577              		.loc 1 233 45 view .LVU187
- 578 0186 01E0     		b	.L21
- 579              	.LVL38:
- 580              	.L24:
- 219:./Hardware/as5047.c **** 		// reset interpolation if encoder edge comes
- 581              		.loc 1 219 18 view .LVU188
- 582 0188 F6EE007A 		vmov.f32	s15, #5.0e-1
- 583              	.LVL39:
- 584              	.L21:
- 234:./Hardware/as5047.c **** 	}
- 235:./Hardware/as5047.c **** 	float interpolated_enc = corrected_enc + interpolation_;
- 585              		.loc 1 235 2 is_stmt 1 view .LVU189
- 586              		.loc 1 235 41 is_stmt 0 view .LVU190
- 587 018c B8EEC88A 		vcvt.f32.s32	s16, s16
- 588              		.loc 1 235 8 view .LVU191
- 589 0190 38EE278A 		vadd.f32	s16, s16, s15
- 590              	.LVL40:
- 236:./Hardware/as5047.c **** 	
- 237:./Hardware/as5047.c **** 	//// compute electrical phase
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 16
+ 234:./Hardware/as5047.c **** 		if (interpolation_ < 0.0f) interpolation_ = 0.0f;
+ 562              		.loc 1 234 45 view .LVU173
+ 563 0176 F0EE477A 		vmov.f32	s15, s14
+ 564              	.LVL38:
+ 565              	.L20:
+ 235:./Hardware/as5047.c **** 	}
+ 566              		.loc 1 235 3 is_stmt 1 view .LVU174
+ 235:./Hardware/as5047.c **** 	}
+ 567              		.loc 1 235 6 is_stmt 0 view .LVU175
+ 568 017a F5EEC07A 		vcmpe.f32	s15, #0
+ 569 017e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 570 0182 04D5     		bpl	.L19
+ 235:./Hardware/as5047.c **** 	}
+ 571              		.loc 1 235 45 view .LVU176
+ 572 0184 DFED267A 		vldr.32	s15, .L35+52
+ 573              	.LVL39:
+ 235:./Hardware/as5047.c **** 	}
+ 574              		.loc 1 235 45 view .LVU177
+ 575 0188 01E0     		b	.L19
+ 576              	.LVL40:
+ 577              	.L22:
+ 221:./Hardware/as5047.c **** 		// reset interpolation if encoder edge comes
+ 578              		.loc 1 221 18 view .LVU178
+ 579 018a F6EE007A 		vmov.f32	s15, #5.0e-1
+ 580              	.LVL41:
+ 581              	.L19:
+ 237:./Hardware/as5047.c **** 	
+ 582              		.loc 1 237 2 is_stmt 1 view .LVU179
+ 237:./Hardware/as5047.c **** 	
+ 583              		.loc 1 237 41 is_stmt 0 view .LVU180
+ 584 018e B8EEC88A 		vcvt.f32.s32	s16, s16
+ 237:./Hardware/as5047.c **** 	
+ 585              		.loc 1 237 8 view .LVU181
+ 586 0192 38EE278A 		vadd.f32	s16, s16, s15
+ 587              	.LVL42:
+ 241:./Hardware/as5047.c **** 	float ph = elec_rad_per_enc * (interpolated_enc - encoder_config.phase_offset_float);
+ 588              		.loc 1 241 2 is_stmt 1 view .LVU182
+ 242:./Hardware/as5047.c **** 
+ 589              		.loc 1 242 2 view .LVU183
+ 242:./Hardware/as5047.c **** 
+ 590              		.loc 1 242 66 is_stmt 0 view .LVU184
+ 591 0196 154C     		ldr	r4, .L35
+ 592              	.LVL43:
+ 242:./Hardware/as5047.c **** 
+ 593              		.loc 1 242 66 view .LVU185
+ 594 0198 D4ED027A 		vldr.32	s15, [r4, #8]
+ 595              	.LVL44:
+ 242:./Hardware/as5047.c **** 
+ 596              		.loc 1 242 50 view .LVU186
+ 597 019c 38EE678A 		vsub.f32	s16, s16, s15
+ 598              	.LVL45:
+ 242:./Hardware/as5047.c **** 
+ 599              		.loc 1 242 8 view .LVU187
+ 600 01a0 DFED207A 		vldr.32	s15, .L35+56
+ 601 01a4 28EE278A 		vmul.f32	s16, s16, s15
+ 602              	.LVL46:
+ 244:./Hardware/as5047.c **** 	encoder_config.phase_vel_ = (2*M_PI) * vel_estimate_ * MOTOR_pole_pairs  * encoder_config.directio
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 19
 
 
- 238:./Hardware/as5047.c **** 	//TODO avoid recomputing elec_rad_per_enc every time
- 239:./Hardware/as5047.c **** 	float elec_rad_per_enc = MOTOR_pole_pairs  * 2 * M_PI * (1.0f / (float)(encoder_config.cpr));
- 591              		.loc 1 239 2 is_stmt 1 view .LVU192
- 592              		.loc 1 239 64 is_stmt 0 view .LVU193
- 593 0194 B7EE007A 		vmov.f32	s14, #1.0e+0
- 594 0198 C7EE287A 		vdiv.f32	s15, s14, s17
- 595              	.LVL41:
- 596              		.loc 1 239 8 view .LVU194
- 597 019c 9FED247A 		vldr.32	s14, .L37+48
- 598 01a0 67EE877A 		vmul.f32	s15, s15, s14
- 599              	.LVL42:
- 240:./Hardware/as5047.c **** 	float ph = elec_rad_per_enc * (interpolated_enc - encoder_config.phase_offset_float);
- 600              		.loc 1 240 2 is_stmt 1 view .LVU195
- 601              		.loc 1 240 66 is_stmt 0 view .LVU196
- 602 01a4 164C     		ldr	r4, .L37
- 603              	.LVL43:
- 604              		.loc 1 240 66 view .LVU197
- 605 01a6 94ED067A 		vldr.32	s14, [r4, #24]
- 606              		.loc 1 240 50 view .LVU198
- 607 01aa 38EE478A 		vsub.f32	s16, s16, s14
- 608              	.LVL44:
- 609              		.loc 1 240 8 view .LVU199
- 610 01ae 28EE278A 		vmul.f32	s16, s16, s15
- 611              	.LVL45:
- 241:./Hardware/as5047.c **** 
- 242:./Hardware/as5047.c **** 	encoder_config.phase_ = wrap_pm_pi(ph) * encoder_config.direction;
- 612              		.loc 1 242 2 is_stmt 1 view .LVU200
- 613              	.LBB37:
- 614              	.LBI37:
+ 603              		.loc 1 244 2 is_stmt 1 view .LVU188
+ 604              	.LBB37:
+ 605              	.LBI37:
   94:./Hardware/as5047.c **** 	return wrap_pm(x, 2 * M_PI);
- 615              		.loc 1 94 21 view .LVU201
- 616              	.LBE37:
+ 606              		.loc 1 94 21 view .LVU189
+ 607              	.LBE37:
   95:./Hardware/as5047.c **** }
- 617              		.loc 1 95 2 view .LVU202
- 618              	.LBB40:
- 619              	.LBB38:
- 620              	.LBI38:
+ 608              		.loc 1 95 2 view .LVU190
+ 609              	.LBB40:
+ 610              	.LBB38:
+ 611              	.LBI38:
   80:./Hardware/as5047.c **** #ifdef FPU_FPV4
- 621              		.loc 1 80 21 view .LVU203
- 622              	.LBB39:
+ 612              		.loc 1 80 21 view .LVU191
+ 613              	.LBB39:
   84:./Hardware/as5047.c **** #endif
- 623              		.loc 1 84 2 view .LVU204
+ 614              		.loc 1 84 2 view .LVU192
   84:./Hardware/as5047.c **** #endif
- 624              		.loc 1 84 17 is_stmt 0 view .LVU205
- 625 01b2 DFED208A 		vldr.32	s17, .L37+52
-  84:./Hardware/as5047.c **** #endif
- 626              		.loc 1 84 17 view .LVU206
- 627 01b6 88EE280A 		vdiv.f32	s0, s16, s17
- 628 01ba FFF7FEFF 		bl	nearbyintf
- 629              	.LVL46:
+ 615              		.loc 1 84 17 is_stmt 0 view .LVU193
+ 616 01a8 9FED1F9A 		vldr.32	s18, .L35+60
+ 617 01ac 88EE090A 		vdiv.f32	s0, s16, s18
+ 618 01b0 FFF7FEFF 		bl	nearbyintf
+ 619              	.LVL47:
   86:./Hardware/as5047.c **** }
- 630              		.loc 1 86 2 is_stmt 1 view .LVU207
+ 620              		.loc 1 86 2 is_stmt 1 view .LVU194
   86:./Hardware/as5047.c **** }
- 631              		.loc 1 86 20 is_stmt 0 view .LVU208
- 632 01be 20EE280A 		vmul.f32	s0, s0, s17
- 633              	.LVL47:
+ 621              		.loc 1 86 20 is_stmt 0 view .LVU195
+ 622 01b4 20EE090A 		vmul.f32	s0, s0, s18
+ 623              	.LVL48:
   86:./Hardware/as5047.c **** }
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 17
-
-
- 634              		.loc 1 86 11 view .LVU209
- 635 01c2 38EE408A 		vsub.f32	s16, s16, s0
- 636              	.LVL48:
+ 624              		.loc 1 86 11 view .LVU196
+ 625 01b8 38EE408A 		vsub.f32	s16, s16, s0
+ 626              	.LVL49:
   86:./Hardware/as5047.c **** }
- 637              		.loc 1 86 11 view .LVU210
- 638              	.LBE39:
- 639              	.LBE38:
- 640              	.LBE40:
- 641              		.loc 1 242 41 view .LVU211
- 642 01c6 D4ED0A7A 		vldr.32	s15, [r4, #40]	@ int
- 643 01ca F8EEE77A 		vcvt.f32.s32	s15, s15
- 644 01ce 27EE888A 		vmul.f32	s16, s15, s16
- 645              		.loc 1 242 24 view .LVU212
- 646 01d2 84ED0C8A 		vstr.32	s16, [r4, #48]
- 243:./Hardware/as5047.c **** 	encoder_config.phase_vel_ = (2*M_PI) * vel_estimate_ * MOTOR_pole_pairs  * encoder_config.directio
- 647              		.loc 1 243 2 is_stmt 1 view .LVU213
- 648              		.loc 1 243 39 is_stmt 0 view .LVU214
- 649 01d6 29EE287A 		vmul.f32	s14, s18, s17
- 650              		.loc 1 243 55 view .LVU215
- 651 01da F1EE0C6A 		vmov.f32	s13, #7.0e+0
- 652 01de 27EE267A 		vmul.f32	s14, s14, s13
- 653              		.loc 1 243 75 view .LVU216
- 654 01e2 67EE877A 		vmul.f32	s15, s15, s14
- 655              		.loc 1 243 28 view .LVU217
- 656 01e6 C4ED0D7A 		vstr.32	s15, [r4, #52]
- 244:./Hardware/as5047.c **** 
- 245:./Hardware/as5047.c **** 	return 1;
- 657              		.loc 1 245 2 is_stmt 1 view .LVU218
- 246:./Hardware/as5047.c **** }
- 658              		.loc 1 246 1 is_stmt 0 view .LVU219
- 659 01ea 0120     		movs	r0, #1
- 660 01ec BDEC088B 		vldm	sp!, {d8-d11}
- 661              	.LCFI3:
- 662              		.cfi_remember_state
- 663              		.cfi_restore 86
- 664              		.cfi_restore 87
- 665              		.cfi_restore 84
- 666              		.cfi_restore 85
- 667              		.cfi_restore 82
- 668              		.cfi_restore 83
- 669              		.cfi_restore 80
- 670              		.cfi_restore 81
- 671              		.cfi_def_cfa_offset 24
- 672              		.loc 1 246 1 view .LVU220
- 673 01f0 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
- 674              	.LVL49:
- 675              	.L25:
- 676              	.LCFI4:
- 677              		.cfi_restore_state
- 219:./Hardware/as5047.c **** 		// reset interpolation if encoder edge comes
- 678              		.loc 1 219 18 view .LVU221
- 679 01f2 F6EE007A 		vmov.f32	s15, #5.0e-1
- 680 01f6 C9E7     		b	.L21
- 681              	.L27:
- 226:./Hardware/as5047.c **** 	}
- 682              		.loc 1 226 18 view .LVU222
- 683 01f8 F7EE007A 		vmov.f32	s15, #1.0e+0
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 18
+ 627              		.loc 1 86 11 view .LVU197
+ 628              	.LBE39:
+ 629              	.LBE38:
+ 630              	.LBE40:
+ 244:./Hardware/as5047.c **** 	encoder_config.phase_vel_ = (2*M_PI) * vel_estimate_ * MOTOR_pole_pairs  * encoder_config.directio
+ 631              		.loc 1 244 41 view .LVU198
+ 632 01bc D4ED047A 		vldr.32	s15, [r4, #16]	@ int
+ 633 01c0 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 634 01c4 27EE888A 		vmul.f32	s16, s15, s16
+ 244:./Hardware/as5047.c **** 	encoder_config.phase_vel_ = (2*M_PI) * vel_estimate_ * MOTOR_pole_pairs  * encoder_config.directio
+ 635              		.loc 1 244 24 view .LVU199
+ 636 01c8 84ED068A 		vstr.32	s16, [r4, #24]
+ 245:./Hardware/as5047.c **** 
+ 637              		.loc 1 245 2 is_stmt 1 view .LVU200
+ 245:./Hardware/as5047.c **** 
+ 638              		.loc 1 245 55 is_stmt 0 view .LVU201
+ 639 01cc 68EE898A 		vmul.f32	s17, s17, s18
+ 245:./Hardware/as5047.c **** 
+ 640              		.loc 1 245 75 view .LVU202
+ 641 01d0 67EEA87A 		vmul.f32	s15, s15, s17
+ 245:./Hardware/as5047.c **** 
+ 642              		.loc 1 245 28 view .LVU203
+ 643 01d4 C4ED077A 		vstr.32	s15, [r4, #28]
+ 247:./Hardware/as5047.c **** }
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 20
 
 
- 684 01fc C6E7     		b	.L21
- 685              	.L38:
- 686 01fe 00BF     		.align	2
- 687              	.L37:
- 688 0200 00000000 		.word	.LANCHOR2
- 689 0204 00000000 		.word	.LANCHOR5
- 690 0208 00000000 		.word	.LANCHOR6
- 691 020c 00000000 		.word	.LANCHOR7
- 692 0210 6F120339 		.word	956502639
- 693 0214 00000000 		.word	.LANCHOR8
- 694 0218 00000000 		.word	.LANCHOR3
- 695 021c 00000000 		.word	.LANCHOR4
- 696 0220 6F128338 		.word	948114031
- 697 0224 00000000 		.word	.LANCHOR9
- 698 0228 00000000 		.word	.LANCHOR10
- 699 022c 00000000 		.word	0
- 700 0230 E0ED2F42 		.word	1110437344
- 701 0234 DB0FC940 		.word	1086918619
- 702              		.cfi_endproc
- 703              	.LFE243:
- 705              		.section	.text.Parity_bit_Calculate,"ax",%progbits
- 706              		.align	1
- 707              		.global	Parity_bit_Calculate
- 708              		.syntax unified
- 709              		.thumb
- 710              		.thumb_func
- 712              	Parity_bit_Calculate:
- 713              	.LVL50:
- 714              	.LFB244:
- 247:./Hardware/as5047.c **** /****************************************************************************/
- 248:./Hardware/as5047.c **** 
- 249:./Hardware/as5047.c **** 
- 250:./Hardware/as5047.c **** 
- 251:./Hardware/as5047.c **** 
- 252:./Hardware/as5047.c **** 
- 253:./Hardware/as5047.c **** 
- 254:./Hardware/as5047.c **** 
- 255:./Hardware/as5047.c **** //计算奇偶函数
- 256:./Hardware/as5047.c **** uint16_t Parity_bit_Calculate(uint16_t data_2_cal)
- 257:./Hardware/as5047.c **** {
- 715              		.loc 1 257 1 is_stmt 1 view -0
- 716              		.cfi_startproc
- 717              		@ args = 0, pretend = 0, frame = 0
- 718              		@ frame_needed = 0, uses_anonymous_args = 0
- 719              		@ link register save eliminated.
- 258:./Hardware/as5047.c **** 	uint16_t parity_bit_value=0;
- 720              		.loc 1 258 2 view .LVU224
- 259:./Hardware/as5047.c **** 	while(data_2_cal != 0)
- 721              		.loc 1 259 2 view .LVU225
- 258:./Hardware/as5047.c **** 	uint16_t parity_bit_value=0;
- 722              		.loc 1 258 11 is_stmt 0 view .LVU226
- 723 0000 0023     		movs	r3, #0
- 724              		.loc 1 259 7 view .LVU227
- 725 0002 01E0     		b	.L40
- 726              	.LVL51:
- 727              	.L41:
- 260:./Hardware/as5047.c **** 	{
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 19
+ 644              		.loc 1 247 2 is_stmt 1 view .LVU204
+ 248:./Hardware/as5047.c **** /****************************************************************************/
+ 645              		.loc 1 248 1 is_stmt 0 view .LVU205
+ 646 01d8 0120     		movs	r0, #1
+ 647 01da BDEC0A8B 		vldm	sp!, {d8-d12}
+ 648              	.LCFI2:
+ 649              		.cfi_remember_state
+ 650              		.cfi_restore 88
+ 651              		.cfi_restore 89
+ 652              		.cfi_restore 86
+ 653              		.cfi_restore 87
+ 654              		.cfi_restore 84
+ 655              		.cfi_restore 85
+ 656              		.cfi_restore 82
+ 657              		.cfi_restore 83
+ 658              		.cfi_restore 80
+ 659              		.cfi_restore 81
+ 660              		.cfi_def_cfa_offset 24
+ 248:./Hardware/as5047.c **** /****************************************************************************/
+ 661              		.loc 1 248 1 view .LVU206
+ 662 01de F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 663              	.LVL50:
+ 664              	.L23:
+ 665              	.LCFI3:
+ 666              		.cfi_restore_state
+ 221:./Hardware/as5047.c **** 		// reset interpolation if encoder edge comes
+ 667              		.loc 1 221 18 view .LVU207
+ 668 01e0 F6EE007A 		vmov.f32	s15, #5.0e-1
+ 669 01e4 D3E7     		b	.L19
+ 670              	.L25:
+ 228:./Hardware/as5047.c **** 	}
+ 671              		.loc 1 228 18 view .LVU208
+ 672 01e6 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 673 01ea D0E7     		b	.L19
+ 674              	.L36:
+ 675              		.align	2
+ 676              	.L35:
+ 677 01ec 00000000 		.word	.LANCHOR2
+ 678 01f0 00000000 		.word	.LANCHOR5
+ 679 01f4 00000000 		.word	.LANCHOR6
+ 680 01f8 00000000 		.word	.LANCHOR7
+ 681 01fc 17B7D138 		.word	953267991
+ 682 0200 00000000 		.word	.LANCHOR8
+ 683 0204 00008038 		.word	947912704
+ 684 0208 00008046 		.word	1182793728
+ 685 020c 00000000 		.word	.LANCHOR3
+ 686 0210 00000000 		.word	.LANCHOR4
+ 687 0214 17B75138 		.word	944879383
+ 688 0218 00000000 		.word	.LANCHOR9
+ 689 021c 00000000 		.word	.LANCHOR10
+ 690 0220 00000000 		.word	0
+ 691 0224 DB0FC939 		.word	969478107
+ 692 0228 DB0FC940 		.word	1086918619
+ 693              		.cfi_endproc
+ 694              	.LFE243:
+ 696              		.section	.text.SPI_ReadWrite_OneByte,"ax",%progbits
+ 697              		.align	1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 21
 
 
- 261:./Hardware/as5047.c **** 		parity_bit_value ^= data_2_cal; 
- 728              		.loc 1 261 3 is_stmt 1 view .LVU228
- 729              		.loc 1 261 20 is_stmt 0 view .LVU229
- 730 0004 4340     		eors	r3, r3, r0
- 731              	.LVL52:
- 262:./Hardware/as5047.c **** 		data_2_cal >>=1;
- 732              		.loc 1 262 3 is_stmt 1 view .LVU230
- 733              		.loc 1 262 14 is_stmt 0 view .LVU231
- 734 0006 4008     		lsrs	r0, r0, #1
- 735              	.LVL53:
- 736              	.L40:
- 259:./Hardware/as5047.c **** 	while(data_2_cal != 0)
- 737              		.loc 1 259 7 is_stmt 1 view .LVU232
- 738 0008 0028     		cmp	r0, #0
- 739 000a FBD1     		bne	.L41
- 263:./Hardware/as5047.c **** 	}
- 264:./Hardware/as5047.c **** 	return (parity_bit_value & 0x1); 
- 740              		.loc 1 264 2 view .LVU233
- 265:./Hardware/as5047.c **** }
- 741              		.loc 1 265 1 is_stmt 0 view .LVU234
- 742 000c 03F00100 		and	r0, r3, #1
- 743              	.LVL54:
- 744              		.loc 1 265 1 view .LVU235
- 745 0010 7047     		bx	lr
- 746              		.cfi_endproc
- 747              	.LFE244:
- 749              		.section	.text.SPI_ReadWrite_OneByte,"ax",%progbits
- 750              		.align	1
- 751              		.global	SPI_ReadWrite_OneByte
- 752              		.syntax unified
- 753              		.thumb
- 754              		.thumb_func
- 756              	SPI_ReadWrite_OneByte:
- 757              	.LVL55:
- 758              	.LFB245:
- 266:./Hardware/as5047.c **** //SPI发送读取函数
- 267:./Hardware/as5047.c **** uint16_t SPI_ReadWrite_OneByte(uint16_t _txdata)
- 268:./Hardware/as5047.c **** {
- 759              		.loc 1 268 1 is_stmt 1 view -0
- 760              		.cfi_startproc
- 761              		@ args = 0, pretend = 0, frame = 16
- 762              		@ frame_needed = 0, uses_anonymous_args = 0
- 763              		.loc 1 268 1 is_stmt 0 view .LVU237
- 764 0000 00B5     		push	{lr}
- 765              	.LCFI5:
- 766              		.cfi_def_cfa_offset 4
- 767              		.cfi_offset 14, -4
- 768 0002 87B0     		sub	sp, sp, #28
- 769              	.LCFI6:
- 770              		.cfi_def_cfa_offset 32
- 771 0004 ADF80E00 		strh	r0, [sp, #14]	@ movhi
- 269:./Hardware/as5047.c **** 
- 270:./Hardware/as5047.c **** 	HAL_GPIO_WritePin(SPI3_SOFTCS_GPIO_Port,SPI3_SOFTCS_Pin,GPIO_PIN_RESET);	//cs拉低
- 772              		.loc 1 270 2 is_stmt 1 view .LVU238
- 773 0008 0022     		movs	r2, #0
- 774 000a 0121     		movs	r1, #1
- 775 000c 0D48     		ldr	r0, .L45
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 20
+ 698              		.global	SPI_ReadWrite_OneByte
+ 699              		.syntax unified
+ 700              		.thumb
+ 701              		.thumb_func
+ 703              	SPI_ReadWrite_OneByte:
+ 704              	.LVL51:
+ 705              	.LFB245:
+ 259:./Hardware/as5047.c **** uint16_t SPI_ReadWrite_OneByte(uint16_t _txdata)
+ 260:./Hardware/as5047.c **** {
+ 706              		.loc 1 260 1 is_stmt 1 view -0
+ 707              		.cfi_startproc
+ 708              		@ args = 0, pretend = 0, frame = 16
+ 709              		@ frame_needed = 0, uses_anonymous_args = 0
+ 710              		.loc 1 260 1 is_stmt 0 view .LVU210
+ 711 0000 10B5     		push	{r4, lr}
+ 712              	.LCFI4:
+ 713              		.cfi_def_cfa_offset 8
+ 714              		.cfi_offset 4, -8
+ 715              		.cfi_offset 14, -4
+ 716 0002 86B0     		sub	sp, sp, #24
+ 717              	.LCFI5:
+ 718              		.cfi_def_cfa_offset 32
+ 719 0004 ADF80E00 		strh	r0, [sp, #14]	@ movhi
+ 261:./Hardware/as5047.c **** 
+ 262:./Hardware/as5047.c ****     uint16_t pos,rawVal;
+ 720              		.loc 1 262 5 is_stmt 1 view .LVU211
+ 263:./Hardware/as5047.c **** 	HAL_GPIO_WritePin(SPI3_SOFTCS_GPIO_Port,SPI3_SOFTCS_Pin,GPIO_PIN_RESET);	//cs拉低
+ 721              		.loc 1 263 2 view .LVU212
+ 722 0008 114C     		ldr	r4, .L41
+ 723 000a 0022     		movs	r2, #0
+ 724 000c 0121     		movs	r1, #1
+ 725 000e 2046     		mov	r0, r4
+ 726              	.LVL52:
+ 727              		.loc 1 263 2 is_stmt 0 view .LVU213
+ 728 0010 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 729              	.LVL53:
+ 264:./Hardware/as5047.c **** 
+ 265:./Hardware/as5047.c ****     HAL_SPI_TransmitReceive(&hspi3,(uint8_t *)&_txdata,(uint8_t *)&rawVal,1,1000);
+ 730              		.loc 1 265 5 is_stmt 1 view .LVU214
+ 731 0014 4FF47A73 		mov	r3, #1000
+ 732 0018 0093     		str	r3, [sp]
+ 733 001a 0123     		movs	r3, #1
+ 734 001c 0DF11602 		add	r2, sp, #22
+ 735 0020 0DF10E01 		add	r1, sp, #14
+ 736 0024 0B48     		ldr	r0, .L41+4
+ 737 0026 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
+ 738              	.LVL54:
+ 266:./Hardware/as5047.c **** 	HAL_GPIO_WritePin(SPI3_SOFTCS_GPIO_Port,SPI3_SOFTCS_Pin,GPIO_PIN_SET);
+ 739              		.loc 1 266 2 view .LVU215
+ 740 002a 0122     		movs	r2, #1
+ 741 002c 1146     		mov	r1, r2
+ 742 002e 2046     		mov	r0, r4
+ 743 0030 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 744              	.LVL55:
+ 267:./Hardware/as5047.c **** 
+ 268:./Hardware/as5047.c **** 	if(ams_parity(rawVal)) //|| ((rawVal >> 14) & 1)
+ 745              		.loc 1 268 2 view .LVU216
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 22
 
 
- 776              	.LVL56:
- 777              		.loc 1 270 2 is_stmt 0 view .LVU239
- 778 000e FFF7FEFF 		bl	HAL_GPIO_WritePin
- 779              	.LVL57:
- 271:./Hardware/as5047.c **** 	uint16_t rxdata;
- 780              		.loc 1 271 2 is_stmt 1 view .LVU240
- 272:./Hardware/as5047.c **** 	if(HAL_SPI_TransmitReceive(&hspi3,(uint8_t *)&_txdata,(uint8_t *)&rxdata,1,1000) !=HAL_OK)
- 781              		.loc 1 272 2 view .LVU241
- 782              		.loc 1 272 5 is_stmt 0 view .LVU242
- 783 0012 4FF47A73 		mov	r3, #1000
- 784 0016 0093     		str	r3, [sp]
- 785 0018 0123     		movs	r3, #1
- 786 001a 0DF11602 		add	r2, sp, #22
- 787 001e 0DF10E01 		add	r1, sp, #14
- 788 0022 0948     		ldr	r0, .L45+4
- 789 0024 FFF7FEFF 		bl	HAL_SPI_TransmitReceive
- 790              	.LVL58:
- 791              		.loc 1 272 4 view .LVU243
- 792 0028 10B1     		cbz	r0, .L43
- 273:./Hardware/as5047.c ****     {
- 274:./Hardware/as5047.c ****         rxdata=0;
- 793              		.loc 1 274 9 is_stmt 1 view .LVU244
- 794              		.loc 1 274 15 is_stmt 0 view .LVU245
- 795 002a 0023     		movs	r3, #0
- 796 002c ADF81630 		strh	r3, [sp, #22]	@ movhi
- 797              	.L43:
- 275:./Hardware/as5047.c ****     }
- 276:./Hardware/as5047.c **** 	HAL_GPIO_WritePin(SPI3_SOFTCS_GPIO_Port,SPI3_SOFTCS_Pin,GPIO_PIN_SET);
- 798              		.loc 1 276 2 is_stmt 1 view .LVU246
- 799 0030 0122     		movs	r2, #1
- 800 0032 1146     		mov	r1, r2
- 801 0034 0348     		ldr	r0, .L45
- 802 0036 FFF7FEFF 		bl	HAL_GPIO_WritePin
- 803              	.LVL59:
- 277:./Hardware/as5047.c **** 	return rxdata;
- 804              		.loc 1 277 2 view .LVU247
- 278:./Hardware/as5047.c **** }
- 805              		.loc 1 278 1 is_stmt 0 view .LVU248
- 806 003a BDF81600 		ldrh	r0, [sp, #22]
- 807 003e 07B0     		add	sp, sp, #28
- 808              	.LCFI7:
- 809              		.cfi_def_cfa_offset 4
- 810              		@ sp needed
- 811 0040 5DF804FB 		ldr	pc, [sp], #4
- 812              	.L46:
- 813              		.align	2
- 814              	.L45:
- 815 0044 00000240 		.word	1073872896
- 816 0048 00000000 		.word	hspi3
- 817              		.cfi_endproc
- 818              	.LFE245:
- 820              		.section	.text.as5047_read,"ax",%progbits
- 821              		.align	1
- 822              		.global	as5047_read
- 823              		.syntax unified
- 824              		.thumb
- 825              		.thumb_func
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 21
+ 746              		.loc 1 268 5 is_stmt 0 view .LVU217
+ 747 0034 BDF81640 		ldrh	r4, [sp, #22]
+ 748 0038 2046     		mov	r0, r4
+ 749 003a FFF7FEFF 		bl	ams_parity
+ 750              	.LVL56:
+ 751              		.loc 1 268 4 view .LVU218
+ 752 003e 18B9     		cbnz	r0, .L39
+ 269:./Hardware/as5047.c ****     {
+ 270:./Hardware/as5047.c ****         return 0xFFFF;
+ 271:./Hardware/as5047.c ****     }else{
+ 272:./Hardware/as5047.c ****         return pos = (rawVal & 0x3fff);
+ 753              		.loc 1 272 9 is_stmt 1 view .LVU219
+ 754              		.loc 1 272 20 is_stmt 0 view .LVU220
+ 755 0040 C4F30D00 		ubfx	r0, r4, #0, #14
+ 756              	.LVL57:
+ 757              	.L38:
+ 273:./Hardware/as5047.c ****     }
+ 274:./Hardware/as5047.c **** 
+ 275:./Hardware/as5047.c **** }
+ 758              		.loc 1 275 1 view .LVU221
+ 759 0044 06B0     		add	sp, sp, #24
+ 760              	.LCFI6:
+ 761              		.cfi_remember_state
+ 762              		.cfi_def_cfa_offset 8
+ 763              		@ sp needed
+ 764 0046 10BD     		pop	{r4, pc}
+ 765              	.L39:
+ 766              	.LCFI7:
+ 767              		.cfi_restore_state
+ 270:./Hardware/as5047.c ****     }else{
+ 768              		.loc 1 270 16 view .LVU222
+ 769 0048 4FF6FF70 		movw	r0, #65535
+ 770 004c FAE7     		b	.L38
+ 771              	.L42:
+ 772 004e 00BF     		.align	2
+ 773              	.L41:
+ 774 0050 00000240 		.word	1073872896
+ 775 0054 00000000 		.word	hspi3
+ 776              		.cfi_endproc
+ 777              	.LFE245:
+ 779              		.section	.text.as5047_read,"ax",%progbits
+ 780              		.align	1
+ 781              		.global	as5047_read
+ 782              		.syntax unified
+ 783              		.thumb
+ 784              		.thumb_func
+ 786              	as5047_read:
+ 787              	.LFB246:
+ 276:./Hardware/as5047.c **** void* as5047_read(void)
+ 277:./Hardware/as5047.c **** {
+ 788              		.loc 1 277 1 is_stmt 1 view -0
+ 789              		.cfi_startproc
+ 790              		@ args = 0, pretend = 0, frame = 0
+ 791              		@ frame_needed = 0, uses_anonymous_args = 0
+ 792 0000 10B5     		push	{r4, lr}
+ 793              	.LCFI8:
+ 794              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 23
 
 
- 827              	as5047_read:
- 828              	.LFB246:
- 279:./Hardware/as5047.c **** void* as5047_read(void)
- 280:./Hardware/as5047.c **** {
- 829              		.loc 1 280 1 is_stmt 1 view -0
- 830              		.cfi_startproc
- 831              		@ args = 0, pretend = 0, frame = 0
- 832              		@ frame_needed = 0, uses_anonymous_args = 0
- 833 0000 10B5     		push	{r4, lr}
- 834              	.LCFI8:
- 835              		.cfi_def_cfa_offset 8
- 836              		.cfi_offset 4, -8
- 837              		.cfi_offset 14, -4
- 281:./Hardware/as5047.c ****     uint16_t add = 0;
- 838              		.loc 1 281 5 view .LVU250
- 839              	.LVL60:
- 282:./Hardware/as5047.c **** 	uint16_t data;
- 840              		.loc 1 282 2 view .LVU251
- 283:./Hardware/as5047.c ****     add = ANGLEUNC;
- 841              		.loc 1 283 5 view .LVU252
- 284:./Hardware/as5047.c **** 	add |= 0x4000;	//读指令 bit14 置1
- 842              		.loc 1 284 2 view .LVU253
- 285:./Hardware/as5047.c **** 	if(Parity_bit_Calculate(add)==1) 
- 843              		.loc 1 285 2 view .LVU254
- 844              		.loc 1 285 5 is_stmt 0 view .LVU255
- 845 0002 47F6FE70 		movw	r0, #32766
- 846 0006 FFF7FEFF 		bl	Parity_bit_Calculate
- 847              	.LVL61:
- 848              		.loc 1 285 4 view .LVU256
- 849 000a 0128     		cmp	r0, #1
- 850 000c 16D0     		beq	.L49
- 284:./Hardware/as5047.c **** 	add |= 0x4000;	//读指令 bit14 置1
- 851              		.loc 1 284 6 view .LVU257
- 852 000e 47F6FE70 		movw	r0, #32766
- 853              	.L48:
- 854              	.LVL62:
- 286:./Hardware/as5047.c ****     {
- 287:./Hardware/as5047.c ****         add=add|0x8000; //如果前15位 1的个数位偶数，则Bit15 置1
- 288:./Hardware/as5047.c ****     }
- 289:./Hardware/as5047.c **** 	SPI_ReadWrite_OneByte(add);		//发送一条指令，不管读回的数据
- 855              		.loc 1 289 2 is_stmt 1 view .LVU258
- 856 0012 FFF7FEFF 		bl	SPI_ReadWrite_OneByte
- 857              	.LVL63:
- 290:./Hardware/as5047.c ****     data=SPI_ReadWrite_OneByte(0x4000); //发送一条空指令，读取上一次指令返回的数
- 858              		.loc 1 290 5 view .LVU259
- 859              		.loc 1 290 10 is_stmt 0 view .LVU260
- 860 0016 4FF48040 		mov	r0, #16384
- 861 001a FFF7FEFF 		bl	SPI_ReadWrite_OneByte
- 862              	.LVL64:
- 291:./Hardware/as5047.c **** 	data &=0x3fff;
- 863              		.loc 1 291 2 is_stmt 1 view .LVU261
- 864              		.loc 1 291 7 is_stmt 0 view .LVU262
- 865 001e C0F30D04 		ubfx	r4, r0, #0, #14
- 866              	.LVL65:
- 292:./Hardware/as5047.c **** 
- 293:./Hardware/as5047.c ****     encoder_update(data);
- 867              		.loc 1 293 5 is_stmt 1 view .LVU263
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 22
+ 795              		.cfi_offset 4, -8
+ 796              		.cfi_offset 14, -4
+ 278:./Hardware/as5047.c ****     uint16_t add = 0;
+ 797              		.loc 1 278 5 view .LVU224
+ 798              	.LVL58:
+ 279:./Hardware/as5047.c **** 	uint16_t data;
+ 799              		.loc 1 279 2 view .LVU225
+ 280:./Hardware/as5047.c ****     data=SPI_ReadWrite_OneByte(0xFFFF); //发送一条空指令，读取上一次指令返回的数
+ 800              		.loc 1 280 5 view .LVU226
+ 801              		.loc 1 280 10 is_stmt 0 view .LVU227
+ 802 0002 4FF6FF70 		movw	r0, #65535
+ 803 0006 FFF7FEFF 		bl	SPI_ReadWrite_OneByte
+ 804              	.LVL59:
+ 805 000a 0446     		mov	r4, r0
+ 806              	.LVL60:
+ 281:./Hardware/as5047.c ****     encoder_update(data);
+ 807              		.loc 1 281 5 is_stmt 1 view .LVU228
+ 808 000c FFF7FEFF 		bl	encoder_update
+ 809              	.LVL61:
+ 282:./Hardware/as5047.c **** 
+ 283:./Hardware/as5047.c ****     rawdata = data;
+ 810              		.loc 1 283 5 view .LVU229
+ 811              		.loc 1 283 13 is_stmt 0 view .LVU230
+ 812 0010 094B     		ldr	r3, .L45
+ 813 0012 1C60     		str	r4, [r3]
+ 284:./Hardware/as5047.c ****     // covdata = data * 402;
+ 285:./Hardware/as5047.c ****     covdata = encoder_config.phase_ * (1<<20);
+ 814              		.loc 1 285 5 is_stmt 1 view .LVU231
+ 815              		.loc 1 285 29 is_stmt 0 view .LVU232
+ 816 0014 094B     		ldr	r3, .L45+4
+ 817 0016 D3ED067A 		vldr.32	s15, [r3, #24]
+ 818              		.loc 1 285 13 view .LVU233
+ 819 001a FEEEC67A 		vcvt.s32.f32	s15, s15, #20
+ 820 001e 084A     		ldr	r2, .L45+8
+ 821 0020 C2ED007A 		vstr.32	s15, [r2]	@ int
+ 286:./Hardware/as5047.c ****     filterdata = encoder_config.phase_vel_ * (1<<15);
+ 822              		.loc 1 286 5 is_stmt 1 view .LVU234
+ 823              		.loc 1 286 32 is_stmt 0 view .LVU235
+ 824 0024 D3ED077A 		vldr.32	s15, [r3, #28]
+ 825              		.loc 1 286 16 view .LVU236
+ 826 0028 FEEEE87A 		vcvt.s32.f32	s15, s15, #15
+ 827 002c 054B     		ldr	r3, .L45+12
+ 828 002e C3ED007A 		vstr.32	s15, [r3]	@ int
+ 287:./Hardware/as5047.c **** 	return (void *)&sg_as5047data;
+ 829              		.loc 1 287 2 is_stmt 1 view .LVU237
+ 288:./Hardware/as5047.c **** }
+ 830              		.loc 1 288 1 is_stmt 0 view .LVU238
+ 831 0032 0548     		ldr	r0, .L45+16
+ 832 0034 10BD     		pop	{r4, pc}
+ 833              	.LVL62:
+ 834              	.L46:
+ 835              		.loc 1 288 1 view .LVU239
+ 836 0036 00BF     		.align	2
+ 837              	.L45:
+ 838 0038 00000000 		.word	.LANCHOR11
+ 839 003c 00000000 		.word	.LANCHOR2
+ 840 0040 00000000 		.word	.LANCHOR12
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 24
 
 
- 868 0022 2046     		mov	r0, r4
- 869 0024 FFF7FEFF 		bl	encoder_update
- 870              	.LVL66:
- 294:./Hardware/as5047.c **** 
- 295:./Hardware/as5047.c ****     rawdata = data;
- 871              		.loc 1 295 5 view .LVU264
- 872              		.loc 1 295 13 is_stmt 0 view .LVU265
- 873 0028 064B     		ldr	r3, .L51
- 874 002a 1C60     		str	r4, [r3]
- 296:./Hardware/as5047.c ****     covdata = data * 402;
- 875              		.loc 1 296 5 is_stmt 1 view .LVU266
- 876              		.loc 1 296 20 is_stmt 0 view .LVU267
- 877 002c 4FF4C970 		mov	r0, #402
- 878 0030 00FB04F4 		mul	r4, r0, r4
- 879              	.LVL67:
- 880              		.loc 1 296 13 view .LVU268
- 881 0034 044B     		ldr	r3, .L51+4
- 882              		.loc 1 296 13 view .LVU269
- 883 0036 1C60     		str	r4, [r3]
- 297:./Hardware/as5047.c **** 	return (void *)&sg_as5047data;
- 884              		.loc 1 297 2 is_stmt 1 view .LVU270
- 298:./Hardware/as5047.c **** }
- 885              		.loc 1 298 1 is_stmt 0 view .LVU271
- 886 0038 0448     		ldr	r0, .L51+8
- 887 003a 10BD     		pop	{r4, pc}
- 888              	.LVL68:
- 889              	.L49:
- 287:./Hardware/as5047.c ****     }
- 890              		.loc 1 287 12 view .LVU272
- 891 003c 4FF6FE70 		movw	r0, #65534
- 892 0040 E7E7     		b	.L48
- 893              	.L52:
- 894 0042 00BF     		.align	2
- 895              	.L51:
- 896 0044 00000000 		.word	.LANCHOR11
- 897 0048 00000000 		.word	.LANCHOR12
- 898 004c 00000000 		.word	.LANCHOR13
- 899              		.cfi_endproc
- 900              	.LFE246:
- 902              		.section	.text.as5047_init,"ax",%progbits
- 903              		.align	1
- 904              		.global	as5047_init
- 905              		.syntax unified
- 906              		.thumb
- 907              		.thumb_func
- 909              	as5047_init:
- 910              	.LFB247:
- 299:./Hardware/as5047.c **** 
- 300:./Hardware/as5047.c **** void as5047_init(void)
- 301:./Hardware/as5047.c **** {
- 911              		.loc 1 301 1 is_stmt 1 view -0
- 912              		.cfi_startproc
- 913              		@ args = 0, pretend = 0, frame = 0
- 914              		@ frame_needed = 0, uses_anonymous_args = 0
- 915 0000 08B5     		push	{r3, lr}
- 916              	.LCFI9:
- 917              		.cfi_def_cfa_offset 8
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 23
+ 841 0044 00000000 		.word	.LANCHOR13
+ 842 0048 00000000 		.word	.LANCHOR14
+ 843              		.cfi_endproc
+ 844              	.LFE246:
+ 846              		.section	.text.as5047_init,"ax",%progbits
+ 847              		.align	1
+ 848              		.global	as5047_init
+ 849              		.syntax unified
+ 850              		.thumb
+ 851              		.thumb_func
+ 853              	as5047_init:
+ 854              	.LFB247:
+ 289:./Hardware/as5047.c **** 
+ 290:./Hardware/as5047.c **** void as5047_init(void)
+ 291:./Hardware/as5047.c **** {
+ 855              		.loc 1 291 1 is_stmt 1 view -0
+ 856              		.cfi_startproc
+ 857              		@ args = 0, pretend = 0, frame = 0
+ 858              		@ frame_needed = 0, uses_anonymous_args = 0
+ 859 0000 08B5     		push	{r3, lr}
+ 860              	.LCFI9:
+ 861              		.cfi_def_cfa_offset 8
+ 862              		.cfi_offset 3, -8
+ 863              		.cfi_offset 14, -4
+ 292:./Hardware/as5047.c ****     sg_as5047data.raw_buf = &rawdata;
+ 864              		.loc 1 292 5 view .LVU241
+ 865              		.loc 1 292 27 is_stmt 0 view .LVU242
+ 866 0002 054B     		ldr	r3, .L49
+ 867 0004 054A     		ldr	r2, .L49+4
+ 868 0006 1A60     		str	r2, [r3]
+ 293:./Hardware/as5047.c ****     sg_as5047data.covdata_buf = &covdata;
+ 869              		.loc 1 293 5 is_stmt 1 view .LVU243
+ 870              		.loc 1 293 31 is_stmt 0 view .LVU244
+ 871 0008 054A     		ldr	r2, .L49+8
+ 872 000a 5A60     		str	r2, [r3, #4]
+ 294:./Hardware/as5047.c ****     sg_as5047data.filterdata_buf = &filterdata;
+ 873              		.loc 1 294 5 is_stmt 1 view .LVU245
+ 874              		.loc 1 294 34 is_stmt 0 view .LVU246
+ 875 000c 054A     		ldr	r2, .L49+12
+ 876 000e 9A60     		str	r2, [r3, #8]
+ 295:./Hardware/as5047.c ****     MagneticSensor_Init();
+ 877              		.loc 1 295 5 is_stmt 1 view .LVU247
+ 878 0010 FFF7FEFF 		bl	MagneticSensor_Init
+ 879              	.LVL63:
+ 296:./Hardware/as5047.c **** }
+ 880              		.loc 1 296 1 is_stmt 0 view .LVU248
+ 881 0014 08BD     		pop	{r3, pc}
+ 882              	.L50:
+ 883 0016 00BF     		.align	2
+ 884              	.L49:
+ 885 0018 00000000 		.word	.LANCHOR14
+ 886 001c 00000000 		.word	.LANCHOR11
+ 887 0020 00000000 		.word	.LANCHOR12
+ 888 0024 00000000 		.word	.LANCHOR13
+ 889              		.cfi_endproc
+ 890              	.LFE247:
+ 892              		.global	vel_estimate_
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 25
 
 
- 918              		.cfi_offset 3, -8
- 919              		.cfi_offset 14, -4
- 302:./Hardware/as5047.c ****     sg_as5047data.raw_buf = &rawdata;
- 920              		.loc 1 302 5 view .LVU274
- 921              		.loc 1 302 27 is_stmt 0 view .LVU275
- 922 0002 054B     		ldr	r3, .L55
- 923 0004 054A     		ldr	r2, .L55+4
- 924 0006 1A60     		str	r2, [r3]
- 303:./Hardware/as5047.c ****     sg_as5047data.covdata_buf = &covdata;
- 925              		.loc 1 303 5 is_stmt 1 view .LVU276
- 926              		.loc 1 303 31 is_stmt 0 view .LVU277
- 927 0008 054A     		ldr	r2, .L55+8
- 928 000a 5A60     		str	r2, [r3, #4]
- 304:./Hardware/as5047.c ****     sg_as5047data.filterdata_buf = &filterdata;
- 929              		.loc 1 304 5 is_stmt 1 view .LVU278
- 930              		.loc 1 304 34 is_stmt 0 view .LVU279
- 931 000c 054A     		ldr	r2, .L55+12
- 932 000e 9A60     		str	r2, [r3, #8]
- 305:./Hardware/as5047.c ****     MagneticSensor_Init();
- 933              		.loc 1 305 5 is_stmt 1 view .LVU280
- 934 0010 FFF7FEFF 		bl	MagneticSensor_Init
- 935              	.LVL69:
- 306:./Hardware/as5047.c **** }
- 936              		.loc 1 306 1 is_stmt 0 view .LVU281
- 937 0014 08BD     		pop	{r3, pc}
- 938              	.L56:
- 939 0016 00BF     		.align	2
- 940              	.L55:
- 941 0018 00000000 		.word	.LANCHOR13
- 942 001c 00000000 		.word	.LANCHOR11
- 943 0020 00000000 		.word	.LANCHOR12
- 944 0024 00000000 		.word	.LANCHOR14
- 945              		.cfi_endproc
- 946              	.LFE247:
- 948              		.global	vel_estimate_
- 949              		.global	pos_estimate_
- 950              		.global	vel_estimate_valid_
- 951              		.global	pos_estimate_valid_
- 952              		.global	encoder_config
- 953              		.global	filterdata
- 954              		.global	covdata
- 955              		.global	rawdata
- 956              		.section	.bss.covdata,"aw",%nobits
- 957              		.align	2
- 958              		.set	.LANCHOR12,. + 0
- 961              	covdata:
- 962 0000 00000000 		.space	4
- 963              		.section	.bss.encoder_config,"aw",%nobits
+ 893              		.global	pos_estimate_
+ 894              		.global	vel_estimate_valid_
+ 895              		.global	pos_estimate_valid_
+ 896              		.global	encoder_config
+ 897              		.global	current_meas_period
+ 898              		.global	filterdata
+ 899              		.global	covdata
+ 900              		.global	rawdata
+ 901              		.section	.bss.covdata,"aw",%nobits
+ 902              		.align	2
+ 903              		.set	.LANCHOR12,. + 0
+ 906              	covdata:
+ 907 0000 00000000 		.space	4
+ 908              		.section	.bss.encoder_config,"aw",%nobits
+ 909              		.align	2
+ 910              		.set	.LANCHOR2,. + 0
+ 913              	encoder_config:
+ 914 0000 00000000 		.space	32
+ 914      00000000 
+ 914      00000000 
+ 914      00000000 
+ 914      00000000 
+ 915              		.section	.bss.filterdata,"aw",%nobits
+ 916              		.align	2
+ 917              		.set	.LANCHOR13,. + 0
+ 920              	filterdata:
+ 921 0000 00000000 		.space	4
+ 922              		.section	.bss.pll_ki_,"aw",%nobits
+ 923              		.align	2
+ 924              		.set	.LANCHOR4,. + 0
+ 927              	pll_ki_:
+ 928 0000 00000000 		.space	4
+ 929              		.section	.bss.pll_kp_,"aw",%nobits
+ 930              		.align	2
+ 931              		.set	.LANCHOR3,. + 0
+ 934              	pll_kp_:
+ 935 0000 00000000 		.space	4
+ 936              		.section	.bss.pos_cpr_counts_.2,"aw",%nobits
+ 937              		.align	2
+ 938              		.set	.LANCHOR6,. + 0
+ 941              	pos_cpr_counts_.2:
+ 942 0000 00000000 		.space	4
+ 943              		.section	.bss.pos_estimate_,"aw",%nobits
+ 944              		.align	2
+ 945              		.set	.LANCHOR9,. + 0
+ 948              	pos_estimate_:
+ 949 0000 00000000 		.space	4
+ 950              		.section	.bss.pos_estimate_counts_.0,"aw",%nobits
+ 951              		.align	2
+ 952              		.set	.LANCHOR8,. + 0
+ 955              	pos_estimate_counts_.0:
+ 956 0000 00000000 		.space	4
+ 957              		.section	.bss.pos_estimate_valid_,"aw",%nobits
+ 958              		.set	.LANCHOR1,. + 0
+ 961              	pos_estimate_valid_:
+ 962 0000 00       		.space	1
+ 963              		.section	.bss.rawdata,"aw",%nobits
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 26
+
+
  964              		.align	2
- 965              		.set	.LANCHOR2,. + 0
- 968              	encoder_config:
- 969 0000 00000000 		.space	56
- 969      00000000 
- 969      00000000 
- 969      00000000 
- 969      00000000 
- 970              		.section	.bss.filterdata,"aw",%nobits
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 24
-
-
+ 965              		.set	.LANCHOR11,. + 0
+ 968              	rawdata:
+ 969 0000 00000000 		.space	4
+ 970              		.section	.bss.sg_as5047data,"aw",%nobits
  971              		.align	2
  972              		.set	.LANCHOR14,. + 0
- 975              	filterdata:
- 976 0000 00000000 		.space	4
- 977              		.section	.bss.pll_ki_,"aw",%nobits
+ 975              	sg_as5047data:
+ 976 0000 00000000 		.space	16
+ 976      00000000 
+ 976      00000000 
+ 976      00000000 
+ 977              		.section	.bss.shadow_count_.3,"aw",%nobits
  978              		.align	2
- 979              		.set	.LANCHOR4,. + 0
- 982              	pll_ki_:
+ 979              		.set	.LANCHOR5,. + 0
+ 982              	shadow_count_.3:
  983 0000 00000000 		.space	4
- 984              		.section	.bss.pll_kp_,"aw",%nobits
+ 984              		.section	.bss.vel_estimate_,"aw",%nobits
  985              		.align	2
- 986              		.set	.LANCHOR3,. + 0
- 989              	pll_kp_:
+ 986              		.set	.LANCHOR10,. + 0
+ 989              	vel_estimate_:
  990 0000 00000000 		.space	4
- 991              		.section	.bss.pos_cpr_counts_.2,"aw",%nobits
+ 991              		.section	.bss.vel_estimate_counts_.1,"aw",%nobits
  992              		.align	2
- 993              		.set	.LANCHOR6,. + 0
- 996              	pos_cpr_counts_.2:
+ 993              		.set	.LANCHOR7,. + 0
+ 996              	vel_estimate_counts_.1:
  997 0000 00000000 		.space	4
- 998              		.section	.bss.pos_estimate_,"aw",%nobits
- 999              		.align	2
- 1000              		.set	.LANCHOR9,. + 0
- 1003              	pos_estimate_:
- 1004 0000 00000000 		.space	4
- 1005              		.section	.bss.pos_estimate_counts_.0,"aw",%nobits
- 1006              		.align	2
- 1007              		.set	.LANCHOR8,. + 0
- 1010              	pos_estimate_counts_.0:
- 1011 0000 00000000 		.space	4
- 1012              		.section	.bss.pos_estimate_valid_,"aw",%nobits
- 1013              		.set	.LANCHOR1,. + 0
- 1016              	pos_estimate_valid_:
- 1017 0000 00       		.space	1
- 1018              		.section	.bss.rawdata,"aw",%nobits
- 1019              		.align	2
- 1020              		.set	.LANCHOR11,. + 0
- 1023              	rawdata:
- 1024 0000 00000000 		.space	4
- 1025              		.section	.bss.sg_as5047data,"aw",%nobits
- 1026              		.align	2
- 1027              		.set	.LANCHOR13,. + 0
- 1030              	sg_as5047data:
- 1031 0000 00000000 		.space	16
- 1031      00000000 
- 1031      00000000 
- 1031      00000000 
- 1032              		.section	.bss.shadow_count_.3,"aw",%nobits
- 1033              		.align	2
- 1034              		.set	.LANCHOR5,. + 0
- 1037              	shadow_count_.3:
- 1038 0000 00000000 		.space	4
- 1039              		.section	.bss.vel_estimate_,"aw",%nobits
- 1040              		.align	2
- 1041              		.set	.LANCHOR10,. + 0
- 1044              	vel_estimate_:
- 1045 0000 00000000 		.space	4
- 1046              		.section	.bss.vel_estimate_counts_.1,"aw",%nobits
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 25
-
-
- 1047              		.align	2
- 1048              		.set	.LANCHOR7,. + 0
- 1051              	vel_estimate_counts_.1:
- 1052 0000 00000000 		.space	4
- 1053              		.section	.bss.vel_estimate_valid_,"aw",%nobits
- 1054              		.set	.LANCHOR0,. + 0
- 1057              	vel_estimate_valid_:
- 1058 0000 00       		.space	1
- 1059              		.text
- 1060              	.Letext0:
- 1061              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
- 1062              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
- 1063              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f405xx.h"
- 1064              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
- 1065              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
- 1066              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
- 1067              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h"
- 1068              		.file 9 "Inc/spi.h"
- 1069              		.file 10 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\math.h"
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 26
+ 998              		.section	.bss.vel_estimate_valid_,"aw",%nobits
+ 999              		.set	.LANCHOR0,. + 0
+ 1002              	vel_estimate_valid_:
+ 1003 0000 00       		.space	1
+ 1004              		.section	.rodata.current_meas_period,"a"
+ 1005              		.align	2
+ 1008              	current_meas_period:
+ 1009 0000 17B7D138 		.word	953267991
+ 1010              		.text
+ 1011              	.Letext0:
+ 1012              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+ 1013              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+ 1014              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f405xx.h"
+ 1015              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 1016              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 1017              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 1018              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h"
+ 1019              		.file 9 "Inc/spi.h"
+ 1020              		.file 10 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\math.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 27
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 as5047.c
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:20     .text.encoder_set_error:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:26     .text.encoder_set_error:00000000 encoder_set_error
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:49     .text.encoder_set_error:0000000c $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:55     .text.update_pll_gains:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:61     .text.update_pll_gains:00000000 update_pll_gains
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:91     .text.update_pll_gains:00000024 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:98     .text.run_offset_calibration:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:104    .text.run_offset_calibration:00000000 run_offset_calibration
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:133    .text.run_offset_calibration:00000014 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:139    .text.MagneticSensor_Init:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:145    .text.MagneticSensor_Init:00000000 MagneticSensor_Init
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:221    .text.MagneticSensor_Init:00000048 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:230    .text.encoder_update:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:236    .text.encoder_update:00000000 encoder_update
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:688    .text.encoder_update:00000200 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:706    .text.Parity_bit_Calculate:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:712    .text.Parity_bit_Calculate:00000000 Parity_bit_Calculate
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:750    .text.SPI_ReadWrite_OneByte:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:756    .text.SPI_ReadWrite_OneByte:00000000 SPI_ReadWrite_OneByte
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:815    .text.SPI_ReadWrite_OneByte:00000044 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:821    .text.as5047_read:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:827    .text.as5047_read:00000000 as5047_read
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:896    .text.as5047_read:00000044 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:903    .text.as5047_init:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:909    .text.as5047_init:00000000 as5047_init
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:941    .text.as5047_init:00000018 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1044   .bss.vel_estimate_:00000000 vel_estimate_
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1003   .bss.pos_estimate_:00000000 pos_estimate_
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1057   .bss.vel_estimate_valid_:00000000 vel_estimate_valid_
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1016   .bss.pos_estimate_valid_:00000000 pos_estimate_valid_
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:968    .bss.encoder_config:00000000 encoder_config
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:975    .bss.filterdata:00000000 filterdata
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:961    .bss.covdata:00000000 covdata
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1023   .bss.rawdata:00000000 rawdata
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:957    .bss.covdata:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:964    .bss.encoder_config:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:971    .bss.filterdata:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:978    .bss.pll_ki_:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:982    .bss.pll_ki_:00000000 pll_ki_
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:985    .bss.pll_kp_:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:989    .bss.pll_kp_:00000000 pll_kp_
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:992    .bss.pos_cpr_counts_.2:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:996    .bss.pos_cpr_counts_.2:00000000 pos_cpr_counts_.2
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:999    .bss.pos_estimate_:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1006   .bss.pos_estimate_counts_.0:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1010   .bss.pos_estimate_counts_.0:00000000 pos_estimate_counts_.0
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1017   .bss.pos_estimate_valid_:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1019   .bss.rawdata:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1026   .bss.sg_as5047data:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1030   .bss.sg_as5047data:00000000 sg_as5047data
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1033   .bss.shadow_count_.3:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1037   .bss.shadow_count_.3:00000000 shadow_count_.3
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1040   .bss.vel_estimate_:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1047   .bss.vel_estimate_counts_.1:00000000 $d
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1051   .bss.vel_estimate_counts_.1:00000000 vel_estimate_counts_.1
-ARM GAS  C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s 			page 27
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:20     .text.ams_parity:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:25     .text.ams_parity:00000000 ams_parity
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:60     .text.encoder_set_error:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:66     .text.encoder_set_error:00000000 encoder_set_error
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:88     .text.encoder_set_error:0000000c $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:94     .text.update_pll_gains:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:100    .text.update_pll_gains:00000000 update_pll_gains
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:130    .text.update_pll_gains:00000024 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:137    .text.run_offset_calibration:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:143    .text.run_offset_calibration:00000000 run_offset_calibration
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:161    .text.MagneticSensor_Init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:167    .text.MagneticSensor_Init:00000000 MagneticSensor_Init
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:217    .text.MagneticSensor_Init:0000002c $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:228    .text.encoder_update:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:234    .text.encoder_update:00000000 encoder_update
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:677    .text.encoder_update:000001ec $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:697    .text.SPI_ReadWrite_OneByte:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:703    .text.SPI_ReadWrite_OneByte:00000000 SPI_ReadWrite_OneByte
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:774    .text.SPI_ReadWrite_OneByte:00000050 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:780    .text.as5047_read:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:786    .text.as5047_read:00000000 as5047_read
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:838    .text.as5047_read:00000038 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:847    .text.as5047_init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:853    .text.as5047_init:00000000 as5047_init
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:885    .text.as5047_init:00000018 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:989    .bss.vel_estimate_:00000000 vel_estimate_
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:948    .bss.pos_estimate_:00000000 pos_estimate_
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:1002   .bss.vel_estimate_valid_:00000000 vel_estimate_valid_
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:961    .bss.pos_estimate_valid_:00000000 pos_estimate_valid_
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:913    .bss.encoder_config:00000000 encoder_config
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:1008   .rodata.current_meas_period:00000000 current_meas_period
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:920    .bss.filterdata:00000000 filterdata
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:906    .bss.covdata:00000000 covdata
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:968    .bss.rawdata:00000000 rawdata
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:902    .bss.covdata:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:909    .bss.encoder_config:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:916    .bss.filterdata:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:923    .bss.pll_ki_:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:927    .bss.pll_ki_:00000000 pll_ki_
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:930    .bss.pll_kp_:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:934    .bss.pll_kp_:00000000 pll_kp_
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:937    .bss.pos_cpr_counts_.2:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:941    .bss.pos_cpr_counts_.2:00000000 pos_cpr_counts_.2
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:944    .bss.pos_estimate_:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:951    .bss.pos_estimate_counts_.0:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:955    .bss.pos_estimate_counts_.0:00000000 pos_estimate_counts_.0
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:962    .bss.pos_estimate_valid_:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:964    .bss.rawdata:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:971    .bss.sg_as5047data:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:975    .bss.sg_as5047data:00000000 sg_as5047data
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:978    .bss.shadow_count_.3:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:982    .bss.shadow_count_.3:00000000 shadow_count_.3
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:985    .bss.vel_estimate_:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:992    .bss.vel_estimate_counts_.1:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:996    .bss.vel_estimate_counts_.1:00000000 vel_estimate_counts_.1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s 			page 28
 
 
-C:\Users\57308\AppData\Local\Temp\ccsc3h8P.s:1058   .bss.vel_estimate_valid_:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:1003   .bss.vel_estimate_valid_:00000000 $d
+C:\Users\57308\AppData\Local\Temp\ccpKJvbA.s:1005   .rodata.current_meas_period:00000000 $d
 
 UNDEFINED SYMBOLS
 nearbyintf

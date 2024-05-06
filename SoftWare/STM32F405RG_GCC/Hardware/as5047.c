@@ -15,36 +15,36 @@ typedef struct as5047_data
 static as5047_data_t sg_as5047data = {0};
 int32_t rawdata,covdata,filterdata;
 static int16_t column;
-typedef enum
-{
-	MODE_INCREMENTAL = 0,
-	MODE_SPI_AS5047P,
-	MODE_SPI_MT6701,
-	MODE_SPI_MA730,
-	MODE_SPI_TLE5012B,
-} ENCODER_enum;
+// typedef enum
+// {
+// 	MODE_INCREMENTAL = 0,
+// 	MODE_SPI_AS5047P,
+// 	MODE_SPI_MT6701,
+// 	MODE_SPI_MA730,
+// 	MODE_SPI_TLE5012B,
+// } ENCODER_enum;
 
 typedef struct 
 {
-	ENCODER_enum  mode;
-	float  calib_range;        // Accuracy required to pass encoder cpr check
-	float  calib_scan_distance;// rad electrical
-	float  calib_scan_omega;   // rad/s electrical
+	// ENCODER_enum  mode;
+	// float  calib_range;        // Accuracy required to pass encoder cpr check
+	// float  calib_scan_distance;// rad electrical
+	// float  calib_scan_omega;   // rad/s electrical
 	float  bandwidth;          //编码器带宽，和cpr成正比
 	int32_t  phase_offset;     //编码器和转子电角度之间的相位差，run_offset_calibration()校准这个参数
 	float  phase_offset_float; //编码器和转子电角度之间的相位差浮点部分，run_offset_calibration()校准这个参数
 	int32_t  cpr;              //每圈编码器的脉冲数
-	float  index_offset;
-	bool  use_index;           //是否使用编码器索引信号
-	bool  pre_calibrated;      // If true, this means the offset stored in
+	// float  index_offset;
+	// bool  use_index;           //是否使用编码器索引信号
+	// bool  pre_calibrated;      // If true, this means the offset stored in
 	                           // configuration is valid and does not need
                              // be determined by run_offset_calibration.
                              // In this case the encoder will enter ready
                              // state as soon as the index is found.
 	int32_t  direction;        //电机转动方向，run_offset_calibration()校准这个参数
-	bool  use_index_offset;
+	// bool  use_index_offset;
 	bool  enable_phase_interpolation; // Use velocity to interpolate inside the count state
-	bool find_idx_on_lockin_only;     // Only be sensitive during lockin scan constant vel state
+	// bool find_idx_on_lockin_only;     // Only be sensitive during lockin scan constant vel state
 	float phase_;              //最终用于计算的当前电角度，范围-Pi~Pi。
 	float phase_vel_;          //最终用于计算的当前电角速度，单位rad/s。
 } ENCODER_CONFIG;
@@ -60,10 +60,10 @@ typedef struct
 #define  ENCODER_cpr                   16384     //AS5047P=MT6701=16384,TLE5012B=32768, MODE_INCREMENTAL=4000,
 #define  ENCODER_bandwidth             1000      //默认1000，hall电机的cpr比较小，可设置为100
 #define M_PI  3.14159265358979323846f
-#define  MOTOR_pole_pairs                          7    //电机极对数
+#define  MOTOR_pole_pairs                          1    //电机极对数
 #define CURRENT_MEAS_PERIOD ( (float)2*TIM_1_8_PERIOD_CLOCKS*(TIM_1_8_RCR+1) / (float)TIM_1_8_CLOCK_HZ )
-static const float current_meas_period = CURRENT_MEAS_PERIOD;
-
+//  const float current_meas_period = CURRENT_MEAS_PERIOD;
+const float current_meas_period = 0.0001f;
 ENCODER_CONFIG   encoder_config;
 
 static float pll_kp_ = 0.0f;   // [count/s / count]
@@ -130,34 +130,34 @@ bool run_offset_calibration(void)
 {
 	uint32_t  i;
 	const float start_lock_duration = 1.0f;	
-	encoder_config.direction = 1;
-	encoder_config.phase_offset = 23406;
-	encoder_config.phase_offset_float = 0.56f;
+
 	return true;
 }
 //初始化三种SPI接口的编码器的参数, 初始化I2C接口或者SPI接口
 void MagneticSensor_Init(void)
 {
 	//读取flash内保存的参数
-	encoder_config.mode = ENCODER_mode;  //选择编码器型号，参数设置宏定义在MyProject.h文件中
-	encoder_config.cpr = ENCODER_cpr;    //编码器cpr
+	// encoder_config.mode = ENCODER_mode;  //选择编码器型号，参数设置宏定义在MyProject.h文件中
+	// ENCODER_cpr = ENCODER_cpr;    //编码器cpr
 	encoder_config.bandwidth = ENCODER_bandwidth;   //编码器带宽
-	encoder_config.calib_range = 0.02f; // Accuracy required to pass encoder cpr check  2%误差
-	encoder_config.calib_scan_distance = 16.0f * M_PI; // rad electrical    校准的时候正反转8个极对数
-	encoder_config.calib_scan_omega = 4.0f * M_PI;     // rad/s electrical  转速2个极对数/秒，所以正转4秒，反转再4秒
+	// encoder_config.calib_range = 0.02f; // Accuracy required to pass encoder cpr check  2%误差
+	// encoder_config.calib_scan_distance = 16.0f * M_PI; // rad electrical    校准的时候正反转8个极对数
+	// encoder_config.calib_scan_omega = 4.0f * M_PI;     // rad/s electrical  转速2个极对数/秒，所以正转4秒，反转再4秒
+
 	encoder_config.phase_offset = 0;        // Offset between encoder count and rotor electrical phase
 	encoder_config.phase_offset_float = 0.0f; // Sub-count phase alignment offset
-	encoder_config.index_offset = 0.0f;
-	encoder_config.use_index = false;
-	encoder_config.pre_calibrated = false;
-	encoder_config.direction = 0; // direction with respect to motor
-	encoder_config.use_index_offset = true;
 	encoder_config.enable_phase_interpolation = true; // Use velocity to interpolate inside the count state
-	encoder_config.find_idx_on_lockin_only = false; // Only be sensitive during lockin scan constant vel state
-	
-	update_pll_gains();    //锁相环参数整定
-	run_offset_calibration();
-    // SPI3_Init_(SPI_CPOL_Low);    //AS5047P
+
+	encoder_config.direction = 1;
+	encoder_config.phase_offset = 23406;
+	encoder_config.phase_offset_float = 0.56f;
+
+
+	pll_kp_ = 2.0f * ENCODER_bandwidth;  // basic conversion to discrete time
+	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
+
+	// update_pll_gains();    //锁相环参数整定
+	// run_offset_calibration();
 
 }
 
@@ -168,8 +168,8 @@ bool encoder_update(int32_t raw)
 	int32_t delta_enc = 0;
 	int32_t pos_abs_latched; //LATCH
 	static int32_t shadow_count_ = 0;   //编码器累计计数。
-	 int32_t count_in_cpr_ = 0;   //编码器当前计数值。
-	 float interpolation_ = 0.0f; //编码器当前插补值。
+    int32_t count_in_cpr_ = 0;   //编码器当前计数值。
+    float interpolation_ = 0.0f; //编码器当前插补值。
 	static float pos_estimate_counts_ = 0.0f;  //当前估算的位置值，单位[count]   
 	static float pos_cpr_counts_ = 0.0f;       //当前约束在cpr范围内的位置值，单位[count]
 	static float vel_estimate_counts_ = 0.0f;  //当前估算转速，单位[count/s]
@@ -179,9 +179,11 @@ bool encoder_update(int32_t raw)
 	delta_enc = pos_abs_latched - count_in_cpr_; //LATCH
 	delta_enc = mod(delta_enc, encoder_config.cpr);
 	if(delta_enc > encoder_config.cpr/2)
-	delta_enc -= encoder_config.cpr;
-	shadow_count_ += delta_enc;
-	count_in_cpr_ = pos_abs_latched;
+	{
+        delta_enc -= encoder_config.cpr;
+    }
+    shadow_count_ += delta_enc;
+    count_in_cpr_ = pos_abs_latched;
 	
 	// Memory for pos_circular
 	float pos_cpr_counts_last = pos_cpr_counts_;
@@ -194,11 +196,11 @@ bool encoder_update(int32_t raw)
 	// discrete phase detector
 	float delta_pos_counts = (float)(shadow_count_ - (int32_t)pos_estimate_counts_);
 	float delta_pos_cpr_counts = (float)(count_in_cpr_ - (int32_t)pos_cpr_counts_);
-	delta_pos_cpr_counts = wrap_pm(delta_pos_cpr_counts, (float)(encoder_config.cpr));
+	delta_pos_cpr_counts = wrap_pm(delta_pos_cpr_counts, (float)(ENCODER_cpr));
 	// pll feedback
 	pos_estimate_counts_ += current_meas_period * pll_kp_ * delta_pos_counts;
 	pos_cpr_counts_ += current_meas_period * pll_kp_ * delta_pos_cpr_counts;
-	pos_cpr_counts_ = fmodf_pos(pos_cpr_counts_, (float)(encoder_config.cpr));
+	pos_cpr_counts_ = fmodf_pos(pos_cpr_counts_, (float)(ENCODER_cpr));
 	vel_estimate_counts_ += current_meas_period * pll_ki_ * delta_pos_cpr_counts;
 	uint8_t snap_to_zero_vel = false;
 	if (fabsf(vel_estimate_counts_) < 0.5f * current_meas_period * pll_ki_)
@@ -208,8 +210,8 @@ bool encoder_update(int32_t raw)
 	}
 	
 	// Outputs from Encoder for Controller
-	pos_estimate_ = pos_estimate_counts_ / (float)encoder_config.cpr;
-	vel_estimate_ = vel_estimate_counts_ / (float)encoder_config.cpr;
+	pos_estimate_ = pos_estimate_counts_ / (float)ENCODER_cpr;
+	vel_estimate_ = vel_estimate_counts_ / (float)ENCODER_cpr;
 
 	//// run encoder count interpolation
 	int32_t corrected_enc = count_in_cpr_ - encoder_config.phase_offset;
@@ -236,7 +238,7 @@ bool encoder_update(int32_t raw)
 	
 	//// compute electrical phase
 	//TODO avoid recomputing elec_rad_per_enc every time
-	float elec_rad_per_enc = MOTOR_pole_pairs  * 2 * M_PI * (1.0f / (float)(encoder_config.cpr));
+	float elec_rad_per_enc = MOTOR_pole_pairs  * 2 * M_PI * (1.0f / (float)(ENCODER_cpr));
 	float ph = elec_rad_per_enc * (interpolated_enc - encoder_config.phase_offset_float);
 
 	encoder_config.phase_ = wrap_pm_pi(ph) * encoder_config.direction;
@@ -245,55 +247,43 @@ bool encoder_update(int32_t raw)
 	return 1;
 }
 /****************************************************************************/
-
-
-
-
-
-
-
-//计算奇偶函数
-uint16_t Parity_bit_Calculate(uint16_t data_2_cal)
-{
-	uint16_t parity_bit_value=0;
-	while(data_2_cal != 0)
-	{
-		parity_bit_value ^= data_2_cal; 
-		data_2_cal >>=1;
-	}
-	return (parity_bit_value & 0x1); 
-}
 //SPI发送读取函数
+static uint8_t ams_parity(uint16_t v)
+{
+	v ^= v >> 8;
+	v ^= v >> 4;
+	v ^= v >> 2;
+	v ^= v >> 1;
+	return v & 1;
+}
 uint16_t SPI_ReadWrite_OneByte(uint16_t _txdata)
 {
 
+    uint16_t pos,rawVal;
 	HAL_GPIO_WritePin(SPI3_SOFTCS_GPIO_Port,SPI3_SOFTCS_Pin,GPIO_PIN_RESET);	//cs拉低
-	uint16_t rxdata;
-	if(HAL_SPI_TransmitReceive(&hspi3,(uint8_t *)&_txdata,(uint8_t *)&rxdata,1,1000) !=HAL_OK)
-    {
-        rxdata=0;
-    }
+
+    HAL_SPI_TransmitReceive(&hspi3,(uint8_t *)&_txdata,(uint8_t *)&rawVal,1,1000);
 	HAL_GPIO_WritePin(SPI3_SOFTCS_GPIO_Port,SPI3_SOFTCS_Pin,GPIO_PIN_SET);
-	return rxdata;
+
+	if(ams_parity(rawVal)) //|| ((rawVal >> 14) & 1)
+    {
+        return 0xFFFF;
+    }else{
+        return pos = (rawVal & 0x3fff);
+    }
+
 }
 void* as5047_read(void)
 {
     uint16_t add = 0;
 	uint16_t data;
-    add = ANGLEUNC;
-	add |= 0x4000;	//读指令 bit14 置1
-	if(Parity_bit_Calculate(add)==1) 
-    {
-        add=add|0x8000; //如果前15位 1的个数位偶数，则Bit15 置1
-    }
-	SPI_ReadWrite_OneByte(add);		//发送一条指令，不管读回的数据
-    data=SPI_ReadWrite_OneByte(0x4000); //发送一条空指令，读取上一次指令返回的数据。
-	data &=0x3fff;
-
+    data=SPI_ReadWrite_OneByte(0xFFFF); //发送一条空指令，读取上一次指令返回的数据。
     encoder_update(data);
 
     rawdata = data;
-    covdata = data * 402;
+    // covdata = data * 402;
+    covdata = encoder_config.phase_ * (1<<20);
+    filterdata = encoder_config.phase_vel_ * (1<<15);
 	return (void *)&sg_as5047data;
 }
 

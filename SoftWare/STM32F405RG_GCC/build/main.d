@@ -27,15 +27,17 @@ build/main.o: Src/main.c Inc/main.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
- Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc/adc.h \
- Inc/main.h Inc/spi.h Inc/tim.h Inc/gpio.h ../Common/debuglog/debuglog.h \
- ../Common/debuglog/./debuglog_cfg.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h Inc/adc.h \
+ Inc/main.h Inc/dma.h Inc/spi.h Inc/tim.h Inc/usart.h Inc/gpio.h \
+ ../Common/debuglog/debuglog.h ../Common/debuglog/./debuglog_cfg.h \
  ../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h \
  ../Common/debuglog/SEGGER_RTT_V792h/Config/SEGGER_RTT_Conf.h \
  Hardware/as5047.h ../Sensor/sensor.h ../Sensor/sensor_cfg.h \
  Board/board.h Hardware/hardware.h ../BLDCMotor/motorctrl.h \
  ../BLDCMotor/./motorctrl_cfg.h ../Common/method/pid.h \
- ../Common/method/filter.h ../Common/IQMath/ti/IQmathLib.h
+ ../Common/method/filter.h ../Common/IQMath/ti/IQmathLib.h \
+ ../protocol/protocol.h
 Inc/main.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 Inc/stm32f4xx_hal_conf.h:
@@ -68,10 +70,13 @@ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
+Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 Inc/adc.h:
 Inc/main.h:
+Inc/dma.h:
 Inc/spi.h:
 Inc/tim.h:
+Inc/usart.h:
 Inc/gpio.h:
 ../Common/debuglog/debuglog.h:
 ../Common/debuglog/./debuglog_cfg.h:
@@ -87,3 +92,4 @@ Hardware/hardware.h:
 ../Common/method/pid.h:
 ../Common/method/filter.h:
 ../Common/IQMath/ti/IQmathLib.h:
+../protocol/protocol.h:
