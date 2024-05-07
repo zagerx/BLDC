@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 1
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -19,21 +19,15 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 1
   16              		.text
   17              	.Ltext0:
   18              		.cfi_sections	.debug_frame
-  19              		.section	.rodata._set_motorstart.str1.4,"aMS",%progbits,1
-  20              		.align	2
-  21              	.LC0:
-  22 0000 6D6F746F 		.ascii	"motor start\000"
-  22      72207374 
-  22      61727400 
-  23              		.section	.text._set_motorstart,"ax",%progbits
-  24              		.align	1
-  25              		.syntax unified
-  26              		.thumb
-  27              		.thumb_func
-  29              	_set_motorstart:
-  30              	.LVL0:
-  31              	.LFB245:
-  32              		.file 1 "../BLDCMotor/motor_protocol.c"
+  19              		.section	.text._set_motorstart,"ax",%progbits
+  20              		.align	1
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	_set_motorstart:
+  26              	.LVL0:
+  27              	.LFB245:
+  28              		.file 1 "../BLDCMotor/motor_protocol.c"
    1:../BLDCMotor/motor_protocol.c **** 
    2:../BLDCMotor/motor_protocol.c **** /*
    3:../BLDCMotor/motor_protocol.c **** mc_tar_speed:200.0f  
@@ -51,1427 +45,1357 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 1
   15:../BLDCMotor/motor_protocol.c **** #include <stdlib.h>  
   16:../BLDCMotor/motor_protocol.c **** #include <ctype.h> // for isspace()  
   17:../BLDCMotor/motor_protocol.c **** 
-  18:../BLDCMotor/motor_protocol.c **** typedef void* (*pfunc)(char *,int32_t);
-  19:../BLDCMotor/motor_protocol.c **** typedef struct {  
-  20:../BLDCMotor/motor_protocol.c ****     const char *cmd;  
-  21:../BLDCMotor/motor_protocol.c ****     unsigned short cmd_index;
-  22:../BLDCMotor/motor_protocol.c ****     pfunc pf_cmdexcue;
-  23:../BLDCMotor/motor_protocol.c **** } commandmap_t; 
-  24:../BLDCMotor/motor_protocol.c **** 
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 2
+  18:../BLDCMotor/motor_protocol.c **** 
+  19:../BLDCMotor/motor_protocol.c **** 
+  20:../BLDCMotor/motor_protocol.c **** 
+  21:../BLDCMotor/motor_protocol.c **** 
+  22:../BLDCMotor/motor_protocol.c **** static void* _set_tarid(char *str,int32_t id);
+  23:../BLDCMotor/motor_protocol.c **** static void* _set_tariq(char *str,int32_t iq);
+  24:../BLDCMotor/motor_protocol.c **** static void* _set_motorstop(char *str,int32_t iq);
+  25:../BLDCMotor/motor_protocol.c **** static void* _set_motorstart(char *str,int32_t iq);
+  26:../BLDCMotor/motor_protocol.c **** static void* _set_d_kp(char *str,int32_t kp);
+  27:../BLDCMotor/motor_protocol.c **** static void* _set_d_ki(char *str,int32_t ki);
+  28:../BLDCMotor/motor_protocol.c **** static void* _set_pidpara_cmd(char *str,int32_t param);
+  29:../BLDCMotor/motor_protocol.c **** static void* _set_tarspeed(char *str,int32_t iq);
+  30:../BLDCMotor/motor_protocol.c **** 
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 2
 
 
-  25:../BLDCMotor/motor_protocol.c **** 
-  26:../BLDCMotor/motor_protocol.c **** 
-  27:../BLDCMotor/motor_protocol.c **** static void* _set_tarid(char *str,int32_t id);
-  28:../BLDCMotor/motor_protocol.c **** static void* _set_tariq(char *str,int32_t iq);
-  29:../BLDCMotor/motor_protocol.c **** static void* _set_motorstop(char *str,int32_t iq);
-  30:../BLDCMotor/motor_protocol.c **** static void* _set_motorstart(char *str,int32_t iq);
-  31:../BLDCMotor/motor_protocol.c **** static void* _set_d_kp(char *str,int32_t kp);
-  32:../BLDCMotor/motor_protocol.c **** static void* _set_d_ki(char *str,int32_t ki);
-  33:../BLDCMotor/motor_protocol.c **** static void* _set_pidpara_cmd(char *str,int32_t param);
-  34:../BLDCMotor/motor_protocol.c **** static void* _set_tarspeed(char *str,int32_t iq);
-  35:../BLDCMotor/motor_protocol.c **** 
-  36:../BLDCMotor/motor_protocol.c **** static int _findF_from_str(const char *str, float *val) ;
-  37:../BLDCMotor/motor_protocol.c **** static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map, size_t mapSize);
-  38:../BLDCMotor/motor_protocol.c ****  
-  39:../BLDCMotor/motor_protocol.c **** respond_t g_respondmap[] = {
-  40:../BLDCMotor/motor_protocol.c ****     {"motor state runing",sizeof("motor state runing")},
-  41:../BLDCMotor/motor_protocol.c ****     {"motor state stop",sizeof("motor state stop")},
-  42:../BLDCMotor/motor_protocol.c **** };
-  43:../BLDCMotor/motor_protocol.c **** // 命令映射表  
-  44:../BLDCMotor/motor_protocol.c **** commandmap_t sg_commandmap[] = {  
-  45:../BLDCMotor/motor_protocol.c ****     {"mc_tar_speed", 1,NULL},  
-  46:../BLDCMotor/motor_protocol.c ****     {"mc_tar_id", 2,_set_tarid},  
-  47:../BLDCMotor/motor_protocol.c ****     {"mc_tar_iq", 3,_set_tariq},
-  48:../BLDCMotor/motor_protocol.c ****     {"motor_stop",4,_set_motorstop},
-  49:../BLDCMotor/motor_protocol.c ****     {"motor_start",5,_set_motorstart},
-  50:../BLDCMotor/motor_protocol.c ****     {"mc_setd_kp",6,_set_d_kp},
-  51:../BLDCMotor/motor_protocol.c ****     {"mc_setd_ki",7,_set_d_ki},
-  52:../BLDCMotor/motor_protocol.c ****     {"mc_pid_paraset",8,_set_pidpara_cmd},
-  53:../BLDCMotor/motor_protocol.c ****     {"mc_tar_speed",9,_set_tarspeed},
-  54:../BLDCMotor/motor_protocol.c **** 
-  55:../BLDCMotor/motor_protocol.c **** };
-  56:../BLDCMotor/motor_protocol.c **** static char *Rx_Buf[62] = {0};
-  57:../BLDCMotor/motor_protocol.c **** void motorprotocol_getdata(char *data)
-  58:../BLDCMotor/motor_protocol.c **** {
-  59:../BLDCMotor/motor_protocol.c ****     strcpy(Rx_Buf,data);
-  60:../BLDCMotor/motor_protocol.c **** }
-  61:../BLDCMotor/motor_protocol.c **** 
-  62:../BLDCMotor/motor_protocol.c **** void motorprotocol_pause(char *cmd)
-  63:../BLDCMotor/motor_protocol.c **** {
-  64:../BLDCMotor/motor_protocol.c ****     float value =0.0f;
-  65:../BLDCMotor/motor_protocol.c ****     unsigned short cmd_ID;
-  66:../BLDCMotor/motor_protocol.c ****     if (cmd[0] == 0 && cmd[1] == 0)
-  67:../BLDCMotor/motor_protocol.c ****     {
-  68:../BLDCMotor/motor_protocol.c ****         return;
-  69:../BLDCMotor/motor_protocol.c ****     }
-  70:../BLDCMotor/motor_protocol.c ****     const size_t mapSize = sizeof(sg_commandmap) / sizeof(sg_commandmap[0]); 
-  71:../BLDCMotor/motor_protocol.c ****     cmd_ID = _findcmd_from_map(cmd,sg_commandmap,mapSize);    
-  72:../BLDCMotor/motor_protocol.c **** }
-  73:../BLDCMotor/motor_protocol.c **** 
-  74:../BLDCMotor/motor_protocol.c **** void motorprotocol_process(void)
-  75:../BLDCMotor/motor_protocol.c **** {   
-  76:../BLDCMotor/motor_protocol.c ****     motorprotocol_pause(Rx_Buf);
-  77:../BLDCMotor/motor_protocol.c ****     memset(Rx_Buf, 0, sizeof(Rx_Buf));
-  78:../BLDCMotor/motor_protocol.c **** }
-  79:../BLDCMotor/motor_protocol.c **** void motorprotocol_tramit(char *pstr,uint16_t len)
-  80:../BLDCMotor/motor_protocol.c **** {
-  81:../BLDCMotor/motor_protocol.c ****     _bsp_protransmit((unsigned char *)pstr,len);
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 3
+  31:../BLDCMotor/motor_protocol.c **** static int _findF_from_str(const char *str, float *val) ;
+  32:../BLDCMotor/motor_protocol.c **** static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map, size_t mapSize);
+  33:../BLDCMotor/motor_protocol.c ****  
+  34:../BLDCMotor/motor_protocol.c **** // 命令映射表  
+  35:../BLDCMotor/motor_protocol.c **** commandmap_t sg_commandmap[] = {  
+  36:../BLDCMotor/motor_protocol.c ****     {"mc_tar_speed",    1,   NULL,                NULL},  
+  37:../BLDCMotor/motor_protocol.c ****     {"mc_tar_id",       2,   _set_tarid,          NULL},  
+  38:../BLDCMotor/motor_protocol.c ****     {"mc_tar_iq",       3,   _set_tariq,          NULL},
+  39:../BLDCMotor/motor_protocol.c ****     {"motor_stop",      4,   _set_motorstop,      "motor state stop"},
+  40:../BLDCMotor/motor_protocol.c ****     {"motor_start",     5,   _set_motorstart,     "motor state runing"},
+  41:../BLDCMotor/motor_protocol.c ****     {"mc_setd_kp",      6,   _set_d_kp,           NULL},
+  42:../BLDCMotor/motor_protocol.c ****     {"mc_setd_ki",      7,   _set_d_ki,           NULL},
+  43:../BLDCMotor/motor_protocol.c ****     {"mc_pid_paraset",  8,   _set_pidpara_cmd,    NULL},
+  44:../BLDCMotor/motor_protocol.c ****     {"mc_tar_speed",    9,   _set_tarspeed,       NULL},
+  45:../BLDCMotor/motor_protocol.c **** 
+  46:../BLDCMotor/motor_protocol.c **** };
+  47:../BLDCMotor/motor_protocol.c **** static char *Rx_Buf[62] = {0};
+  48:../BLDCMotor/motor_protocol.c **** void motorprotocol_getdata(char *data)
+  49:../BLDCMotor/motor_protocol.c **** {
+  50:../BLDCMotor/motor_protocol.c ****     strcpy(Rx_Buf,data);
+  51:../BLDCMotor/motor_protocol.c **** }
+  52:../BLDCMotor/motor_protocol.c **** 
+  53:../BLDCMotor/motor_protocol.c **** void motorprotocol_pause(char *cmd)
+  54:../BLDCMotor/motor_protocol.c **** {
+  55:../BLDCMotor/motor_protocol.c ****     float value =0.0f;
+  56:../BLDCMotor/motor_protocol.c ****     unsigned short cmd_ID;
+  57:../BLDCMotor/motor_protocol.c ****     if (cmd[0] == 0 && cmd[1] == 0)
+  58:../BLDCMotor/motor_protocol.c ****     {
+  59:../BLDCMotor/motor_protocol.c ****         return;
+  60:../BLDCMotor/motor_protocol.c ****     }
+  61:../BLDCMotor/motor_protocol.c ****     const size_t mapSize = sizeof(sg_commandmap) / sizeof(sg_commandmap[0]); 
+  62:../BLDCMotor/motor_protocol.c ****     cmd_ID = _findcmd_from_map(cmd,sg_commandmap,mapSize);    
+  63:../BLDCMotor/motor_protocol.c **** }
+  64:../BLDCMotor/motor_protocol.c **** 
+  65:../BLDCMotor/motor_protocol.c **** void motorprotocol_process(void)
+  66:../BLDCMotor/motor_protocol.c **** {   
+  67:../BLDCMotor/motor_protocol.c ****     motorprotocol_pause(Rx_Buf);
+  68:../BLDCMotor/motor_protocol.c ****     memset(Rx_Buf, 0, sizeof(Rx_Buf));
+  69:../BLDCMotor/motor_protocol.c **** }
+  70:../BLDCMotor/motor_protocol.c **** void motorprotocol_tramit(char *pstr,uint16_t len)
+  71:../BLDCMotor/motor_protocol.c **** {
+  72:../BLDCMotor/motor_protocol.c ****     _bsp_protransmit((unsigned char *)pstr,len);
+  73:../BLDCMotor/motor_protocol.c **** }
+  74:../BLDCMotor/motor_protocol.c **** static void* _set_d_kp(char *str,int32_t kp)
+  75:../BLDCMotor/motor_protocol.c **** {
+  76:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;
+  77:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+  78:../BLDCMotor/motor_protocol.c ****     {
+  79:../BLDCMotor/motor_protocol.c ****         return 0;
+  80:../BLDCMotor/motor_protocol.c ****     }
+  81:../BLDCMotor/motor_protocol.c ****     motordebug.pid_d_kp = val;
+  82:../BLDCMotor/motor_protocol.c ****     return 0;    
+  83:../BLDCMotor/motor_protocol.c **** }
+  84:../BLDCMotor/motor_protocol.c **** static void* _set_d_ki(char *str,int32_t ki)
+  85:../BLDCMotor/motor_protocol.c **** {
+  86:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+  87:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 3
 
 
-  82:../BLDCMotor/motor_protocol.c **** }
-  83:../BLDCMotor/motor_protocol.c **** static void* _set_d_kp(char *str,int32_t kp)
-  84:../BLDCMotor/motor_protocol.c **** {
-  85:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;
-  86:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
-  87:../BLDCMotor/motor_protocol.c ****     {
-  88:../BLDCMotor/motor_protocol.c ****         return 0;
-  89:../BLDCMotor/motor_protocol.c ****     }
-  90:../BLDCMotor/motor_protocol.c ****     motordebug.pid_d_kp = val;
-  91:../BLDCMotor/motor_protocol.c ****     return 0;    
-  92:../BLDCMotor/motor_protocol.c **** }
-  93:../BLDCMotor/motor_protocol.c **** static void* _set_d_ki(char *str,int32_t ki)
-  94:../BLDCMotor/motor_protocol.c **** {
-  95:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
-  96:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
-  97:../BLDCMotor/motor_protocol.c ****     {
-  98:../BLDCMotor/motor_protocol.c ****         return 0;
-  99:../BLDCMotor/motor_protocol.c ****     }  
- 100:../BLDCMotor/motor_protocol.c ****     motordebug.pid_d_ki = val;
- 101:../BLDCMotor/motor_protocol.c ****     return 0; 
- 102:../BLDCMotor/motor_protocol.c **** }
- 103:../BLDCMotor/motor_protocol.c **** static void* _set_motorstart(char *str,int32_t iq)
- 104:../BLDCMotor/motor_protocol.c **** {
-  33              		.loc 1 104 1 view -0
-  34              		.cfi_startproc
-  35              		@ args = 0, pretend = 0, frame = 0
-  36              		@ frame_needed = 0, uses_anonymous_args = 0
-  37              		@ link register save eliminated.
- 105:../BLDCMotor/motor_protocol.c ****     motordebug.cur_cmd = "motor start";
-  38              		.loc 1 105 5 view .LVU1
-  39              		.loc 1 105 24 is_stmt 0 view .LVU2
-  40 0000 024B     		ldr	r3, .L2
-  41 0002 034A     		ldr	r2, .L2+4
-  42 0004 C3F88420 		str	r2, [r3, #132]
- 106:../BLDCMotor/motor_protocol.c ****     return 0;
-  43              		.loc 1 106 5 is_stmt 1 view .LVU3
- 107:../BLDCMotor/motor_protocol.c **** }
-  44              		.loc 1 107 1 is_stmt 0 view .LVU4
-  45 0008 0020     		movs	r0, #0
-  46              	.LVL1:
-  47              		.loc 1 107 1 view .LVU5
-  48 000a 7047     		bx	lr
-  49              	.L3:
-  50              		.align	2
-  51              	.L2:
-  52 000c 00000000 		.word	motordebug
-  53 0010 00000000 		.word	.LC0
-  54              		.cfi_endproc
-  55              	.LFE245:
-  57              		.section	.rodata._set_motorstop.str1.4,"aMS",%progbits,1
-  58              		.align	2
-  59              	.LC1:
-  60 0000 6D6F746F 		.ascii	"motor stop\000"
-  60      72207374 
-  60      6F7000
-  61              		.section	.text._set_motorstop,"ax",%progbits
-  62              		.align	1
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 4
+  88:../BLDCMotor/motor_protocol.c ****     {
+  89:../BLDCMotor/motor_protocol.c ****         return 0;
+  90:../BLDCMotor/motor_protocol.c ****     }  
+  91:../BLDCMotor/motor_protocol.c ****     motordebug.pid_d_ki = val;
+  92:../BLDCMotor/motor_protocol.c ****     return 0; 
+  93:../BLDCMotor/motor_protocol.c **** }
+  94:../BLDCMotor/motor_protocol.c **** static void* _set_motorstart(char *str,int32_t iq)
+  95:../BLDCMotor/motor_protocol.c **** {
+  29              		.loc 1 95 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  96:../BLDCMotor/motor_protocol.c ****     // motordebug.cur_cmd = "motor start";// sg_commandmap[CMD_SET_START].cmd;
+  97:../BLDCMotor/motor_protocol.c ****     motordebug.cur_cmd = sg_commandmap[CMD_SET_START].cmd;
+  34              		.loc 1 97 5 view .LVU1
+  35              		.loc 1 97 54 is_stmt 0 view .LVU2
+  36 0000 034B     		ldr	r3, .L2
+  37 0002 1A6C     		ldr	r2, [r3, #64]
+  38              		.loc 1 97 24 view .LVU3
+  39 0004 034B     		ldr	r3, .L2+4
+  40 0006 C3F88420 		str	r2, [r3, #132]
+  98:../BLDCMotor/motor_protocol.c ****     return 0;
+  41              		.loc 1 98 5 is_stmt 1 view .LVU4
+  99:../BLDCMotor/motor_protocol.c **** }
+  42              		.loc 1 99 1 is_stmt 0 view .LVU5
+  43 000a 0020     		movs	r0, #0
+  44              	.LVL1:
+  45              		.loc 1 99 1 view .LVU6
+  46 000c 7047     		bx	lr
+  47              	.L3:
+  48 000e 00BF     		.align	2
+  49              	.L2:
+  50 0010 00000000 		.word	.LANCHOR0
+  51 0014 00000000 		.word	motordebug
+  52              		.cfi_endproc
+  53              	.LFE245:
+  55              		.section	.text._set_motorstop,"ax",%progbits
+  56              		.align	1
+  57              		.syntax unified
+  58              		.thumb
+  59              		.thumb_func
+  61              	_set_motorstop:
+  62              	.LVL2:
+  63              	.LFB246:
+ 100:../BLDCMotor/motor_protocol.c **** static void* _set_motorstop(char *str,int32_t iq)
+ 101:../BLDCMotor/motor_protocol.c **** {
+  64              		.loc 1 101 1 is_stmt 1 view -0
+  65              		.cfi_startproc
+  66              		@ args = 0, pretend = 0, frame = 0
+  67              		@ frame_needed = 0, uses_anonymous_args = 0
+  68              		@ link register save eliminated.
+ 102:../BLDCMotor/motor_protocol.c ****     motordebug.cur_cmd = sg_commandmap[CMD_SET_STOP].cmd;
+  69              		.loc 1 102 5 view .LVU8
+  70              		.loc 1 102 53 is_stmt 0 view .LVU9
+  71 0000 034B     		ldr	r3, .L5
+  72 0002 1A6B     		ldr	r2, [r3, #48]
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 4
 
 
-  63              		.syntax unified
-  64              		.thumb
-  65              		.thumb_func
-  67              	_set_motorstop:
-  68              	.LVL2:
-  69              	.LFB246:
- 108:../BLDCMotor/motor_protocol.c **** static void* _set_motorstop(char *str,int32_t iq)
- 109:../BLDCMotor/motor_protocol.c **** {
-  70              		.loc 1 109 1 is_stmt 1 view -0
-  71              		.cfi_startproc
-  72              		@ args = 0, pretend = 0, frame = 0
-  73              		@ frame_needed = 0, uses_anonymous_args = 0
-  74              		@ link register save eliminated.
- 110:../BLDCMotor/motor_protocol.c ****     motordebug.cur_cmd = "motor stop";
-  75              		.loc 1 110 5 view .LVU7
-  76              		.loc 1 110 24 is_stmt 0 view .LVU8
-  77 0000 024B     		ldr	r3, .L5
-  78 0002 034A     		ldr	r2, .L5+4
-  79 0004 C3F88420 		str	r2, [r3, #132]
- 111:../BLDCMotor/motor_protocol.c ****     return 0;
-  80              		.loc 1 111 5 is_stmt 1 view .LVU9
- 112:../BLDCMotor/motor_protocol.c **** }
-  81              		.loc 1 112 1 is_stmt 0 view .LVU10
-  82 0008 0020     		movs	r0, #0
-  83              	.LVL3:
-  84              		.loc 1 112 1 view .LVU11
-  85 000a 7047     		bx	lr
-  86              	.L6:
-  87              		.align	2
-  88              	.L5:
-  89 000c 00000000 		.word	motordebug
-  90 0010 00000000 		.word	.LC1
-  91              		.cfi_endproc
-  92              	.LFE246:
-  94              		.section	.text._set_pidpara_cmd,"ax",%progbits
-  95              		.align	1
-  96              		.syntax unified
-  97              		.thumb
-  98              		.thumb_func
- 100              	_set_pidpara_cmd:
- 101              	.LVL4:
- 102              	.LFB249:
- 113:../BLDCMotor/motor_protocol.c **** static void* _set_tarid(char *str,int32_t id)
- 114:../BLDCMotor/motor_protocol.c **** {
- 115:../BLDCMotor/motor_protocol.c ****     USER_DEBUG_NORMAL("set id\r\n");
- 116:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
- 117:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 118:../BLDCMotor/motor_protocol.c ****     {
- 119:../BLDCMotor/motor_protocol.c ****         return 0;
- 120:../BLDCMotor/motor_protocol.c ****     }
- 121:../BLDCMotor/motor_protocol.c ****     motordebug.id_targe = val;
- 122:../BLDCMotor/motor_protocol.c ****     return 0;
- 123:../BLDCMotor/motor_protocol.c **** } 
- 124:../BLDCMotor/motor_protocol.c **** 
- 125:../BLDCMotor/motor_protocol.c **** static void* _set_tariq(char *str,int32_t iq)
- 126:../BLDCMotor/motor_protocol.c **** {
- 127:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 5
+  73              		.loc 1 102 24 view .LVU10
+  74 0004 034B     		ldr	r3, .L5+4
+  75 0006 C3F88420 		str	r2, [r3, #132]
+ 103:../BLDCMotor/motor_protocol.c ****     return 0;
+  76              		.loc 1 103 5 is_stmt 1 view .LVU11
+ 104:../BLDCMotor/motor_protocol.c **** }
+  77              		.loc 1 104 1 is_stmt 0 view .LVU12
+  78 000a 0020     		movs	r0, #0
+  79              	.LVL3:
+  80              		.loc 1 104 1 view .LVU13
+  81 000c 7047     		bx	lr
+  82              	.L6:
+  83 000e 00BF     		.align	2
+  84              	.L5:
+  85 0010 00000000 		.word	.LANCHOR0
+  86 0014 00000000 		.word	motordebug
+  87              		.cfi_endproc
+  88              	.LFE246:
+  90              		.section	.text._set_pidpara_cmd,"ax",%progbits
+  91              		.align	1
+  92              		.syntax unified
+  93              		.thumb
+  94              		.thumb_func
+  96              	_set_pidpara_cmd:
+  97              	.LVL4:
+  98              	.LFB249:
+ 105:../BLDCMotor/motor_protocol.c **** static void* _set_tarid(char *str,int32_t id)
+ 106:../BLDCMotor/motor_protocol.c **** {
+ 107:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ 108:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 109:../BLDCMotor/motor_protocol.c ****     {
+ 110:../BLDCMotor/motor_protocol.c ****         return 0;
+ 111:../BLDCMotor/motor_protocol.c ****     }
+ 112:../BLDCMotor/motor_protocol.c ****     motordebug.id_targe = val;
+ 113:../BLDCMotor/motor_protocol.c ****     return 0;
+ 114:../BLDCMotor/motor_protocol.c **** } 
+ 115:../BLDCMotor/motor_protocol.c **** 
+ 116:../BLDCMotor/motor_protocol.c **** static void* _set_tariq(char *str,int32_t iq)
+ 117:../BLDCMotor/motor_protocol.c **** {
+ 118:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ 119:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 120:../BLDCMotor/motor_protocol.c ****     {
+ 121:../BLDCMotor/motor_protocol.c ****         return 0;
+ 122:../BLDCMotor/motor_protocol.c ****     }
+ 123:../BLDCMotor/motor_protocol.c ****     motordebug.iq_targe = val;
+ 124:../BLDCMotor/motor_protocol.c ****     return 0;    
+ 125:../BLDCMotor/motor_protocol.c **** }
+ 126:../BLDCMotor/motor_protocol.c **** 
+ 127:../BLDCMotor/motor_protocol.c **** static void* _set_pidpara_cmd(char *str,int32_t param)
+ 128:../BLDCMotor/motor_protocol.c **** {
+  99              		.loc 1 128 1 is_stmt 1 view -0
+ 100              		.cfi_startproc
+ 101              		@ args = 0, pretend = 0, frame = 0
+ 102              		@ frame_needed = 0, uses_anonymous_args = 0
+ 103              		@ link register save eliminated.
+ 129:../BLDCMotor/motor_protocol.c ****     motordebug.motor_stat = 4;
+ 104              		.loc 1 129 5 view .LVU15
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 5
 
 
- 128:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 129:../BLDCMotor/motor_protocol.c ****     {
- 130:../BLDCMotor/motor_protocol.c ****         return 0;
- 131:../BLDCMotor/motor_protocol.c ****     }
- 132:../BLDCMotor/motor_protocol.c ****     motordebug.iq_targe = val;
- 133:../BLDCMotor/motor_protocol.c ****     return 0;    
- 134:../BLDCMotor/motor_protocol.c **** }
- 135:../BLDCMotor/motor_protocol.c **** 
- 136:../BLDCMotor/motor_protocol.c **** static void* _set_pidpara_cmd(char *str,int32_t param)
- 137:../BLDCMotor/motor_protocol.c **** {
- 103              		.loc 1 137 1 is_stmt 1 view -0
- 104              		.cfi_startproc
- 105              		@ args = 0, pretend = 0, frame = 0
- 106              		@ frame_needed = 0, uses_anonymous_args = 0
- 107              		@ link register save eliminated.
- 138:../BLDCMotor/motor_protocol.c ****     motordebug.motor_stat = 4;
- 108              		.loc 1 138 5 view .LVU13
- 109              		.loc 1 138 27 is_stmt 0 view .LVU14
- 110 0000 024B     		ldr	r3, .L8
- 111 0002 0422     		movs	r2, #4
- 112 0004 C3F88020 		str	r2, [r3, #128]
- 139:../BLDCMotor/motor_protocol.c ****     return 0;
- 113              		.loc 1 139 5 is_stmt 1 view .LVU15
- 140:../BLDCMotor/motor_protocol.c **** }
- 114              		.loc 1 140 1 is_stmt 0 view .LVU16
- 115 0008 0020     		movs	r0, #0
- 116              	.LVL5:
- 117              		.loc 1 140 1 view .LVU17
- 118 000a 7047     		bx	lr
- 119              	.L9:
- 120              		.align	2
- 121              	.L8:
- 122 000c 00000000 		.word	motordebug
- 123              		.cfi_endproc
- 124              	.LFE249:
- 126              		.section	.text._findF_from_str,"ax",%progbits
- 127              		.align	1
- 128              		.syntax unified
- 129              		.thumb
- 130              		.thumb_func
- 132              	_findF_from_str:
- 133              	.LVL6:
- 134              	.LFB252:
- 141:../BLDCMotor/motor_protocol.c **** 
- 142:../BLDCMotor/motor_protocol.c **** static void* _set_tarspeed(char *str,int32_t iq)
- 143:../BLDCMotor/motor_protocol.c **** {
- 144:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
- 145:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 146:../BLDCMotor/motor_protocol.c ****     {
- 147:../BLDCMotor/motor_protocol.c ****         return 0;
- 148:../BLDCMotor/motor_protocol.c ****     }
- 149:../BLDCMotor/motor_protocol.c ****     motordebug.speed_targe = val;
- 150:../BLDCMotor/motor_protocol.c ****     return 0; 
- 151:../BLDCMotor/motor_protocol.c **** }
- 152:../BLDCMotor/motor_protocol.c **** // 查找命令的函数  
- 153:../BLDCMotor/motor_protocol.c **** static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map, size_t mapSize) {
- 154:../BLDCMotor/motor_protocol.c ****     if (str == NULL) {  
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 6
+ 105              		.loc 1 129 27 is_stmt 0 view .LVU16
+ 106 0000 024B     		ldr	r3, .L8
+ 107 0002 0422     		movs	r2, #4
+ 108 0004 C3F88020 		str	r2, [r3, #128]
+ 130:../BLDCMotor/motor_protocol.c ****     return 0;
+ 109              		.loc 1 130 5 is_stmt 1 view .LVU17
+ 131:../BLDCMotor/motor_protocol.c **** }
+ 110              		.loc 1 131 1 is_stmt 0 view .LVU18
+ 111 0008 0020     		movs	r0, #0
+ 112              	.LVL5:
+ 113              		.loc 1 131 1 view .LVU19
+ 114 000a 7047     		bx	lr
+ 115              	.L9:
+ 116              		.align	2
+ 117              	.L8:
+ 118 000c 00000000 		.word	motordebug
+ 119              		.cfi_endproc
+ 120              	.LFE249:
+ 122              		.section	.text._findF_from_str,"ax",%progbits
+ 123              		.align	1
+ 124              		.syntax unified
+ 125              		.thumb
+ 126              		.thumb_func
+ 128              	_findF_from_str:
+ 129              	.LVL6:
+ 130              	.LFB252:
+ 132:../BLDCMotor/motor_protocol.c **** 
+ 133:../BLDCMotor/motor_protocol.c **** static void* _set_tarspeed(char *str,int32_t iq)
+ 134:../BLDCMotor/motor_protocol.c **** {
+ 135:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ 136:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 137:../BLDCMotor/motor_protocol.c ****     {
+ 138:../BLDCMotor/motor_protocol.c ****         return 0;
+ 139:../BLDCMotor/motor_protocol.c ****     }
+ 140:../BLDCMotor/motor_protocol.c ****     motordebug.speed_targe = val;
+ 141:../BLDCMotor/motor_protocol.c ****     return 0; 
+ 142:../BLDCMotor/motor_protocol.c **** }
+ 143:../BLDCMotor/motor_protocol.c **** // 查找命令的函数  
+ 144:../BLDCMotor/motor_protocol.c **** static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map, size_t mapSize) {
+ 145:../BLDCMotor/motor_protocol.c ****     if (str == NULL) {  
+ 146:../BLDCMotor/motor_protocol.c ****         return 0; // 如果传入的字符串为空，则返回0表示不匹配  
+ 147:../BLDCMotor/motor_protocol.c ****     }  
+ 148:../BLDCMotor/motor_protocol.c ****       
+ 149:../BLDCMotor/motor_protocol.c ****     for (size_t i = 0; i < mapSize; ++i) {  
+ 150:../BLDCMotor/motor_protocol.c ****         // 使用strncmp比较直到遇到冒号或字符串结束  
+ 151:../BLDCMotor/motor_protocol.c ****         size_t cmdLen = strlen(map[i].cmd);  
+ 152:../BLDCMotor/motor_protocol.c ****         if (strncmp(str, map[i].cmd, cmdLen) == 0 && str[cmdLen] == ':') { 
+ 153:../BLDCMotor/motor_protocol.c **** 
+ 154:../BLDCMotor/motor_protocol.c ****             if (!map[i].pf_cmdexcue)
+ 155:../BLDCMotor/motor_protocol.c ****             {
+ 156:../BLDCMotor/motor_protocol.c ****                 return 0;
+ 157:../BLDCMotor/motor_protocol.c ****             }
+ 158:../BLDCMotor/motor_protocol.c **** 
+ 159:../BLDCMotor/motor_protocol.c ****             map[i].pf_cmdexcue(str,0);
+ 160:../BLDCMotor/motor_protocol.c ****             return map[i].cmd_index; // 找到匹配项，返回对应值  
+ 161:../BLDCMotor/motor_protocol.c ****         }
+ 162:../BLDCMotor/motor_protocol.c ****     }
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 6
 
 
- 155:../BLDCMotor/motor_protocol.c ****         return 0; // 如果传入的字符串为空，则返回0表示不匹配  
- 156:../BLDCMotor/motor_protocol.c ****     }  
- 157:../BLDCMotor/motor_protocol.c ****       
- 158:../BLDCMotor/motor_protocol.c ****     for (size_t i = 0; i < mapSize; ++i) {  
- 159:../BLDCMotor/motor_protocol.c ****         // 使用strncmp比较直到遇到冒号或字符串结束  
- 160:../BLDCMotor/motor_protocol.c ****         size_t cmdLen = strlen(map[i].cmd);  
- 161:../BLDCMotor/motor_protocol.c ****         if (strncmp(str, map[i].cmd, cmdLen) == 0 && str[cmdLen] == ':') { 
- 162:../BLDCMotor/motor_protocol.c **** 
- 163:../BLDCMotor/motor_protocol.c ****             if (!map[i].pf_cmdexcue)
- 164:../BLDCMotor/motor_protocol.c ****             {
- 165:../BLDCMotor/motor_protocol.c ****                 USER_DEBUG_NORMAL("pf_cmdexcue NULL\r\n");
- 166:../BLDCMotor/motor_protocol.c ****                 return 0;
- 167:../BLDCMotor/motor_protocol.c ****             }
- 168:../BLDCMotor/motor_protocol.c **** 
- 169:../BLDCMotor/motor_protocol.c ****             map[i].pf_cmdexcue(str,0);
- 170:../BLDCMotor/motor_protocol.c ****             return map[i].cmd_index; // 找到匹配项，返回对应值  
- 171:../BLDCMotor/motor_protocol.c ****         }
- 172:../BLDCMotor/motor_protocol.c ****     }
- 173:../BLDCMotor/motor_protocol.c ****     USER_DEBUG_NORMAL("NO Cmd PATH\r\n");
- 174:../BLDCMotor/motor_protocol.c ****     return 0; // 未找到匹配项，返回0  
- 175:../BLDCMotor/motor_protocol.c **** }  
- 176:../BLDCMotor/motor_protocol.c **** 
- 177:../BLDCMotor/motor_protocol.c **** static int _findF_from_str(const char *str, float *val) {  
- 135              		.loc 1 177 57 is_stmt 1 view -0
- 136              		.cfi_startproc
- 137              		@ args = 0, pretend = 0, frame = 8
- 138              		@ frame_needed = 0, uses_anonymous_args = 0
- 178:../BLDCMotor/motor_protocol.c ****     if (str == NULL || val == NULL) {  
- 139              		.loc 1 178 5 view .LVU19
- 140              		.loc 1 178 8 is_stmt 0 view .LVU20
- 141 0000 38B3     		cbz	r0, .L15
- 177:../BLDCMotor/motor_protocol.c ****     if (str == NULL || val == NULL) {  
- 142              		.loc 1 177 57 discriminator 1 view .LVU21
- 143 0002 30B5     		push	{r4, r5, lr}
- 144              	.LCFI0:
- 145              		.cfi_def_cfa_offset 12
- 146              		.cfi_offset 4, -12
- 147              		.cfi_offset 5, -8
- 148              		.cfi_offset 14, -4
- 149 0004 83B0     		sub	sp, sp, #12
- 150              	.LCFI1:
- 151              		.cfi_def_cfa_offset 24
- 152 0006 0D46     		mov	r5, r1
- 153              		.loc 1 178 21 discriminator 1 view .LVU22
- 154 0008 29B3     		cbz	r1, .L16
- 179:../BLDCMotor/motor_protocol.c ****         return 0; // Invalid arguments  
+ 163:../BLDCMotor/motor_protocol.c ****     return 0; // 未找到匹配项，返回0  
+ 164:../BLDCMotor/motor_protocol.c **** }  
+ 165:../BLDCMotor/motor_protocol.c **** 
+ 166:../BLDCMotor/motor_protocol.c **** static int _findF_from_str(const char *str, float *val) {  
+ 131              		.loc 1 166 57 is_stmt 1 view -0
+ 132              		.cfi_startproc
+ 133              		@ args = 0, pretend = 0, frame = 8
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 167:../BLDCMotor/motor_protocol.c ****     if (str == NULL || val == NULL) {  
+ 135              		.loc 1 167 5 view .LVU21
+ 136              		.loc 1 167 8 is_stmt 0 view .LVU22
+ 137 0000 38B3     		cbz	r0, .L15
+ 166:../BLDCMotor/motor_protocol.c ****     if (str == NULL || val == NULL) {  
+ 138              		.loc 1 166 57 discriminator 1 view .LVU23
+ 139 0002 30B5     		push	{r4, r5, lr}
+ 140              	.LCFI0:
+ 141              		.cfi_def_cfa_offset 12
+ 142              		.cfi_offset 4, -12
+ 143              		.cfi_offset 5, -8
+ 144              		.cfi_offset 14, -4
+ 145 0004 83B0     		sub	sp, sp, #12
+ 146              	.LCFI1:
+ 147              		.cfi_def_cfa_offset 24
+ 148 0006 0D46     		mov	r5, r1
+ 149              		.loc 1 167 21 discriminator 1 view .LVU24
+ 150 0008 29B3     		cbz	r1, .L16
+ 168:../BLDCMotor/motor_protocol.c ****         return 0; // Invalid arguments  
+ 169:../BLDCMotor/motor_protocol.c ****     }  
+ 170:../BLDCMotor/motor_protocol.c ****   
+ 171:../BLDCMotor/motor_protocol.c ****     const char *colonPos = strchr(str, ':'); // Find the colon in the string  
+ 151              		.loc 1 171 5 is_stmt 1 view .LVU25
+ 152              		.loc 1 171 28 is_stmt 0 view .LVU26
+ 153 000a 3A21     		movs	r1, #58
+ 154              	.LVL7:
+ 155              		.loc 1 171 28 view .LVU27
+ 156 000c FFF7FEFF 		bl	strchr
+ 157              	.LVL8:
+ 172:../BLDCMotor/motor_protocol.c ****     if (colonPos == NULL || *(colonPos + 1) == '\0') {  
+ 158              		.loc 1 172 5 is_stmt 1 view .LVU28
+ 159              		.loc 1 172 8 is_stmt 0 view .LVU29
+ 160 0010 0446     		mov	r4, r0
+ 161 0012 10B3     		cbz	r0, .L17
+ 162              		.loc 1 172 29 discriminator 1 view .LVU30
+ 163 0014 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+ 164              		.loc 1 172 26 discriminator 1 view .LVU31
+ 165 0016 13B3     		cbz	r3, .L18
+ 173:../BLDCMotor/motor_protocol.c ****         return 0; // No colon found or no characters after colon  
+ 174:../BLDCMotor/motor_protocol.c ****     }  
+ 175:../BLDCMotor/motor_protocol.c ****   
+ 176:../BLDCMotor/motor_protocol.c ****     // Skip the colon and any following whitespace  
+ 177:../BLDCMotor/motor_protocol.c ****     const char *numStart = colonPos + 1;  
+ 166              		.loc 1 177 5 is_stmt 1 view .LVU32
+ 167              		.loc 1 177 17 is_stmt 0 view .LVU33
+ 168 0018 0134     		adds	r4, r4, #1
+ 169              	.LVL9:
+ 178:../BLDCMotor/motor_protocol.c ****     while (isspace((unsigned char)*numStart)) {  
+ 170              		.loc 1 178 5 is_stmt 1 view .LVU34
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 7
+
+
+ 171              		.loc 1 178 11 is_stmt 0 view .LVU35
+ 172 001a 00E0     		b	.L12
+ 173              	.L13:
+ 179:../BLDCMotor/motor_protocol.c ****         numStart++;  
+ 174              		.loc 1 179 9 is_stmt 1 view .LVU36
+ 175              		.loc 1 179 17 is_stmt 0 view .LVU37
+ 176 001c 0134     		adds	r4, r4, #1
+ 177              	.LVL10:
+ 178              	.L12:
+ 178:../BLDCMotor/motor_protocol.c ****     while (isspace((unsigned char)*numStart)) {  
+ 179              		.loc 1 178 11 is_stmt 1 view .LVU38
+ 178:../BLDCMotor/motor_protocol.c ****     while (isspace((unsigned char)*numStart)) {  
+ 180              		.loc 1 178 12 is_stmt 0 view .LVU39
+ 181 001e 2278     		ldrb	r2, [r4]	@ zero_extendqisi2
+ 182 0020 114B     		ldr	r3, .L25
+ 183 0022 D35C     		ldrb	r3, [r2, r3]	@ zero_extendqisi2
+ 178:../BLDCMotor/motor_protocol.c ****     while (isspace((unsigned char)*numStart)) {  
+ 184              		.loc 1 178 11 view .LVU40
+ 185 0024 13F0080F 		tst	r3, #8
+ 186 0028 F8D1     		bne	.L13
  180:../BLDCMotor/motor_protocol.c ****     }  
  181:../BLDCMotor/motor_protocol.c ****   
- 182:../BLDCMotor/motor_protocol.c ****     const char *colonPos = strchr(str, ':'); // Find the colon in the string  
- 155              		.loc 1 182 5 is_stmt 1 view .LVU23
- 156              		.loc 1 182 28 is_stmt 0 view .LVU24
- 157 000a 3A21     		movs	r1, #58
- 158              	.LVL7:
- 159              		.loc 1 182 28 view .LVU25
- 160 000c FFF7FEFF 		bl	strchr
- 161              	.LVL8:
- 183:../BLDCMotor/motor_protocol.c ****     if (colonPos == NULL || *(colonPos + 1) == '\0') {  
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 7
+ 182:../BLDCMotor/motor_protocol.c ****     // Attempt to parse the number  
+ 183:../BLDCMotor/motor_protocol.c ****     char *endPtr;  
+ 187              		.loc 1 183 5 is_stmt 1 view .LVU41
+ 184:../BLDCMotor/motor_protocol.c ****     float parsedValue = strtof(numStart, &endPtr);  
+ 188              		.loc 1 184 5 view .LVU42
+ 189              		.loc 1 184 25 is_stmt 0 view .LVU43
+ 190 002a 01A9     		add	r1, sp, #4
+ 191 002c 2046     		mov	r0, r4
+ 192              	.LVL11:
+ 193              		.loc 1 184 25 view .LVU44
+ 194 002e FFF7FEFF 		bl	strtof
+ 195              	.LVL12:
+ 185:../BLDCMotor/motor_protocol.c ****   
+ 186:../BLDCMotor/motor_protocol.c ****     // Check if a valid number was parsed  
+ 187:../BLDCMotor/motor_protocol.c ****     if (endPtr != numStart && (*endPtr == '\0' || isspace((unsigned char)*endPtr))) {  
+ 196              		.loc 1 187 5 is_stmt 1 view .LVU45
+ 197              		.loc 1 187 16 is_stmt 0 view .LVU46
+ 198 0032 019B     		ldr	r3, [sp, #4]
+ 199              		.loc 1 187 8 view .LVU47
+ 200 0034 A342     		cmp	r3, r4
+ 201 0036 15D0     		beq	.L19
+ 202              		.loc 1 187 32 discriminator 1 view .LVU48
+ 203 0038 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 204              		.loc 1 187 28 discriminator 1 view .LVU49
+ 205 003a 33B1     		cbz	r3, .L14
+ 206              		.loc 1 187 51 discriminator 2 view .LVU50
+ 207 003c 0A4A     		ldr	r2, .L25
+ 208 003e 9B5C     		ldrb	r3, [r3, r2]	@ zero_extendqisi2
+ 209              		.loc 1 187 48 discriminator 2 view .LVU51
+ 210 0040 13F0080F 		tst	r3, #8
+ 211 0044 01D1     		bne	.L14
+ 188:../BLDCMotor/motor_protocol.c ****         *val = parsedValue;  
+ 189:../BLDCMotor/motor_protocol.c ****         return 1; // Success  
+ 190:../BLDCMotor/motor_protocol.c ****     }
+ 191:../BLDCMotor/motor_protocol.c ****   
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 8
 
 
- 162              		.loc 1 183 5 is_stmt 1 view .LVU26
- 163              		.loc 1 183 8 is_stmt 0 view .LVU27
- 164 0010 0446     		mov	r4, r0
- 165 0012 10B3     		cbz	r0, .L17
- 166              		.loc 1 183 29 discriminator 1 view .LVU28
- 167 0014 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
- 168              		.loc 1 183 26 discriminator 1 view .LVU29
- 169 0016 13B3     		cbz	r3, .L18
- 184:../BLDCMotor/motor_protocol.c ****         return 0; // No colon found or no characters after colon  
- 185:../BLDCMotor/motor_protocol.c ****     }  
- 186:../BLDCMotor/motor_protocol.c ****   
- 187:../BLDCMotor/motor_protocol.c ****     // Skip the colon and any following whitespace  
- 188:../BLDCMotor/motor_protocol.c ****     const char *numStart = colonPos + 1;  
- 170              		.loc 1 188 5 is_stmt 1 view .LVU30
- 171              		.loc 1 188 17 is_stmt 0 view .LVU31
- 172 0018 0134     		adds	r4, r4, #1
- 173              	.LVL9:
- 189:../BLDCMotor/motor_protocol.c ****     while (isspace((unsigned char)*numStart)) {  
- 174              		.loc 1 189 5 is_stmt 1 view .LVU32
- 175              		.loc 1 189 11 is_stmt 0 view .LVU33
- 176 001a 00E0     		b	.L12
- 177              	.L13:
- 190:../BLDCMotor/motor_protocol.c ****         numStart++;  
- 178              		.loc 1 190 9 is_stmt 1 view .LVU34
- 179              		.loc 1 190 17 is_stmt 0 view .LVU35
- 180 001c 0134     		adds	r4, r4, #1
- 181              	.LVL10:
- 182              	.L12:
- 189:../BLDCMotor/motor_protocol.c ****     while (isspace((unsigned char)*numStart)) {  
- 183              		.loc 1 189 11 is_stmt 1 view .LVU36
- 189:../BLDCMotor/motor_protocol.c ****     while (isspace((unsigned char)*numStart)) {  
- 184              		.loc 1 189 12 is_stmt 0 view .LVU37
- 185 001e 2278     		ldrb	r2, [r4]	@ zero_extendqisi2
- 186 0020 114B     		ldr	r3, .L25
- 187 0022 D35C     		ldrb	r3, [r2, r3]	@ zero_extendqisi2
- 189:../BLDCMotor/motor_protocol.c ****     while (isspace((unsigned char)*numStart)) {  
- 188              		.loc 1 189 11 view .LVU38
- 189 0024 13F0080F 		tst	r3, #8
- 190 0028 F8D1     		bne	.L13
- 191:../BLDCMotor/motor_protocol.c ****     }  
- 192:../BLDCMotor/motor_protocol.c ****   
- 193:../BLDCMotor/motor_protocol.c ****     // Attempt to parse the number  
- 194:../BLDCMotor/motor_protocol.c ****     char *endPtr;  
- 191              		.loc 1 194 5 is_stmt 1 view .LVU39
- 195:../BLDCMotor/motor_protocol.c ****     float parsedValue = strtof(numStart, &endPtr);  
- 192              		.loc 1 195 5 view .LVU40
- 193              		.loc 1 195 25 is_stmt 0 view .LVU41
- 194 002a 01A9     		add	r1, sp, #4
- 195 002c 2046     		mov	r0, r4
- 196              	.LVL11:
- 197              		.loc 1 195 25 view .LVU42
- 198 002e FFF7FEFF 		bl	strtof
- 199              	.LVL12:
- 196:../BLDCMotor/motor_protocol.c ****   
- 197:../BLDCMotor/motor_protocol.c ****     // Check if a valid number was parsed  
- 198:../BLDCMotor/motor_protocol.c ****     if (endPtr != numStart && (*endPtr == '\0' || isspace((unsigned char)*endPtr))) {  
- 200              		.loc 1 198 5 is_stmt 1 view .LVU43
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 8
+ 192:../BLDCMotor/motor_protocol.c ****     return 0; // Failure: no valid number found or trailing non-whitespace characters  
+ 212              		.loc 1 192 12 view .LVU52
+ 213 0046 0020     		movs	r0, #0
+ 214 0048 0AE0     		b	.L10
+ 215              	.L14:
+ 188:../BLDCMotor/motor_protocol.c ****         *val = parsedValue;  
+ 216              		.loc 1 188 9 is_stmt 1 view .LVU53
+ 188:../BLDCMotor/motor_protocol.c ****         *val = parsedValue;  
+ 217              		.loc 1 188 14 is_stmt 0 view .LVU54
+ 218 004a 85ED000A 		vstr.32	s0, [r5]
+ 189:../BLDCMotor/motor_protocol.c ****     }
+ 219              		.loc 1 189 9 is_stmt 1 view .LVU55
+ 189:../BLDCMotor/motor_protocol.c ****     }
+ 220              		.loc 1 189 16 is_stmt 0 view .LVU56
+ 221 004e 0120     		movs	r0, #1
+ 222 0050 06E0     		b	.L10
+ 223              	.LVL13:
+ 224              	.L15:
+ 225              	.LCFI2:
+ 226              		.cfi_def_cfa_offset 0
+ 227              		.cfi_restore 4
+ 228              		.cfi_restore 5
+ 229              		.cfi_restore 14
+ 168:../BLDCMotor/motor_protocol.c ****     }  
+ 230              		.loc 1 168 16 view .LVU57
+ 231 0052 0020     		movs	r0, #0
+ 232              	.LVL14:
+ 193:../BLDCMotor/motor_protocol.c **** }  
+ 233              		.loc 1 193 1 view .LVU58
+ 234 0054 7047     		bx	lr
+ 235              	.LVL15:
+ 236              	.L16:
+ 237              	.LCFI3:
+ 238              		.cfi_def_cfa_offset 24
+ 239              		.cfi_offset 4, -12
+ 240              		.cfi_offset 5, -8
+ 241              		.cfi_offset 14, -4
+ 168:../BLDCMotor/motor_protocol.c ****     }  
+ 242              		.loc 1 168 16 view .LVU59
+ 243 0056 0020     		movs	r0, #0
+ 244              	.LVL16:
+ 168:../BLDCMotor/motor_protocol.c ****     }  
+ 245              		.loc 1 168 16 view .LVU60
+ 246 0058 02E0     		b	.L10
+ 247              	.LVL17:
+ 248              	.L17:
+ 173:../BLDCMotor/motor_protocol.c ****     }  
+ 249              		.loc 1 173 16 view .LVU61
+ 250 005a 0020     		movs	r0, #0
+ 251              	.LVL18:
+ 173:../BLDCMotor/motor_protocol.c ****     }  
+ 252              		.loc 1 173 16 view .LVU62
+ 253 005c 00E0     		b	.L10
+ 254              	.LVL19:
+ 255              	.L18:
+ 173:../BLDCMotor/motor_protocol.c ****     }  
+ 256              		.loc 1 173 16 view .LVU63
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 9
 
 
- 201              		.loc 1 198 16 is_stmt 0 view .LVU44
- 202 0032 019B     		ldr	r3, [sp, #4]
- 203              		.loc 1 198 8 view .LVU45
- 204 0034 A342     		cmp	r3, r4
- 205 0036 15D0     		beq	.L19
- 206              		.loc 1 198 32 discriminator 1 view .LVU46
- 207 0038 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
- 208              		.loc 1 198 28 discriminator 1 view .LVU47
- 209 003a 33B1     		cbz	r3, .L14
- 210              		.loc 1 198 51 discriminator 2 view .LVU48
- 211 003c 0A4A     		ldr	r2, .L25
- 212 003e 9B5C     		ldrb	r3, [r3, r2]	@ zero_extendqisi2
- 213              		.loc 1 198 48 discriminator 2 view .LVU49
- 214 0040 13F0080F 		tst	r3, #8
- 215 0044 01D1     		bne	.L14
- 199:../BLDCMotor/motor_protocol.c ****         *val = parsedValue;  
- 200:../BLDCMotor/motor_protocol.c ****         return 1; // Success  
- 201:../BLDCMotor/motor_protocol.c ****     }
- 202:../BLDCMotor/motor_protocol.c ****   
- 203:../BLDCMotor/motor_protocol.c ****     return 0; // Failure: no valid number found or trailing non-whitespace characters  
- 216              		.loc 1 203 12 view .LVU50
- 217 0046 0020     		movs	r0, #0
- 218 0048 0AE0     		b	.L10
- 219              	.L14:
- 199:../BLDCMotor/motor_protocol.c ****         *val = parsedValue;  
- 220              		.loc 1 199 9 is_stmt 1 view .LVU51
- 199:../BLDCMotor/motor_protocol.c ****         *val = parsedValue;  
- 221              		.loc 1 199 14 is_stmt 0 view .LVU52
- 222 004a 85ED000A 		vstr.32	s0, [r5]
- 200:../BLDCMotor/motor_protocol.c ****     }
- 223              		.loc 1 200 9 is_stmt 1 view .LVU53
- 200:../BLDCMotor/motor_protocol.c ****     }
- 224              		.loc 1 200 16 is_stmt 0 view .LVU54
- 225 004e 0120     		movs	r0, #1
- 226 0050 06E0     		b	.L10
- 227              	.LVL13:
- 228              	.L15:
- 229              	.LCFI2:
- 230              		.cfi_def_cfa_offset 0
- 231              		.cfi_restore 4
- 232              		.cfi_restore 5
- 233              		.cfi_restore 14
- 179:../BLDCMotor/motor_protocol.c ****     }  
- 234              		.loc 1 179 16 view .LVU55
- 235 0052 0020     		movs	r0, #0
- 236              	.LVL14:
- 204:../BLDCMotor/motor_protocol.c **** }  
- 237              		.loc 1 204 1 view .LVU56
- 238 0054 7047     		bx	lr
- 239              	.LVL15:
- 240              	.L16:
- 241              	.LCFI3:
- 242              		.cfi_def_cfa_offset 24
- 243              		.cfi_offset 4, -12
- 244              		.cfi_offset 5, -8
- 245              		.cfi_offset 14, -4
- 179:../BLDCMotor/motor_protocol.c ****     }  
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 9
+ 257 005e 0020     		movs	r0, #0
+ 258              	.LVL20:
+ 259              	.L10:
+ 260              		.loc 1 193 1 view .LVU64
+ 261 0060 03B0     		add	sp, sp, #12
+ 262              	.LCFI4:
+ 263              		.cfi_remember_state
+ 264              		.cfi_def_cfa_offset 12
+ 265              		@ sp needed
+ 266 0062 30BD     		pop	{r4, r5, pc}
+ 267              	.LVL21:
+ 268              	.L19:
+ 269              	.LCFI5:
+ 270              		.cfi_restore_state
+ 192:../BLDCMotor/motor_protocol.c **** }  
+ 271              		.loc 1 192 12 view .LVU65
+ 272 0064 0020     		movs	r0, #0
+ 273 0066 FBE7     		b	.L10
+ 274              	.L26:
+ 275              		.align	2
+ 276              	.L25:
+ 277 0068 01000000 		.word	_ctype_+1
+ 278              		.cfi_endproc
+ 279              	.LFE252:
+ 281              		.section	.text._set_tarspeed,"ax",%progbits
+ 282              		.align	1
+ 283              		.syntax unified
+ 284              		.thumb
+ 285              		.thumb_func
+ 287              	_set_tarspeed:
+ 288              	.LVL22:
+ 289              	.LFB250:
+ 134:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ 290              		.loc 1 134 1 is_stmt 1 view -0
+ 291              		.cfi_startproc
+ 292              		@ args = 0, pretend = 0, frame = 8
+ 293              		@ frame_needed = 0, uses_anonymous_args = 0
+ 134:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ 294              		.loc 1 134 1 is_stmt 0 view .LVU67
+ 295 0000 00B5     		push	{lr}
+ 296              	.LCFI6:
+ 297              		.cfi_def_cfa_offset 4
+ 298              		.cfi_offset 14, -4
+ 299 0002 83B0     		sub	sp, sp, #12
+ 300              	.LCFI7:
+ 301              		.cfi_def_cfa_offset 16
+ 135:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 302              		.loc 1 135 5 is_stmt 1 view .LVU68
+ 135:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 303              		.loc 1 135 11 is_stmt 0 view .LVU69
+ 304 0004 0023     		movs	r3, #0
+ 305 0006 0193     		str	r3, [sp, #4]	@ float
+ 136:../BLDCMotor/motor_protocol.c ****     {
+ 306              		.loc 1 136 5 is_stmt 1 view .LVU70
+ 136:../BLDCMotor/motor_protocol.c ****     {
+ 307              		.loc 1 136 10 is_stmt 0 view .LVU71
+ 308 0008 01A9     		add	r1, sp, #4
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 10
 
 
- 246              		.loc 1 179 16 view .LVU57
- 247 0056 0020     		movs	r0, #0
- 248              	.LVL16:
- 179:../BLDCMotor/motor_protocol.c ****     }  
- 249              		.loc 1 179 16 view .LVU58
- 250 0058 02E0     		b	.L10
- 251              	.LVL17:
- 252              	.L17:
- 184:../BLDCMotor/motor_protocol.c ****     }  
- 253              		.loc 1 184 16 view .LVU59
- 254 005a 0020     		movs	r0, #0
- 255              	.LVL18:
- 184:../BLDCMotor/motor_protocol.c ****     }  
- 256              		.loc 1 184 16 view .LVU60
- 257 005c 00E0     		b	.L10
- 258              	.LVL19:
- 259              	.L18:
- 184:../BLDCMotor/motor_protocol.c ****     }  
- 260              		.loc 1 184 16 view .LVU61
- 261 005e 0020     		movs	r0, #0
- 262              	.LVL20:
- 263              	.L10:
- 264              		.loc 1 204 1 view .LVU62
- 265 0060 03B0     		add	sp, sp, #12
- 266              	.LCFI4:
- 267              		.cfi_remember_state
- 268              		.cfi_def_cfa_offset 12
- 269              		@ sp needed
- 270 0062 30BD     		pop	{r4, r5, pc}
- 271              	.LVL21:
- 272              	.L19:
- 273              	.LCFI5:
- 274              		.cfi_restore_state
- 203:../BLDCMotor/motor_protocol.c **** }  
- 275              		.loc 1 203 12 view .LVU63
- 276 0064 0020     		movs	r0, #0
- 277 0066 FBE7     		b	.L10
- 278              	.L26:
- 279              		.align	2
- 280              	.L25:
- 281 0068 01000000 		.word	_ctype_+1
- 282              		.cfi_endproc
- 283              	.LFE252:
- 285              		.section	.text._set_tarspeed,"ax",%progbits
- 286              		.align	1
- 287              		.syntax unified
- 288              		.thumb
- 289              		.thumb_func
- 291              	_set_tarspeed:
- 292              	.LVL22:
- 293              	.LFB250:
- 143:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
- 294              		.loc 1 143 1 is_stmt 1 view -0
- 295              		.cfi_startproc
- 296              		@ args = 0, pretend = 0, frame = 8
- 297              		@ frame_needed = 0, uses_anonymous_args = 0
- 143:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 10
+ 309              	.LVL23:
+ 136:../BLDCMotor/motor_protocol.c ****     {
+ 310              		.loc 1 136 10 view .LVU72
+ 311 000a FFF7FEFF 		bl	_findF_from_str
+ 312              	.LVL24:
+ 136:../BLDCMotor/motor_protocol.c ****     {
+ 313              		.loc 1 136 8 view .LVU73
+ 314 000e 10B1     		cbz	r0, .L28
+ 140:../BLDCMotor/motor_protocol.c ****     return 0; 
+ 315              		.loc 1 140 5 is_stmt 1 view .LVU74
+ 140:../BLDCMotor/motor_protocol.c ****     return 0; 
+ 316              		.loc 1 140 28 is_stmt 0 view .LVU75
+ 317 0010 034B     		ldr	r3, .L30
+ 318 0012 019A     		ldr	r2, [sp, #4]	@ float
+ 319 0014 5A65     		str	r2, [r3, #84]	@ float
+ 141:../BLDCMotor/motor_protocol.c **** }
+ 320              		.loc 1 141 5 is_stmt 1 view .LVU76
+ 321              	.L28:
+ 142:../BLDCMotor/motor_protocol.c **** // 查找命令的函数  
+ 322              		.loc 1 142 1 is_stmt 0 view .LVU77
+ 323 0016 0020     		movs	r0, #0
+ 324 0018 03B0     		add	sp, sp, #12
+ 325              	.LCFI8:
+ 326              		.cfi_def_cfa_offset 4
+ 327              		@ sp needed
+ 328 001a 5DF804FB 		ldr	pc, [sp], #4
+ 329              	.L31:
+ 330 001e 00BF     		.align	2
+ 331              	.L30:
+ 332 0020 00000000 		.word	motordebug
+ 333              		.cfi_endproc
+ 334              	.LFE250:
+ 336              		.section	.text._set_d_ki,"ax",%progbits
+ 337              		.align	1
+ 338              		.syntax unified
+ 339              		.thumb
+ 340              		.thumb_func
+ 342              	_set_d_ki:
+ 343              	.LVL25:
+ 344              	.LFB244:
+  85:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ 345              		.loc 1 85 1 is_stmt 1 view -0
+ 346              		.cfi_startproc
+ 347              		@ args = 0, pretend = 0, frame = 8
+ 348              		@ frame_needed = 0, uses_anonymous_args = 0
+  85:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ 349              		.loc 1 85 1 is_stmt 0 view .LVU79
+ 350 0000 00B5     		push	{lr}
+ 351              	.LCFI9:
+ 352              		.cfi_def_cfa_offset 4
+ 353              		.cfi_offset 14, -4
+ 354 0002 83B0     		sub	sp, sp, #12
+ 355              	.LCFI10:
+ 356              		.cfi_def_cfa_offset 16
+  86:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 357              		.loc 1 86 5 is_stmt 1 view .LVU80
+  86:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 11
 
 
- 298              		.loc 1 143 1 is_stmt 0 view .LVU65
- 299 0000 00B5     		push	{lr}
- 300              	.LCFI6:
- 301              		.cfi_def_cfa_offset 4
- 302              		.cfi_offset 14, -4
- 303 0002 83B0     		sub	sp, sp, #12
- 304              	.LCFI7:
- 305              		.cfi_def_cfa_offset 16
- 144:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 306              		.loc 1 144 5 is_stmt 1 view .LVU66
- 144:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 307              		.loc 1 144 11 is_stmt 0 view .LVU67
- 308 0004 0023     		movs	r3, #0
- 309 0006 0193     		str	r3, [sp, #4]	@ float
- 145:../BLDCMotor/motor_protocol.c ****     {
- 310              		.loc 1 145 5 is_stmt 1 view .LVU68
- 145:../BLDCMotor/motor_protocol.c ****     {
- 311              		.loc 1 145 10 is_stmt 0 view .LVU69
- 312 0008 01A9     		add	r1, sp, #4
- 313              	.LVL23:
- 145:../BLDCMotor/motor_protocol.c ****     {
- 314              		.loc 1 145 10 view .LVU70
- 315 000a FFF7FEFF 		bl	_findF_from_str
- 316              	.LVL24:
- 145:../BLDCMotor/motor_protocol.c ****     {
- 317              		.loc 1 145 8 view .LVU71
- 318 000e 10B1     		cbz	r0, .L28
- 149:../BLDCMotor/motor_protocol.c ****     return 0; 
- 319              		.loc 1 149 5 is_stmt 1 view .LVU72
- 149:../BLDCMotor/motor_protocol.c ****     return 0; 
- 320              		.loc 1 149 28 is_stmt 0 view .LVU73
- 321 0010 034B     		ldr	r3, .L30
- 322 0012 019A     		ldr	r2, [sp, #4]	@ float
- 323 0014 5A65     		str	r2, [r3, #84]	@ float
- 150:../BLDCMotor/motor_protocol.c **** }
- 324              		.loc 1 150 5 is_stmt 1 view .LVU74
- 325              	.L28:
- 151:../BLDCMotor/motor_protocol.c **** // 查找命令的函数  
- 326              		.loc 1 151 1 is_stmt 0 view .LVU75
- 327 0016 0020     		movs	r0, #0
- 328 0018 03B0     		add	sp, sp, #12
- 329              	.LCFI8:
- 330              		.cfi_def_cfa_offset 4
- 331              		@ sp needed
- 332 001a 5DF804FB 		ldr	pc, [sp], #4
- 333              	.L31:
- 334 001e 00BF     		.align	2
- 335              	.L30:
- 336 0020 00000000 		.word	motordebug
- 337              		.cfi_endproc
- 338              	.LFE250:
- 340              		.section	.text._set_d_ki,"ax",%progbits
- 341              		.align	1
- 342              		.syntax unified
- 343              		.thumb
- 344              		.thumb_func
- 346              	_set_d_ki:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 11
+ 358              		.loc 1 86 11 is_stmt 0 view .LVU81
+ 359 0004 0023     		movs	r3, #0
+ 360 0006 0193     		str	r3, [sp, #4]	@ float
+  87:../BLDCMotor/motor_protocol.c ****     {
+ 361              		.loc 1 87 5 is_stmt 1 view .LVU82
+  87:../BLDCMotor/motor_protocol.c ****     {
+ 362              		.loc 1 87 10 is_stmt 0 view .LVU83
+ 363 0008 01A9     		add	r1, sp, #4
+ 364              	.LVL26:
+  87:../BLDCMotor/motor_protocol.c ****     {
+ 365              		.loc 1 87 10 view .LVU84
+ 366 000a FFF7FEFF 		bl	_findF_from_str
+ 367              	.LVL27:
+  87:../BLDCMotor/motor_protocol.c ****     {
+ 368              		.loc 1 87 8 view .LVU85
+ 369 000e 10B1     		cbz	r0, .L33
+  91:../BLDCMotor/motor_protocol.c ****     return 0; 
+ 370              		.loc 1 91 5 is_stmt 1 view .LVU86
+  91:../BLDCMotor/motor_protocol.c ****     return 0; 
+ 371              		.loc 1 91 25 is_stmt 0 view .LVU87
+ 372 0010 034B     		ldr	r3, .L35
+ 373 0012 019A     		ldr	r2, [sp, #4]	@ float
+ 374 0014 DA66     		str	r2, [r3, #108]	@ float
+  92:../BLDCMotor/motor_protocol.c **** }
+ 375              		.loc 1 92 5 is_stmt 1 view .LVU88
+ 376              	.L33:
+  93:../BLDCMotor/motor_protocol.c **** static void* _set_motorstart(char *str,int32_t iq)
+ 377              		.loc 1 93 1 is_stmt 0 view .LVU89
+ 378 0016 0020     		movs	r0, #0
+ 379 0018 03B0     		add	sp, sp, #12
+ 380              	.LCFI11:
+ 381              		.cfi_def_cfa_offset 4
+ 382              		@ sp needed
+ 383 001a 5DF804FB 		ldr	pc, [sp], #4
+ 384              	.L36:
+ 385 001e 00BF     		.align	2
+ 386              	.L35:
+ 387 0020 00000000 		.word	motordebug
+ 388              		.cfi_endproc
+ 389              	.LFE244:
+ 391              		.section	.text._set_d_kp,"ax",%progbits
+ 392              		.align	1
+ 393              		.syntax unified
+ 394              		.thumb
+ 395              		.thumb_func
+ 397              	_set_d_kp:
+ 398              	.LVL28:
+ 399              	.LFB243:
+  75:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;
+ 400              		.loc 1 75 1 is_stmt 1 view -0
+ 401              		.cfi_startproc
+ 402              		@ args = 0, pretend = 0, frame = 8
+ 403              		@ frame_needed = 0, uses_anonymous_args = 0
+  75:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;
+ 404              		.loc 1 75 1 is_stmt 0 view .LVU91
+ 405 0000 00B5     		push	{lr}
+ 406              	.LCFI12:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 12
 
 
- 347              	.LVL25:
- 348              	.LFB244:
-  94:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
- 349              		.loc 1 94 1 is_stmt 1 view -0
- 350              		.cfi_startproc
- 351              		@ args = 0, pretend = 0, frame = 8
- 352              		@ frame_needed = 0, uses_anonymous_args = 0
-  94:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
- 353              		.loc 1 94 1 is_stmt 0 view .LVU77
- 354 0000 00B5     		push	{lr}
- 355              	.LCFI9:
- 356              		.cfi_def_cfa_offset 4
- 357              		.cfi_offset 14, -4
- 358 0002 83B0     		sub	sp, sp, #12
- 359              	.LCFI10:
- 360              		.cfi_def_cfa_offset 16
-  95:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 361              		.loc 1 95 5 is_stmt 1 view .LVU78
-  95:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 362              		.loc 1 95 11 is_stmt 0 view .LVU79
- 363 0004 0023     		movs	r3, #0
- 364 0006 0193     		str	r3, [sp, #4]	@ float
-  96:../BLDCMotor/motor_protocol.c ****     {
- 365              		.loc 1 96 5 is_stmt 1 view .LVU80
-  96:../BLDCMotor/motor_protocol.c ****     {
- 366              		.loc 1 96 10 is_stmt 0 view .LVU81
- 367 0008 01A9     		add	r1, sp, #4
- 368              	.LVL26:
-  96:../BLDCMotor/motor_protocol.c ****     {
- 369              		.loc 1 96 10 view .LVU82
- 370 000a FFF7FEFF 		bl	_findF_from_str
- 371              	.LVL27:
-  96:../BLDCMotor/motor_protocol.c ****     {
- 372              		.loc 1 96 8 view .LVU83
- 373 000e 10B1     		cbz	r0, .L33
- 100:../BLDCMotor/motor_protocol.c ****     return 0; 
- 374              		.loc 1 100 5 is_stmt 1 view .LVU84
- 100:../BLDCMotor/motor_protocol.c ****     return 0; 
- 375              		.loc 1 100 25 is_stmt 0 view .LVU85
- 376 0010 034B     		ldr	r3, .L35
- 377 0012 019A     		ldr	r2, [sp, #4]	@ float
- 378 0014 DA66     		str	r2, [r3, #108]	@ float
- 101:../BLDCMotor/motor_protocol.c **** }
- 379              		.loc 1 101 5 is_stmt 1 view .LVU86
- 380              	.L33:
- 102:../BLDCMotor/motor_protocol.c **** static void* _set_motorstart(char *str,int32_t iq)
- 381              		.loc 1 102 1 is_stmt 0 view .LVU87
- 382 0016 0020     		movs	r0, #0
- 383 0018 03B0     		add	sp, sp, #12
- 384              	.LCFI11:
- 385              		.cfi_def_cfa_offset 4
- 386              		@ sp needed
- 387 001a 5DF804FB 		ldr	pc, [sp], #4
- 388              	.L36:
- 389 001e 00BF     		.align	2
- 390              	.L35:
- 391 0020 00000000 		.word	motordebug
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 12
+ 407              		.cfi_def_cfa_offset 4
+ 408              		.cfi_offset 14, -4
+ 409 0002 83B0     		sub	sp, sp, #12
+ 410              	.LCFI13:
+ 411              		.cfi_def_cfa_offset 16
+  76:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 412              		.loc 1 76 5 is_stmt 1 view .LVU92
+  76:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 413              		.loc 1 76 11 is_stmt 0 view .LVU93
+ 414 0004 0023     		movs	r3, #0
+ 415 0006 0193     		str	r3, [sp, #4]	@ float
+  77:../BLDCMotor/motor_protocol.c ****     {
+ 416              		.loc 1 77 5 is_stmt 1 view .LVU94
+  77:../BLDCMotor/motor_protocol.c ****     {
+ 417              		.loc 1 77 10 is_stmt 0 view .LVU95
+ 418 0008 01A9     		add	r1, sp, #4
+ 419              	.LVL29:
+  77:../BLDCMotor/motor_protocol.c ****     {
+ 420              		.loc 1 77 10 view .LVU96
+ 421 000a FFF7FEFF 		bl	_findF_from_str
+ 422              	.LVL30:
+  77:../BLDCMotor/motor_protocol.c ****     {
+ 423              		.loc 1 77 8 view .LVU97
+ 424 000e 10B1     		cbz	r0, .L38
+  81:../BLDCMotor/motor_protocol.c ****     return 0;    
+ 425              		.loc 1 81 5 is_stmt 1 view .LVU98
+  81:../BLDCMotor/motor_protocol.c ****     return 0;    
+ 426              		.loc 1 81 25 is_stmt 0 view .LVU99
+ 427 0010 034B     		ldr	r3, .L40
+ 428 0012 019A     		ldr	r2, [sp, #4]	@ float
+ 429 0014 9A66     		str	r2, [r3, #104]	@ float
+  82:../BLDCMotor/motor_protocol.c **** }
+ 430              		.loc 1 82 5 is_stmt 1 view .LVU100
+ 431              	.L38:
+  83:../BLDCMotor/motor_protocol.c **** static void* _set_d_ki(char *str,int32_t ki)
+ 432              		.loc 1 83 1 is_stmt 0 view .LVU101
+ 433 0016 0020     		movs	r0, #0
+ 434 0018 03B0     		add	sp, sp, #12
+ 435              	.LCFI14:
+ 436              		.cfi_def_cfa_offset 4
+ 437              		@ sp needed
+ 438 001a 5DF804FB 		ldr	pc, [sp], #4
+ 439              	.L41:
+ 440 001e 00BF     		.align	2
+ 441              	.L40:
+ 442 0020 00000000 		.word	motordebug
+ 443              		.cfi_endproc
+ 444              	.LFE243:
+ 446              		.section	.text._set_tariq,"ax",%progbits
+ 447              		.align	1
+ 448              		.syntax unified
+ 449              		.thumb
+ 450              		.thumb_func
+ 452              	_set_tariq:
+ 453              	.LVL31:
+ 454              	.LFB248:
+ 117:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 13
 
 
- 392              		.cfi_endproc
- 393              	.LFE244:
- 395              		.section	.text._set_d_kp,"ax",%progbits
- 396              		.align	1
- 397              		.syntax unified
- 398              		.thumb
- 399              		.thumb_func
- 401              	_set_d_kp:
- 402              	.LVL28:
- 403              	.LFB243:
-  84:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;
- 404              		.loc 1 84 1 is_stmt 1 view -0
- 405              		.cfi_startproc
- 406              		@ args = 0, pretend = 0, frame = 8
- 407              		@ frame_needed = 0, uses_anonymous_args = 0
-  84:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;
- 408              		.loc 1 84 1 is_stmt 0 view .LVU89
- 409 0000 00B5     		push	{lr}
- 410              	.LCFI12:
- 411              		.cfi_def_cfa_offset 4
- 412              		.cfi_offset 14, -4
- 413 0002 83B0     		sub	sp, sp, #12
- 414              	.LCFI13:
- 415              		.cfi_def_cfa_offset 16
-  85:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 416              		.loc 1 85 5 is_stmt 1 view .LVU90
-  85:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 417              		.loc 1 85 11 is_stmt 0 view .LVU91
- 418 0004 0023     		movs	r3, #0
- 419 0006 0193     		str	r3, [sp, #4]	@ float
-  86:../BLDCMotor/motor_protocol.c ****     {
- 420              		.loc 1 86 5 is_stmt 1 view .LVU92
-  86:../BLDCMotor/motor_protocol.c ****     {
- 421              		.loc 1 86 10 is_stmt 0 view .LVU93
- 422 0008 01A9     		add	r1, sp, #4
- 423              	.LVL29:
-  86:../BLDCMotor/motor_protocol.c ****     {
- 424              		.loc 1 86 10 view .LVU94
- 425 000a FFF7FEFF 		bl	_findF_from_str
- 426              	.LVL30:
-  86:../BLDCMotor/motor_protocol.c ****     {
- 427              		.loc 1 86 8 view .LVU95
- 428 000e 10B1     		cbz	r0, .L38
-  90:../BLDCMotor/motor_protocol.c ****     return 0;    
- 429              		.loc 1 90 5 is_stmt 1 view .LVU96
-  90:../BLDCMotor/motor_protocol.c ****     return 0;    
- 430              		.loc 1 90 25 is_stmt 0 view .LVU97
- 431 0010 034B     		ldr	r3, .L40
- 432 0012 019A     		ldr	r2, [sp, #4]	@ float
- 433 0014 9A66     		str	r2, [r3, #104]	@ float
-  91:../BLDCMotor/motor_protocol.c **** }
- 434              		.loc 1 91 5 is_stmt 1 view .LVU98
- 435              	.L38:
-  92:../BLDCMotor/motor_protocol.c **** static void* _set_d_ki(char *str,int32_t ki)
- 436              		.loc 1 92 1 is_stmt 0 view .LVU99
- 437 0016 0020     		movs	r0, #0
- 438 0018 03B0     		add	sp, sp, #12
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 13
+ 455              		.loc 1 117 1 is_stmt 1 view -0
+ 456              		.cfi_startproc
+ 457              		@ args = 0, pretend = 0, frame = 8
+ 458              		@ frame_needed = 0, uses_anonymous_args = 0
+ 117:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ 459              		.loc 1 117 1 is_stmt 0 view .LVU103
+ 460 0000 00B5     		push	{lr}
+ 461              	.LCFI15:
+ 462              		.cfi_def_cfa_offset 4
+ 463              		.cfi_offset 14, -4
+ 464 0002 83B0     		sub	sp, sp, #12
+ 465              	.LCFI16:
+ 466              		.cfi_def_cfa_offset 16
+ 118:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 467              		.loc 1 118 5 is_stmt 1 view .LVU104
+ 118:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 468              		.loc 1 118 11 is_stmt 0 view .LVU105
+ 469 0004 0023     		movs	r3, #0
+ 470 0006 0193     		str	r3, [sp, #4]	@ float
+ 119:../BLDCMotor/motor_protocol.c ****     {
+ 471              		.loc 1 119 5 is_stmt 1 view .LVU106
+ 119:../BLDCMotor/motor_protocol.c ****     {
+ 472              		.loc 1 119 10 is_stmt 0 view .LVU107
+ 473 0008 01A9     		add	r1, sp, #4
+ 474              	.LVL32:
+ 119:../BLDCMotor/motor_protocol.c ****     {
+ 475              		.loc 1 119 10 view .LVU108
+ 476 000a FFF7FEFF 		bl	_findF_from_str
+ 477              	.LVL33:
+ 119:../BLDCMotor/motor_protocol.c ****     {
+ 478              		.loc 1 119 8 view .LVU109
+ 479 000e 10B1     		cbz	r0, .L43
+ 123:../BLDCMotor/motor_protocol.c ****     return 0;    
+ 480              		.loc 1 123 5 is_stmt 1 view .LVU110
+ 123:../BLDCMotor/motor_protocol.c ****     return 0;    
+ 481              		.loc 1 123 25 is_stmt 0 view .LVU111
+ 482 0010 034B     		ldr	r3, .L45
+ 483 0012 019A     		ldr	r2, [sp, #4]	@ float
+ 484 0014 9A64     		str	r2, [r3, #72]	@ float
+ 124:../BLDCMotor/motor_protocol.c **** }
+ 485              		.loc 1 124 5 is_stmt 1 view .LVU112
+ 486              	.L43:
+ 125:../BLDCMotor/motor_protocol.c **** 
+ 487              		.loc 1 125 1 is_stmt 0 view .LVU113
+ 488 0016 0020     		movs	r0, #0
+ 489 0018 03B0     		add	sp, sp, #12
+ 490              	.LCFI17:
+ 491              		.cfi_def_cfa_offset 4
+ 492              		@ sp needed
+ 493 001a 5DF804FB 		ldr	pc, [sp], #4
+ 494              	.L46:
+ 495 001e 00BF     		.align	2
+ 496              	.L45:
+ 497 0020 00000000 		.word	motordebug
+ 498              		.cfi_endproc
+ 499              	.LFE248:
+ 501              		.section	.text._set_tarid,"ax",%progbits
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 14
 
 
- 439              	.LCFI14:
- 440              		.cfi_def_cfa_offset 4
- 441              		@ sp needed
- 442 001a 5DF804FB 		ldr	pc, [sp], #4
- 443              	.L41:
- 444 001e 00BF     		.align	2
- 445              	.L40:
- 446 0020 00000000 		.word	motordebug
- 447              		.cfi_endproc
- 448              	.LFE243:
- 450              		.section	.text._set_tariq,"ax",%progbits
- 451              		.align	1
- 452              		.syntax unified
- 453              		.thumb
- 454              		.thumb_func
- 456              	_set_tariq:
- 457              	.LVL31:
- 458              	.LFB248:
- 126:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
- 459              		.loc 1 126 1 is_stmt 1 view -0
- 460              		.cfi_startproc
- 461              		@ args = 0, pretend = 0, frame = 8
- 462              		@ frame_needed = 0, uses_anonymous_args = 0
- 126:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
- 463              		.loc 1 126 1 is_stmt 0 view .LVU101
- 464 0000 00B5     		push	{lr}
- 465              	.LCFI15:
- 466              		.cfi_def_cfa_offset 4
- 467              		.cfi_offset 14, -4
- 468 0002 83B0     		sub	sp, sp, #12
- 469              	.LCFI16:
- 470              		.cfi_def_cfa_offset 16
- 127:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 471              		.loc 1 127 5 is_stmt 1 view .LVU102
- 127:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 472              		.loc 1 127 11 is_stmt 0 view .LVU103
- 473 0004 0023     		movs	r3, #0
- 474 0006 0193     		str	r3, [sp, #4]	@ float
- 128:../BLDCMotor/motor_protocol.c ****     {
- 475              		.loc 1 128 5 is_stmt 1 view .LVU104
- 128:../BLDCMotor/motor_protocol.c ****     {
- 476              		.loc 1 128 10 is_stmt 0 view .LVU105
- 477 0008 01A9     		add	r1, sp, #4
- 478              	.LVL32:
- 128:../BLDCMotor/motor_protocol.c ****     {
- 479              		.loc 1 128 10 view .LVU106
- 480 000a FFF7FEFF 		bl	_findF_from_str
- 481              	.LVL33:
- 128:../BLDCMotor/motor_protocol.c ****     {
- 482              		.loc 1 128 8 view .LVU107
- 483 000e 10B1     		cbz	r0, .L43
- 132:../BLDCMotor/motor_protocol.c ****     return 0;    
- 484              		.loc 1 132 5 is_stmt 1 view .LVU108
- 132:../BLDCMotor/motor_protocol.c ****     return 0;    
- 485              		.loc 1 132 25 is_stmt 0 view .LVU109
- 486 0010 034B     		ldr	r3, .L45
- 487 0012 019A     		ldr	r2, [sp, #4]	@ float
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 14
+ 502              		.align	1
+ 503              		.syntax unified
+ 504              		.thumb
+ 505              		.thumb_func
+ 507              	_set_tarid:
+ 508              	.LVL34:
+ 509              	.LFB247:
+ 106:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ 510              		.loc 1 106 1 is_stmt 1 view -0
+ 511              		.cfi_startproc
+ 512              		@ args = 0, pretend = 0, frame = 8
+ 513              		@ frame_needed = 0, uses_anonymous_args = 0
+ 106:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
+ 514              		.loc 1 106 1 is_stmt 0 view .LVU115
+ 515 0000 00B5     		push	{lr}
+ 516              	.LCFI18:
+ 517              		.cfi_def_cfa_offset 4
+ 518              		.cfi_offset 14, -4
+ 519 0002 83B0     		sub	sp, sp, #12
+ 520              	.LCFI19:
+ 521              		.cfi_def_cfa_offset 16
+ 107:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 522              		.loc 1 107 5 is_stmt 1 view .LVU116
+ 107:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
+ 523              		.loc 1 107 11 is_stmt 0 view .LVU117
+ 524 0004 0023     		movs	r3, #0
+ 525 0006 0193     		str	r3, [sp, #4]	@ float
+ 108:../BLDCMotor/motor_protocol.c ****     {
+ 526              		.loc 1 108 5 is_stmt 1 view .LVU118
+ 108:../BLDCMotor/motor_protocol.c ****     {
+ 527              		.loc 1 108 10 is_stmt 0 view .LVU119
+ 528 0008 01A9     		add	r1, sp, #4
+ 529              	.LVL35:
+ 108:../BLDCMotor/motor_protocol.c ****     {
+ 530              		.loc 1 108 10 view .LVU120
+ 531 000a FFF7FEFF 		bl	_findF_from_str
+ 532              	.LVL36:
+ 108:../BLDCMotor/motor_protocol.c ****     {
+ 533              		.loc 1 108 8 view .LVU121
+ 534 000e 10B1     		cbz	r0, .L48
+ 112:../BLDCMotor/motor_protocol.c ****     return 0;
+ 535              		.loc 1 112 5 is_stmt 1 view .LVU122
+ 112:../BLDCMotor/motor_protocol.c ****     return 0;
+ 536              		.loc 1 112 25 is_stmt 0 view .LVU123
+ 537 0010 034B     		ldr	r3, .L50
+ 538 0012 019A     		ldr	r2, [sp, #4]	@ float
+ 539 0014 1A64     		str	r2, [r3, #64]	@ float
+ 113:../BLDCMotor/motor_protocol.c **** } 
+ 540              		.loc 1 113 5 is_stmt 1 view .LVU124
+ 541              	.L48:
+ 114:../BLDCMotor/motor_protocol.c **** 
+ 542              		.loc 1 114 1 is_stmt 0 view .LVU125
+ 543 0016 0020     		movs	r0, #0
+ 544 0018 03B0     		add	sp, sp, #12
+ 545              	.LCFI20:
+ 546              		.cfi_def_cfa_offset 4
+ 547              		@ sp needed
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 15
 
 
- 488 0014 9A64     		str	r2, [r3, #72]	@ float
- 133:../BLDCMotor/motor_protocol.c **** }
- 489              		.loc 1 133 5 is_stmt 1 view .LVU110
- 490              	.L43:
- 134:../BLDCMotor/motor_protocol.c **** 
- 491              		.loc 1 134 1 is_stmt 0 view .LVU111
- 492 0016 0020     		movs	r0, #0
- 493 0018 03B0     		add	sp, sp, #12
- 494              	.LCFI17:
- 495              		.cfi_def_cfa_offset 4
- 496              		@ sp needed
- 497 001a 5DF804FB 		ldr	pc, [sp], #4
- 498              	.L46:
- 499 001e 00BF     		.align	2
- 500              	.L45:
- 501 0020 00000000 		.word	motordebug
- 502              		.cfi_endproc
- 503              	.LFE248:
- 505              		.section	.rodata._set_tarid.str1.4,"aMS",%progbits,1
- 506              		.align	2
- 507              	.LC2:
- 508 0000 73657420 		.ascii	"set id\015\012\000"
- 508      69640D0A 
- 508      00
- 509              		.section	.text._set_tarid,"ax",%progbits
- 510              		.align	1
- 511              		.syntax unified
- 512              		.thumb
- 513              		.thumb_func
- 515              	_set_tarid:
- 516              	.LVL34:
- 517              	.LFB247:
- 114:../BLDCMotor/motor_protocol.c ****     USER_DEBUG_NORMAL("set id\r\n");
- 518              		.loc 1 114 1 is_stmt 1 view -0
- 519              		.cfi_startproc
- 520              		@ args = 0, pretend = 0, frame = 8
- 521              		@ frame_needed = 0, uses_anonymous_args = 0
- 114:../BLDCMotor/motor_protocol.c ****     USER_DEBUG_NORMAL("set id\r\n");
- 522              		.loc 1 114 1 is_stmt 0 view .LVU113
- 523 0000 10B5     		push	{r4, lr}
- 524              	.LCFI18:
- 525              		.cfi_def_cfa_offset 8
- 526              		.cfi_offset 4, -8
- 527              		.cfi_offset 14, -4
- 528 0002 82B0     		sub	sp, sp, #8
- 529              	.LCFI19:
- 530              		.cfi_def_cfa_offset 16
- 531 0004 0446     		mov	r4, r0
- 115:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
- 532              		.loc 1 115 5 is_stmt 1 view .LVU114
- 533 0006 0849     		ldr	r1, .L50
- 534              	.LVL35:
- 115:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
- 535              		.loc 1 115 5 is_stmt 0 view .LVU115
- 536 0008 0020     		movs	r0, #0
- 537              	.LVL36:
- 115:../BLDCMotor/motor_protocol.c ****     float val = 0.0f;            
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 15
+ 548 001a 5DF804FB 		ldr	pc, [sp], #4
+ 549              	.L51:
+ 550 001e 00BF     		.align	2
+ 551              	.L50:
+ 552 0020 00000000 		.word	motordebug
+ 553              		.cfi_endproc
+ 554              	.LFE247:
+ 556              		.section	.text._findcmd_from_map,"ax",%progbits
+ 557              		.align	1
+ 558              		.syntax unified
+ 559              		.thumb
+ 560              		.thumb_func
+ 562              	_findcmd_from_map:
+ 563              	.LVL37:
+ 564              	.LFB251:
+ 144:../BLDCMotor/motor_protocol.c ****     if (str == NULL) {  
+ 565              		.loc 1 144 99 is_stmt 1 view -0
+ 566              		.cfi_startproc
+ 567              		@ args = 0, pretend = 0, frame = 0
+ 568              		@ frame_needed = 0, uses_anonymous_args = 0
+ 145:../BLDCMotor/motor_protocol.c ****         return 0; // 如果传入的字符串为空，则返回0表示不匹配  
+ 569              		.loc 1 145 5 view .LVU127
+ 145:../BLDCMotor/motor_protocol.c ****         return 0; // 如果传入的字符串为空，则返回0表示不匹配  
+ 570              		.loc 1 145 8 is_stmt 0 view .LVU128
+ 571 0000 40B3     		cbz	r0, .L57
+ 144:../BLDCMotor/motor_protocol.c ****     if (str == NULL) {  
+ 572              		.loc 1 144 99 view .LVU129
+ 573 0002 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 574              	.LCFI21:
+ 575              		.cfi_def_cfa_offset 32
+ 576              		.cfi_offset 4, -32
+ 577              		.cfi_offset 5, -28
+ 578              		.cfi_offset 6, -24
+ 579              		.cfi_offset 7, -20
+ 580              		.cfi_offset 8, -16
+ 581              		.cfi_offset 9, -12
+ 582              		.cfi_offset 10, -8
+ 583              		.cfi_offset 14, -4
+ 584 0006 0E46     		mov	r6, r1
+ 585 0008 9046     		mov	r8, r2
+ 586 000a 0746     		mov	r7, r0
+ 587              	.LBB2:
+ 149:../BLDCMotor/motor_protocol.c ****         // 使用strncmp比较直到遇到冒号或字符串结束  
+ 588              		.loc 1 149 17 view .LVU130
+ 589 000c 0024     		movs	r4, #0
+ 590 000e 00E0     		b	.L54
+ 591              	.LVL38:
+ 592              	.L55:
+ 149:../BLDCMotor/motor_protocol.c ****         // 使用strncmp比较直到遇到冒号或字符串结束  
+ 593              		.loc 1 149 37 is_stmt 1 discriminator 2 view .LVU131
+ 594 0010 0134     		adds	r4, r4, #1
+ 595              	.LVL39:
+ 596              	.L54:
+ 149:../BLDCMotor/motor_protocol.c ****         // 使用strncmp比较直到遇到冒号或字符串结束  
+ 597              		.loc 1 149 24 discriminator 1 view .LVU132
+ 149:../BLDCMotor/motor_protocol.c ****         // 使用strncmp比较直到遇到冒号或字符串结束  
+ 598              		.loc 1 149 5 is_stmt 0 discriminator 1 view .LVU133
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 16
 
 
- 538              		.loc 1 115 5 view .LVU116
- 539 000a FFF7FEFF 		bl	SEGGER_RTT_printf
- 540              	.LVL37:
- 116:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 541              		.loc 1 116 5 is_stmt 1 view .LVU117
- 116:../BLDCMotor/motor_protocol.c ****     if (!_findF_from_str(str,&val))
- 542              		.loc 1 116 11 is_stmt 0 view .LVU118
- 543 000e 0023     		movs	r3, #0
- 544 0010 0193     		str	r3, [sp, #4]	@ float
- 117:../BLDCMotor/motor_protocol.c ****     {
- 545              		.loc 1 117 5 is_stmt 1 view .LVU119
- 117:../BLDCMotor/motor_protocol.c ****     {
- 546              		.loc 1 117 10 is_stmt 0 view .LVU120
- 547 0012 01A9     		add	r1, sp, #4
- 548 0014 2046     		mov	r0, r4
- 549 0016 FFF7FEFF 		bl	_findF_from_str
- 550              	.LVL38:
- 117:../BLDCMotor/motor_protocol.c ****     {
- 551              		.loc 1 117 8 view .LVU121
- 552 001a 10B1     		cbz	r0, .L48
- 121:../BLDCMotor/motor_protocol.c ****     return 0;
- 553              		.loc 1 121 5 is_stmt 1 view .LVU122
- 121:../BLDCMotor/motor_protocol.c ****     return 0;
- 554              		.loc 1 121 25 is_stmt 0 view .LVU123
- 555 001c 034B     		ldr	r3, .L50+4
- 556 001e 019A     		ldr	r2, [sp, #4]	@ float
- 557 0020 1A64     		str	r2, [r3, #64]	@ float
- 122:../BLDCMotor/motor_protocol.c **** } 
- 558              		.loc 1 122 5 is_stmt 1 view .LVU124
- 559              	.L48:
- 123:../BLDCMotor/motor_protocol.c **** 
- 560              		.loc 1 123 1 is_stmt 0 view .LVU125
- 561 0022 0020     		movs	r0, #0
- 562 0024 02B0     		add	sp, sp, #8
- 563              	.LCFI20:
- 564              		.cfi_def_cfa_offset 8
- 565              		@ sp needed
- 566 0026 10BD     		pop	{r4, pc}
- 567              	.LVL39:
- 568              	.L51:
- 123:../BLDCMotor/motor_protocol.c **** 
- 569              		.loc 1 123 1 view .LVU126
- 570              		.align	2
- 571              	.L50:
- 572 0028 00000000 		.word	.LC2
- 573 002c 00000000 		.word	motordebug
- 574              		.cfi_endproc
- 575              	.LFE247:
- 577              		.section	.rodata._findcmd_from_map.str1.4,"aMS",%progbits,1
- 578              		.align	2
- 579              	.LC3:
- 580 0000 70665F63 		.ascii	"pf_cmdexcue NULL\015\012\000"
- 580      6D646578 
- 580      63756520 
- 580      4E554C4C 
- 580      0D0A00
- 581 0013 00       		.align	2
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 16
+ 599 0012 4445     		cmp	r4, r8
+ 600 0014 1BD2     		bcs	.L63
+ 601              	.LBB3:
+ 151:../BLDCMotor/motor_protocol.c ****         if (strncmp(str, map[i].cmd, cmdLen) == 0 && str[cmdLen] == ':') { 
+ 602              		.loc 1 151 9 is_stmt 1 view .LVU134
+ 151:../BLDCMotor/motor_protocol.c ****         if (strncmp(str, map[i].cmd, cmdLen) == 0 && str[cmdLen] == ':') { 
+ 603              		.loc 1 151 35 is_stmt 0 view .LVU135
+ 604 0016 2301     		lsls	r3, r4, #4
+ 605 0018 06EB0419 		add	r9, r6, r4, lsl #4
+ 151:../BLDCMotor/motor_protocol.c ****         if (strncmp(str, map[i].cmd, cmdLen) == 0 && str[cmdLen] == ':') { 
+ 606              		.loc 1 151 25 view .LVU136
+ 607 001c 56F803A0 		ldr	r10, [r6, r3]
+ 608 0020 5046     		mov	r0, r10
+ 609 0022 FFF7FEFF 		bl	strlen
+ 610              	.LVL40:
+ 611 0026 0546     		mov	r5, r0
+ 612              	.LVL41:
+ 152:../BLDCMotor/motor_protocol.c **** 
+ 613              		.loc 1 152 9 is_stmt 1 view .LVU137
+ 152:../BLDCMotor/motor_protocol.c **** 
+ 614              		.loc 1 152 13 is_stmt 0 view .LVU138
+ 615 0028 0246     		mov	r2, r0
+ 616 002a 5146     		mov	r1, r10
+ 617 002c 3846     		mov	r0, r7
+ 618              	.LVL42:
+ 152:../BLDCMotor/motor_protocol.c **** 
+ 619              		.loc 1 152 13 view .LVU139
+ 620 002e FFF7FEFF 		bl	strncmp
+ 621              	.LVL43:
+ 152:../BLDCMotor/motor_protocol.c **** 
+ 622              		.loc 1 152 12 view .LVU140
+ 623 0032 0028     		cmp	r0, #0
+ 624 0034 ECD1     		bne	.L55
+ 152:../BLDCMotor/motor_protocol.c **** 
+ 625              		.loc 1 152 57 discriminator 1 view .LVU141
+ 626 0036 7B5D     		ldrb	r3, [r7, r5]	@ zero_extendqisi2
+ 152:../BLDCMotor/motor_protocol.c **** 
+ 627              		.loc 1 152 51 discriminator 1 view .LVU142
+ 628 0038 3A2B     		cmp	r3, #58
+ 629 003a E9D1     		bne	.L55
+ 154:../BLDCMotor/motor_protocol.c ****             {
+ 630              		.loc 1 154 13 is_stmt 1 view .LVU143
+ 154:../BLDCMotor/motor_protocol.c ****             {
+ 631              		.loc 1 154 24 is_stmt 0 view .LVU144
+ 632 003c D9F80830 		ldr	r3, [r9, #8]
+ 154:../BLDCMotor/motor_protocol.c ****             {
+ 633              		.loc 1 154 16 view .LVU145
+ 634 0040 53B1     		cbz	r3, .L58
+ 159:../BLDCMotor/motor_protocol.c ****             return map[i].cmd_index; // 找到匹配项，返回对应值  
+ 635              		.loc 1 159 13 is_stmt 1 view .LVU146
+ 636 0042 0021     		movs	r1, #0
+ 637 0044 3846     		mov	r0, r7
+ 638 0046 9847     		blx	r3
+ 639              	.LVL44:
+ 160:../BLDCMotor/motor_protocol.c ****         }
+ 640              		.loc 1 160 13 view .LVU147
+ 160:../BLDCMotor/motor_protocol.c ****         }
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 17
 
 
- 582              	.LC4:
- 583 0014 4E4F2043 		.ascii	"NO Cmd PATH\015\012\000"
- 583      6D642050 
- 583      4154480D 
- 583      0A00
- 584              		.section	.text._findcmd_from_map,"ax",%progbits
- 585              		.align	1
- 586              		.syntax unified
- 587              		.thumb
- 588              		.thumb_func
- 590              	_findcmd_from_map:
- 591              	.LVL40:
- 592              	.LFB251:
- 153:../BLDCMotor/motor_protocol.c ****     if (str == NULL) {  
- 593              		.loc 1 153 99 is_stmt 1 view -0
- 594              		.cfi_startproc
- 595              		@ args = 0, pretend = 0, frame = 0
- 596              		@ frame_needed = 0, uses_anonymous_args = 0
- 154:../BLDCMotor/motor_protocol.c ****         return 0; // 如果传入的字符串为空，则返回0表示不匹配  
- 597              		.loc 1 154 5 view .LVU128
- 154:../BLDCMotor/motor_protocol.c ****         return 0; // 如果传入的字符串为空，则返回0表示不匹配  
- 598              		.loc 1 154 8 is_stmt 0 view .LVU129
- 599 0000 A0B3     		cbz	r0, .L58
- 153:../BLDCMotor/motor_protocol.c ****     if (str == NULL) {  
- 600              		.loc 1 153 99 view .LVU130
- 601 0002 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
- 602              	.LCFI21:
- 603              		.cfi_def_cfa_offset 32
- 604              		.cfi_offset 4, -32
- 605              		.cfi_offset 5, -28
- 606              		.cfi_offset 6, -24
- 607              		.cfi_offset 7, -20
- 608              		.cfi_offset 8, -16
- 609              		.cfi_offset 9, -12
- 610              		.cfi_offset 10, -8
- 611              		.cfi_offset 14, -4
- 612 0006 0F46     		mov	r7, r1
- 613 0008 9146     		mov	r9, r2
- 614 000a 8046     		mov	r8, r0
- 615              	.LBB2:
- 158:../BLDCMotor/motor_protocol.c ****         // 使用strncmp比较直到遇到冒号或字符串结束  
- 616              		.loc 1 158 17 view .LVU131
- 617 000c 0024     		movs	r4, #0
- 618 000e 05E0     		b	.L54
- 619              	.LVL41:
- 620              	.L64:
- 621              	.LBB3:
- 165:../BLDCMotor/motor_protocol.c ****                 return 0;
- 622              		.loc 1 165 17 is_stmt 1 view .LVU132
- 623 0010 1749     		ldr	r1, .L65
- 624 0012 FFF7FEFF 		bl	SEGGER_RTT_printf
- 625              	.LVL42:
- 166:../BLDCMotor/motor_protocol.c ****             }
- 626              		.loc 1 166 17 view .LVU133
- 166:../BLDCMotor/motor_protocol.c ****             }
- 627              		.loc 1 166 24 is_stmt 0 view .LVU134
- 628 0016 0020     		movs	r0, #0
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 17
+ 641              		.loc 1 160 26 is_stmt 0 view .LVU148
+ 642 0048 B9F80400 		ldrh	r0, [r9, #4]
+ 643 004c 00E0     		b	.L53
+ 644              	.LVL45:
+ 645              	.L63:
+ 160:../BLDCMotor/motor_protocol.c ****         }
+ 646              		.loc 1 160 26 view .LVU149
+ 647              	.LBE3:
+ 648              	.LBE2:
+ 163:../BLDCMotor/motor_protocol.c **** }  
+ 649              		.loc 1 163 12 view .LVU150
+ 650 004e 0020     		movs	r0, #0
+ 651              	.L53:
+ 164:../BLDCMotor/motor_protocol.c **** 
+ 652              		.loc 1 164 1 view .LVU151
+ 653 0050 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 654              	.LVL46:
+ 655              	.L57:
+ 656              	.LCFI22:
+ 657              		.cfi_def_cfa_offset 0
+ 658              		.cfi_restore 4
+ 659              		.cfi_restore 5
+ 660              		.cfi_restore 6
+ 661              		.cfi_restore 7
+ 662              		.cfi_restore 8
+ 663              		.cfi_restore 9
+ 664              		.cfi_restore 10
+ 665              		.cfi_restore 14
+ 146:../BLDCMotor/motor_protocol.c ****     }  
+ 666              		.loc 1 146 16 view .LVU152
+ 667 0054 0020     		movs	r0, #0
+ 668              	.LVL47:
+ 164:../BLDCMotor/motor_protocol.c **** 
+ 669              		.loc 1 164 1 view .LVU153
+ 670 0056 7047     		bx	lr
+ 671              	.LVL48:
+ 672              	.L58:
+ 673              	.LCFI23:
+ 674              		.cfi_def_cfa_offset 32
+ 675              		.cfi_offset 4, -32
+ 676              		.cfi_offset 5, -28
+ 677              		.cfi_offset 6, -24
+ 678              		.cfi_offset 7, -20
+ 679              		.cfi_offset 8, -16
+ 680              		.cfi_offset 9, -12
+ 681              		.cfi_offset 10, -8
+ 682              		.cfi_offset 14, -4
+ 683              	.LBB5:
+ 684              	.LBB4:
+ 156:../BLDCMotor/motor_protocol.c ****             }
+ 685              		.loc 1 156 24 view .LVU154
+ 686 0058 0020     		movs	r0, #0
+ 687 005a F9E7     		b	.L53
+ 688              	.LBE4:
+ 689              	.LBE5:
+ 690              		.cfi_endproc
+ 691              	.LFE251:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 18
 
 
- 629 0018 26E0     		b	.L53
- 630              	.L55:
- 631              	.LBE3:
- 158:../BLDCMotor/motor_protocol.c ****         // 使用strncmp比较直到遇到冒号或字符串结束  
- 632              		.loc 1 158 37 is_stmt 1 discriminator 2 view .LVU135
- 633 001a 0134     		adds	r4, r4, #1
- 634              	.LVL43:
- 635              	.L54:
- 158:../BLDCMotor/motor_protocol.c ****         // 使用strncmp比较直到遇到冒号或字符串结束  
- 636              		.loc 1 158 24 discriminator 1 view .LVU136
- 158:../BLDCMotor/motor_protocol.c ****         // 使用strncmp比较直到遇到冒号或字符串结束  
- 637              		.loc 1 158 5 is_stmt 0 discriminator 1 view .LVU137
- 638 001c 4C45     		cmp	r4, r9
- 639 001e 1ED2     		bcs	.L63
- 640              	.LBB4:
- 160:../BLDCMotor/motor_protocol.c ****         if (strncmp(str, map[i].cmd, cmdLen) == 0 && str[cmdLen] == ':') { 
- 641              		.loc 1 160 9 is_stmt 1 view .LVU138
- 160:../BLDCMotor/motor_protocol.c ****         if (strncmp(str, map[i].cmd, cmdLen) == 0 && str[cmdLen] == ':') { 
- 642              		.loc 1 160 35 is_stmt 0 view .LVU139
- 643 0020 04EB4403 		add	r3, r4, r4, lsl #1
- 644 0024 07EB830A 		add	r10, r7, r3, lsl #2
- 160:../BLDCMotor/motor_protocol.c ****         if (strncmp(str, map[i].cmd, cmdLen) == 0 && str[cmdLen] == ':') { 
- 645              		.loc 1 160 25 view .LVU140
- 646 0028 57F82360 		ldr	r6, [r7, r3, lsl #2]
- 647 002c 3046     		mov	r0, r6
- 648 002e FFF7FEFF 		bl	strlen
- 649              	.LVL44:
- 650 0032 0546     		mov	r5, r0
- 651              	.LVL45:
- 161:../BLDCMotor/motor_protocol.c **** 
- 652              		.loc 1 161 9 is_stmt 1 view .LVU141
- 161:../BLDCMotor/motor_protocol.c **** 
- 653              		.loc 1 161 13 is_stmt 0 view .LVU142
- 654 0034 0246     		mov	r2, r0
- 655 0036 3146     		mov	r1, r6
- 656 0038 4046     		mov	r0, r8
- 657              	.LVL46:
- 161:../BLDCMotor/motor_protocol.c **** 
- 658              		.loc 1 161 13 view .LVU143
- 659 003a FFF7FEFF 		bl	strncmp
- 660              	.LVL47:
- 161:../BLDCMotor/motor_protocol.c **** 
- 661              		.loc 1 161 12 view .LVU144
- 662 003e 0028     		cmp	r0, #0
- 663 0040 EBD1     		bne	.L55
- 161:../BLDCMotor/motor_protocol.c **** 
- 664              		.loc 1 161 57 discriminator 1 view .LVU145
- 665 0042 18F80530 		ldrb	r3, [r8, r5]	@ zero_extendqisi2
- 161:../BLDCMotor/motor_protocol.c **** 
- 666              		.loc 1 161 51 discriminator 1 view .LVU146
- 667 0046 3A2B     		cmp	r3, #58
- 668 0048 E7D1     		bne	.L55
- 163:../BLDCMotor/motor_protocol.c ****             {
- 669              		.loc 1 163 13 is_stmt 1 view .LVU147
- 163:../BLDCMotor/motor_protocol.c ****             {
- 670              		.loc 1 163 24 is_stmt 0 view .LVU148
- 671 004a DAF80830 		ldr	r3, [r10, #8]
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 18
+ 693              		.section	.text.motorprotocol_getdata,"ax",%progbits
+ 694              		.align	1
+ 695              		.global	motorprotocol_getdata
+ 696              		.syntax unified
+ 697              		.thumb
+ 698              		.thumb_func
+ 700              	motorprotocol_getdata:
+ 701              	.LVL49:
+ 702              	.LFB239:
+  49:../BLDCMotor/motor_protocol.c ****     strcpy(Rx_Buf,data);
+ 703              		.loc 1 49 1 is_stmt 1 view -0
+ 704              		.cfi_startproc
+ 705              		@ args = 0, pretend = 0, frame = 0
+ 706              		@ frame_needed = 0, uses_anonymous_args = 0
+  49:../BLDCMotor/motor_protocol.c ****     strcpy(Rx_Buf,data);
+ 707              		.loc 1 49 1 is_stmt 0 view .LVU156
+ 708 0000 08B5     		push	{r3, lr}
+ 709              	.LCFI24:
+ 710              		.cfi_def_cfa_offset 8
+ 711              		.cfi_offset 3, -8
+ 712              		.cfi_offset 14, -4
+ 713 0002 0146     		mov	r1, r0
+  50:../BLDCMotor/motor_protocol.c **** }
+ 714              		.loc 1 50 5 is_stmt 1 view .LVU157
+ 715 0004 0148     		ldr	r0, .L66
+ 716              	.LVL50:
+  50:../BLDCMotor/motor_protocol.c **** }
+ 717              		.loc 1 50 5 is_stmt 0 view .LVU158
+ 718 0006 FFF7FEFF 		bl	strcpy
+ 719              	.LVL51:
+  51:../BLDCMotor/motor_protocol.c **** 
+ 720              		.loc 1 51 1 view .LVU159
+ 721 000a 08BD     		pop	{r3, pc}
+ 722              	.L67:
+ 723              		.align	2
+ 724              	.L66:
+ 725 000c 00000000 		.word	.LANCHOR1
+ 726              		.cfi_endproc
+ 727              	.LFE239:
+ 729              		.section	.text.motorprotocol_pause,"ax",%progbits
+ 730              		.align	1
+ 731              		.global	motorprotocol_pause
+ 732              		.syntax unified
+ 733              		.thumb
+ 734              		.thumb_func
+ 736              	motorprotocol_pause:
+ 737              	.LVL52:
+ 738              	.LFB240:
+  54:../BLDCMotor/motor_protocol.c ****     float value =0.0f;
+ 739              		.loc 1 54 1 is_stmt 1 view -0
+ 740              		.cfi_startproc
+ 741              		@ args = 0, pretend = 0, frame = 0
+ 742              		@ frame_needed = 0, uses_anonymous_args = 0
+  54:../BLDCMotor/motor_protocol.c ****     float value =0.0f;
+ 743              		.loc 1 54 1 is_stmt 0 view .LVU161
+ 744 0000 08B5     		push	{r3, lr}
+ 745              	.LCFI25:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 19
 
 
- 163:../BLDCMotor/motor_protocol.c ****             {
- 672              		.loc 1 163 16 view .LVU149
- 673 004e 002B     		cmp	r3, #0
- 674 0050 DED0     		beq	.L64
- 169:../BLDCMotor/motor_protocol.c ****             return map[i].cmd_index; // 找到匹配项，返回对应值  
- 675              		.loc 1 169 13 is_stmt 1 view .LVU150
- 676 0052 0021     		movs	r1, #0
- 677 0054 4046     		mov	r0, r8
- 678 0056 9847     		blx	r3
- 679              	.LVL48:
- 170:../BLDCMotor/motor_protocol.c ****         }
- 680              		.loc 1 170 13 view .LVU151
- 170:../BLDCMotor/motor_protocol.c ****         }
- 681              		.loc 1 170 26 is_stmt 0 view .LVU152
- 682 0058 BAF80400 		ldrh	r0, [r10, #4]
- 683 005c 04E0     		b	.L53
- 684              	.LVL49:
- 685              	.L63:
- 170:../BLDCMotor/motor_protocol.c ****         }
- 686              		.loc 1 170 26 view .LVU153
- 687              	.LBE4:
- 688              	.LBE2:
- 173:../BLDCMotor/motor_protocol.c ****     return 0; // 未找到匹配项，返回0  
- 689              		.loc 1 173 5 is_stmt 1 view .LVU154
- 690 005e 0549     		ldr	r1, .L65+4
- 691 0060 0020     		movs	r0, #0
- 692 0062 FFF7FEFF 		bl	SEGGER_RTT_printf
- 693              	.LVL50:
- 174:../BLDCMotor/motor_protocol.c **** }  
- 694              		.loc 1 174 5 view .LVU155
- 174:../BLDCMotor/motor_protocol.c **** }  
- 695              		.loc 1 174 12 is_stmt 0 view .LVU156
- 696 0066 0020     		movs	r0, #0
- 697              	.L53:
- 175:../BLDCMotor/motor_protocol.c **** 
- 698              		.loc 1 175 1 view .LVU157
- 699 0068 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
- 700              	.LVL51:
- 701              	.L58:
- 702              	.LCFI22:
- 703              		.cfi_def_cfa_offset 0
- 704              		.cfi_restore 4
- 705              		.cfi_restore 5
- 706              		.cfi_restore 6
- 707              		.cfi_restore 7
- 708              		.cfi_restore 8
- 709              		.cfi_restore 9
- 710              		.cfi_restore 10
- 711              		.cfi_restore 14
- 155:../BLDCMotor/motor_protocol.c ****     }  
- 712              		.loc 1 155 16 view .LVU158
- 713 006c 0020     		movs	r0, #0
- 714              	.LVL52:
- 175:../BLDCMotor/motor_protocol.c **** 
- 715              		.loc 1 175 1 view .LVU159
- 716 006e 7047     		bx	lr
- 717              	.L66:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 19
+ 746              		.cfi_def_cfa_offset 8
+ 747              		.cfi_offset 3, -8
+ 748              		.cfi_offset 14, -4
+  55:../BLDCMotor/motor_protocol.c ****     unsigned short cmd_ID;
+ 749              		.loc 1 55 5 is_stmt 1 view .LVU162
+ 750              	.LVL53:
+  56:../BLDCMotor/motor_protocol.c ****     if (cmd[0] == 0 && cmd[1] == 0)
+ 751              		.loc 1 56 5 view .LVU163
+  57:../BLDCMotor/motor_protocol.c ****     {
+ 752              		.loc 1 57 5 view .LVU164
+  57:../BLDCMotor/motor_protocol.c ****     {
+ 753              		.loc 1 57 12 is_stmt 0 view .LVU165
+ 754 0002 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+  57:../BLDCMotor/motor_protocol.c ****     {
+ 755              		.loc 1 57 8 view .LVU166
+ 756 0004 0BB9     		cbnz	r3, .L69
+  57:../BLDCMotor/motor_protocol.c ****     {
+ 757              		.loc 1 57 27 discriminator 1 view .LVU167
+ 758 0006 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+  57:../BLDCMotor/motor_protocol.c ****     {
+ 759              		.loc 1 57 21 discriminator 1 view .LVU168
+ 760 0008 1BB1     		cbz	r3, .L68
+ 761              	.L69:
+  61:../BLDCMotor/motor_protocol.c ****     cmd_ID = _findcmd_from_map(cmd,sg_commandmap,mapSize);    
+ 762              		.loc 1 61 5 is_stmt 1 view .LVU169
+ 763              	.LVL54:
+  62:../BLDCMotor/motor_protocol.c **** }
+ 764              		.loc 1 62 5 view .LVU170
+  62:../BLDCMotor/motor_protocol.c **** }
+ 765              		.loc 1 62 14 is_stmt 0 view .LVU171
+ 766 000a 0922     		movs	r2, #9
+ 767 000c 0149     		ldr	r1, .L72
+ 768 000e FFF7FEFF 		bl	_findcmd_from_map
+ 769              	.LVL55:
+ 770              	.L68:
+  63:../BLDCMotor/motor_protocol.c **** 
+ 771              		.loc 1 63 1 view .LVU172
+ 772 0012 08BD     		pop	{r3, pc}
+ 773              	.L73:
+ 774              		.align	2
+ 775              	.L72:
+ 776 0014 00000000 		.word	.LANCHOR0
+ 777              		.cfi_endproc
+ 778              	.LFE240:
+ 780              		.section	.text.motorprotocol_process,"ax",%progbits
+ 781              		.align	1
+ 782              		.global	motorprotocol_process
+ 783              		.syntax unified
+ 784              		.thumb
+ 785              		.thumb_func
+ 787              	motorprotocol_process:
+ 788              	.LFB241:
+  66:../BLDCMotor/motor_protocol.c ****     motorprotocol_pause(Rx_Buf);
+ 789              		.loc 1 66 1 is_stmt 1 view -0
+ 790              		.cfi_startproc
+ 791              		@ args = 0, pretend = 0, frame = 0
+ 792              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 20
 
 
- 718              		.align	2
- 719              	.L65:
- 720 0070 00000000 		.word	.LC3
- 721 0074 14000000 		.word	.LC4
- 722              		.cfi_endproc
- 723              	.LFE251:
- 725              		.section	.text.motorprotocol_getdata,"ax",%progbits
- 726              		.align	1
- 727              		.global	motorprotocol_getdata
- 728              		.syntax unified
- 729              		.thumb
- 730              		.thumb_func
- 732              	motorprotocol_getdata:
- 733              	.LVL53:
- 734              	.LFB239:
-  58:../BLDCMotor/motor_protocol.c ****     strcpy(Rx_Buf,data);
- 735              		.loc 1 58 1 is_stmt 1 view -0
- 736              		.cfi_startproc
- 737              		@ args = 0, pretend = 0, frame = 0
- 738              		@ frame_needed = 0, uses_anonymous_args = 0
-  58:../BLDCMotor/motor_protocol.c ****     strcpy(Rx_Buf,data);
- 739              		.loc 1 58 1 is_stmt 0 view .LVU161
- 740 0000 08B5     		push	{r3, lr}
- 741              	.LCFI23:
- 742              		.cfi_def_cfa_offset 8
- 743              		.cfi_offset 3, -8
- 744              		.cfi_offset 14, -4
- 745 0002 0146     		mov	r1, r0
-  59:../BLDCMotor/motor_protocol.c **** }
- 746              		.loc 1 59 5 is_stmt 1 view .LVU162
- 747 0004 0148     		ldr	r0, .L69
- 748              	.LVL54:
-  59:../BLDCMotor/motor_protocol.c **** }
- 749              		.loc 1 59 5 is_stmt 0 view .LVU163
- 750 0006 FFF7FEFF 		bl	strcpy
- 751              	.LVL55:
-  60:../BLDCMotor/motor_protocol.c **** 
- 752              		.loc 1 60 1 view .LVU164
- 753 000a 08BD     		pop	{r3, pc}
- 754              	.L70:
- 755              		.align	2
- 756              	.L69:
- 757 000c 00000000 		.word	.LANCHOR0
- 758              		.cfi_endproc
- 759              	.LFE239:
- 761              		.section	.text.motorprotocol_pause,"ax",%progbits
- 762              		.align	1
- 763              		.global	motorprotocol_pause
- 764              		.syntax unified
- 765              		.thumb
- 766              		.thumb_func
- 768              	motorprotocol_pause:
- 769              	.LVL56:
- 770              	.LFB240:
-  63:../BLDCMotor/motor_protocol.c ****     float value =0.0f;
- 771              		.loc 1 63 1 is_stmt 1 view -0
- 772              		.cfi_startproc
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 20
+ 793 0000 10B5     		push	{r4, lr}
+ 794              	.LCFI26:
+ 795              		.cfi_def_cfa_offset 8
+ 796              		.cfi_offset 4, -8
+ 797              		.cfi_offset 14, -4
+  67:../BLDCMotor/motor_protocol.c ****     memset(Rx_Buf, 0, sizeof(Rx_Buf));
+ 798              		.loc 1 67 5 view .LVU174
+ 799 0002 054C     		ldr	r4, .L76
+ 800 0004 2046     		mov	r0, r4
+ 801 0006 FFF7FEFF 		bl	motorprotocol_pause
+ 802              	.LVL56:
+  68:../BLDCMotor/motor_protocol.c **** }
+ 803              		.loc 1 68 5 view .LVU175
+ 804 000a F822     		movs	r2, #248
+ 805 000c 0021     		movs	r1, #0
+ 806 000e 2046     		mov	r0, r4
+ 807 0010 FFF7FEFF 		bl	memset
+ 808              	.LVL57:
+  69:../BLDCMotor/motor_protocol.c **** void motorprotocol_tramit(char *pstr,uint16_t len)
+ 809              		.loc 1 69 1 is_stmt 0 view .LVU176
+ 810 0014 10BD     		pop	{r4, pc}
+ 811              	.L77:
+ 812 0016 00BF     		.align	2
+ 813              	.L76:
+ 814 0018 00000000 		.word	.LANCHOR1
+ 815              		.cfi_endproc
+ 816              	.LFE241:
+ 818              		.section	.text.motorprotocol_tramit,"ax",%progbits
+ 819              		.align	1
+ 820              		.global	motorprotocol_tramit
+ 821              		.syntax unified
+ 822              		.thumb
+ 823              		.thumb_func
+ 825              	motorprotocol_tramit:
+ 826              	.LVL58:
+ 827              	.LFB242:
+  71:../BLDCMotor/motor_protocol.c ****     _bsp_protransmit((unsigned char *)pstr,len);
+ 828              		.loc 1 71 1 is_stmt 1 view -0
+ 829              		.cfi_startproc
+ 830              		@ args = 0, pretend = 0, frame = 0
+ 831              		@ frame_needed = 0, uses_anonymous_args = 0
+  71:../BLDCMotor/motor_protocol.c ****     _bsp_protransmit((unsigned char *)pstr,len);
+ 832              		.loc 1 71 1 is_stmt 0 view .LVU178
+ 833 0000 08B5     		push	{r3, lr}
+ 834              	.LCFI27:
+ 835              		.cfi_def_cfa_offset 8
+ 836              		.cfi_offset 3, -8
+ 837              		.cfi_offset 14, -4
+  72:../BLDCMotor/motor_protocol.c **** }
+ 838              		.loc 1 72 5 is_stmt 1 view .LVU179
+ 839 0002 FFF7FEFF 		bl	_bsp_protransmit
+ 840              	.LVL59:
+  73:../BLDCMotor/motor_protocol.c **** static void* _set_d_kp(char *str,int32_t kp)
+ 841              		.loc 1 73 1 is_stmt 0 view .LVU180
+ 842 0006 08BD     		pop	{r3, pc}
+ 843              		.cfi_endproc
+ 844              	.LFE242:
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 21
 
 
- 773              		@ args = 0, pretend = 0, frame = 0
- 774              		@ frame_needed = 0, uses_anonymous_args = 0
-  63:../BLDCMotor/motor_protocol.c ****     float value =0.0f;
- 775              		.loc 1 63 1 is_stmt 0 view .LVU166
- 776 0000 08B5     		push	{r3, lr}
- 777              	.LCFI24:
- 778              		.cfi_def_cfa_offset 8
- 779              		.cfi_offset 3, -8
- 780              		.cfi_offset 14, -4
-  64:../BLDCMotor/motor_protocol.c ****     unsigned short cmd_ID;
- 781              		.loc 1 64 5 is_stmt 1 view .LVU167
- 782              	.LVL57:
-  65:../BLDCMotor/motor_protocol.c ****     if (cmd[0] == 0 && cmd[1] == 0)
- 783              		.loc 1 65 5 view .LVU168
-  66:../BLDCMotor/motor_protocol.c ****     {
- 784              		.loc 1 66 5 view .LVU169
-  66:../BLDCMotor/motor_protocol.c ****     {
- 785              		.loc 1 66 12 is_stmt 0 view .LVU170
- 786 0002 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
-  66:../BLDCMotor/motor_protocol.c ****     {
- 787              		.loc 1 66 8 view .LVU171
- 788 0004 0BB9     		cbnz	r3, .L72
-  66:../BLDCMotor/motor_protocol.c ****     {
- 789              		.loc 1 66 27 discriminator 1 view .LVU172
- 790 0006 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
-  66:../BLDCMotor/motor_protocol.c ****     {
- 791              		.loc 1 66 21 discriminator 1 view .LVU173
- 792 0008 1BB1     		cbz	r3, .L71
- 793              	.L72:
-  70:../BLDCMotor/motor_protocol.c ****     cmd_ID = _findcmd_from_map(cmd,sg_commandmap,mapSize);    
- 794              		.loc 1 70 5 is_stmt 1 view .LVU174
- 795              	.LVL58:
-  71:../BLDCMotor/motor_protocol.c **** }
- 796              		.loc 1 71 5 view .LVU175
-  71:../BLDCMotor/motor_protocol.c **** }
- 797              		.loc 1 71 14 is_stmt 0 view .LVU176
- 798 000a 0922     		movs	r2, #9
- 799 000c 0149     		ldr	r1, .L75
- 800 000e FFF7FEFF 		bl	_findcmd_from_map
- 801              	.LVL59:
- 802              	.L71:
-  72:../BLDCMotor/motor_protocol.c **** 
- 803              		.loc 1 72 1 view .LVU177
- 804 0012 08BD     		pop	{r3, pc}
- 805              	.L76:
- 806              		.align	2
- 807              	.L75:
- 808 0014 00000000 		.word	.LANCHOR1
- 809              		.cfi_endproc
- 810              	.LFE240:
- 812              		.section	.text.motorprotocol_process,"ax",%progbits
- 813              		.align	1
- 814              		.global	motorprotocol_process
- 815              		.syntax unified
- 816              		.thumb
- 817              		.thumb_func
- 819              	motorprotocol_process:
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 21
+ 846              		.global	sg_commandmap
+ 847              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 848              		.align	2
+ 849              	.LC0:
+ 850 0000 6D635F74 		.ascii	"mc_tar_speed\000"
+ 850      61725F73 
+ 850      70656564 
+ 850      00
+ 851 000d 000000   		.align	2
+ 852              	.LC1:
+ 853 0010 6D635F74 		.ascii	"mc_tar_id\000"
+ 853      61725F69 
+ 853      6400
+ 854 001a 0000     		.align	2
+ 855              	.LC2:
+ 856 001c 6D635F74 		.ascii	"mc_tar_iq\000"
+ 856      61725F69 
+ 856      7100
+ 857 0026 0000     		.align	2
+ 858              	.LC3:
+ 859 0028 6D6F746F 		.ascii	"motor_stop\000"
+ 859      725F7374 
+ 859      6F7000
+ 860 0033 00       		.align	2
+ 861              	.LC4:
+ 862 0034 6D6F746F 		.ascii	"motor state stop\000"
+ 862      72207374 
+ 862      61746520 
+ 862      73746F70 
+ 862      00
+ 863 0045 000000   		.align	2
+ 864              	.LC5:
+ 865 0048 6D6F746F 		.ascii	"motor_start\000"
+ 865      725F7374 
+ 865      61727400 
+ 866              		.align	2
+ 867              	.LC6:
+ 868 0054 6D6F746F 		.ascii	"motor state runing\000"
+ 868      72207374 
+ 868      61746520 
+ 868      72756E69 
+ 868      6E6700
+ 869 0067 00       		.align	2
+ 870              	.LC7:
+ 871 0068 6D635F73 		.ascii	"mc_setd_kp\000"
+ 871      6574645F 
+ 871      6B7000
+ 872 0073 00       		.align	2
+ 873              	.LC8:
+ 874 0074 6D635F73 		.ascii	"mc_setd_ki\000"
+ 874      6574645F 
+ 874      6B6900
+ 875 007f 00       		.align	2
+ 876              	.LC9:
+ 877 0080 6D635F70 		.ascii	"mc_pid_paraset\000"
+ 877      69645F70 
+ 877      61726173 
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 22
 
 
- 820              	.LFB241:
-  75:../BLDCMotor/motor_protocol.c ****     motorprotocol_pause(Rx_Buf);
- 821              		.loc 1 75 1 is_stmt 1 view -0
- 822              		.cfi_startproc
- 823              		@ args = 0, pretend = 0, frame = 0
- 824              		@ frame_needed = 0, uses_anonymous_args = 0
- 825 0000 10B5     		push	{r4, lr}
- 826              	.LCFI25:
- 827              		.cfi_def_cfa_offset 8
- 828              		.cfi_offset 4, -8
- 829              		.cfi_offset 14, -4
-  76:../BLDCMotor/motor_protocol.c ****     memset(Rx_Buf, 0, sizeof(Rx_Buf));
- 830              		.loc 1 76 5 view .LVU179
- 831 0002 054C     		ldr	r4, .L79
- 832 0004 2046     		mov	r0, r4
- 833 0006 FFF7FEFF 		bl	motorprotocol_pause
- 834              	.LVL60:
-  77:../BLDCMotor/motor_protocol.c **** }
- 835              		.loc 1 77 5 view .LVU180
- 836 000a F822     		movs	r2, #248
- 837 000c 0021     		movs	r1, #0
- 838 000e 2046     		mov	r0, r4
- 839 0010 FFF7FEFF 		bl	memset
- 840              	.LVL61:
-  78:../BLDCMotor/motor_protocol.c **** void motorprotocol_tramit(char *pstr,uint16_t len)
- 841              		.loc 1 78 1 is_stmt 0 view .LVU181
- 842 0014 10BD     		pop	{r4, pc}
- 843              	.L80:
- 844 0016 00BF     		.align	2
- 845              	.L79:
- 846 0018 00000000 		.word	.LANCHOR0
- 847              		.cfi_endproc
- 848              	.LFE241:
- 850              		.section	.text.motorprotocol_tramit,"ax",%progbits
- 851              		.align	1
- 852              		.global	motorprotocol_tramit
- 853              		.syntax unified
- 854              		.thumb
- 855              		.thumb_func
- 857              	motorprotocol_tramit:
- 858              	.LVL62:
- 859              	.LFB242:
-  80:../BLDCMotor/motor_protocol.c ****     _bsp_protransmit((unsigned char *)pstr,len);
- 860              		.loc 1 80 1 is_stmt 1 view -0
- 861              		.cfi_startproc
- 862              		@ args = 0, pretend = 0, frame = 0
- 863              		@ frame_needed = 0, uses_anonymous_args = 0
-  80:../BLDCMotor/motor_protocol.c ****     _bsp_protransmit((unsigned char *)pstr,len);
- 864              		.loc 1 80 1 is_stmt 0 view .LVU183
- 865 0000 08B5     		push	{r3, lr}
- 866              	.LCFI26:
- 867              		.cfi_def_cfa_offset 8
- 868              		.cfi_offset 3, -8
- 869              		.cfi_offset 14, -4
-  81:../BLDCMotor/motor_protocol.c **** }
- 870              		.loc 1 81 5 is_stmt 1 view .LVU184
- 871 0002 FFF7FEFF 		bl	_bsp_protransmit
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 22
+ 877      657400
+ 878              		.section	.bss.Rx_Buf,"aw",%nobits
+ 879              		.align	2
+ 880              		.set	.LANCHOR1,. + 0
+ 883              	Rx_Buf:
+ 884 0000 00000000 		.space	248
+ 884      00000000 
+ 884      00000000 
+ 884      00000000 
+ 884      00000000 
+ 885              		.section	.data.sg_commandmap,"aw"
+ 886              		.align	2
+ 887              		.set	.LANCHOR0,. + 0
+ 890              	sg_commandmap:
+ 891 0000 00000000 		.word	.LC0
+ 892 0004 0100     		.short	1
+ 893 0006 0000     		.space	2
+ 894 0008 00000000 		.word	0
+ 895 000c 00000000 		.word	0
+ 896 0010 10000000 		.word	.LC1
+ 897 0014 0200     		.short	2
+ 898 0016 0000     		.space	2
+ 899 0018 00000000 		.word	_set_tarid
+ 900 001c 00000000 		.word	0
+ 901 0020 1C000000 		.word	.LC2
+ 902 0024 0300     		.short	3
+ 903 0026 0000     		.space	2
+ 904 0028 00000000 		.word	_set_tariq
+ 905 002c 00000000 		.word	0
+ 906 0030 28000000 		.word	.LC3
+ 907 0034 0400     		.short	4
+ 908 0036 0000     		.space	2
+ 909 0038 00000000 		.word	_set_motorstop
+ 910 003c 34000000 		.word	.LC4
+ 911 0040 48000000 		.word	.LC5
+ 912 0044 0500     		.short	5
+ 913 0046 0000     		.space	2
+ 914 0048 00000000 		.word	_set_motorstart
+ 915 004c 54000000 		.word	.LC6
+ 916 0050 68000000 		.word	.LC7
+ 917 0054 0600     		.short	6
+ 918 0056 0000     		.space	2
+ 919 0058 00000000 		.word	_set_d_kp
+ 920 005c 00000000 		.word	0
+ 921 0060 74000000 		.word	.LC8
+ 922 0064 0700     		.short	7
+ 923 0066 0000     		.space	2
+ 924 0068 00000000 		.word	_set_d_ki
+ 925 006c 00000000 		.word	0
+ 926 0070 80000000 		.word	.LC9
+ 927 0074 0800     		.short	8
+ 928 0076 0000     		.space	2
+ 929 0078 00000000 		.word	_set_pidpara_cmd
+ 930 007c 00000000 		.word	0
+ 931 0080 00000000 		.word	.LC0
+ 932 0084 0900     		.short	9
+ 933 0086 0000     		.space	2
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 23
 
 
- 872              	.LVL63:
-  82:../BLDCMotor/motor_protocol.c **** static void* _set_d_kp(char *str,int32_t kp)
- 873              		.loc 1 82 1 is_stmt 0 view .LVU185
- 874 0006 08BD     		pop	{r3, pc}
- 875              		.cfi_endproc
- 876              	.LFE242:
- 878              		.global	sg_commandmap
- 879              		.section	.rodata.str1.4,"aMS",%progbits,1
- 880              		.align	2
- 881              	.LC5:
- 882 0000 6D635F74 		.ascii	"mc_tar_speed\000"
- 882      61725F73 
- 882      70656564 
- 882      00
- 883 000d 000000   		.align	2
- 884              	.LC6:
- 885 0010 6D635F74 		.ascii	"mc_tar_id\000"
- 885      61725F69 
- 885      6400
- 886 001a 0000     		.align	2
- 887              	.LC7:
- 888 001c 6D635F74 		.ascii	"mc_tar_iq\000"
- 888      61725F69 
- 888      7100
- 889 0026 0000     		.align	2
- 890              	.LC8:
- 891 0028 6D6F746F 		.ascii	"motor_stop\000"
- 891      725F7374 
- 891      6F7000
- 892 0033 00       		.align	2
- 893              	.LC9:
- 894 0034 6D6F746F 		.ascii	"motor_start\000"
- 894      725F7374 
- 894      61727400 
- 895              		.align	2
- 896              	.LC10:
- 897 0040 6D635F73 		.ascii	"mc_setd_kp\000"
- 897      6574645F 
- 897      6B7000
- 898 004b 00       		.align	2
- 899              	.LC11:
- 900 004c 6D635F73 		.ascii	"mc_setd_ki\000"
- 900      6574645F 
- 900      6B6900
- 901 0057 00       		.align	2
- 902              	.LC12:
- 903 0058 6D635F70 		.ascii	"mc_pid_paraset\000"
- 903      69645F70 
- 903      61726173 
- 903      657400
- 904              		.global	g_respondmap
- 905 0067 00       		.align	2
- 906              	.LC13:
- 907 0068 6D6F746F 		.ascii	"motor state runing\000"
- 907      72207374 
- 907      61746520 
- 907      72756E69 
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 23
-
-
- 907      6E6700
- 908 007b 00       		.align	2
- 909              	.LC14:
- 910 007c 6D6F746F 		.ascii	"motor state stop\000"
- 910      72207374 
- 910      61746520 
- 910      73746F70 
- 910      00
- 911              		.section	.bss.Rx_Buf,"aw",%nobits
- 912              		.align	2
- 913              		.set	.LANCHOR0,. + 0
- 916              	Rx_Buf:
- 917 0000 00000000 		.space	248
- 917      00000000 
- 917      00000000 
- 917      00000000 
- 917      00000000 
- 918              		.section	.data.g_respondmap,"aw"
- 919              		.align	2
- 922              	g_respondmap:
- 923 0000 68000000 		.word	.LC13
- 924 0004 1300     		.short	19
- 925 0006 0000     		.space	2
- 926 0008 7C000000 		.word	.LC14
- 927 000c 1100     		.short	17
- 928 000e 0000     		.space	2
- 929              		.section	.data.sg_commandmap,"aw"
- 930              		.align	2
- 931              		.set	.LANCHOR1,. + 0
- 934              	sg_commandmap:
- 935 0000 00000000 		.word	.LC5
- 936 0004 0100     		.short	1
- 937 0006 0000     		.space	2
- 938 0008 00000000 		.word	0
- 939 000c 10000000 		.word	.LC6
- 940 0010 0200     		.short	2
- 941 0012 0000     		.space	2
- 942 0014 00000000 		.word	_set_tarid
- 943 0018 1C000000 		.word	.LC7
- 944 001c 0300     		.short	3
- 945 001e 0000     		.space	2
- 946 0020 00000000 		.word	_set_tariq
- 947 0024 28000000 		.word	.LC8
- 948 0028 0400     		.short	4
- 949 002a 0000     		.space	2
- 950 002c 00000000 		.word	_set_motorstop
- 951 0030 34000000 		.word	.LC9
- 952 0034 0500     		.short	5
- 953 0036 0000     		.space	2
- 954 0038 00000000 		.word	_set_motorstart
- 955 003c 40000000 		.word	.LC10
- 956 0040 0600     		.short	6
- 957 0042 0000     		.space	2
- 958 0044 00000000 		.word	_set_d_kp
- 959 0048 4C000000 		.word	.LC11
- 960 004c 0700     		.short	7
- 961 004e 0000     		.space	2
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 24
-
-
- 962 0050 00000000 		.word	_set_d_ki
- 963 0054 58000000 		.word	.LC12
- 964 0058 0800     		.short	8
- 965 005a 0000     		.space	2
- 966 005c 00000000 		.word	_set_pidpara_cmd
- 967 0060 00000000 		.word	.LC5
- 968 0064 0900     		.short	9
- 969 0066 0000     		.space	2
- 970 0068 00000000 		.word	_set_tarspeed
- 971              		.text
- 972              	.Letext0:
- 973              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
- 974              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
- 975              		.file 4 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\lib\\gcc\\arm-none-eabi\\10.3.1\\inclu
- 976              		.file 5 "../BLDCMotor/motorctrl_common.h"
- 977              		.file 6 "../BLDCMotor/motor_protocol.h"
- 978              		.file 7 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\ctype.h"
- 979              		.file 8 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\string.h"
- 980              		.file 9 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\stdlib.h"
- 981              		.file 10 "../Common/debuglog/SEGGER_RTT_V792h/RTT/SEGGER_RTT.h"
- 982              		.file 11 "../protocol/protocol.h"
- 983              		.file 12 "<built-in>"
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 25
+ 934 0088 00000000 		.word	_set_tarspeed
+ 935 008c 00000000 		.word	0
+ 936              		.text
+ 937              	.Letext0:
+ 938              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+ 939              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+ 940              		.file 4 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\lib\\gcc\\arm-none-eabi\\10.3.1\\inclu
+ 941              		.file 5 "../BLDCMotor/motorctrl_common.h"
+ 942              		.file 6 "../BLDCMotor/motor_protocol.h"
+ 943              		.file 7 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\ctype.h"
+ 944              		.file 8 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\string.h"
+ 945              		.file 9 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\stdlib.h"
+ 946              		.file 10 "../protocol/protocol.h"
+ 947              		.file 11 "<built-in>"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 24
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 motor_protocol.c
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:20     .rodata._set_motorstart.str1.4:00000000 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:24     .text._set_motorstart:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:29     .text._set_motorstart:00000000 _set_motorstart
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:52     .text._set_motorstart:0000000c $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:58     .rodata._set_motorstop.str1.4:00000000 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:62     .text._set_motorstop:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:67     .text._set_motorstop:00000000 _set_motorstop
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:89     .text._set_motorstop:0000000c $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:95     .text._set_pidpara_cmd:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:100    .text._set_pidpara_cmd:00000000 _set_pidpara_cmd
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:122    .text._set_pidpara_cmd:0000000c $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:127    .text._findF_from_str:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:132    .text._findF_from_str:00000000 _findF_from_str
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:281    .text._findF_from_str:00000068 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:286    .text._set_tarspeed:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:291    .text._set_tarspeed:00000000 _set_tarspeed
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:336    .text._set_tarspeed:00000020 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:341    .text._set_d_ki:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:346    .text._set_d_ki:00000000 _set_d_ki
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:391    .text._set_d_ki:00000020 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:396    .text._set_d_kp:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:401    .text._set_d_kp:00000000 _set_d_kp
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:446    .text._set_d_kp:00000020 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:451    .text._set_tariq:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:456    .text._set_tariq:00000000 _set_tariq
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:501    .text._set_tariq:00000020 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:506    .rodata._set_tarid.str1.4:00000000 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:510    .text._set_tarid:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:515    .text._set_tarid:00000000 _set_tarid
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:572    .text._set_tarid:00000028 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:578    .rodata._findcmd_from_map.str1.4:00000000 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:585    .text._findcmd_from_map:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:590    .text._findcmd_from_map:00000000 _findcmd_from_map
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:720    .text._findcmd_from_map:00000070 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:726    .text.motorprotocol_getdata:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:732    .text.motorprotocol_getdata:00000000 motorprotocol_getdata
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:757    .text.motorprotocol_getdata:0000000c $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:762    .text.motorprotocol_pause:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:768    .text.motorprotocol_pause:00000000 motorprotocol_pause
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:808    .text.motorprotocol_pause:00000014 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:813    .text.motorprotocol_process:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:819    .text.motorprotocol_process:00000000 motorprotocol_process
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:846    .text.motorprotocol_process:00000018 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:851    .text.motorprotocol_tramit:00000000 $t
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:857    .text.motorprotocol_tramit:00000000 motorprotocol_tramit
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:934    .data.sg_commandmap:00000000 sg_commandmap
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:880    .rodata.str1.4:00000000 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:922    .data.g_respondmap:00000000 g_respondmap
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:912    .bss.Rx_Buf:00000000 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:916    .bss.Rx_Buf:00000000 Rx_Buf
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:919    .data.g_respondmap:00000000 $d
-C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s:930    .data.sg_commandmap:00000000 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:20     .text._set_motorstart:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:25     .text._set_motorstart:00000000 _set_motorstart
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:50     .text._set_motorstart:00000010 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:56     .text._set_motorstop:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:61     .text._set_motorstop:00000000 _set_motorstop
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:85     .text._set_motorstop:00000010 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:91     .text._set_pidpara_cmd:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:96     .text._set_pidpara_cmd:00000000 _set_pidpara_cmd
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:118    .text._set_pidpara_cmd:0000000c $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:123    .text._findF_from_str:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:128    .text._findF_from_str:00000000 _findF_from_str
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:277    .text._findF_from_str:00000068 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:282    .text._set_tarspeed:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:287    .text._set_tarspeed:00000000 _set_tarspeed
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:332    .text._set_tarspeed:00000020 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:337    .text._set_d_ki:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:342    .text._set_d_ki:00000000 _set_d_ki
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:387    .text._set_d_ki:00000020 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:392    .text._set_d_kp:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:397    .text._set_d_kp:00000000 _set_d_kp
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:442    .text._set_d_kp:00000020 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:447    .text._set_tariq:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:452    .text._set_tariq:00000000 _set_tariq
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:497    .text._set_tariq:00000020 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:502    .text._set_tarid:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:507    .text._set_tarid:00000000 _set_tarid
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:552    .text._set_tarid:00000020 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:557    .text._findcmd_from_map:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:562    .text._findcmd_from_map:00000000 _findcmd_from_map
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:694    .text.motorprotocol_getdata:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:700    .text.motorprotocol_getdata:00000000 motorprotocol_getdata
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:725    .text.motorprotocol_getdata:0000000c $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:730    .text.motorprotocol_pause:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:736    .text.motorprotocol_pause:00000000 motorprotocol_pause
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:776    .text.motorprotocol_pause:00000014 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:781    .text.motorprotocol_process:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:787    .text.motorprotocol_process:00000000 motorprotocol_process
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:814    .text.motorprotocol_process:00000018 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:819    .text.motorprotocol_tramit:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:825    .text.motorprotocol_tramit:00000000 motorprotocol_tramit
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:890    .data.sg_commandmap:00000000 sg_commandmap
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:848    .rodata.str1.4:00000000 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:879    .bss.Rx_Buf:00000000 $d
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:883    .bss.Rx_Buf:00000000 Rx_Buf
+C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s:886    .data.sg_commandmap:00000000 $d
 
 UNDEFINED SYMBOLS
 motordebug
-ARM GAS  C:\Users\57308\AppData\Local\Temp\cc2nhO1N.s 			page 26
-
-
 strchr
 strtof
 _ctype_
-SEGGER_RTT_printf
 strlen
 strncmp
 strcpy
 memset
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc3Asqm8.s 			page 25
+
+
 _bsp_protransmit

@@ -20,6 +20,9 @@ serialwindow::~serialwindow()
     serial = nullptr; // 防止悬空指针
     delete ui;
 }
+
+
+
 /*
  * 串口初始化
 */
@@ -46,6 +49,30 @@ void serialwindow::SerialPortInit()
 }
 
 /*
+**   数据处理
+*/
+void serialwindow::processdata(QByteArray data)
+{
+    QTextEdit *line_edit;
+    line_edit = ui->textEdit;
+    // 将数据转换为 QString，并将 "\r\n" 转换为 ""
+    QString textData = QString::fromUtf8(data).replace("\r\n", "");
+
+    /*获取Kp文本框*/
+    line_edit->append(textData);
+
+    ui->Kc_lineEdit->setEnabled(false);
+
+    QLabel *lightLabel;
+    lightLabel = ui->LED_Label;
+    lightLabel->setPixmap(QPixmap("../MCOM/images/GreenLED.png")); // 设置初始状态为灭灯
+
+    lightLabel->setScaledContents(true); // /*根据控件大小缩放图片*/
+    lightLabel->setFixedSize(50, 50); // 设置控件大小为 50x50
+    /* 设置小灯 */
+
+}
+/*
  * 串口接收槽函数
 */
 void serialwindow::onReadSerialData()
@@ -59,12 +86,7 @@ void serialwindow::onReadSerialData()
         // 如果读取到了数据
         if (!data.isEmpty())
         {
-            // 转换 QByteArray 为 QString 并处理（比如输出到控制台）
-            QString textData = QString::fromUtf8(data);
-            qDebug() << "Received data:" << textData;
-
-            // 或者直接处理 QByteArray
-            // processData(data);
+            processdata(data);
         }
         else
         {
@@ -78,6 +100,11 @@ void serialwindow::onReadSerialData()
         qDebug() << "Serial port is not open or not initialized.";
     }
 }
+
+
+/*
+**  按键响应
+*/
 void serialwindow::on_pushButton_clicked()
 {
     QPushButton *openbutton = ui->pushButton;
@@ -156,9 +183,32 @@ void serialwindow::on_mt_stopBt_clicked()
     serial->write(command.toLatin1());
 }
 
+void serialwindow::on_mc_pidset_clicked()
+{
+    sendKpCommand();
+}
+
+void serialwindow::on_mc_speed_Bt_clicked()
+{
+    QLineEdit *line_edit;
+    QString pstr;
+    /*获取iq文本框*/
+    line_edit = ui->Speed_lineEdit;
+    pstr = line_edit->text();
+    if(!pstr.isEmpty())
+    {
+        qDebug() << "send speed";
+        QString command = "mc_tar_speed:";
+        command += pstr;
+        serial->write(command.toLatin1());
+    }
+}
 
 
 
+/*
+** 普通公共函数
+*/
 void serialwindow::sendKpCommand()
 {
     QLineEdit *line_edit;
@@ -251,29 +301,4 @@ void serialwindow::sendIqCommand()
     }
 }
 
-
-
-
-void serialwindow::on_mc_pidset_clicked()
-{
-    sendKpCommand();
-}
-
-
-
-void serialwindow::on_mc_speed_Bt_clicked()
-{
-    QLineEdit *line_edit;
-    QString pstr;
-    /*获取iq文本框*/
-    line_edit = ui->Speed_lineEdit;
-    pstr = line_edit->text();
-    if(!pstr.isEmpty())
-    {
-        qDebug() << "send speed";
-        QString command = "mc_tar_speed:";
-        command += pstr;
-        serial->write(command.toLatin1());
-    }
-}
 

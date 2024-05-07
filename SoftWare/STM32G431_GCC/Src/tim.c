@@ -321,7 +321,7 @@ void tim_set_pwm(float _a,float _b,float _c)
 
     unsigned short max = 0;
     max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(8390));
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR-110));
 }
 void tim_pwm_enable_noirq(void)
 {
@@ -365,7 +365,7 @@ void tim_pwm_disable(void)
 
 void tim_tigger_adc(void)
 {
-__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(8390));  
+__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR-110));  
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
 

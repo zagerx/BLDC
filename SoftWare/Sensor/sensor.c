@@ -83,7 +83,7 @@ void* sensor_user_read(ENUM_SENSOR sensor_id,sensordata_type _type)
     static volatile sensor_data_t rawdata;
     if (sensor_id <= SENSOR_NONE || sensor_id > SENSOR_NUMBER)
     {
-        return 0;
+        return (void*)0;
     }
     sensor_t *pcursensor;
     pcursensor = &g_sensor_arry[sensor_id];
@@ -113,7 +113,7 @@ void* sensor_user_read(ENUM_SENSOR sensor_id,sensordata_type _type)
 
 void* sensor_user_write(ENUM_SENSOR sensor_id,int8_t *pdata,uint16_t size)
 {
-
+    return (void*)0;
 }
 
 void sensor_user_pause(ENUM_SENSOR sensor_id)

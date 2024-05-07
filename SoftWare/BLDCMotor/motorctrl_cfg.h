@@ -10,7 +10,7 @@
 #include "filter.h"
 #include "IQmathLib.h"
 #include "debuglog.h"
-#include "perf_counter.h"
+// #include "perf_counter.h"
 
 #include "board.h"
 

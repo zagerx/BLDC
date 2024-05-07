@@ -6,6 +6,8 @@ mc_tar_iq:0.8f
 
 */
 #include "motorctrl_common.h"
+#include "motor_protocol.h"
+#include "protocol.h"
 #include "board.h"
 #include "string.h"
 #include "stdio.h"
@@ -13,12 +15,7 @@ mc_tar_iq:0.8f
 #include <stdlib.h>  
 #include <ctype.h> // for isspace()  
 
-typedef void* (*pfunc)(char *,int32_t);
-typedef struct {  
-    const char *cmd;  
-    unsigned short cmd_index;
-    pfunc pf_cmdexcue;
-} commandmap_t; 
+
 
 
 
@@ -34,18 +31,17 @@ static void* _set_tarspeed(char *str,int32_t iq);
 static int _findF_from_str(const char *str, float *val) ;
 static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map, size_t mapSize);
  
-
 // 命令映射表  
 commandmap_t sg_commandmap[] = {  
-    {"mc_tar_speed", 1,NULL},  
-    {"mc_tar_id", 2,_set_tarid},  
-    {"mc_tar_iq", 3,_set_tariq},
-    {"motor_stop",4,_set_motorstop},
-    {"motor_start",5,_set_motorstart},
-    {"mc_setd_kp",6,_set_d_kp},
-    {"mc_setd_ki",7,_set_d_ki},
-    {"mc_pid_paraset",8,_set_pidpara_cmd},
-    {"mc_tar_speed",9,_set_tarspeed},
+    {"mc_tar_speed",    1,   NULL,                NULL},  
+    {"mc_tar_id",       2,   _set_tarid,          NULL},  
+    {"mc_tar_iq",       3,   _set_tariq,          NULL},
+    {"motor_stop",      4,   _set_motorstop,      "motor state stop"},
+    {"motor_start",     5,   _set_motorstart,     "motor state runing"},
+    {"mc_setd_kp",      6,   _set_d_kp,           NULL},
+    {"mc_setd_ki",      7,   _set_d_ki,           NULL},
+    {"mc_pid_paraset",  8,   _set_pidpara_cmd,    NULL},
+    {"mc_tar_speed",    9,   _set_tarspeed,       NULL},
 
 };
 static char *Rx_Buf[62] = {0};
@@ -60,7 +56,6 @@ void motorprotocol_pause(char *cmd)
     unsigned short cmd_ID;
     if (cmd[0] == 0 && cmd[1] == 0)
     {
-        /* code */
         return;
     }
     const size_t mapSize = sizeof(sg_commandmap) / sizeof(sg_commandmap[0]); 
@@ -72,6 +67,10 @@ void motorprotocol_process(void)
     motorprotocol_pause(Rx_Buf);
     memset(Rx_Buf, 0, sizeof(Rx_Buf));
 }
+void motorprotocol_tramit(char *pstr,uint16_t len)
+{
+    _bsp_protransmit((unsigned char *)pstr,len);
+}
 static void* _set_d_kp(char *str,int32_t kp)
 {
     float val = 0.0f;
@@ -79,7 +78,7 @@ static void* _set_d_kp(char *str,int32_t kp)
     {
         return 0;
     }
-    sg_motordebug.pid_d_kp = val;
+    motordebug.pid_d_kp = val;
     return 0;    
 }
 static void* _set_d_ki(char *str,int32_t ki)
@@ -89,29 +88,28 @@ static void* _set_d_ki(char *str,int32_t ki)
     {
         return 0;
     }  
-    sg_motordebug.pid_d_ki = val;
+    motordebug.pid_d_ki = val;
     return 0; 
 }
 static void* _set_motorstart(char *str,int32_t iq)
 {
-    sg_motordebug.motor_stat = 3;
-    sg_motordebug.pid_Q_out = 0xFF;
+    // motordebug.cur_cmd = "motor start";// sg_commandmap[CMD_SET_START].cmd;
+    motordebug.cur_cmd = sg_commandmap[CMD_SET_START].cmd;
     return 0;
 }
 static void* _set_motorstop(char *str,int32_t iq)
 {
-    sg_motordebug.motor_statue_To = "motor stop";
+    motordebug.cur_cmd = sg_commandmap[CMD_SET_STOP].cmd;
     return 0;
 }
 static void* _set_tarid(char *str,int32_t id)
 {
-    USER_DEBUG_NORMAL("set id\r\n");
     float val = 0.0f;            
     if (!_findF_from_str(str,&val))
     {
         return 0;
     }
-    sg_motordebug.id_targe = val;
+    motordebug.id_targe = val;
     return 0;
 } 
 
@@ -122,14 +120,13 @@ static void* _set_tariq(char *str,int32_t iq)
     {
         return 0;
     }
-    sg_motordebug.iq_targe = val;
+    motordebug.iq_targe = val;
     return 0;    
 }
 
 static void* _set_pidpara_cmd(char *str,int32_t param)
 {
-    sg_motordebug.motor_stat = 4;
-    // sg_motordebug.motor_statue = ""
+    motordebug.motor_stat = 4;
     return 0;
 }
 
@@ -140,7 +137,7 @@ static void* _set_tarspeed(char *str,int32_t iq)
     {
         return 0;
     }
-    sg_motordebug.speed_targe = val;
+    motordebug.speed_targe = val;
     return 0; 
 }
 // 查找命令的函数  
@@ -156,7 +153,6 @@ static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map
 
             if (!map[i].pf_cmdexcue)
             {
-                USER_DEBUG_NORMAL("pf_cmdexcue NULL\r\n");
                 return 0;
             }
 
@@ -164,7 +160,6 @@ static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map
             return map[i].cmd_index; // 找到匹配项，返回对应值  
         }
     }
-    USER_DEBUG_NORMAL("NO Cmd PATH\r\n");
     return 0; // 未找到匹配项，返回0  
 }  
 

@@ -8,7 +8,9 @@
 #ifdef STM32G431xx
     #include "stm32g4xx_hal.h"
 #endif
-
+#ifdef STM32F405xx
+#include "stm32f4xx_hal.h"
+#endif
 #ifdef STM32H723xx
 #include "stm32h7xx_hal.h"
 #endif

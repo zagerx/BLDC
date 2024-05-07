@@ -1,108 +1,96 @@
 #include "./motorctrl.h"
 #include "debuglog.h"
 #include "motorctrl_common.h"
-
+#include "motor_protocol.h"
 #include "board.h"
 #include "string.h"
 
-#ifdef BOARD_STM32G431
-#endif
-#define Q15_PI_2                   (51471)
-#define Q15_2PI                    (205884)
-#define PI_2                       (1.570796f)
-#define MOTORCTRL_PERCI            (1)
 
 enum{
-    MOTOR_ZERO,
     MOTOR_INIT,
-    MOTOR_IDLE,
     MOTOR_START, 
     MOTOR_RUNING,
     MOTOR_STOP,
 };
 
-motordebug_t sg_motordebug = {0};
-typedef struct
-{
-    unsigned char state;
-    unsigned short cnt;
-}motorctrl_t;
 
 static dq_t _currmentloop(abc_t i_abc,float ele_theta);
 static short _get_angleoffset(void);
 static void motor_enable(void);
 static void motor_disable(void);
 static void motor_set_pwm(duty_t temp);
-static void sg_debug_clear(void)
-{
-    sg_motordebug.id_targe =0.0f;
-    sg_motordebug.iq_targe =0.0f;
-    sg_motordebug.ele_angle = 0.0f;
-    memset(&sg_motordebug,0,sizeof(sg_motordebug)-4);
-}
+static void mc_param_init(void);
+static void mc_param_deinit(void);
+
 alpbet_t _limit_voltagecircle(alpbet_t raw_uab);
 static float motor_speedcale(float cur_theta);
 static float _speedloop(float tar,float real);
+static void trigger_software_reset(void);
 
-motorctrl_t g_Motor1 = {
-    .state = MOTOR_INIT,
-    .cnt = 0,
-};
+
 static volatile float sg_MecThetaOffset = 0.0f;
-static lowfilter_t sg_elefilter[3];
-lowfilter_t sg_speedfilter = {0.0f};
-pid_cb_t test_d_pid = {0};
-static pid_cb_t *sgp_curloop_d_pid;
-static pid_cb_t *sgp_curloop_q_pid;
-static pid_cb_t *sgp_speed_pid;
-static pid_cb_t sg_speed_pid;
-static curloop_t sg_curloop_param;
+extern const float current_meas_period;
 
+mt_param_t mt_param = {0};
+motordebug_t motordebug = {0};
 
 void motortctrl_process(void)
 {
+    static uint16_t _state = MOTOR_INIT;
     char rec_buf[64];
     char cnt = 0;
-    // if (readline_fromPC(rec_buf,sizeof(rec_buf)))
-    // {
-    //     motorprotocol_pause(rec_buf);
-    // }
+
     motorprotocol_process();
-    switch (g_Motor1.state)
+    switch (_state)
     {
     case MOTOR_INIT:
-        if (sg_motordebug.motor_stat != 4)
+        // if (motordebug.cur_cmd != "motor start")//sg_commandmap[CMD_SET_START].cmd)
+        if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
         {
             break;
         }
-        foc_paraminit();
-        lowfilter_init(&sg_speedfilter,80);
-
+        _state = MOTOR_START;
+    case MOTOR_START:
+        mc_param_init();
         motor_enable();
-        g_Motor1.state = MOTOR_RUNING;
+        _state = MOTOR_RUNING;
+        // motorprotocol_tramit(g_respondmap[RES_RUNING].respond,g_respondmap[RES_RUNING].respond_len);
+        motorprotocol_tramit(sg_commandmap[CMD_SET_START].res_cmd,strlen(sg_commandmap[CMD_SET_START].res_cmd));
         break;
 
     case MOTOR_RUNING:
+        // if (motordebug.cur_cmd == "motor stop")
+        if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
         {
-            if (sg_motordebug.motor_statue_To == "motor stop")
-            {
-                g_Motor1.state = MOTOR_STOP;
-            }
+            // motorprotocol_tramit(g_respondmap[RES_STOP].respond,g_respondmap[RES_STOP].respond_len);
+            motorprotocol_tramit(sg_commandmap[CMD_SET_STOP].res_cmd,strlen(sg_commandmap[CMD_SET_STOP].res_cmd));
+            _state = MOTOR_STOP;
         }
         break;
 
     case MOTOR_STOP:
+        trigger_software_reset();
         motor_disable();
+        mc_param_deinit();
+        _state = MOTOR_INIT;
         break;
     default:
         break;
     }
 }
+
+
+
+
+
 /*------------周期性被调用----------------*/
+float speed_real;
+int32_t a1,b1,c1;
+float test_a,test_b,test_c;
 void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 {
     float elec_theta,mech_theta;
-    int32_t Q15_Mechtheta;    
+    int32_t mec_theta;
     duty_t dut01;
     abc_t i_abc;
     dq_t udq;
@@ -110,19 +98,18 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 /*----------------三相电流处理------------------------------*/    
 #if 1
     float Ia,Ib,Ic;
-    int32_t a1,b1,c1;
     a1 = abc_vale[0] - A_ADCCHANNL_OFFSET;
     b1 = abc_vale[1] - B_ADCCHANNL_OFFSET;
     c1 = abc_vale[2] - C_ADCCHANNL_OFFSET;
-    sg_motordebug.Q_ia = a1;
-    Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
+    // Ia = (float)a1*(float)A_VOLITETOCURRENT_FACTOR;
     Ib = (float)b1*(float)B_VOLITETOCURRENT_FACTOR;
-    // Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
-    Ic = -Ia - Ib;
-    i_abc.a = lowfilter_cale(&sg_elefilter[0],Ia);
-    i_abc.b = lowfilter_cale(&sg_elefilter[1],Ib);
-    i_abc.c = lowfilter_cale(&sg_elefilter[2],Ic);
-
+    Ic = (float)c1*(float)C_VOLITETOCURRENT_FACTOR;
+    Ia = -Ic - Ib;
+    i_abc.a = lowfilter_cale(&(mt_param.elefitler[0]),Ia);
+    i_abc.b = lowfilter_cale(&(mt_param.elefitler[1]),Ib);
+    i_abc.c = lowfilter_cale(&(mt_param.elefitler[2]),Ic);
+    motordebug.ia = i_abc.a;
+    motordebug.ib = i_abc.b;
 #endif
 
     enum{
@@ -140,34 +127,33 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
             {
                 break;
             }
-            USER_DEBUG_NORMAL("enter IDLE\r\n");
-            state0_ = IDLE;
+            state0_ = CLOSELOOP;
             break;
         case IDLE:
-            if (sg_motordebug.id_targe != 0.0f || sg_motordebug.iq_targe != 0.0f)
+            if (motordebug.id_targe != 0.0f || motordebug.iq_targe != 0.0f)
             {
-                sg_motordebug.ele_angle = 0.0f;
+                motordebug.ele_angle = 0.0f;
                 state0_ = SPEEDLOOP;
             }
             break;
         case SPEEDLOOP:
-            Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
-            mech_theta = _IQ20toF(Q15_Mechtheta);
-            sg_motordebug.real_speed = motor_speedcale(mech_theta);//每2ms更新一次
+            mec_theta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
+            mech_theta = _IQ20toF(mec_theta);
+            motordebug.real_speed = motor_speedcale(mech_theta);//每2ms更新一次
             elec_theta = mech_theta * MOTOR_PAIR;
-            elec_theta -= sg_MecThetaOffset;
+            elec_theta -= 0.56f;//sg_MecThetaOffset;
 
             elec_theta = _normalize_angle(elec_theta);
             _currmentloop(i_abc,elec_theta);
 
-            sg_motordebug.ele_angle = elec_theta;    
+            motordebug.ele_angle = elec_theta;    
             static unsigned short cnt = 0;
             if (cnt++ < 200)
             {
                 // break;
             }
             cnt = 0;
-            udq.q = 0.3f;//pid_contrl(sgp_speed_pid,300,sg_motordebug.real_speed);
+            udq.q = 0.3f;
             udq.d = 0;
             alpbet_t uab;
             uab = _2r_2s(udq, elec_theta - PI_2);  
@@ -177,26 +163,27 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
         case CLOSELOOP:
         {
             //获取电角度
-            Q15_Mechtheta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
-            mech_theta = _IQ20toF(Q15_Mechtheta);
-            sg_motordebug.real_speed = motor_speedcale(mech_theta);//每2ms更新一次
+            mec_theta = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
+            mech_theta = _IQ20toF(mec_theta);
+            motordebug.real_speed = motor_speedcale(mech_theta);//每2ms更新一次
 
             elec_theta = mech_theta * MOTOR_PAIR;
             elec_theta -= sg_MecThetaOffset;
 
             elec_theta = _normalize_angle(elec_theta);
-            sg_motordebug.ele_angle = elec_theta;
+            speed_real = _IQ15toF(((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_FILTER))[0]);
+            motordebug.ele_angle = elec_theta;
 
-#if 1//开环
-            _currmentloop(i_abc,elec_theta);
-            dq_t udq = {0.0f,-0.2f,_IQ15(0.0f),_IQ15(0.0f)};
+#if 0//开环
+            // _currmentloop(i_abc,elec_theta);
+            dq_t udq = {0.0f,0.4f,_IQ15(0.0f),_IQ15(0.0f)};
             alpbet_t uab,uab_q15;
-            if(sg_motordebug.self_ele_theta>_2PI)
+            if(motordebug.self_ele_theta>_2PI)
             {
-                sg_motordebug.self_ele_theta = 0.0f;
+                motordebug.self_ele_theta = 0.0f;
             }
-            sg_motordebug.self_ele_theta += 0.001f;
-            uab = _2r_2s(udq, sg_motordebug.self_ele_theta); 
+            motordebug.self_ele_theta += 0.001f;
+            uab = _2r_2s(udq, motordebug.self_ele_theta); 
             dut01 = _svpwm(uab.alpha,uab.beta);
             motor_set_pwm(dut01);
 #else
@@ -205,10 +192,10 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
                 udq = _currmentloop(i_abc,elec_theta - PI_2);
                 // udq.d = 0.0f;
                 // udq.q = 0.6f;
-                // udq.d = sg_motordebug.id_targe;
-                udq.q = sg_motordebug.iq_targe;
+                // udq.d = motordebug.id_targe;
+                udq.q = motordebug.iq_targe;
             #else
-                if (sg_motordebug.iq_targe < 0.0f)
+                if (motordebug.iq_targe < 0.0f)
                 {
                 _currmentloop(i_abc,elec_theta + PI_2);
                 }else{
@@ -217,14 +204,17 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
                     i_abc.c = -i_abc.c;
                     _currmentloop(i_abc,elec_theta);
                 }
-                // udq.d = sg_motordebug.id_targe;
-                udq.q = sg_motordebug.iq_targe;
+                // udq.d = motordebug.id_targe;
+                udq.q = 0.4f;
                 udq.d = 0.0f;
-                // udq.q = _speedloop(300.0f,sg_motordebug.real_speed);
+                // udq.q = _speedloop(300.0f,motordebug.real_speed);
             #endif
             alpbet_t uab;
-            uab = _2r_2s(udq, elec_theta);  
+            float pwm_phase = elec_theta + 1.5f * current_meas_period * speed_real*7.0;
+            motordebug.self_ele_theta = pwm_phase;
+            uab = _2r_2s(udq, pwm_phase);  
             uab = _limit_voltagecircle(uab);
+            SVM(uab.alpha,uab.beta,&test_a,&test_b,&test_c);
             motor_set_pwm(_svpwm(uab.alpha,uab.beta)); 
 #endif
         }
@@ -262,36 +252,35 @@ dq_t _currmentloop(abc_t i_abc,float ele_theta)
     _tempb = i_abc.b;
     _tempc = i_abc.c;
 #ifdef BOARD_STM32G431
-    /*bac  */
     i_abc.a = -_tempa;
     i_abc.b = -_tempc;
     i_abc.c = -_tempb;
-    sg_motordebug.ia = i_abc.a;
-    sg_motordebug.ib = i_abc.b;
-    sg_motordebug.ic = i_abc.c;
+    motordebug.ia = i_abc.a;
+    motordebug.ib = i_abc.b;
+    motordebug.ic = i_abc.c;
 #endif
     _3s_2s(i_abc,&i_alphbeta);   
     _2s_2r(i_alphbeta,((ele_theta)),&i_dq);
-    sg_motordebug.id = (i_dq.d);
-    sg_motordebug.iq = (i_dq.q);
+    motordebug.id = (i_dq.d);
+    motordebug.iq = (i_dq.q);
     dq_t udq = {0.0f};
 #if 1
     float tar_id = 0.0f,tar_iq = 0.0f;
-    tar_id = sg_motordebug.id_targe;
-    tar_iq = sg_motordebug.iq_targe;
-    udq.d = pid_contrl(sgp_curloop_d_pid,tar_id,i_dq.d);
-    sg_motordebug.id_real = i_dq.d;
-    sg_motordebug.pid_D_out = udq.d;
-    udq.q =pid_contrl(sgp_curloop_q_pid,tar_iq,i_dq.q);
-    sg_motordebug.iq_real = i_dq.q;
-    sg_motordebug.pid_Q_out = udq.q;
+    tar_id = motordebug.id_targe;
+    tar_iq = motordebug.iq_targe;
+    udq.d = pid_contrl(&(mt_param.daxis_pi),tar_id,i_dq.d);
+    motordebug.id_real = i_dq.d;
+    motordebug.pid_D_out = udq.d;
+    udq.q =pid_contrl(&(mt_param.qaxis_pi),tar_iq,i_dq.q);
+    motordebug.iq_real = i_dq.q;
+    motordebug.pid_Q_out = udq.q;
 #endif
     return udq;
 #endif
 }
 static float _speedloop(float tar,float real)
 {
-   return pid_contrl(sgp_speed_pid,tar,real);
+   return pid_contrl(&(mt_param.speedloop_pi),tar,real);
 }
 static void motor_enable(void)
 {
@@ -319,9 +308,11 @@ static void motor_disable(void)
     tim_pwm_disable();
     adc_stop();
 }
+float test_a,test_b,test_c;
 static void motor_set_pwm(duty_t temp)
 {
-    tim_set_pwm(temp._a,temp._b,temp._c);
+    test_a = temp._a;test_b = temp._b;test_c = temp._c;
+    tim_set_pwm(test_a ,test_b,test_c);
 }
 
 static float motor_speedcale(float cur_theta)
@@ -343,7 +334,7 @@ static float motor_speedcale(float cur_theta)
         delta_theta += (int)(-delta_theta / _2PI + 1) * _2PI;  
     }  
 
-    delta_theta = lowfilter_cale(&sg_speedfilter,delta_theta);
+    delta_theta = lowfilter_cale(&(mt_param.speedfilter),delta_theta);
     float omeg_c = (delta_theta)/0.002f/100.0f;
     float N_rpm = omeg_c * 9.5492965855f;//60.0f/_2PI
     pre_theta = cur_theta;
@@ -412,17 +403,38 @@ static short _get_angleoffset(void)
     return 1;
 }
 
-void foc_paraminit(void)
+static void mc_param_init(void)
 {
-    sgp_curloop_d_pid = &sg_curloop_param.d_pid;
-    sgp_curloop_q_pid = &sg_curloop_param.q_pid;
-    sgp_speed_pid = &sg_speed_pid;
-    pid_init(sgp_curloop_d_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,1.0f,D_MAX_VAL,D_MIN_VAL);
-    pid_init(sgp_curloop_q_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,1.0f,D_MAX_VAL,D_MIN_VAL);
-    pid_init(sgp_speed_pid,sg_motordebug.pid_d_kp,sg_motordebug.pid_d_ki,1.0f,3.0,-3.0);
+    // sgp_curloop_d_pid = &sg_curloop_param.d_pid;
+    // sgp_curloop_q_pid = &sg_curloop_param.q_pid;
+    // sgp_speed_pid = &sg_speed_pid;
+    // pid_init(sgp_curloop_d_pid,motordebug.pid_d_kp,motordebug.pid_d_ki,1.0f,D_MAX_VAL,D_MIN_VAL);
+    // pid_init(sgp_curloop_q_pid,motordebug.pid_d_kp,motordebug.pid_d_ki,1.0f,D_MAX_VAL,D_MIN_VAL);
+    // pid_init(sgp_speed_pid,motordebug.pid_d_kp,motordebug.pid_d_ki,1.0f,3.0,-3.0);
 
-    lowfilter_init(&sg_elefilter[0],80);
-    lowfilter_init(&sg_elefilter[1],80);
-    lowfilter_init(&sg_elefilter[2],80);
+    // lowfilter_init(&sg_elefilter[0],80);
+    // lowfilter_init(&sg_elefilter[1],80);
+    // lowfilter_init(&sg_elefilter[2],80);
+
+
+    pid_init(&(mt_param.daxis_pi),1.0f,0.0f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(&(mt_param.qaxis_pi),1.0f,0.0f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(&(mt_param.speedloop_pi),1.0f,0.0f,1.0f,D_MAX_VAL,D_MIN_VAL);
+
+    lowfilter_init(&(mt_param.elefitler[0]),80);
+    lowfilter_init(&(mt_param.elefitler[1]),80);
+    lowfilter_init(&(mt_param.elefitler[2]),80);
+}
+
+static void mc_param_deinit(void)
+{
+    memset(&mt_param,0,sizeof(mt_param));
+    memset(&motordebug,0,sizeof(motordebug));
+}
+
+
+static void trigger_software_reset(void)
+{
+    HAL_NVIC_SystemReset();
 }
 
