@@ -44,11 +44,11 @@ void MX_TIM1_Init(void)
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = _PSC-1;
-  htim1.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED1;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED3;
   htim1.Init.Period = _ARR;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim1.Init.RepetitionCounter = 2;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
   {
     Error_Handler();
@@ -62,8 +62,8 @@ void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
@@ -84,10 +84,6 @@ void MX_TIM1_Init(void)
     Error_Handler();
   }
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
   {
     Error_Handler();
   }
@@ -119,6 +115,10 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM1_MspInit 0 */
     /* TIM1 clock enable */
     __HAL_RCC_TIM1_CLK_ENABLE();
+
+    /* TIM1 interrupt Init */
+    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
   /* USER CODE BEGIN TIM1_MspInit 1 */
 
   /* USER CODE END TIM1_MspInit 1 */
@@ -175,6 +175,9 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_TIM1_CLK_DISABLE();
+
+    /* TIM1 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(TIM1_UP_TIM10_IRQn);
   /* USER CODE BEGIN TIM1_MspDeInit 1 */
 
   /* USER CODE END TIM1_MspDeInit 1 */
@@ -228,21 +231,12 @@ void tim_set_pwm(float _a,float _b,float _c)
     max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR>>1));  
 }
-void tim_pwm_enable_noirq(void)
-{
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)0);    
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3);     
-}
+
 void tim_pwm_enable(void)
 {
   
+    HAL_TIM_Base_Start_IT(&htim1);
+
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
@@ -267,4 +261,48 @@ void tim_tigger_adc(void)
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR>>1));  
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
+
+
+extern void _50uscycle_process(unsigned int *abc_vale,float _elec_theta);
+extern ADC_HandleTypeDef hadc2;
+extern ADC_HandleTypeDef hadc3;
+#include "debuglog.h"
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    static unsigned int adc_vale[3];
+    // adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
+    // adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
+    // adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
+    
+
+  uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;
+
+    adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
+    adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_1);
+    // HAL_ADCEx_InjectedStart(&hadc2);
+
+	if(!counting_down)   //
+	{
+		// current_meas_cb(timestamp_, &current0);  //传入采样值并运算 clark变换
+		// encoder_update();
+		// controller_update();//更新力矩
+    // for(unsigned char i=0;i<20;i++);
+
+    // adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_1);
+	}
+	else
+	{
+		// motor_update();//更新iq限制�?
+		// foc_update();
+		// for(i=0;i<20;i++);                   //延时，同时等待ADC完毕
+		// dc_calib_cb(&current0);  //timestamp_ + TIM_1_8_PERIOD_CLOCKS * (TIM_1_8_RCR + 1), 
+		// pwm_update_cb();         //timestamp_ + 3 * TIM_1_8_PERIOD_CLOCKS * (TIM_1_8_RCR + 1);
+    _50uscycle_process(adc_vale,0.0f); 
+	}
+
+
+}
+
+
+
 /* USER CODE END 1 */

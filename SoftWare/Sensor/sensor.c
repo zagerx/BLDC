@@ -109,6 +109,7 @@ void* sensor_user_read(ENUM_SENSOR sensor_id,sensordata_type _type)
     {
         return (void*)(rawdata.filterdata_buf);
     }
+    return 0;
 }
 
 void* sensor_user_write(ENUM_SENSOR sensor_id,int8_t *pdata,uint16_t size)

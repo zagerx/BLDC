@@ -43,5 +43,5 @@ void tasklist_process(void)
     // 销毁任务链表
     DELETE_LIST(task_list);
     
-    return 0;
+    return;
 }

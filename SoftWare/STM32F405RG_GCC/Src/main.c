@@ -109,6 +109,9 @@ void sysrunning_process(void)
             break;
     }
 }
+
+static unsigned short test_adc_vale[3];
+
 /* USER CODE END 0 */
 
 /**
@@ -118,7 +121,6 @@ void sysrunning_process(void)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -144,13 +146,15 @@ int main(void)
   MX_TIM1_Init();
   MX_ADC2_Init();
   MX_USART2_UART_Init();
+  MX_ADC3_Init();
   /* USER CODE BEGIN 2 */
   User_Printf_Init();
   USER_DEBUG_NORMAL("F405 Hello world\r\n");
   hw_init();
   protocol_init();
-
   HAL_Delay(1500);
+  HAL_ADCEx_InjectedStart(&hadc2);
+  HAL_ADCEx_InjectedStart(&hadc3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -160,7 +164,11 @@ int main(void)
     HAL_Delay(1);
     sysrunning_process();
     hw_sensor_process();
-    motortctrl_process();    
+    motortctrl_process();  
+    // test_adc_vale[0] = HAL_ADC_GetValue(&hadc2);  
+    // HAL_ADC_Start(&hadc2);
+    // test_adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
+    // HAL_ADCEx_InjectedStart(&hadc2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -57,8 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define _ARR 8400
 #define _PSC 1
+#define _ARR 3500
 #define SPI3_SOFTCS_Pin GPIO_PIN_0
 #define SPI3_SOFTCS_GPIO_Port GPIOA
 #define LED_01_Pin GPIO_PIN_2
