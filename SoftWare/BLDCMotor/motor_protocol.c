@@ -67,7 +67,7 @@ void motorprotocol_process(void)
     motorprotocol_pause(Rx_Buf);
     memset(Rx_Buf, 0, sizeof(Rx_Buf));
 }
-void motorprotocol_tramit(char *pstr,uint16_t len)
+void motorprotocol_transmit(char *pstr,uint16_t len)
 {
     _bsp_protransmit((unsigned char *)pstr,len);
 }

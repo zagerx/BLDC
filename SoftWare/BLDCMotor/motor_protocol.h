@@ -23,6 +23,6 @@ typedef struct {
 
 
 extern commandmap_t sg_commandmap[];
-void motorprotocol_tramit(char *pstr,uint16_t len);
+void motorprotocol_transmit(char *pstr,uint16_t len);
 
 #endif
