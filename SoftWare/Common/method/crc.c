@@ -76,7 +76,7 @@ static const unsigned char crc8_table[] =
     0x82, 0xb3, 0xe0, 0xd1, 0x46, 0x77, 0x24, 0x15, 0x3b, 0x0a, 0x59, 0x68, 0xff, 0xce, 0x9d, 0xac
 };  
     
-uint8_t CalcCRC8(unsigned char *ptr, unsigned int len) 
+uint8_t crc8_calc(unsigned char *ptr, unsigned int len) 
 {
     uint8_t  crc = 0x00;
 
@@ -87,46 +87,34 @@ uint8_t CalcCRC8(unsigned char *ptr, unsigned int len)
     return (crc);
 }    
 	
-uint16_t CRC16_Subsection(uint8_t *puchMsg, uint16_t value, uint32_t usDataLen)
+uint16_t crc16_calc(uint8_t *pmsg, uint16_t value, uint32_t usDataLen)
 {
-    unsigned short wCRCin = value;
+    unsigned short wcrcin = value;
     unsigned short wCPoly = 0x1021;
-    unsigned char wChar = 0;
+    unsigned char wchar = 0;
 		
     while (usDataLen--)
     {
-        wChar = *(puchMsg++);
-        wCRCin ^= (wChar << 8);
+        wchar = *(pmsg++);
+        wcrcin ^= (wchar << 8);
 
         for(int i = 0; i < 8; i++)
         {
-            if(wCRCin & 0x8000)
+            if(wcrcin & 0x8000)
             {
-                wCRCin = (wCRCin << 1) ^ wCPoly;
+                wcrcin = (wcrcin << 1) ^ wCPoly;
             }
             else
             {
-                wCRCin = wCRCin << 1;
+                wcrcin = wcrcin << 1;
             }
         }
     }
-    return (wCRCin) ;
+    return (wcrcin) ;
 }
 /* Return a 32-bit CRC of the contents of the buffer. */
 
-void printf_test(const char* name, uint8_t* buff, uint8_t len)
-{
-	if(!name || !buff)
-		return;
-	
-	int i;
-	for(i = 0; i < len; i++)
-	{
-		//printf("%s[%d]=0x%x\r\n", name, i, buff[i]);
-	}
-}
-
-unsigned long CalcCRC32(const unsigned char *s, unsigned int len)
+unsigned long crc32_calc(const unsigned char *s, unsigned int len)
 {
 	unsigned int i;
 	unsigned long crc32val;
@@ -141,8 +129,7 @@ unsigned long CalcCRC32(const unsigned char *s, unsigned int len)
 	return ~crc32val;
 }
 
-	
-uint32_t CRC32_Subsection(const unsigned char *s, uint32_t value, uint32_t len)
+uint32_t crc32_subsection(const unsigned char *s, uint32_t value, uint32_t len)
 {
 	unsigned int i;
 	uint32_t crc32val;

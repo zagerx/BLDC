@@ -1,42 +1,42 @@
-/*-----------------------------Ä£¿éÌá½»ËµÃ÷--------------------------------------
-ÓÅ»¯ÁËÏûÏ¢µØÍ¼µÄÃüÃû
-    1¡¢¸´Î»Ö®ºó£¬·¢ËÍµÚÒ»Ìõ²âÊÔÖ¸Áî£¬Èç¹û0BÖ¸ÁîÏÈÏìÓ¦£¬ÔòÓÐÄÚ´æ¶ÏÑÔÊ§°ÜÇé¿ö³öÏÖ
-        µ«²»»áËÀ»ú¡£
+/*-----------------------------Ä£ï¿½ï¿½ï¿½á½»Ëµï¿½ï¿½--------------------------------------
+ï¿½Å»ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    1ï¿½ï¿½ï¿½ï¿½Î»Ö®ï¿½ó£¬·ï¿½ï¿½Íµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½î£¬ï¿½ï¿½ï¿½0BÖ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-1¡¢²âÊÔÐ­ÒéÖØ·¢Á÷³Ì
-    1¡¢Ê¹ÓÃ´®¿ÚÖúÊÖ·¢ËÍ
-        5A A5 00 01 00 27 92 FE FEÖ¸Áî£¬´¥·¢Êý¾ÝÖØ·¢¹¦ÄÜ
-    2¡¢¹Û²ì´®¿ÚÖúÊÖµÄ´òÓ¡Êý¾Ý    
-        ¿ÉÒÔ¹Û²ìµ½ÓÐÁ½×éÃüÁîÍ¬Ê±ÔÚ·¢ËÍ
+1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð­ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½ï¿½ï¿½
+    1ï¿½ï¿½Ê¹ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½
+        5A A5 00 01 00 27 92 FE FEÖ¸ï¿½î£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½ï¿½ï¿½ï¿½ï¿½
+    2ï¿½ï¿½ï¿½Û²ì´®ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÄ´ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½    
+        ï¿½ï¿½ï¿½Ô¹Û²ìµ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½Ú·ï¿½ï¿½ï¿½
 
-        1¡¢Ê¹ÓÃ´®¿ÚÖúÊÖ·¢ËÍ5A A5 02 0A 00 08 CD CC CC 40 33 33 13 40 44 71 FE FE/5A A5 00 0B 00 08 CD CC CC 40 33 33 13 40 9A D2 FE FE
-            ¿É¹Û²ìµ½¶ÔÓ¦µÄÃüÁîÍ£Ö¹·¢ËÍ
+        1ï¿½ï¿½Ê¹ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½5A A5 02 0A 00 08 CD CC CC 40 33 33 13 40 44 71 FE FE/5A A5 00 0B 00 08 CD CC CC 40 33 33 13 40 9A D2 FE FE
+            ï¿½É¹Û²ìµ½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£Ö¹ï¿½ï¿½ï¿½ï¿½
 
-2¡¢´æÔÚµÄÎÊÌâµã 1¡¢ÉêÇëÄÚ´æÊ§°Ü´æÔÚ
-               2¡¢×´Ì¬»úµ÷¶È¹ý³ÌÖÐ»á·¢Éúhardfalt
-3¡¢½áÂÛ£º
-    ¸ÃÀý³Ì»ù±¾ÉÏ¿ÉÒÔÊµÏÖÏûÏ¢µÄ·Ç×èÈûÊ½ÖØ·¢¹¦ÄÜ£¬µ«»¹Ðè¼ÌÐøÓÅ»¯
+2ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½Ê§ï¿½Ü´ï¿½ï¿½ï¿½
+               2ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½È¹ï¿½ï¿½ï¿½ï¿½Ð»á·¢ï¿½ï¿½hardfalt
+3ï¿½ï¿½ï¿½ï¿½ï¿½Û£ï¿½
+    ï¿½ï¿½ï¿½ï¿½ï¿½Ì»ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½Ï¢ï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½Ø·ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å»ï¿½
 */
 #include "protocol_comment.h"
 #include "protocol_cfg.h"
 #include "protocol.h"
-/*-------------------------------FIFO×é¼þ------------------------------------------*/
-static unsigned char fifo_receive_buff[PRO_FIFO_SIZE];//fifoÊý¾Ý»º´æÇø
-static byte_fifo_t protocol_fifo_handle;//fifo¿ØÖÆ¿é
+/*-------------------------------FIFOï¿½ï¿½ï¿½------------------------------------------*/
+static unsigned char fifo_receive_buff[PRO_FIFO_SIZE];//fifoï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½ï¿½ï¿½
+static byte_fifo_t protocol_fifo_handle;//fifoï¿½ï¿½ï¿½Æ¿ï¿½
 
 _list_t *gtransmit_list;
 unsigned short g_protocol_event;
-/*-------------------------------Ð­Òé¼äÍ¬²½ÊÂ¼þ-----------------------------*/
+/*-------------------------------Ð­ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Â¼ï¿½-----------------------------*/
 
 /*********************************************************************************************************
-** Function name(º¯ÊýÃû³Æ):				protocol_reciverdata_tofifo()
+** Function name(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½):				protocol_reciverdata_tofifo()
 **
-** Descriptions£¨ÃèÊö£©:				½ÓÊÕÒ»Ö¡Êý¾Ý¸øFIFO×é¼þ
+** Descriptionsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:				ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½Ý¸ï¿½FIFOï¿½ï¿½ï¿½
 **
-** input parameters£¨ÊäÈë²ÎÊý£©:		len:Ò»Ö¡Êý¾Ý³¤¶È(°üº¬Ö¡Í·¡¢Ö¡Î²)
-** Returned value£¨·µ»ØÖµ£©:				0:³É¹¦
+** input parametersï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:		len:Ò»Ö¡ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½Ö¡Í·ï¿½ï¿½Ö¡Î²)
+** Returned valueï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½:				0:ï¿½É¹ï¿½
 **
-** Calling modules£¨µ÷ÓÃÄ£¿é£©:			fifo.c/h
+** Calling modulesï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½é£©:			fifo.c/h
 ********************************************************************************************************/
 unsigned char protocol_reciverdata_tofifo(unsigned char *pdata,unsigned short len)
 {
@@ -89,7 +89,7 @@ char _get_framedata_fromfifo(unsigned char *pbuf,unsigned short *pframe_len)
                     /* code */
                     *pframe_len = 0;
                     index = 0;
-                    chState = START;//»ñÈ¡µ½ÍêÕûµÄÊý¾ÝÖ¡  ¸´Î»×´Ì¬»ú
+                    chState = START;//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡  ï¿½ï¿½Î»×´Ì¬ï¿½ï¿½
                     return 1;
                 }
                 bytefifo_readmulintebyte(&protocol_fifo_handle,&data,1);
@@ -104,7 +104,7 @@ char _get_framedata_fromfifo(unsigned char *pbuf,unsigned short *pframe_len)
                         /* code */
                         *pframe_len = index;
                         index = 0;
-                        chState = START;//»ñÈ¡µ½ÍêÕûµÄÊý¾ÝÖ¡  ¸´Î»×´Ì¬»ú
+                        chState = START;//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡  ï¿½ï¿½Î»×´Ì¬ï¿½ï¿½
                         return 0;
                     }
                 }
@@ -117,7 +117,7 @@ char _get_framedata_fromfifo(unsigned char *pbuf,unsigned short *pframe_len)
 }
 
 
-/*----------------------------·â°üÐ­Òé°ü----------------------------------------------------------*/
+/*----------------------------ï¿½ï¿½ï¿½Ð­ï¿½ï¿½ï¿½----------------------------------------------------------*/
 pro_pack_t* _packet_propack(pro_frame_t *frame,unsigned int timeout,unsigned char recnt)
 {   
     fsm_cb_t fsmcb;
@@ -131,8 +131,8 @@ pro_pack_t* _packet_propack(pro_frame_t *frame,unsigned int timeout,unsigned cha
     return p_propack;
 }
 
-/*-----------------------------·â°üÐ­ÒéÖ¡-------------------------------------------------------
-**return       Ò»¶ÎÁ¬ÐøµÄÄÚ´æ
+/*-----------------------------ï¿½ï¿½ï¿½Ð­ï¿½ï¿½Ö¡-------------------------------------------------------
+**return       Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½
 */
 pro_frame_t* _packet_proframe(unsigned short cmd,void *pdata,unsigned short len)
 {
@@ -157,12 +157,12 @@ pro_frame_t* _packet_proframe(unsigned short cmd,void *pdata,unsigned short len)
     }    
     return pfram;
 }
-/*-----------------------------½â°üÐ­ÒéÖ¡-------------------------------------------------------
-return Ò»¶ÎÁ¬ÐøµÄÄÚ´æ
+/*-----------------------------ï¿½ï¿½ï¿½Ð­ï¿½ï¿½Ö¡-------------------------------------------------------
+return Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½
 */
 pro_frame_t* _unpack_proframe(unsigned char *pdata,unsigned short len)
 {
-    /*ÉêÇëÄÚ´æ*/
+    /*ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½*/
     unsigned char *pr_buf_1;
     unsigned short r_fram_len;
     unsigned short r_data_len;
@@ -170,18 +170,18 @@ pro_frame_t* _unpack_proframe(unsigned char *pdata,unsigned short len)
     r_fram_len = len;
     pr_buf_1 = heap_malloc(r_fram_len);
     memcpy(pr_buf_1,pdata,r_fram_len);
-    r_crc_16 = CRC16_Subsection((unsigned char *)pr_buf_1,0xFFFF,r_fram_len-4);
+    r_crc_16 = crc16_calc((unsigned char *)pr_buf_1,0xFFFF,r_fram_len-4);
     if(r_crc_16 != (pr_buf_1[r_fram_len-4]<<8 | pr_buf_1[r_fram_len-3]))
     {
         USER_DEBUG_NORMAL("CRC16 Err 0x%2x\r\n",r_crc_16);
         heap_free(pr_buf_1);
         return NULL;
     }
-    /*Ð£Ñé³É¹¦*/
-    r_data_len =  pr_buf_1[4]<<8 | pr_buf_1[5];   //»ñÈ¡Êý¾Ý³¤¶È
+    /*Ð£ï¿½ï¿½É¹ï¿½*/
+    r_data_len =  pr_buf_1[4]<<8 | pr_buf_1[5];   //ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½
     unsigned char *pr_buf_2;
     pr_buf_2 = 0;
-    pr_buf_2 = heap_malloc(sizeof(pro_frame_t)+r_data_len);//ÉêÇëÊý¾ÝÖ¡ÄÚ´æ
+    pr_buf_2 = heap_malloc(sizeof(pro_frame_t)+r_data_len);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½Ú´ï¿½
     memcpy(&pr_buf_2[2],pr_buf_1,r_fram_len);
     heap_free(pr_buf_1);
 
@@ -208,13 +208,13 @@ pro_frame_t* _unpack_proframe(unsigned char *pdata,unsigned short len)
 void protocol_init(void)
 {
     bytefifo_init(&protocol_fifo_handle,fifo_receive_buff,sizeof(fifo_receive_buff));
-    /*´´½¨Ò»¸öÏûÏ¢·¢ËÍÁ´±í*/
+    /*ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
     gtransmit_list = list_creat();
 }
 
 /*
-process:Ïß³Ì
-parse:½âÎö
+process:ï¿½ß³ï¿½
+parse:ï¿½ï¿½ï¿½ï¿½
 */
 void protocol_process(void)
 {

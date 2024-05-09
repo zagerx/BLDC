@@ -7,7 +7,6 @@
 ********************************************************************************************************/
 #include "fifo.h"
 
-
 #define FIFO_LOCK 1
 #define FIFO_UNLOCK 0
 static char bytefifo_isfull(byte_fifo_t *pfifo)
@@ -18,32 +17,30 @@ static char bytefifo_isfull(byte_fifo_t *pfifo)
 	}
 	return 1;
 }
-/*FIFO�գ����ܶ�����*/
 static char bytefifo_isempty(byte_fifo_t *pfifo)
 {
 	if(pfifo->head == pfifo->tail)
 	{
-		return 0;//��
+		return 0;
 	}
 	return 1;
 }
-/*FIFO������д����*/
 static char bytefifo_writebyte(byte_fifo_t *pfifo,byte_t data)
 {
     if(bytefifo_isfull(pfifo) == 0)
     {
-        return 1;//��
+        return 1;
     }
     pfifo->pbuf[pfifo->head] = data;
     pfifo->head = (pfifo->head + 1) % pfifo->buflen ;
 	pfifo->remain_byte--;
-    return 0;//д��ɹ�
+    return 0;
 }
 static char bytefifo_readbyte(byte_fifo_t *pfifo,byte_t *pdata)
-{/*FIFOΪ�� ���ܶ�*/
+{
     if (bytefifo_isempty(pfifo) == 0)
     {
-        return 1;//�޷���ȡ
+        return 1;
     }
 	*pdata = pfifo->pbuf[pfifo->tail];
     pfifo->tail = (pfifo->tail + 1)%pfifo->buflen ;
@@ -51,7 +48,6 @@ static char bytefifo_readbyte(byte_fifo_t *pfifo,byte_t *pdata)
 	return 0;
 }
 
-/*��ȡFIFO��ʹ�õ��ֽ���*/
 static unsigned short bytefifo_usendbyte(byte_fifo_t *pfifo)
 {
 	if(pfifo->tail <= pfifo->head)
@@ -80,10 +76,10 @@ char bytefifo_writemulitebyge(byte_fifo_t *pfifo,byte_t *buf,unsigned short len)
     }
     pfifo->lockstate = FIFO_LOCK;
 
-	if(len > (pfifo->buflen  - bytefifo_usendbyte(pfifo)-1))//-1����Ϊ��һ���ֽ�ʼ��û���õ�
+	if(len > (pfifo->buflen  - bytefifo_usendbyte(pfifo)-1))
 	{
         pfifo->lockstate = FIFO_UNLOCK;
-		return 1;//д��ʧ��
+		return 1;
 	}
 	while(len--)
 	{
@@ -105,7 +101,7 @@ char bytefifo_readmulintebyte(byte_fifo_t *pfifo,byte_t *buf,unsigned short len)
 	if(len > bytefifo_usendbyte(pfifo))//
 	{
         pfifo->lockstate = FIFO_UNLOCK;
-		return 1;//��ȡʧ��
+		return 1;
 	}
 	while(len--)
 	{

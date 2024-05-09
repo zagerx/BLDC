@@ -82,5 +82,27 @@
     \
     bool is_##type##_list_empty(type##_list_t* pthis) { \
         return pthis == NULL || pthis->head == NULL; \
-    }
+    } \
+    \
+node_type* get_##type##_list_head(type##_list_t* pthis) { \
+    if (pthis == NULL || pthis->head == NULL) { \
+        return NULL; \
+    } \
+    return pthis->head; \
+    } \
+    \
+node_type* traverse_##type##_list(type##_list_t* pthis) { \
+    static node_type* current = NULL; \
+    if (pthis == NULL) {\
+        current = NULL;\
+        return NULL;\
+    }\
+    if (current == NULL) {\
+        current = pthis->head;\
+    } else {\
+        current = current->next_node;\
+    }\
+    return current;\
+}
+    
 #endif
