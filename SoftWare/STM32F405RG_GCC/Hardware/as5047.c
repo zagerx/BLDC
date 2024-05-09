@@ -15,21 +15,9 @@ typedef struct as5047_data
 static as5047_data_t sg_as5047data = {0};
 int32_t rawdata,covdata,filterdata;
 static int16_t column;
-// typedef enum
-// {
-// 	MODE_INCREMENTAL = 0,
-// 	MODE_SPI_AS5047P,
-// 	MODE_SPI_MT6701,
-// 	MODE_SPI_MA730,
-// 	MODE_SPI_TLE5012B,
-// } ENCODER_enum;
 
 typedef struct 
 {
-	// ENCODER_enum  mode;
-	// float  calib_range;        // Accuracy required to pass encoder cpr check
-	// float  calib_scan_distance;// rad electrical
-	// float  calib_scan_omega;   // rad/s electrical
 	float  bandwidth;          //编码器带宽，和cpr成正比
 	int32_t  phase_offset;     //编码器和转子电角度之间的相位差，run_offset_calibration()校准这个参数
 	float  phase_offset_float; //编码器和转子电角度之间的相位差浮点部分，run_offset_calibration()校准这个参数
@@ -44,7 +32,6 @@ typedef struct
 	int32_t  direction;        //电机转动方向，run_offset_calibration()校准这个参数
 	// bool  use_index_offset;
 	bool  enable_phase_interpolation; // Use velocity to interpolate inside the count state
-	// bool find_idx_on_lockin_only;     // Only be sensitive during lockin scan constant vel state
 	float phase_;              //最终用于计算的当前电角度，范围-Pi~Pi。
 	float phase_vel_;          //最终用于计算的当前电角速度，单位rad/s。
 } ENCODER_CONFIG;
@@ -95,7 +82,6 @@ static inline float wrap_pm_pi(float x) {
 	return wrap_pm(x, 2 * M_PI);
 }
 
-// Modulo (as opposed to remainder), per https://stackoverflow.com/a/19288271
 static inline int mod(const int dividend, const int divisor)
 {
 	int r = dividend % divisor;
@@ -108,24 +94,16 @@ void encoder_set_error(uint32_t error)
 {
 	vel_estimate_valid_ = false;
 	pos_estimate_valid_ = false;
-	// set_error(error);
 }
 /*****************************************************************************/
 void update_pll_gains(void)
 {
 	pll_kp_ = 2.0f * encoder_config.bandwidth;  // basic conversion to discrete time
 	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
-	// Check that we don't get problems with discrete time approximation
-	// if (!(current_meas_period * pll_kp_ < 1.0f))
-		// encoder_set_error(ERROR_UNSTABLE_GAIN);
 }
 /*****************************************************************************/
 
-/*****************************************************************************/
-/*****************************************************************************/
-// @brief Turns the motor in one direction for a bit and then in the other
-// direction in order to find the offset between the electrical phase 0
-// and the encoder state 0.
+
 bool run_offset_calibration(void)
 {
 	uint32_t  i;
@@ -136,13 +114,8 @@ bool run_offset_calibration(void)
 //初始化三种SPI接口的编码器的参数, 初始化I2C接口或者SPI接口
 void MagneticSensor_Init(void)
 {
-	//读取flash内保存的参数
-	// encoder_config.mode = ENCODER_mode;  //选择编码器型号，参数设置宏定义在MyProject.h文件中
-	// ENCODER_cpr = ENCODER_cpr;    //编码器cpr
+
 	encoder_config.bandwidth = ENCODER_bandwidth;   //编码器带宽
-	// encoder_config.calib_range = 0.02f; // Accuracy required to pass encoder cpr check  2%误差
-	// encoder_config.calib_scan_distance = 16.0f * M_PI; // rad electrical    校准的时候正反转8个极对数
-	// encoder_config.calib_scan_omega = 4.0f * M_PI;     // rad/s electrical  转速2个极对数/秒，所以正转4秒，反转再4秒
 
 	encoder_config.phase_offset = 0;        // Offset between encoder count and rotor electrical phase
 	encoder_config.phase_offset_float = 0.0f; // Sub-count phase alignment offset
@@ -155,9 +128,6 @@ void MagneticSensor_Init(void)
 
 	pll_kp_ = 2.0f * ENCODER_bandwidth;  // basic conversion to discrete time
 	pll_ki_ = 0.25f * (pll_kp_ * pll_kp_); // Critically damped
-
-	// update_pll_gains();    //锁相环参数整定
-	// run_offset_calibration();
 
 }
 
@@ -219,8 +189,6 @@ bool encoder_update(int32_t raw)
 	if(snap_to_zero_vel || !encoder_config.enable_phase_interpolation)
 	{
 		interpolation_ = 0.5f;
-		// reset interpolation if encoder edge comes
-    // TODO: This isn't correct. At high velocities the first phase in this count may very well not be at the edge.
 	}
 	else if(delta_enc > 0){
 		interpolation_ = 0.0f;
@@ -236,7 +204,6 @@ bool encoder_update(int32_t raw)
 	}
 	float interpolated_enc = corrected_enc + interpolation_;
 	
-	//// compute electrical phase
 	//TODO avoid recomputing elec_rad_per_enc every time
 	float elec_rad_per_enc = MOTOR_pole_pairs  * 2 * M_PI * (1.0f / (float)(ENCODER_cpr));
 	float ph = elec_rad_per_enc * (interpolated_enc - encoder_config.phase_offset_float);
