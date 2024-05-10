@@ -104,5 +104,5 @@ node_type* traverse_##type##_list(type##_list_t* pthis) { \
     }\
     return current;\
 }
-    
+
 #endif
