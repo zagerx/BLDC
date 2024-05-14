@@ -29,7 +29,6 @@ static void motor_disable(void);
 static void motor_set_pwm(duty_t temp);
 
 static float sg_MecThetaOffset = 0.0f;
-extern const float current_meas_period;
 
 mt_param_t mt_param = {0};
 motordebug_t motordebug = {0};
@@ -114,7 +113,7 @@ void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
             motor_set_pwm(_svpwm(uab.alpha,uab.beta));
 #else
             dq_t udq = {0.0f,0.4f,_IQ15(0.0f),_IQ15(0.8f)};
-            float pwm_phase = elec_theta + 1.5f * current_meas_period * (motordebug.real_speed);
+            float pwm_phase;// = elec_theta + 1.5f * current_meas_period * (motordebug.real_speed);
             motordebug.self_ele_theta = pwm_phase;
             alpbet_t uab;
             uab = _limit_voltagecircle(_2r_2s(udq, pwm_phase));
