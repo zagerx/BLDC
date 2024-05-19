@@ -4,7 +4,7 @@
 #include "motor_protocol.h"
 #include "board.h"
 #include "string.h"
-
+#include "_board.h"
 enum{
     MOTOR_INIT,
     MOTOR_START, 
@@ -45,6 +45,7 @@ void motortctrl_process(void)
         {
             break;
         }
+        motor_para_init();
         _state = MOTOR_START;
     case MOTOR_START:
         mc_param_init();

@@ -126,6 +126,5 @@ alpbet_t _2r_2s_Q(dq_t i_dq,int32_t theta);
 void _2s_2r_Q(alpbet_t i_alphabeta,int32_t theta,dq_t *dq);
 void _3s_2s_Q(abc_t i_abc,alpbet_t *alp_bet);
 
-int SVM(float alpha, float beta, float* tA, float* tB, float* tC) ;
 
 #endif

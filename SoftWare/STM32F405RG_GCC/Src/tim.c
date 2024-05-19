@@ -68,7 +68,7 @@ void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.OCMode = TIM_OCMODE_PWM2;
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
@@ -87,13 +87,13 @@ void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
+  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_ENABLE;
+  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_ENABLE;
   sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
   sBreakDeadTimeConfig.DeadTime = 100;
   sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
   sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_ENABLE;
   if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK)
   {
     Error_Handler();
@@ -215,21 +215,20 @@ static unsigned short min_val_01(unsigned short a,unsigned short b,unsigned shor
   }
   return min;
 }
+
+uint16_t a,b,c;
 void tim_set_pwm(float _a,float _b,float _c)
 {
+  a = (uint16_t)((_a)*(_ARR));
+  b = (uint16_t)((_b)*(_ARR));
+  c = (uint16_t)((_c)*(_ARR));
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,a);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,b);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,c);
 
-  float a,b,c;
-
-    a = ((_a)*(_ARR));
-    b = ((_b)*(_ARR));
-    c = ((_c)*(_ARR));
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)a);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)b);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)c);
-
-    unsigned short max = 0;
-    max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
-  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR>>1));  
+  //   unsigned short max = 0;
+  //   max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
+  // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR>>1));  
 }
 
 void tim_pwm_enable(void)
@@ -267,40 +266,26 @@ extern void _50uscycle_process(unsigned int *abc_vale,float _elec_theta);
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
 #include "debuglog.h"
+#include "_board.h"
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    static unsigned int adc_vale[3];
-    // adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-    // adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
-    // adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
-    
+  static unsigned int adc_vale[3];
 
   uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;
 
-    adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-    adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_1);
-    // HAL_ADCEx_InjectedStart(&hadc2);
+  adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
+  adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_1);
 
-	if(!counting_down)   //
+
+	if(!counting_down)   
 	{
-		// current_meas_cb(timestamp_, &current0);  //传入采样值并运算 clark变换
-		// encoder_update();
-		// controller_update();//更新力矩
-    // for(unsigned char i=0;i<20;i++);
-
-    // adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_1);
+    __loopcurrment(adc_vale[0],adc_vale[1],adc_vale[2]);
 	}
 	else
 	{
-		// motor_update();//更新iq限制�?
-		// foc_update();
-		// for(i=0;i<20;i++);                   //延时，同时等待ADC完毕
-		// dc_calib_cb(&current0);  //timestamp_ + TIM_1_8_PERIOD_CLOCKS * (TIM_1_8_RCR + 1), 
-		// pwm_update_cb();         //timestamp_ + 3 * TIM_1_8_PERIOD_CLOCKS * (TIM_1_8_RCR + 1);
-    _50uscycle_process(adc_vale,0.0f); 
+      // _50uscycle_process(adc_vale,0.0f); 
+
 	}
-
-
 }
 
 
