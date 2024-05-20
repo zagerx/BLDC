@@ -262,11 +262,14 @@ void tim_tigger_adc(void)
 }
 
 
-extern void _50uscycle_process(unsigned int *abc_vale,float _elec_theta);
+
+
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
 #include "debuglog.h"
 #include "_board.h"
+extern void _50uscycle_process(unsigned int *abc_vale,float _elec_theta);
+extern void currment_loop(uint16_t a,uint16_t b,uint16_t c,float theta,float pre_theta);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   static unsigned int adc_vale[3];
@@ -279,7 +282,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 	if(!counting_down)   
 	{
-    __loopcurrment(adc_vale[0],adc_vale[1],adc_vale[2]);
+    // __loopcurrment(adc_vale[0],adc_vale[1],adc_vale[2]);
+    currment_loop(adc_vale[0],adc_vale[1],adc_vale[2],0,0);
 	}
 	else
 	{

@@ -5,6 +5,7 @@
 #include "board.h"
 #include "string.h"
 #include "_board.h"
+#include "mc_torquemode.h"
 enum{
     MOTOR_INIT,
     MOTOR_START, 
@@ -32,7 +33,8 @@ static float sg_MecThetaOffset = 0.0f;
 
 mt_param_t mt_param = {0};
 motordebug_t motordebug = {0};
-
+extern dq_t torqueMode_limitIq(float torque);
+extern float torqueMode_limittorque(void);
 void motortctrl_process(void)
 {
     static uint16_t _state = MOTOR_INIT;
@@ -55,6 +57,11 @@ void motortctrl_process(void)
         break;
 
     case MOTOR_RUNING:
+        {
+            dq_t idq = mc_update_torque(0.05f);//更新iq限制值
+            motordebug.id_targe = idq.d;
+            motordebug.iq_targe = idq.q;
+        }
         if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
         {
             motorprotocol_transmit(sg_commandmap[CMD_SET_STOP].res_cmd,strlen(sg_commandmap[CMD_SET_STOP].res_cmd));
