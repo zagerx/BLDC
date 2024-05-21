@@ -28,7 +28,7 @@ static float  v_current_control_integral_d = 0.0f; // [V]
 static float  v_current_control_integral_q = 0.0f; // [V]
 static float effective_current_lim_ = 10.0f; // [A]
 static float max_allowed_current_ = 0.0f;    // [A] set in setup()
- mt_param_t sgmc_param = {0};
+ mc_param_t sgmc_param = {0};
 
 
 float input_torque_ = 0.05f;  // [Nm]
@@ -50,7 +50,7 @@ static void foc_reset(void)
 	pid_reset(&(sgmc_param.qaxis_pi));
 }
 
- void motor_para_init(void)
+void motor_para_init(void)
 {
 	pi_gains_[0] = 0.0273f;
 	pi_gains_[1] = 166.2507f;

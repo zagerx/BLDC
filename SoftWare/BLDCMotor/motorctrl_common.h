@@ -15,14 +15,27 @@
 
 
 #pragma pack(push,4)
-typedef struct _mt_param
+typedef struct _mc_param
 {
     pid_cb_t daxis_pi;
     pid_cb_t qaxis_pi;
     pid_cb_t speedloop_pi;
     lowfilter_t elefitler[3];
     lowfilter_t speedfilter;
-}mt_param_t;
+}mc_param_t;
+
+typedef struct _motor
+{
+
+    mc_param_t ctrlparam;
+
+    float pairs;
+    float torqueconst;
+
+    void (*enable)(void);
+    void (*disable)(void);
+}mt_t;
+
 typedef struct
 {
     float ia;

@@ -15,7 +15,7 @@
 extern float vel_estimate_    ;          //当前估算转速，单位[turn/s]
 extern float encoder_elespeed ;
 extern float encoder_eletheta ;
-extern mt_param_t sgmc_param ;
+extern mc_param_t sgmc_param ;
 extern float  vbus_voltage;
 
 
@@ -33,6 +33,16 @@ void currment_loop(uint16_t a,uint16_t b,uint16_t c,float theta,float pre_theta)
     _convert_current(&phasecurrment,a,b,c);
     FOC_current(motordebug.id_targe, motordebug.iq_targe,phasecurrment);
 
+}
+
+void currment_loop_paraminit(pid_cb_t *pid)
+{
+	/*pid 参数*/
+}
+
+void currment_loop_paramdeinit(pid_cb_t *pid)
+{
+	/*pid 反向初始化参数*/
 }
 
 
@@ -112,9 +122,16 @@ static bool FOC_current(float Id_des, float Iq_des,abc_t iabc)   //I_phase是par
 static abc_t convert_current(uint16_t adc_A,uint16_t adc_B,uint16_t adc_C)
 {
     abc_t phasecurrent;
-	// phasecurrent.b  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_A - (1 << 11)) * (1/PHASE_CURRENT_GAIN)) * (1/SHUNT_RESISTANCE);          //shunt_conductance_ = 1/0.001采样电阻;
-    // phasecurrent.c  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_C - (1 << 11)) * (1/PHASE_CURRENT_GAIN)) * (1/SHUNT_RESISTANCE);
-    // phasecurrent.a = -phasecurrent.b-phasecurrent.c;
+	if (adc_B < CURRENT_ADC_LOWER_BOUND || adc_B > CURRENT_ADC_UPPER_BOUND ||\
+		adc_C < CURRENT_ADC_LOWER_BOUND || adc_C > CURRENT_ADC_UPPER_BOUND)
+	{
+		phasecurrent.b = 0.0f;
+		phasecurrent.c = 0.0f;
+	}else{
+		phasecurrent.b  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_A - (1 << 11)) * (1/PHASE_CURRENT_GAIN)) * (1/SHUNT_RESISTANCE);          //shunt_conductance_ = 1/0.001采样电阻;
+		phasecurrent.c  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_C - (1 << 11)) * (1/PHASE_CURRENT_GAIN)) * (1/SHUNT_RESISTANCE);
+	}
+	phasecurrent.a = -phasecurrent.b - phasecurrent.c;    // phasecurrent.a = -phasecurrent.b-phasecurrent.c;
 
     phasecurrent.b  += 0.2f;
     phasecurrent.c  -= 0.2f;
@@ -123,7 +140,7 @@ static abc_t convert_current(uint16_t adc_A,uint16_t adc_B,uint16_t adc_C)
 }
 
 static void _convert_current(abc_t *current,uint16_t ADC_A,uint16_t ADC_B,uint16_t ADC_C)
-{  
+{
 	current->b = phase_current_from_adcval(ADC_B);
 	current->c = phase_current_from_adcval(ADC_C);
 	current->a = -current->b - current->c;

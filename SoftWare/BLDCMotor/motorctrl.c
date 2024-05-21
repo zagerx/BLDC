@@ -31,10 +31,9 @@ static void motor_set_pwm(duty_t temp);
 
 static float sg_MecThetaOffset = 0.0f;
 
-mt_param_t mt_param = {0};
+mc_param_t mt_param = {0};
 motordebug_t motordebug = {0};
-extern dq_t torqueMode_limitIq(float torque);
-extern float torqueMode_limittorque(void);
+
 void motortctrl_process(void)
 {
     static uint16_t _state = MOTOR_INIT;
@@ -79,6 +78,24 @@ void motortctrl_process(void)
         break;
     }
 }
+
+void _mc_param_init(mc_param_t *motor_x)
+{
+    /*电流环 参数初始化*/
+
+    /*速度环 参数初始化*/
+
+}
+
+void mc_hightfreq_task(uint16_t a,uint16_t b,uint16_t c)
+{
+    /*获取角度 速度*/
+
+}
+
+
+
+
 
 void _50uscycle_process(unsigned int *abc_vale,float _elec_theta)
 {
