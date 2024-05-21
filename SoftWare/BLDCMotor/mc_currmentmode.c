@@ -3,14 +3,20 @@
 #include "stdbool.h"
 #include "utils.h"
 #include "tim.h"
-#define  CURRENT_SENSE_MIN_VOLT  0.3f
-#define  CURRENT_SENSE_MAX_VOLT  3.0f
-#define SHUNT_RESISTANCE                 0.001f    //采样电阻，如果是0.5mΩ=0.0005f,1mΩ=0.001f
-#define PHASE_CURRENT_GAIN               20.0f     //电流采样运放倍数，20倍
-#define  CURRENT_ADC_LOWER_BOUND  (uint32_t)((float)(1 << 12) * CURRENT_SENSE_MIN_VOLT / 3.3f)
-#define  CURRENT_ADC_UPPER_BOUND  (uint32_t)((float)(1 << 12) * CURRENT_SENSE_MAX_VOLT / 3.3f)
-#define TIM_PERIOD                       3500
-#define CURRMENT_MEAS_PERIOD             0.000125f
+
+#define  CURRENT_SENSE_MIN_VOLT           0.3f
+#define  CURRENT_SENSE_MAX_VOLT           3.0f
+#define  SHUNT_RESISTANCE                 0.001f    //采样电阻，如果是0.5mΩ=0.0005f,1mΩ=0.001f
+#define  PHASE_CURRENT_GAIN               20.0f     //电流采样运放倍数，20倍
+#define  CURRENT_ADC_LOWER_BOUND          (uint32_t)((float)(1 << 12) * CURRENT_SENSE_MIN_VOLT / 3.3f)
+#define  CURRENT_ADC_UPPER_BOUND          (uint32_t)((float)(1 << 12) * CURRENT_SENSE_MAX_VOLT / 3.3f)
+#define  TIM_PERIOD                       3500
+#define  CURRMENT_MEAS_PERIOD             0.000125f
+extern float vel_estimate_    ;          //当前估算转速，单位[turn/s]
+extern float encoder_elespeed ;
+extern float encoder_eletheta ;
+extern mt_param_t sgmc_param ;
+extern float  vbus_voltage;
 
 
 static void _convert_current(abc_t *current,uint16_t ADC_A,uint16_t ADC_B,uint16_t ADC_C);
@@ -19,11 +25,6 @@ static  float phase_current_from_adcval(uint32_t ADCValue);
 static bool FOC_current(float Id_des, float Iq_des,abc_t iabc);
 
 
-extern float vel_estimate_    ;          //当前估算转速，单位[turn/s]
-extern float encoder_elespeed ;
-extern float encoder_eletheta ;
-extern mt_param_t sgmc_param ;
-extern float  vbus_voltage;
 void currment_loop(uint16_t a,uint16_t b,uint16_t c,float theta,float pre_theta)
 {
     ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
@@ -47,11 +48,11 @@ static bool FOC_current(float Id_des, float Iq_des,abc_t iabc)   //I_phase是par
 
 	float Ierr_d = Id_des - idq.d;
 	float Ierr_q = Iq_des - idq.q;
+
 	motordebug.id_targe = Id_des;
 	motordebug.id_real  = idq.d;
 	motordebug.iq_targe = Iq_des;
 	motordebug.iq_real  = idq.q;
-
 
 	// TODO look into feed forward terms (esp omega, since PI pole maps to RL tau)
 	// Apply PI control
@@ -89,7 +90,6 @@ static bool FOC_current(float Id_des, float Iq_des,abc_t iabc)   //I_phase是par
 		mod_q *= mod_scalefactor;
 	}
 
-
 	// Inverse park transform
 	idq.d = mod_d;
 	idq.q = mod_q;
@@ -103,6 +103,10 @@ static bool FOC_current(float Id_des, float Iq_des,abc_t iabc)   //I_phase是par
 	tim_set_pwm(duty._a,duty._b,duty._c);
 	return true;
 }
+
+
+
+
 
 
 static abc_t convert_current(uint16_t adc_A,uint16_t adc_B,uint16_t adc_C)

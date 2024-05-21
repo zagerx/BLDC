@@ -1,7 +1,7 @@
 #include "./motorctrl.h"
 #include "debuglog.h"
 #include "motorctrl_common.h"
-#include "motor_protocol.h"
+#include "mc_protocol.h"
 #include "board.h"
 #include "string.h"
 #include "_board.h"
