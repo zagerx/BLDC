@@ -3,7 +3,7 @@
 #undef NULL
 #define NULL 0
 static sensor_t sg_sensor_mt6816 = {
-        .pf_read = as5047_read,
+        .pf_read = 0,
         .pf_write = NULL,
         .pf_init = as5047_init,
         .cycle = 0,
