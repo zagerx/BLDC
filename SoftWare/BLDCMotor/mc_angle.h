@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 #include "stdbool.h"
-bool mc_read_encoder(int32_t *data);
+void mc_encoder_readspeedangle(int32_t *data,float *theta,float *speed);
 
 
 #endif
