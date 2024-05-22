@@ -4,7 +4,6 @@
 #include "mc_protocol.h"
 #include "board.h"
 #include "string.h"
-// #include "_board.h"
 #include "mc_torquemode.h"
 #include "mc_currmentmode.h"
 enum{
@@ -78,15 +77,31 @@ void _mc_param_init(mc_param_t *motor_x)
 extern float vel_estimate_    ;          //当前估算转速，单位[turn/s]
 extern float encoder_elespeed ;
 extern float encoder_eletheta ;
-#include "angle_encoder.h"
+#include "mc_angle.h"
+#include "as5047.h"
 void mc_hightfreq_task(uint16_t a,uint16_t b,uint16_t c)
 {
     duty_t duty = {0};
     /*获取角度 速度*/
     // ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_COV))[0];
-    encoder_update(0);
-	float theta = encoder_eletheta;
-	float next_theta = encoder_eletheta + 1.5f * CURRMENT_MEAS_PERIOD * encoder_elespeed;  //0.5.6是在反park变换时计算，效果一样
+
+    mc_read_encoder(0);    
+	float theta = 0.0f;
+    float next_theta = 0.0f;
+    theta = encoder_eletheta;
+	next_theta = encoder_eletheta + 1.5f * CURRMENT_MEAS_PERIOD * encoder_elespeed;  //0.5.6是在反park变换时计算，效果一样
+
+    // float mec_theta = as5047_readangle() * 0.00038349f - 0.56f;
+    // float ele_theta = mec_theta * 7.0f;
+    // theta = wrap_pm_pi(ele_theta);
+    // next_theta = theta;
+    // static float pre_angle = 0.0f;
+    // float speed = 0.0f;
+    // speed = (theta - pre_angle) * 0.000125f;
+    // pre_angle = theta;
+    // motordebug.ele_angle = theta;
+    // motordebug.real_speed = speed;
+
     duty = currment_loop(a,b,c,theta,next_theta);
     motor_set_pwm(duty);
 }

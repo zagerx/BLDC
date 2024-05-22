@@ -3,7 +3,6 @@
 #include "stdbool.h"
 
 
-/*****************************************************************************/
 static inline float wrap_pm(float x, float y) {
 #ifdef FPU_FPV4
 	float intval = (float)round(x / y);  //round_int
@@ -28,7 +27,6 @@ static inline int mod(const int dividend, const int divisor)
 	if (r < 0) r += divisor;
 	return r;
 }
-/*****************************************************************************/
 
 static float pll_kp_ = 2000.0f;      // [count/s / count]
 static float pll_ki_ = 1000000.0f;   // [(count/s^2) / count]
@@ -42,7 +40,7 @@ float encoder_eletheta = 0.0f;
 #define  ENCODER_PERIOD          0.000125f
 #define  ENCODER_MOTOR_PAIR      7.0f
 #define  ENCODER_CPR             16384
-bool encoder_update(int32_t *data)
+bool mc_read_encoder(int32_t *data)
 {
 	int32_t delta_enc = 0;
 	int32_t pos_abs_latched; //LATCH
@@ -61,9 +59,6 @@ bool encoder_update(int32_t *data)
 	delta_enc -= ENCODER_CPR;
 	shadow_count_ += delta_enc;
 	count_in_cpr_ = pos_abs_latched;
-	
-	// Memory for pos_circular
-	float pos_cpr_counts_last = pos_cpr_counts_;
 	
 	// run pll (for now pll is in units of encoder counts)
 	// Predict current pos
@@ -108,5 +103,10 @@ bool encoder_update(int32_t *data)
 }
 
 
+
+float mc_read_virvalencoder(float ialpha,float ibeta)
+{
+	return 0.0f;
+}
 
 

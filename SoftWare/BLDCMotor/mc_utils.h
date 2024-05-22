@@ -2,7 +2,7 @@
 #ifndef __UTILS_LIB_H
 #define __UTILS_LIB_H
 
-#include "stm32f4xx.h"
+// #include "stm32f4xx.h"
 #include "math.h"
 
 
@@ -49,6 +49,11 @@ static inline int mod(const int dividend, const int divisor)
 	int r = dividend % divisor;
 	if (r < 0) r += divisor;
 	return r;
+}
+
+
+static inline float wrap_pm_pi(float x) {
+	return wrap_pm(x, 2 * M_PI);
 }
 /****************************************************************************/
 

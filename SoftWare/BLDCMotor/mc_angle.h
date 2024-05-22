@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 #include "stdbool.h"
-bool encoder_update(int32_t *data);
+bool mc_read_encoder(int32_t *data);
 
 
 #endif
