@@ -319,7 +319,7 @@ void adc_init(void)
 void adc_start(void)
 {
   HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
-  HAL_ADCEx_InjectedStart_IT(&hadc1);
+  // HAL_ADCEx_InjectedStart_IT(&hadc1);
 }
 void adc_stop(void)
 {
