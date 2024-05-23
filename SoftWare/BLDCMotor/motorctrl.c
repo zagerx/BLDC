@@ -100,3 +100,8 @@ static void mc_param_deinit(void)
 
 
 
+motor_t* motor_table[2] = {0};
+void motor_register(motor_t *motor)
+{
+    motor_table[0] = motor;
+}

@@ -81,33 +81,33 @@ typedef struct
 static sys_run_t sg_SYSRuning;
 void sysrunning_process(void)
 {
-    enum{
-        SYS_IDLE,
-        SYS_NORMLE,
-    };
-    /*-----------------------*/
-    sg_SYSRuning.time_cnt++;
-    switch (sg_SYSRuning.state)
-    {
-        case SYS_IDLE:
-            if(!(sg_SYSRuning.time_cnt % (DELAY_5000MS))){
-                sg_SYSRuning.time_cnt = 0;
-                break;
-            }
-            if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
-            }
-            if(!(sg_SYSRuning.time_cnt % (DELAY_500MS)))
-            {
-            }            
-            if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
-            {
-                HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                
-            }
-            if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
-            }
-        default:
-            break;
-    }
+  enum{
+      SYS_IDLE,
+      SYS_NORMLE,
+  };
+
+  sg_SYSRuning.time_cnt++;
+  switch (sg_SYSRuning.state)
+  {
+      case SYS_IDLE:
+          if(!(sg_SYSRuning.time_cnt % (DELAY_5000MS))){
+              sg_SYSRuning.time_cnt = 0;
+              break;
+          }
+          if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
+          }
+          if(!(sg_SYSRuning.time_cnt % (DELAY_500MS)))
+          {
+          }            
+          if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
+          {
+              HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                
+          }
+          if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
+          }
+      default:
+          break;
+  }
 }
 
 static unsigned short test_adc_vale[3];
@@ -165,10 +165,6 @@ int main(void)
     sysrunning_process();
     hw_sensor_process();
     motortctrl_process();  
-    // test_adc_vale[0] = HAL_ADC_GetValue(&hadc2);  
-    // HAL_ADC_Start(&hadc2);
-    // test_adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-    // HAL_ADCEx_InjectedStart(&hadc2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

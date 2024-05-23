@@ -362,6 +362,8 @@ void adc_stop(void)
 ** ÿ100usִ��һ�� pwmƵ��10KHz
 */
 #include "perf_counter.h"
+#include "motorctrl.h"
+
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     unsigned int adc_vale[3];
@@ -370,7 +372,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_3);
   unsigned int nCycleUsed = 0;
   __cycleof__("full test",{nCycleUsed = _;}){
-    _50uscycle_process(adc_vale,0.0f);
+    mc_hightfreq_task(adc_vale[0],adc_vale[1],adc_vale[2]);
   }
   // USER_DEBUG_NORMAL("_50uscycle_process %d\r\n",nCycleUsed/170);     
 }

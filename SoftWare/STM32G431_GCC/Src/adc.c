@@ -240,6 +240,7 @@ void adc_stop(void)
 ** ÿ100usִ��һ�� pwmƵ��10KHz
 */
 #include "perf_counter.h"
+#include "motorctrl.h"
 unsigned int offset_buf[3];
 unsigned int test_eleclooptime = 0;
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
@@ -250,7 +251,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_3);
   unsigned int nCycleUsed = 0;
   __cycleof__("full test",{nCycleUsed = _;}){
-    _50uscycle_process(adc_vale,0.0f);
+    mc_hightfreq_task(adc_vale[0],adc_vale[1],adc_vale[2]);
   }
   test_eleclooptime = nCycleUsed/170;
 }

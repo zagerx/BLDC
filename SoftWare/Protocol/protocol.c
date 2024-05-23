@@ -208,14 +208,9 @@ pro_frame_t* _unpack_proframe(unsigned char *pdata,unsigned short len)
 void protocol_init(void)
 {
     bytefifo_init(&protocol_fifo_handle,fifo_receive_buff,sizeof(fifo_receive_buff));
-    /*����һ����Ϣ��������*/
     gtransmit_list = list_creat();
 }
 
-/*
-process:�߳�
-parse:����
-*/
 void protocol_process(void)
 {
     protocol_parse();
