@@ -259,17 +259,4 @@ void adc_stop(void)
   // HAL_ADCEx_InjectedStop_IT(&hadc2);
 }
 
-/*----------------------------------------ADC�ж�----------------------------------------------------
-** ÿ100usִ��һ�� pwmƵ��10KHz
-*/
-// unsigned int offset_buf[3];
-// unsigned int test_eleclooptime = 0;
-void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-    unsigned int adc_vale[3];
-    adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-    adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
-    adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
-    _50uscycle_process(adc_vale,0.0f);
-}
 /* USER CODE END 1 */

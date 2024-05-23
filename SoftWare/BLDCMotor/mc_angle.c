@@ -21,11 +21,11 @@ void mc_encoder_readspeedangle(int32_t *data,float *theta,float *speed)
 {
 
 	int32_t delta_enc = 0;
-	int32_t pos_abs_latched; //LATCH
-	static int32_t shadow_count_ = 0;   //编码器累计计数。
-	int32_t count_in_cpr_ = 0;   //编码器当前计数值。
-	static float pos_cpr_counts_ = 0.0f;       //当前约束在cpr范围内的位置值，单位[count]
-	static float vel_estimate_counts_ = 0.0f;  //当前估算转速，单位[count/s]
+	int32_t pos_abs_latched;                    //LATCH
+	static int32_t shadow_count_ = 0;           //编码器累计计数。
+	int32_t count_in_cpr_ = 0;                  //编码器当前计数值。
+	static float pos_cpr_counts_ = 0.0f;        //当前约束在cpr范围内的位置值，单位[count]
+	static float vel_estimate_counts_ = 0.0f;   //当前估算转速，单位[count/s]
 
 	mc_encoder_readTEST(*data,theta,0);
 
@@ -56,6 +56,7 @@ void mc_encoder_readspeedangle(int32_t *data,float *theta,float *speed)
 	int32_t corrected_enc = count_in_cpr_ - ENCODER_OFFSET;	
 	float elec_rad_per_enc = ENCODER_MOTOR_PAIR * 2 * M_PI * (1.0f / (float)(ENCODER_CPR));
 	float ph = elec_rad_per_enc * (corrected_enc - ENCODER_OFFSET_FLOAT);
+
 	// *theta = wrap_pm_pi(ph) * ENCODER_DIR;
 	*speed = (2*M_PI) * vel_estimate_ * ENCODER_MOTOR_PAIR * ENCODER_DIR;
 

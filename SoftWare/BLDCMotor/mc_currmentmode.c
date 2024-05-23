@@ -14,7 +14,7 @@
 
 // extern mc_param_t mc_param ;
 extern mc_param_t mc_param;
- float  vbus_voltage=24.0f;
+float  vbus_voltage=24.0f;
 
 static abc_t convert_current(uint16_t adc_A,uint16_t adc_B,uint16_t adc_C);
 

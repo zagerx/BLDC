@@ -1,11 +1,6 @@
 #include "./motorctrl_common.h"
 #include "debuglog.h"
 #include "mc_utils.h"
-static dq_t circle_limit(dq_t dq);
-
-
-
-
 
 
 
@@ -246,63 +241,8 @@ duty_t _svpwm(float ualpha,float ubeta)
     return i_alphabeta;
 }
 
-
 float _normalize_angle(float angle)
 {
   float a = fmod(angle, _2PI);
   return a >= 0 ? a : (a + 2.0f*PI);  
 }
-
-dq_t circle_limit(dq_t dq)
-{
-    dq_t new_vdq;
-    float square_limit;
-    float vd_square_limit;
-    float square_q;
-    float square_d;
-    float square_sum;
-    float square_temp;
-    float new_q,new_d;
-
-    new_vdq = dq;
-    square_d = dq.d * dq.d;
-    square_q = dq.q * dq.q;
-    square_limit = CIRCLE_MAX_VAL * CIRCLE_MAX_VAL;
-    vd_square_limit = D_MAX_VAL*D_MAX_VAL;
-
-    square_sum = square_d + square_q;
-    if (square_sum > square_limit)
-    {
-      if (square_d <= vd_square_limit)
-      {
-        square_temp = square_limit - square_d;
-        new_q = sqrtf(square_temp);
-        if (dq.q < 0)
-        {
-          new_q = -new_q;
-        }
-        new_d = dq.d;
-      }
-      else
-      {
-        new_d = D_MAX_VAL;
-        if (dq.d < 0)
-        {
-          new_d = -new_d;
-        }
-        square_temp = square_limit - vd_square_limit;
-        new_q = sqrtf(square_temp);
-        if (dq.q < 0)
-        {
-          new_q = - new_q;
-        }
-      }
-      new_vdq.q = new_q;
-      new_vdq.d = new_d;
-    }
-
-    return new_vdq;
-}
-
-
-

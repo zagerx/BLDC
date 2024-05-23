@@ -22,7 +22,7 @@ dq_t mc_update_torque(float tar)
 	float id = 0;
 	float iq = 0;
 	float ilim = 30.0f;
-	id = clamp(id, -ilim*0.99f, ilim*0.99f); // 1% space reserved for Iq to avoid numerical issues
+	id = clamp(id, -ilim*0.99f, ilim*0.99f);                 // 1% space reserved for Iq to avoid numerical issues
 	iq = torque / TORQUE_COMSTANT;
 	float iq_lim_sqr = SQ(ilim) - SQ(id);
 	float Iq_lim = (iq_lim_sqr <= 0.0f) ? 0.0f : sqrt(iq_lim_sqr);

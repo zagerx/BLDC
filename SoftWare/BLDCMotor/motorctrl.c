@@ -9,6 +9,7 @@
 #include "mc_utils.h"
 #include "mc_angle.h"
 #define  CURRMENT_MEAS_PERIOD             0.000125f
+
 enum{
     MOTOR_INIT,
     MOTOR_START, 
@@ -16,15 +17,11 @@ enum{
     MOTOR_STOP,
 };
 
-static void mc_param_init(void);
-static void mc_param_deinit(void);
-static void trigger_software_reset(void);
-static void motor_enable(void);
-static void motor_disable(void);
-static void motor_set_pwm(duty_t temp);
-
 mc_param_t mc_param = {0};
 motordebug_t motordebug = {0};
+
+static void mc_param_init(void);
+static void mc_param_deinit(void);
 
 void motortctrl_process(void)
 {
@@ -69,14 +66,6 @@ void motortctrl_process(void)
     }
 }
 
-void _mc_param_init(mc_param_t *motor_x)
-{
-    /*电流环 参数初始化*/
-
-    /*速度环 参数初始化*/
-
-}
-
 void mc_hightfreq_task(uint16_t a,uint16_t b,uint16_t c)
 {
     duty_t duty = {0};
@@ -89,15 +78,13 @@ void mc_hightfreq_task(uint16_t a,uint16_t b,uint16_t c)
     next_theta = theta + 1.5f * CURRMENT_MEAS_PERIOD * speed;
 
     duty = currment_loop(a,b,c,theta,next_theta);
-    motor_set_pwm(duty);
+    motor_set_pwm(duty._a,duty._b,duty._c);
 }
-
 
 static void mc_param_init(void)
 {
     pid_init(&(mc_param.daxis_pi),0.0273f,166.2507f * 0.000125f,1.0f,D_MAX_VAL,D_MIN_VAL);
     pid_init(&(mc_param.qaxis_pi),0.0273f,166.2507f * 0.000125f,1.0f,D_MAX_VAL,D_MIN_VAL);
-
 
     // pid_init(&(mc_param.speedloop_pi),1.0f,0.0f,1.0f,D_MAX_VAL,D_MIN_VAL);
     // lowfilter_init(&(mc_param.elefitler[0]),80);
@@ -111,37 +98,5 @@ static void mc_param_deinit(void)
     memset(&motordebug,0,sizeof(motordebug));
 }
 
-static void motor_enable(void)
-{
-#ifdef BOARD_STM32H723
-    gpio_setmotor_power();
-#endif
-    /*pwm 使能*/
-    tim_pwm_enable();
-    tim_tigger_adc();
-    adc_start();
-}
-static void motor_enable_noirq(void)
-{
-#ifdef BOARD_STM32H723
-    gpio_setmotor_power();
-#endif
-    /*pwm 使能*/
-    tim_pwm_enable();
-}
-static void motor_disable(void)
-{
-#ifdef BOARD_STM32H723
-    gpio_setmotor_powerdown();
-#endif    
-    tim_pwm_disable();
-    adc_stop();
-}
-static void motor_set_pwm(duty_t temp)
-{
-    tim_set_pwm(temp._a ,temp._b,temp._c);
-}
-static void trigger_software_reset(void)
-{
-    HAL_NVIC_SystemReset();
-}
+
+
