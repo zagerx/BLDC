@@ -27,9 +27,7 @@ void* mt6816_read(void)
 
     AngleIn17bits =(((Spi_pRxData[1]&0x00ff)<<8) | (Spi_pRxData[2]&0x00fc))>>2;
     // AngleIn17bits = 16384 - AngleIn17bits;
-    AngleIn17bits = AngleIn17bits;
     rawdata = AngleIn17bits;
-    // covdata = (AngleIn17bits * 0.00038349f) * (1<<20);
     covdata = (AngleIn17bits * 402);
     // filterdata = lowfilter_cale(&sg_anglefilter,(float)test_rawdata);
     // covdata = filterdata;

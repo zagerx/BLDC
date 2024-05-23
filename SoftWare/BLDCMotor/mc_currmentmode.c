@@ -40,7 +40,7 @@ duty_t currment_loop(uint16_t a,uint16_t b,uint16_t c,float theta,float next_the
 
 	motordebug.id_real  = idq.d;
 	motordebug.iq_real  = idq.q;
-#if 1
+#if 0
 	float Vd = pid_contrl(&(mc_param.daxis_pi),Id_des,idq.d);
 	float Vq = pid_contrl(&(mc_param.qaxis_pi),Iq_des,idq.q);
 #else

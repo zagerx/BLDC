@@ -122,6 +122,7 @@ void sysrunning_process(void)
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -151,6 +152,7 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   MX_TIM2_Init();
+  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   // HAL_TIM_Base_Start_IT(&htim2);
   User_Printf_Init();
@@ -205,8 +207,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV8;
-  RCC_OscInitStruct.PLL.PLLN = 85;
+  RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV2;
+  RCC_OscInitStruct.PLL.PLLN = 21;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
