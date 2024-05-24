@@ -249,15 +249,16 @@ void tim_tigger_adc(void)
 
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc1;
+  unsigned int adc_vale[3];
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;  
-  unsigned int adc_vale[3];
-  adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
-  adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-  adc_vale[2] = 0;
 	if(!counting_down)   
 	{
+    adc_vale[0] = 0;
+    adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+    adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
     mc_hightfreq_task(adc_vale[0],adc_vale[1],adc_vale[2]);
 	}
 }

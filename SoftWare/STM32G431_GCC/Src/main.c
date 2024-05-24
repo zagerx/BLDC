@@ -148,10 +148,10 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_TIM1_Init();
-  MX_ADC1_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   MX_ADC2_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   // HAL_TIM_Base_Start_IT(&htim2);
   User_Printf_Init();
@@ -166,6 +166,8 @@ int main(void)
   protocol_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
   USER_DEBUG_NORMAL("SYS start runing\r\n");
+  HAL_ADCEx_Calibration_Start(&hadc2,ADC_SINGLE_ENDED);
+  HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
 
   /* USER CODE END 2 */
 

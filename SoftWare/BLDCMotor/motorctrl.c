@@ -76,7 +76,7 @@ void mc_hightfreq_task(uint16_t a,uint16_t b,uint16_t c)
     float speed = 0.0f;
     mc_encoder_readspeedangle(&raw,&theta,&speed);
     next_theta = theta + 1.5f * CURRMENT_MEAS_PERIOD * speed;
-
+    motordebug.ele_angle = theta;
     duty = currment_loop(a,b,c,theta,next_theta);
     motor_set_pwm(duty._a,duty._b,duty._c);
 }

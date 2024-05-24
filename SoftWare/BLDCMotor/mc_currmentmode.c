@@ -93,13 +93,28 @@ static abc_t convert_current(uint16_t adc_A,uint16_t adc_B,uint16_t adc_C)
 		phasecurrent.b = 0.0f;
 		phasecurrent.c = 0.0f;
 	}else{
+
+		#if 0
 		phasecurrent.b  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_B - (1 << 11)) * (1/PHASE_CURRENT_GAIN)) * (1/SHUNT_RESISTANCE);          //shunt_conductance_ = 1/0.001采样电阻;
 		phasecurrent.c  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_C - (1 << 11)) * (1/PHASE_CURRENT_GAIN)) * (1/SHUNT_RESISTANCE);
-	}
-	phasecurrent.a = -phasecurrent.b - phasecurrent.c;    // phasecurrent.a = -phasecurrent.b-phasecurrent.c;
+		phasecurrent.a = -phasecurrent.b - phasecurrent.c;    // phasecurrent.a = -phasecurrent.b-phasecurrent.c;
+		phasecurrent.b  += 0.2f;
+		phasecurrent.c  -= 0.2f;
+		phasecurrent.a  -= 0.0f;
 
-    phasecurrent.b  += 0.2f;
-    phasecurrent.c  -= 0.2f;
-    phasecurrent.a  -= 0.0f;
+
+		#else
+		phasecurrent.b  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_B - (1 << 11)) * (1/5.7f)) * (1/0.025f);          //shunt_conductance_ = 1/0.001采样电阻;
+		phasecurrent.c  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_C - (1 << 11)) * (1/5.7f)) * (1/0.025f);		
+		phasecurrent.a = -phasecurrent.b - phasecurrent.c;    // phasecurrent.a = -phasecurrent.b-phasecurrent.c;
+		phasecurrent.b  += 0.2f;
+		phasecurrent.c  -= 0.2f;
+		phasecurrent.a  += 0.6f;
+		
+		
+		#endif
+
+	}
+
     return phasecurrent;
 }
