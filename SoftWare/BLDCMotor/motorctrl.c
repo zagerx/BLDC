@@ -66,7 +66,7 @@ void motortctrl_process(void)
     }
 }
 
-void mc_hightfreq_task(uint16_t a,uint16_t b,uint16_t c)
+void mc_hightfreq_task(float *iabc)
 {
     duty_t duty = {0};
     /*获取角度 速度*/
@@ -77,7 +77,7 @@ void mc_hightfreq_task(uint16_t a,uint16_t b,uint16_t c)
     mc_encoder_readspeedangle(&raw,&theta,&speed);
     next_theta = theta + 1.5f * CURRMENT_MEAS_PERIOD * speed;
     motordebug.ele_angle = theta;
-    duty = currment_loop(a,b,c,theta,next_theta);
+    duty = currment_loop(iabc,theta,next_theta);
     motor_set_pwm(duty._a,duty._b,duty._c);
 }
 
