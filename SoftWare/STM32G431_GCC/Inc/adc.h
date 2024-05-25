@@ -46,6 +46,9 @@ void MX_ADC2_Init(void);
 /* USER CODE BEGIN Prototypes */
 void adc_start(void);
 void adc_stop(void);
+void adc_vbusinit(void);
+void* adc_readvbus(void);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -63,7 +63,7 @@ typedef struct
     float iq_targe;
     int32_t Q_iq_targe;
     float iq_real;
-
+    float vbus;
     float speed_targe;
     float pid_Q_out;
     float Pid_q_kp;

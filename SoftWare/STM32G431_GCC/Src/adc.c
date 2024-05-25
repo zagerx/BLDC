@@ -77,7 +77,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Channel = ADC_CHANNEL_14;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -217,13 +217,20 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     }
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
     /**ADC1 GPIO Configuration
     PA2     ------> ADC1_IN3
+    PB11     ------> ADC1_IN14
     */
     GPIO_InitStruct.Pin = GPIO_PIN_2;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_11;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* USER CODE BEGIN ADC1_MspInit 1 */
 
@@ -281,8 +288,11 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
     /**ADC1 GPIO Configuration
     PA2     ------> ADC1_IN3
+    PB11     ------> ADC1_IN14
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2);
+
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_11);
 
   /* USER CODE BEGIN ADC1_MspDeInit 1 */
 
@@ -318,15 +328,51 @@ void adc_init(void)
 }
 void adc_start(void)
 {
+
   HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
   HAL_ADCEx_InjectedStart_IT(&hadc1);
 
   HAL_ADCEx_Calibration_Start(&hadc2,ADC_SINGLE_ENDED);
   HAL_ADCEx_InjectedStart_IT(&hadc2);
 }
+
+
+
+typedef struct vbus_data
+{
+    int32_t *raw_buf;
+    int32_t *covdata_buf;
+    int32_t *filterdata_buf;
+    int16_t buf_column;
+}vbus_data_t;
+static vbus_data_t vbus = {0};
+static int32_t rawdata = 0,covdata = 0,filterdata = 0;
+static int16_t column;
+void adc_vbusinit(void)
+{
+  HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
+
+    HAL_ADC_Start(&hadc1);
+    vbus.raw_buf = &rawdata;
+    vbus.covdata_buf = &covdata;
+    vbus.filterdata_buf = &filterdata;  
+}
+void* adc_readvbus(void)
+{
+  HAL_ADC_Start(&hadc1);
+
+  if (HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK) {
+  rawdata = HAL_ADC_GetValue(&hadc1);
+  covdata = ((4.7f+47.0f)/4.f) * (3.3f/4096) * rawdata * (1<<15);
+  }
+  HAL_ADC_Stop(&hadc1);
+  return (void*)&vbus;
+}
+
+
 void adc_stop(void)
 {
-  HAL_ADCEx_InjectedStop_IT(&hadc2);
-  HAL_ADCEx_InjectedStop_IT(&hadc1);
+  HAL_ADCEx_InjectedStop(&hadc2);
+  HAL_ADCEx_InjectedStop(&hadc1);
 }
 /* USER CODE END 1 */

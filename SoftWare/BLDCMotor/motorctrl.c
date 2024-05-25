@@ -22,7 +22,6 @@ motordebug_t motordebug = {0};
 
 static void mc_param_init(void);
 static void mc_param_deinit(void);
-
 void motortctrl_process(void)
 {
     static uint16_t _state = MOTOR_INIT;
@@ -49,6 +48,11 @@ void motortctrl_process(void)
             motordebug.id_targe = idq.d;
             motordebug.iq_targe = idq.q;
         }
+
+        int32_t cov = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
+        float vbus = (float)((float)cov / (1<<15));
+        motordebug.vbus = vbus;
+
         if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
         {
             motorprotocol_transmit(sg_commandmap[CMD_SET_STOP].res_cmd,strlen(sg_commandmap[CMD_SET_STOP].res_cmd));
