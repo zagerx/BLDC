@@ -40,7 +40,7 @@ duty_t currment_loop(float *abc,float theta,float next_theta)
 	float Vq = pid_contrl(&(mc_param.qaxis_pi),Iq_des,idq.q);
 #else
 	float Vd = 0.0f;
-	float Vq = -0.8f;
+	float Vq = 0.8f;
 #endif
 	float mod_to_V = (2.0f / 3.0f) * vbus_voltage;
 	float V_to_mod = 1.0f / mod_to_V;
@@ -76,40 +76,3 @@ void currment_loop_paramdeinit(pid_cb_t *pid)
 {
 	/*pid 反向初始化参数*/
 }
-
-
-
-// static abc_t convert_current(uint16_t adc_A,uint16_t adc_B,uint16_t adc_C)
-// {
-//     abc_t phasecurrent;
-// 	if (adc_B < CURRENT_ADC_LOWER_BOUND || adc_B > CURRENT_ADC_UPPER_BOUND ||\
-// 		adc_C < CURRENT_ADC_LOWER_BOUND || adc_C > CURRENT_ADC_UPPER_BOUND)
-// 	{
-// 		phasecurrent.b = 0.0f;
-// 		phasecurrent.c = 0.0f;
-// 	}else{
-
-// 		#if 0
-// 		phasecurrent.b  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_B - (1 << 11)) * (1/PHASE_CURRENT_GAIN)) * (1/SHUNT_RESISTANCE);          //shunt_conductance_ = 1/0.001采样电阻;
-// 		phasecurrent.c  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_C - (1 << 11)) * (1/PHASE_CURRENT_GAIN)) * (1/SHUNT_RESISTANCE);
-// 		phasecurrent.a = -phasecurrent.b - phasecurrent.c;    // phasecurrent.a = -phasecurrent.b-phasecurrent.c;
-// 		phasecurrent.b  += 0.2f;
-// 		phasecurrent.c  -= 0.2f;
-// 		phasecurrent.a  -= 0.0f;
-
-
-// 		#else
-// 		phasecurrent.b  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_B - (1 << 11)) * (1/5.7f)) * (1/0.25f);          //shunt_conductance_ = 1/0.001采样电阻;
-// 		phasecurrent.c  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_C - (1 << 11)) * (1/5.7f)) * (1/0.25f);
-// 		phasecurrent.a = -phasecurrent.b - phasecurrent.c;    // phasecurrent.a = -phasecurrent.b-phasecurrent.c;
-// 		// phasecurrent.b  += 0.2f;
-// 		// phasecurrent.c  -= 0.2f;
-// 		phasecurrent.a  += 0.1f;
-		
-		
-// 		#endif
-
-// 	}
-
-//     return phasecurrent;
-// }

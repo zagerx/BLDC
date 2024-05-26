@@ -365,7 +365,7 @@ void* adc_readvbus(void)
   rawdata = HAL_ADC_GetValue(&hadc1);
   covdata = ((4.7f+47.0f)/4.f) * (3.3f/4096) * rawdata * (1<<15);
   }
-  HAL_ADC_Stop(&hadc1);
+  // HAL_ADC_Stop(&hadc1);
   return (void*)&vbus;
 }
 

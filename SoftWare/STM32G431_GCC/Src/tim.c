@@ -63,7 +63,7 @@ void MX_TIM1_Init(void)
     Error_Handler();
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
-  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_UPDATE;
+  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
   {
@@ -211,9 +211,6 @@ void tim_set_pwm(float _a,float _b,float _c)
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,b);
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,c);
 
-  //   unsigned short max = 0;
-  //   max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
-  // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR>>1));  
 }
 
 void tim_pwm_enable(void)
@@ -242,8 +239,6 @@ void tim_pwm_disable(void)
 
 void tim_tigger_adc(void)
 {
-  // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR>>1));  
-  // HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
 #include "motorctrl.h"
 
@@ -273,15 +268,15 @@ static void _convert_current(uint16_t* adc_buf,float *i_abc)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  unsigned int adc_vale[3];
+  unsigned short adc_vale[3];
   float iabc[3];
   uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;  
 	if(!counting_down)   
 	{
-    adc_vale[0] = 0;
-    adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
-    adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-    _convert_current(adc_vale,iabc);
+    adc_vale[0] = (uint16_t)0;
+    adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+    adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
+    _convert_current((uint16_t*)adc_vale,iabc);
     mc_hightfreq_task(iabc);
 	}
 }
