@@ -5,8 +5,6 @@
 #include "tim.h"
 
 
-#define  SHUNT_RESISTANCE                 0.001f    //采样电阻，如果是0.5mΩ=0.0005f,1mΩ=0.001f
-#define  PHASE_CURRENT_GAIN               20.0f     //电流采样运放倍数，20倍
 
 #define  TIM_PERIOD                       3500
 
@@ -37,7 +35,7 @@ duty_t currment_loop(float *abc,float theta,float next_theta)
 
 	motordebug.id_real  = idq.d;
 	motordebug.iq_real  = idq.q;
-#if 1
+#if 0
 	float Vd = pid_contrl(&(mc_param.daxis_pi),Id_des,idq.d);
 	float Vq = pid_contrl(&(mc_param.qaxis_pi),Iq_des,idq.q);
 #else

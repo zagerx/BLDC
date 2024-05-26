@@ -49,9 +49,9 @@ void motortctrl_process(void)
             motordebug.iq_targe = idq.q;
         }
 
-        int32_t cov = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
-        float vbus = (float)((float)cov / (1<<15));
-        motordebug.vbus = vbus;
+        // int32_t cov = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
+        // float vbus = (float)((float)cov / (1<<15));
+        // motordebug.vbus = vbus;
 
         if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
         {
