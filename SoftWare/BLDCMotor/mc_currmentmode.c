@@ -35,7 +35,7 @@ duty_t currment_loop(float *abc,float theta,float next_theta)
 
 	motordebug.id_real  = idq.d;
 	motordebug.iq_real  = idq.q;
-#if 0
+#if 1
 	float Vd = pid_contrl(&(mc_param.daxis_pi),Id_des,idq.d);
 	float Vq = pid_contrl(&(mc_param.qaxis_pi),Iq_des,idq.q);
 #else
