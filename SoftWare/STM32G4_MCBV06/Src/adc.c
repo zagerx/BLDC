@@ -288,9 +288,6 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-    /* ADC4 interrupt Init */
-    HAL_NVIC_SetPriority(ADC4_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(ADC4_IRQn);
   /* USER CODE BEGIN ADC4_MspInit 1 */
 
   /* USER CODE END ADC4_MspInit 1 */
@@ -337,8 +334,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
     HAL_GPIO_DeInit(GPIOD, GPIO_PIN_14);
 
-    /* ADC4 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(ADC4_IRQn);
   /* USER CODE BEGIN ADC4_MspDeInit 1 */
 
   /* USER CODE END ADC4_MspDeInit 1 */
@@ -346,49 +341,15 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-#include "motorctrl.h"
 
 void adc_start(void)
 {
   HAL_ADCEx_Calibration_Start(&hadc4,ADC_SINGLE_ENDED);
-  HAL_ADCEx_InjectedStart_IT(&hadc4);
+  HAL_ADCEx_InjectedStart(&hadc4);
 }
 void adc_stop(void)
 {
-  HAL_ADCEx_InjectedStop_IT(&hadc4);
-}
-
-/*----------------------------------------ADC�ж�----------------------------------------------------
-** ÿ100usִ��һ�� pwmƵ��10KHz
-*/
-#include "perf_counter.h"
-#include "motorctrl.h"
-
-void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-    unsigned int adc_vale[3];
-    adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_1);
-    adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_2);
-    adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_3);
-  unsigned int nCycleUsed = 0;
-  __cycleof__("full test",{nCycleUsed = _;}){
-    mc_hightfreq_task(adc_vale[0],adc_vale[1],adc_vale[2]);
-  }
-  // USER_DEBUG_NORMAL("_50uscycle_process %d\r\n",nCycleUsed/170);     
-}
-
-
-void adc2_start(void)
-{
-  HAL_ADCEx_Calibration_Start(&hadc2,ADC_SINGLE_ENDED);
-  HAL_ADCEx_InjectedStart(&hadc2);
-}
-unsigned int adc2_vale[3];
-void get_adc2val(void)
-{
-    adc2_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_1);
-    adc2_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_2);
-    adc2_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_3);
+  HAL_ADCEx_InjectedStop(&hadc4);
 }
 
 

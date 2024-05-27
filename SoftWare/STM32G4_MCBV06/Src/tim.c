@@ -46,10 +46,10 @@ void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = PSC-1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED1;
-  htim1.Init.Period = 8499;
+  htim1.Init.Period = 3499;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim1.Init.RepetitionCounter = 2;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
   {
     Error_Handler();
@@ -63,14 +63,14 @@ void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
   sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.OCMode = TIM_OCMODE_PWM2;
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_LOW;
@@ -86,12 +86,6 @@ void MX_TIM1_Init(void)
     Error_Handler();
   }
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.Pulse = 200;
-  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
   {
     Error_Handler();
   }
@@ -173,6 +167,10 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM1_MspInit 0 */
     /* TIM1 clock enable */
     __HAL_RCC_TIM1_CLK_ENABLE();
+
+    /* TIM1 interrupt Init */
+    HAL_NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
   /* USER CODE BEGIN TIM1_MspInit 1 */
 
   /* USER CODE END TIM1_MspInit 1 */
@@ -252,6 +250,9 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_TIM1_CLK_DISABLE();
+
+    /* TIM1 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(TIM1_UP_TIM16_IRQn);
   /* USER CODE BEGIN TIM1_MspDeInit 1 */
 
   /* USER CODE END TIM1_MspDeInit 1 */
@@ -282,54 +283,25 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
 }
 
 /* USER CODE BEGIN 1 */
-#include "adc.h"
-static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned short c)
-{
-	short max;
-	if(a>b)
-	{
-		max = a;
-	}else{
-		max = b;
-	}
-	if(c>max)
-	{
-		max = c;
-	}
-	return max;
-}
+
 void tim_set_pwm(float _a,float _b,float _c)
 {
-    float a,b,c;
-    a = (((float)_a)*_ARR);
-    b = (((float)_b)*_ARR);
-    c = (((float)_c)*_ARR);
+  uint16_t a,b,c;
 
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)a);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)b);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)c);
+  a = (uint16_t)((_a)*(_ARR));
+  b = (uint16_t)((_b)*(_ARR));
+  c = (uint16_t)((_c)*(_ARR));
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,a);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,b);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,c);
 
-    unsigned short max = 0;
-    max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(8390));
 }
-void tim_pwm_enable_noirq(void)
-{
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)0);    
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
-    HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3);     
-}
+
 void tim_pwm_enable(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(uint16_t)0);    
+  
+    HAL_TIM_Base_Start_IT(&htim1);
+
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
@@ -339,27 +311,65 @@ void tim_pwm_enable(void)
 }
 void tim_pwm_disable(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,(0));
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,(0));
-    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,(0));
-
     HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_1);
     HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_1);
     HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_2);
     HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_2);
     HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_3); 
-    HAL_ADCEx_InjectedStop_IT(&hadc4);
+
     HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_4);      
 }
 
 void tim_tigger_adc(void)
 {
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
+}
+#include "motorctrl.h"
+
+extern ADC_HandleTypeDef hadc4;
+
+#define  CURRENT_SENSE_MIN_VOLT           0.3f
+#define  CURRENT_SENSE_MAX_VOLT           3.0f
+#define  CURRENT_ADC_LOWER_BOUND          (uint32_t)((float)(1 << 12) * CURRENT_SENSE_MIN_VOLT / 3.3f)
+#define  CURRENT_ADC_UPPER_BOUND          (uint32_t)((float)(1 << 12) * CURRENT_SENSE_MAX_VOLT / 3.3f)
+
+static void _convert_current(uint16_t* adc_buf,float *i_abc)
+{
+	if (adc_buf[1] < CURRENT_ADC_LOWER_BOUND || adc_buf[1] > CURRENT_ADC_UPPER_BOUND ||\
+		adc_buf[2] < CURRENT_ADC_LOWER_BOUND || adc_buf[2] > CURRENT_ADC_UPPER_BOUND)
+	{
+		i_abc[1] = 0.0f;
+		i_abc[2] = 0.0f;
+	}else{
+		i_abc[1]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[1] - (1 << 11)) * (1/5.7f)) * (1/0.25f);          //shunt_conductance_ = 1/0.001采样电阻;
+		i_abc[2]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[2] - (1 << 11)) * (1/5.7f)) * (1/0.25f);
+	}
+		i_abc[0] = -i_abc[1] - i_abc[2];    // phasecurrent.a = -phasecurrent.b-phasecurrent.c;
+		i_abc[0]  += 0.1f;
+    return;
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  unsigned short adc_vale[3];
+  float iabc[3];
+  uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;  
+	if(!counting_down)   
+	{
+    adc_vale[0] = (uint16_t)0;
+    adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_1);
+    adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_1);
+    _convert_current((uint16_t*)adc_vale,iabc);
+    mc_hightfreq_task(iabc);
+	}
 }
 
 
 
+
+
+
+/*----------------------------------Encoder--------------------------------------------*/
 void tim_encode_start(void)
 {
   HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1 | TIM_CHANNEL_2);

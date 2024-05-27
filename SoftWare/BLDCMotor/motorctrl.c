@@ -84,6 +84,21 @@ void mc_hightfreq_task(float *iabc)
     duty = currment_loop(iabc,theta,next_theta);
     motor_set_pwm(duty._a,duty._b,duty._c);
 }
+#define S_TOtil       _2PI
+#define TIME_TOTIL    3.0f
+
+void mc_test(float *iabc)
+{
+    duty_t duty = {0};
+    static unsigned short cnt = 0;
+    float theta = 0.0f;
+    theta = S_TOtil/TIME_TOTIL * 0.000125F * cnt;//机械角度
+    theta = theta / 7.0f;//电角度
+    next_theta = S_TOtil/TIME_TOTIL/7.0f;
+    duty = currment_loop(iabc,theta,next_theta);
+    motor_set_pwm(duty._a,duty._b,duty._c);
+    cnt++;
+}
 
 static void mc_param_init(void)
 {

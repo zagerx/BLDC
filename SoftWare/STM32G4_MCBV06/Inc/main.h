@@ -59,7 +59,7 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define PSC 1
 #define _ENCODERLINS 8192
-#define _ARR 8500
+#define _ARR 3500
 #define HALL_U1_Pin GPIO_PIN_14
 #define HALL_U1_GPIO_Port GPIOC
 #define POWER_12V_OFF_Pin GPIO_PIN_3
