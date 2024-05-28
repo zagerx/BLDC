@@ -24,13 +24,13 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "ipc.h"
+// #include "ipc.h"
 #include "sensor.h"
-#include "../Protocol/protocol.h"
+// #include "../Protocol/protocol.h"
 #include "../../BLDCMotor/motorctrl.h"
 #include "debuglog.h"
-#include "hardware.h"
 #include "perf_counter.h"
+#include "board.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -103,11 +103,9 @@ void sysrunning_process(void)
             }            
             if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
             {
-                // USER_DEBUG_NORMAL("theta %f\r\n",(*(sensor_data_t*)sensor_user_read(SENSOR_01)).cov_data);
                 HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
-                // protocol02_process();
             }
         default:
             break;
@@ -153,7 +151,6 @@ int main(void)
   MX_ADC2_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-  // HAL_TIM_Base_Start_IT(&htim2);
   User_Printf_Init();
   USER_DEBUG_NORMAL("hello world\r\n");
   unsigned int nCycleUsed = 0;
@@ -161,13 +158,11 @@ int main(void)
     delay_ms(1000);
   }
   USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/170);  
-  hw_init();
-
-  protocol_init();
+  board_init();
+  // protocol_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
   USER_DEBUG_NORMAL("SYS start runing\r\n");
-  HAL_ADCEx_Calibration_Start(&hadc2,ADC_SINGLE_ENDED);
-  HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
+
 
   /* USER CODE END 2 */
 
@@ -177,9 +172,10 @@ int main(void)
   {
 
     sysrunning_process();
-    hw_sensor_process();
+    // hw_sensor_process();
+    sensor_process();
     motortctrl_process();
-    protocol_process();
+    // protocol_process();
     HAL_Delay(1);
     /* USER CODE END WHILE */
 

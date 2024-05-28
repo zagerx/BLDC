@@ -151,7 +151,7 @@ int main(void)
   User_Printf_Init();
   USER_DEBUG_NORMAL("F405 Hello world\r\n");
   hw_init();
-  protocol_init();
+  // protocol_init();
   HAL_Delay(1500);
   HAL_ADCEx_InjectedStart(&hadc2);
   HAL_ADCEx_InjectedStart(&hadc3);

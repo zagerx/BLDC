@@ -7,7 +7,7 @@ mc_tar_iq:0.8f
 */
 #include "motorctrl_common.h"
 #include "mc_protocol.h"
-#include "protocol.h"
+// #include "protocol.h"
 #include "board.h"
 #include "string.h"
 #include "stdio.h"
@@ -16,6 +16,7 @@ mc_tar_iq:0.8f
 #include <ctype.h> // for isspace()  
 
 
+extern void _bsp_protransmit(unsigned char* pdata,unsigned short len);
 
 
 

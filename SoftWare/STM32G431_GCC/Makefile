@@ -73,14 +73,12 @@ Src/usart.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart_ex.c 
 
+C_SOURCES += $(wildcard ./Board/*.c)
 C_SOURCES += $(wildcard ./Hardware/*.c)
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-C_SOURCES += $(wildcard ../Protocol/*.c)
 C_SOURCES += $(wildcard ../Sensor/*.c)
 C_SOURCES += $(wildcard ../Common/*.c)
 C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
-C_SOURCES += $(wildcard ../Common/IPC/*.c)
-C_SOURCES += $(wildcard ../Common/Fsm/*.c)
 C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
 C_SOURCES += $(wildcard ../Common/debuglog/*.c)
 C_SOURCES += $(wildcard ../Common/method/*.c)
@@ -154,15 +152,15 @@ C_INCLUDES += -I../Common/Perf_counter
 C_INCLUDES += -I./Hardware 
 C_INCLUDES += -I../Sensor 
 C_INCLUDES += -I../BLDCMotor 
-C_INCLUDES += -I../protocol 
+# C_INCLUDES += -I../protocol 
 C_INCLUDES += -I../Common/IQMath/support 
 C_INCLUDES += -I../Common/IQMath/ti 
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
 C_INCLUDES += -I../Common/debuglog 
 C_INCLUDES += -I../Common/method 
-C_INCLUDES += -I../Common/IPC 
-C_INCLUDES += -I../Common/Fsm 
+# C_INCLUDES += -I../Common/IPC 
+# C_INCLUDES += -I../Common/Fsm 
 C_INCLUDES += -I../Common/_assert 
 C_INCLUDES += -I../Common/data_structures 
 C_INCLUDES += -I../Common 

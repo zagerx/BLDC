@@ -22,10 +22,11 @@
 
 /* USER CODE BEGIN 0 */
 #include "string.h"
-#include "protocol_cfg.h"
-#include "protocol.h"
-static uint8_t sg_uartreceive_buff[PRO_FRAME_MAX_SIZE];
-static unsigned char sg_uartsend_buf[PRO_FRAME_MAX_SIZE];
+// #include "protocol_cfg.h"
+// #include "protocol.h"
+
+static uint8_t sg_uartreceive_buff[125];
+static unsigned char sg_uartsend_buf[125];
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -206,7 +207,7 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
             HAL_UART_DMAStop(&huart1);//停止本次DMA传输
             unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);   //计算接收到的数据长度
             motorprotocol_getdata(sg_uartreceive_buff);
-            protocol_reciverdata_tofifo(sg_uartreceive_buff,data_length);
+            // protocol_reciverdata_tofifo(sg_uartreceive_buff,data_length);
             memset(sg_uartreceive_buff,0,data_length);                                            //清零接收缓冲区
             data_length = 0;
             HAL_UART_Receive_DMA(&huart1, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));                    //重启开始DMA传输 每次255字节数据                    
