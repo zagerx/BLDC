@@ -139,6 +139,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
   w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
   test_u = u;test_v = v;test_w = w;
-  hallsection_update(u,v,w);
+  // hallsection_update(u,v,w);
 }
 /* USER CODE END 2 */

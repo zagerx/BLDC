@@ -68,5 +68,6 @@ typedef enum{
     #define Q_MAX_VAL                    D_MAX_VAL
     #define Q_MIN_VAL                    -Q_MAX_VAL
 #endif
+void board_init(void);
 
 #endif

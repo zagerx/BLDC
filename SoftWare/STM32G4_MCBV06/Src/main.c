@@ -29,6 +29,8 @@
 #include "hardware.h"
 #include "motorctrl.h"
 #include "sensor.h"
+#include "board.h"
+#include "actuator.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -98,7 +100,7 @@ void sysrunning_process(void)
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
             {
-                HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);                
+                // HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);                
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
                 HAL_GPIO_TogglePin(SF_DOG_GPIO_Port,SF_DOG_Pin);
@@ -149,6 +151,7 @@ int main(void)
   USER_DEBUG_NORMAL("MCB_V06 start runing\r\n");
   HAL_Delay(800);
   hw_init();
+  board_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -156,6 +159,7 @@ int main(void)
   while (1)
   {
     sensor_process();
+    actuator_process();
     sysrunning_process();
     motortctrl_process();
     HAL_Delay(1);

@@ -348,17 +348,17 @@ static void _convert_current(uint16_t* adc_buf,float *i_abc)
 		i_abc[0]  += 0.1f;
     return;
 }
+  unsigned short adc_vale[3];
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  unsigned short adc_vale[3];
   float iabc[3];
   uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;  
 	if(!counting_down)   
 	{
     adc_vale[0] = (uint16_t)0;
     adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_1);
-    adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_1);
+    adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
     _convert_current((uint16_t*)adc_vale,iabc);
     mc_hightfreq_task(iabc);
 	}
