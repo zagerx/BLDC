@@ -1,55 +1,55 @@
-#include "Fct.h"
+#include "actuator.h"
+#include "actuator_cfg.h"
+#include "stdint.h"
 
-static int cmd01_actutorfunc(actuator_t *pthis);
-static void Fct_FindCmd(FCT_PRO_CMD cmd);
-static commandmap_t sgcommandmap[] = {
-    {CMD_01,{ACT_IDLE,cmd01_actutorfunc}},
+#ifdef ACTUATOR_MODE
+typedef enum{
+    CMD_NONE = -1,
+    EVENT_01 = 0,
+    EVENT_02 = 1,   
+}ACT_DRI_EVENT;
+#endif
+
+
+typedef struct {  
+    ACT_DRI_EVENT cmd;  
+    actuator_t actutor;
+} eventmap_t;
+static eventmap_t sg_eventmap[] = {
+    {EVENT_01,{ACT_IDLE,event01_actutorfunc}},
 };
 
-extern void Fct_protocolpause(uint8_t *data)
+static void _evevt_triggle_actutor(ACT_DRI_EVENT event);
+
+
+extern void actutor_get_driverevent(void *data)
 {
-    /*根据协议处理 data*/
-    FCT_PRO_CMD cmd;
-    cmd = (FCT_PRO_CMD)(*data);
-    
-    Fct_FindCmd(cmd);
+    _evevt_triggle_actutor((ACT_DRI_EVENT)(*data));
 }
-extern void Fct_actuatorprocess(void)
+extern void actuator_process(void)
 {
-    for (uint16_t i = 0; i < sizeof(sgcommandmap)/sizeof(sgcommandmap[0]); i++)
+    for (uint16_t i = 0; i < sizeof(sg_eventmap)/sizeof(sg_eventmap[0]); i++)
     {
-        if (sgcommandmap[i].actutor.pFunc != NULL)
+        if (sg_eventmap[i].actutor.pFunc != NULL)
         {
-            sgcommandmap[i].actutor.pFunc((actuator_t*)&(sgcommandmap[i].actutor));
+            sg_eventmap[i].actutor.pFunc((actuator_t*)&(sg_eventmap[i].actutor));
         }
     }
 }
 
-static void Fct_FindCmd(FCT_PRO_CMD cmd)
+static void _evevt_triggle_actutor(ACT_DRI_EVENT event)
 {
-    for (uint16_t i = 0; i < sizeof(sgcommandmap)/sizeof(sgcommandmap[0]); i++)
+    for (uint16_t i = 0; i < sizeof(sg_eventmap)/sizeof(sg_eventmap[0]); i++)
     {
-        if (sgcommandmap[i].cmd != cmd)
+        if (sg_eventmap[i].event != event)
         {
             continue;
         }
         
-        if (sgcommandmap[i].actutor.pFunc != NULL)
+        if (sg_eventmap[i].actutor.pFunc != NULL)
         {
-            sgcommandmap[i].actutor.state = ACT_START;
+            sg_eventmap[i].actutor.state = ACT_START;
         }
     }
 }
 
-static int cmd01_actutorfunc(actuator_t *pthis)
-{
-    switch (pthis->state)
-    {
-    case ACT_START:
-        break;
-
-    default:
-        break;
-    }
-    return 0;
-}

@@ -17,7 +17,9 @@ mc_tar_iq:0.8f
 
 
 extern void _bsp_protransmit(unsigned char* pdata,unsigned short len);
-
+__attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len)
+{
+}
 
 
 static void* _set_tarid(char *str,int32_t id);
