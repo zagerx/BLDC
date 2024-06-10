@@ -16,6 +16,6 @@ typedef struct _motor_
 void motortctrl_process(void);
 void mc_hightfreq_task(float *iabc);
 void motorprotocol_pause(char *cmd);
-void motorprotocol_getdata(char *data);
+void motorprotocol_getdata(char *data,unsigned short len);
 void motorprotocol_process(void);
 #endif

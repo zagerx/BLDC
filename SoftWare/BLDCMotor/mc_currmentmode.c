@@ -18,9 +18,9 @@ duty_t currment_loop(float *abc,float theta,float next_theta)
 	i_abc.a = abc[0];
 	i_abc.b = abc[1];
 	i_abc.c = abc[2];
-	motordebug.ia = i_abc.a;
-	motordebug.ib = i_abc.b;
-	motordebug.ic = i_abc.c;
+	motordebug.ia_real = i_abc.a;
+	motordebug.ib_real = i_abc.b;
+	motordebug.ic_real = i_abc.c;
 
     alpbet_t motor_Ialphabeta;
 	_3s_2s(i_abc,&motor_Ialphabeta);

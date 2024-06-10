@@ -40,6 +40,7 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
+Src/system_scheduler.c \
 Src/main.c \
 Src/gpio.c \
 Src/stm32g4xx_it.c \

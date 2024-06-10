@@ -50,15 +50,7 @@ static float _limit_torque(float tar)
 	{
 		torque = limitVel(VELOCITY_LIMIT, *vel_estimate, vel_gain, torque);
 	}
-
-	if (torque > Tlim)
-	{
-		torque = Tlim;
-	}
-	if (torque < -Tlim)
-	{
-		torque = -Tlim;
-	}
+	torque = ((torque > Tlim) ? Tlim : (torque < -Tlim) ? -Tlim : torque);
 	return torque;
 }
 

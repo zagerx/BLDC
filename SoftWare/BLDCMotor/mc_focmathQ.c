@@ -1,3 +1,5 @@
+#if 0
+
 #include "stdint.h"
 #include "motorctrl_common.h"
 
@@ -94,4 +96,4 @@ void _2s_2r_Q(alpbet_t i_alphabeta,int32_t theta,dq_t *dq)
     dq->Q_d =  _IQ15mpy(cos_theta,i_alphabeta.Q_alpha) + _IQ15mpy(sin_theta,i_alphabeta.Q_beta);
     dq->Q_q = _IQ15mpy(-sin_theta,i_alphabeta.Q_alpha) + _IQ15mpy(cos_theta,i_alphabeta.Q_beta);    
 }
-
+#endif

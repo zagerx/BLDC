@@ -15,10 +15,10 @@ enum{
 };
 typedef void* (*pfunc)(char *,int32_t);
 typedef struct {  
-    const char *cmd;  
+    char *cmd;  
     unsigned short cmd_index;
     pfunc pf_cmdexcue;
-    const char *res_cmd;
+    char *res_cmd;
 } commandmap_t; 
 
 

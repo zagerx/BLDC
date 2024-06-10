@@ -48,27 +48,27 @@ commandmap_t sg_commandmap[] = {
 
 };
 static char *Rx_Buf[62] = {0};
-void motorprotocol_getdata(char *data)
+void motorprotocol_getdata(char *data,unsigned short len)
 {
-    strcpy(Rx_Buf,data);
+    // strcpy(Rx_Buf,data);
+    memcpy(Rx_Buf,data,len);
 }
 
 void motorprotocol_pause(char *cmd)
 {
-    float value =0.0f;
-    unsigned short cmd_ID;
     if (cmd[0] == 0 && cmd[1] == 0)
     {
         return;
     }
     const size_t mapSize = sizeof(sg_commandmap) / sizeof(sg_commandmap[0]); 
-    cmd_ID = _findcmd_from_map(cmd,sg_commandmap,mapSize);    
+    _findcmd_from_map(cmd,sg_commandmap,mapSize);    
 }
 
 void motorprotocol_process(void)
 {   
-    motorprotocol_pause(Rx_Buf);
-    memset(Rx_Buf, 0, sizeof(Rx_Buf));
+
+    motorprotocol_pause((char *)Rx_Buf);
+    memset((char *)Rx_Buf, 0, sizeof(Rx_Buf));
 }
 void motorprotocol_transmit(char *pstr,uint16_t len)
 {
@@ -159,7 +159,7 @@ static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map
                 return 0;
             }
 
-            map[i].pf_cmdexcue(str,0);
+            map[i].pf_cmdexcue((char *)str,0);
             return map[i].cmd_index; // 找到匹配项，返回对应值  
         }
     }

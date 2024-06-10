@@ -168,7 +168,7 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
     memcpy(sg_uartsend_buf,pdata,len);
     HAL_UART_Transmit_DMA(&huart2,sg_uartsend_buf,len);
 }
-extern void motorprotocol_getdata(char *data);
+extern void motorprotocol_getdata(char *data,unsigned short len);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
     if(USART2 == huart2.Instance)                                   //判断是否是串�?1（！此处应写(huart->Instance == USART2)
@@ -178,7 +178,7 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
             __HAL_UART_CLEAR_IDLEFLAG(&huart2);                     //清楚空闲中断标志（否则会�?直不断进入中断）
             HAL_UART_DMAStop(&huart2);//停止本次DMA传输
             unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart2_rx);   //计算接收到的数据长度
-            motorprotocol_getdata(sg_uartreceive_buff);
+            motorprotocol_getdata(sg_uartreceive_buff,data_length);
             // protocol_reciverdata_tofifo(sg_uartreceive_buff,data_length);
             memset(sg_uartreceive_buff,0,data_length);                                            //清零接收缓冲�?
             data_length = 0;

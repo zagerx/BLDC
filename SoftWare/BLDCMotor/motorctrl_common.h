@@ -38,34 +38,22 @@ typedef struct _motor
 
 typedef struct
 {
-    float ia;
-    float ib;
-    float ic;
-    float ialpha;
-    float ibeta;
-    float id;
-    float iq;
-
-    int32_t Q_ia;
-    int32_t Q_ib;
-    int32_t Q_ic;
-    int32_t Q_ialpha;
-    int32_t Q_ibeta;
-    int32_t Q_id;
-    int32_t Q_iq;
+    float ia_real;
+    float ib_real;
+    float ic_real;
 
     float id_real;
-    int32_t Q_id_targe;
     float id_targe;
 
+    float iq_real;
+    float iq_targe;
+
+    float speed_targe;
     float real_speed;
 
-    float iq_targe;
-    int32_t Q_iq_targe;
-    float iq_real;
     float vbus;
-    float speed_targe;
-    float pid_Q_out;
+
+
     float Pid_q_kp;
     float pid_q_ki;
     float pid_D_out;
@@ -73,8 +61,6 @@ typedef struct
     float pid_d_ki;
     float ele_angle;
     float self_ele_theta;
-    int32_t Q15_ele_angle;
-    int32_t Q15_mec_angle;
     int32_t motor_stat;
     char *cur_cmd;
 }motordebug_t;

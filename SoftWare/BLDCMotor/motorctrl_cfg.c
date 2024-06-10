@@ -23,8 +23,8 @@ void motor_set_pwm(float _a,float _b,float _c)
     tim_set_pwm(_a ,_b,_c);
 }
 
-static void trigger_software_reset(void)
-{
-    HAL_NVIC_SystemReset();
-}
+// static void trigger_software_reset(void)
+// {
+//     HAL_NVIC_SystemReset();
+// }
 

@@ -6,6 +6,7 @@
 #include "string.h"
 #include "mc_torquemode.h"
 #include "mc_currmentmode.h"
+#include "mc_speedmode.h"
 #include "mc_utils.h"
 #include "mc_angle.h"
 #define  CURRMENT_MEAS_PERIOD             0.000125f
@@ -48,7 +49,12 @@ void motortctrl_process(void)
 
     case MOTOR_RUNING:
         {
-            dq_t idq = mc_update_torque(0.1f);//更新iq限制值
+            // dq_t idq = mc_update_torque(0.1f);//更新iq限制值
+            // motordebug.id_targe = idq.d;
+            // motordebug.iq_targe = idq.q;
+            dq_t idq = {0.0f};
+            idq.q = speed_loop(10.0f);
+            motordebug.speed_targe = 10.0f;
             motordebug.id_targe = idq.d;
             motordebug.iq_targe = idq.q;
         }
@@ -141,9 +147,9 @@ void mc_test(float *iabc,float omega)
 
         _3s_2s(i_abc,&i_ab);
         _2s_2r(i_ab,theta*7.0f,&i_dq);
-        motordebug.ia = i_abc.a;
-        motordebug.ib = i_abc.b;
-        motordebug.ic = i_abc.c;
+        motordebug.ia_real = i_abc.a;
+        motordebug.ib_real = i_abc.b;
+        motordebug.ic_real = i_abc.c;
         motordebug.id_real = i_dq.d;
         motordebug.iq_real = i_dq.q;
         next_theta = omega * 0.000125F * (cnt+1) * 7.0f;
@@ -179,8 +185,7 @@ static void mc_param_init(void)
 {
     pid_init(&(mc_param.daxis_pi),0.0273f,166.2507f * 0.000125f,1.0f,D_MAX_VAL,D_MIN_VAL);
     pid_init(&(mc_param.qaxis_pi),0.0273f,166.2507f * 0.000125f,1.0f,D_MAX_VAL,D_MIN_VAL);
-
-    // pid_init(&(mc_param.speedloop_pi),1.0f,0.0f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(&(mc_param.speedloop_pi),1.0f,0.1f,1.0f,D_MAX_VAL,D_MIN_VAL);
     // lowfilter_init(&(mc_param.elefitler[0]),80);
     // lowfilter_init(&(mc_param.elefitler[1]),80);
     // lowfilter_init(&(mc_param.elefitler[2]),80);
