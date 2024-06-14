@@ -48,7 +48,7 @@ typedef enum{
     #define U_DC                        (24.0f)
     #define F_PWM                       (float)(1.0f/T_PWM)
     #define T_UDC                       (float)(T_PWM/U_DC)
-    #define ANGLE_COMPENSATA           (0.1f)
+    #define ANGLE_COMPENSATA            (0.1f)
 
     #define CIRCLE_MAX_VAL               (24.0f)
     #define D_MAX_VAL                    12.0f//4.0f//CIRCLE_MAX_VAL*sqrt(3.0f)/3.0f
