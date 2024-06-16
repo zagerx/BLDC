@@ -118,7 +118,7 @@ int main(void)
   USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/170);  
   board_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
-  USER_DEBUG_NORMAL("SYS start runing\r\n");
+    USER_DEBUG_NORMAL("SYS start runing\r\n");
 
 
   /* USER CODE END 2 */

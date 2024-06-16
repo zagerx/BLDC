@@ -4,11 +4,6 @@
 #include "mc_utils.h"
 #include "tim.h"
 
-
-
-#define  TIM_PERIOD                       3500
-
-// extern mc_param_t mc_param ;
 extern mc_param_t mc_param;
 float  vbus_voltage=24.0f;
 
@@ -42,7 +37,7 @@ duty_t currment_loop(float *abc,float theta,float next_theta)
 	float Vd = 0.0f;
 	float Vq = 0.8f;
 #endif
-	float mod_to_V = (2.0f / 3.0f) * vbus_voltage;
+	float mod_to_V = (2.0f / 3.0f) * motordebug.vbus;//vbus_voltage;
 	float V_to_mod = 1.0f / mod_to_V;
 	float mod_d = V_to_mod * Vd;
 	float mod_q = V_to_mod * Vq;

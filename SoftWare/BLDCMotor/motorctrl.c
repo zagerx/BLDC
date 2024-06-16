@@ -9,7 +9,7 @@
 #include "mc_speedmode.h"
 #include "mc_utils.h"
 #include "mc_angle.h"
-#define  CURRMENT_MEAS_PERIOD             0.000125f
+#define  CURRMENT_PERIOD             0.000125f
 #define TOTAL_DISTANCE       (_2PI)
 #define TOTAL_TIME           (6.0f)
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)
@@ -59,9 +59,24 @@ void motortctrl_process(void)
             motordebug.iq_targe = idq.q;
         }
 
-        // int32_t cov = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
-        // float vbus = (float)((float)cov / (1<<15));
-        // motordebug.vbus = vbus;
+        int32_t cov = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
+        float vbus = (float)((float)cov / (1<<15));
+        static short falut_cnt = 0;
+        if (vbus > 22.0f)
+        {
+            falut_cnt = 0;
+        }else{
+            falut_cnt++;
+            if (falut_cnt > 10)
+            {
+                falut_cnt = 0;
+                motor_disable();
+                _state = MOTOR_STOP;
+            }
+        }
+
+        
+        motordebug.vbus = vbus;
 
         if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
         {
@@ -83,7 +98,6 @@ void motortctrl_process(void)
 void mc_hightfreq_task(float *iabc)
 {
 #if 0    
-
     mc_test(iabc,TOTAL_OMEGA);
 #else
 
@@ -94,8 +108,9 @@ void mc_hightfreq_task(float *iabc)
     float next_theta = 0.0f;
     float speed = 0.0f;
     mc_encoder_readspeedangle(&raw,&theta,&speed);
-    next_theta = theta + 1.5f * CURRMENT_MEAS_PERIOD * speed;
+    next_theta = theta + 1.5f * CURRMENT_PERIOD * speed;
     motordebug.ele_angle = theta;
+    motordebug.real_speed = speed;
     duty = currment_loop(iabc,theta,next_theta);
     motor_set_pwm(duty._a,duty._b,duty._c);
 #endif
@@ -143,7 +158,7 @@ void mc_test(float *iabc,float omega)
 
     case RUNING:
 
-        theta = omega * 0.000125F * cnt;
+        theta = omega * CURRMENT_PERIOD * cnt;
 
         _3s_2s(i_abc,&i_ab);
         _2s_2r(i_ab,theta*7.0f,&i_dq);
@@ -152,7 +167,7 @@ void mc_test(float *iabc,float omega)
         motordebug.ic_real = i_abc.c;
         motordebug.id_real = i_dq.d;
         motordebug.iq_real = i_dq.q;
-        next_theta = omega * 0.000125F * (cnt+1) * 7.0f;
+        next_theta = omega * CURRMENT_PERIOD * (cnt+1) * 7.0f;
         motordebug.ele_angle = next_theta;
         temp_ab = _2r_2s(idq,next_theta);
         duty = SVM(temp_ab.alpha,temp_ab.beta);
@@ -183,9 +198,9 @@ void mc_test(float *iabc,float omega)
 
 static void mc_param_init(void)
 {
-    pid_init(&(mc_param.daxis_pi),0.0273f,166.2507f * 0.000125f,1.0f,D_MAX_VAL,D_MIN_VAL);
-    pid_init(&(mc_param.qaxis_pi),0.0273f,166.2507f * 0.000125f,1.0f,D_MAX_VAL,D_MIN_VAL);
-    pid_init(&(mc_param.speedloop_pi),1.0f,0.1f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(&(mc_param.daxis_pi),0.0273f,166.2507f * CURRMENT_PERIOD,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(&(mc_param.qaxis_pi),0.0273f,166.2507f * CURRMENT_PERIOD,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(&(mc_param.speedloop_pi),0.9f,0.1f,1.0f,D_MAX_VAL,D_MIN_VAL);
     // lowfilter_init(&(mc_param.elefitler[0]),80);
     // lowfilter_init(&(mc_param.elefitler[1]),80);
     // lowfilter_init(&(mc_param.elefitler[2]),80);

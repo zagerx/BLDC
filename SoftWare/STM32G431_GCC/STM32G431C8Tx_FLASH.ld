@@ -76,17 +76,6 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-
-   .my_section :  
-    {  
-        . = ALIGN(4);
-        *(.my_section)  
-        . = ALIGN(4);
-    } > FLASH  
-  
-    /* ... 其他段的定义 ... */  
-
-
   /* The program code and other data goes into FLASH */
   .text :
   {

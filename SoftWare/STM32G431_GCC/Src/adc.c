@@ -37,8 +37,8 @@ void MX_ADC1_Init(void)
   /* USER CODE END ADC1_Init 0 */
 
   ADC_MultiModeTypeDef multimode = {0};
-  ADC_ChannelConfTypeDef sConfig = {0};
   ADC_InjectionConfTypeDef sConfigInjected = {0};
+  ADC_ChannelConfTypeDef sConfig = {0};
 
   /* USER CODE BEGIN ADC1_Init 1 */
 
@@ -60,7 +60,7 @@ void MX_ADC1_Init(void)
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.DMAContinuousRequests = DISABLE;
-  hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc1.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
   hadc1.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
@@ -71,19 +71,6 @@ void MX_ADC1_Init(void)
   */
   multimode.Mode = ADC_MODE_INDEPENDENT;
   if (HAL_ADCEx_MultiModeConfigChannel(&hadc1, &multimode) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_14;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
-  sConfig.SingleDiff = ADC_SINGLE_ENDED;
-  sConfig.OffsetNumber = ADC_OFFSET_NONE;
-  sConfig.Offset = 0;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
   }
@@ -104,6 +91,19 @@ void MX_ADC1_Init(void)
   sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
   sConfigInjected.InjecOversamplingMode = DISABLE;
   if (HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_14;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
   }
@@ -350,22 +350,19 @@ static int32_t rawdata = 0,covdata = 0,filterdata = 0;
 static int16_t column;
 void adc_vbusinit(void)
 {
-  HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
+  vbus.raw_buf = &rawdata;
+  vbus.covdata_buf = &covdata;
+  vbus.filterdata_buf = &filterdata;
+  HAL_ADC_Start(&hadc1);
 
-    HAL_ADC_Start(&hadc1);
-    vbus.raw_buf = &rawdata;
-    vbus.covdata_buf = &covdata;
-    vbus.filterdata_buf = &filterdata;  
 }
 void* adc_readvbus(void)
 {
-  HAL_ADC_Start(&hadc1);
 
   if (HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK) {
-  rawdata = HAL_ADC_GetValue(&hadc1);
-  covdata = ((4.7f+47.0f)/4.f) * (3.3f/4096) * rawdata * (1<<15);
+    rawdata = HAL_ADC_GetValue(&hadc1);
+    covdata = ((4.7f+47.0f)/4.f) * (3.3f/4096) * rawdata * (1<<15);
   }
-  // HAL_ADC_Stop(&hadc1);
   return (void*)&vbus;
 }
 

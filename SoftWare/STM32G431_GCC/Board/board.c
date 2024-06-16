@@ -12,10 +12,19 @@ static sensor_t sg_sensor_as5047 = {
         .cycle = 0,
         .status = EN_SENSOR_INIT
 };
-
+#include "adc.h"
+static sensor_t sg_sensor_vbus = {
+        .pf_read = adc_readvbus,
+        .pf_write = NULL,
+        .pf_init = adc_vbusinit,
+        .cycle = 2,
+        .status = EN_SENSOR_INIT
+};
 void board_init(void)
 {
     sensor_register(&sg_sensor_as5047,SENSOR_01);
+    sensor_register(&sg_sensor_vbus,SENSOR_02);
+
 }
 
 void board_deinit(void)
