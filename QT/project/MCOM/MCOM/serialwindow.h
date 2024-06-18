@@ -20,37 +20,22 @@ public:
     ~serialwindow();
     void SerialPortInit(void);
 private slots:
-    void on_pushButton_clicked();
-
-    void on_enter_bt_clicked();
 
     void on_mc_startBt_clicked();
 
     void on_mt_stopBt_clicked();
 
-    void sendKpCommand();
-
-    void sendKiCommand();
-
-    void sendKcCommand();
-
-    void sendIdCommand();
-
-    void sendIqCommand();
-
     void onReadSerialData();
 
-    void on_mc_pidset_clicked();
-
-    void sendParamEnter();
-
-    void on_mc_speed_Bt_clicked();
-
     void processdata(QByteArray data);
+    void on_debug_bt_clicked();
+    void onDataReceivedFromB(const QString &data); // 接收B界面传递的数据
+
+    void on_enseriBt_clicked();
+
 private:
     Ui::serialwindow *ui;
     QSerialPort *serial;
-    // QLabel *lightLabel;
 };
 
 #endif // SERIALWINDOW_H

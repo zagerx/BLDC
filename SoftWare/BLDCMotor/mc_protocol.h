@@ -3,15 +3,11 @@
 #include "stdint.h"
 
 enum{
-    CMD_SET_TARSPEED_ = 0,
-    CMD_SET_ID,
-    CMD_SET_IQ,
+
     CMD_SET_STOP,
     CMD_SET_START,
     CMD_SET_D_KP,
-    CMD_SET_D_KI,
-    CMD_SET_PIDPARASET,
-    CMD_SET_TARSPEED,
+
 };
 typedef void* (*pfunc)(char *,int32_t);
 typedef struct {  

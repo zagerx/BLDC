@@ -54,14 +54,12 @@ typedef struct
     float vbus;
 
 
-    float Pid_q_kp;
-    float pid_q_ki;
-    float pid_D_out;
-    float pid_d_kp;
-    float pid_d_ki;
+    float pid_kp;
+    float pid_ki;
+    float pid_kc;
+
     float ele_angle;
     float self_ele_theta;
-    int32_t motor_stat;
     char *cur_cmd;
 }motordebug_t;
 

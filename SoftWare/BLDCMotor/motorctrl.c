@@ -9,7 +9,7 @@
 #include "mc_speedmode.h"
 #include "mc_utils.h"
 #include "mc_angle.h"
-#define  CURRMENT_PERIOD             0.000125f
+#define CURRMENT_PERIOD      (0.000125f)
 #define TOTAL_DISTANCE       (_2PI)
 #define TOTAL_TIME           (6.0f)
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)
@@ -75,7 +75,6 @@ void motortctrl_process(void)
             }
         }
 
-        
         motordebug.vbus = vbus;
 
         if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))

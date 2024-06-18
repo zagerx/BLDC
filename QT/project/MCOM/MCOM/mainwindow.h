@@ -20,8 +20,6 @@ public:
 private slots:
     void on_serialButton_clicked();
 
-    void on_PIDButton_clicked();
-
 private:
     Ui::MainWindow *ui;
 };

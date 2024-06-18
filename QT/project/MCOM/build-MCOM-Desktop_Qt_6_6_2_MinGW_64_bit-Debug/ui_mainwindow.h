@@ -25,7 +25,6 @@ public:
     QWidget *centralwidget;
     QPushButton *serialButton;
     QPushButton *CANButton;
-    QPushButton *PIDButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -42,9 +41,6 @@ public:
         CANButton = new QPushButton(centralwidget);
         CANButton->setObjectName("CANButton");
         CANButton->setGeometry(QRect(210, 50, 111, 51));
-        PIDButton = new QPushButton(centralwidget);
-        PIDButton->setObjectName("PIDButton");
-        PIDButton->setGeometry(QRect(80, 150, 101, 51));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
@@ -64,7 +60,6 @@ public:
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
         serialButton->setText(QCoreApplication::translate("MainWindow", "\344\270\262\345\217\243\351\200\232\344\277\241", nullptr));
         CANButton->setText(QCoreApplication::translate("MainWindow", "CAN\351\200\232\344\277\241", nullptr));
-        PIDButton->setText(QCoreApplication::translate("MainWindow", "PID", nullptr));
     } // retranslateUi
 
 };

@@ -40,83 +40,55 @@ namespace {
 struct qt_meta_stringdata_CLASSserialwindowENDCLASS_t {};
 constexpr auto qt_meta_stringdata_CLASSserialwindowENDCLASS = QtMocHelpers::stringData(
     "serialwindow",
-    "on_pushButton_clicked",
-    "",
-    "on_enter_bt_clicked",
     "on_mc_startBt_clicked",
+    "",
     "on_mt_stopBt_clicked",
-    "sendKpCommand",
-    "sendKiCommand",
-    "sendKcCommand",
-    "sendIdCommand",
-    "sendIqCommand",
     "onReadSerialData",
-    "on_mc_pidset_clicked",
-    "sendParamEnter",
-    "on_mc_speed_Bt_clicked",
     "processdata",
-    "data"
+    "data",
+    "on_debug_bt_clicked",
+    "onDataReceivedFromB",
+    "on_enseriBt_clicked"
 );
 #else  // !QT_MOC_HAS_STRING_DATA
 struct qt_meta_stringdata_CLASSserialwindowENDCLASS_t {
-    uint offsetsAndSizes[34];
+    uint offsetsAndSizes[20];
     char stringdata0[13];
     char stringdata1[22];
     char stringdata2[1];
-    char stringdata3[20];
-    char stringdata4[22];
-    char stringdata5[21];
-    char stringdata6[14];
-    char stringdata7[14];
-    char stringdata8[14];
-    char stringdata9[14];
-    char stringdata10[14];
-    char stringdata11[17];
-    char stringdata12[21];
-    char stringdata13[15];
-    char stringdata14[23];
-    char stringdata15[12];
-    char stringdata16[5];
+    char stringdata3[21];
+    char stringdata4[17];
+    char stringdata5[12];
+    char stringdata6[5];
+    char stringdata7[20];
+    char stringdata8[20];
+    char stringdata9[20];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_CLASSserialwindowENDCLASS_t::offsetsAndSizes) + ofs), len 
 Q_CONSTINIT static const qt_meta_stringdata_CLASSserialwindowENDCLASS_t qt_meta_stringdata_CLASSserialwindowENDCLASS = {
     {
         QT_MOC_LITERAL(0, 12),  // "serialwindow"
-        QT_MOC_LITERAL(13, 21),  // "on_pushButton_clicked"
+        QT_MOC_LITERAL(13, 21),  // "on_mc_startBt_clicked"
         QT_MOC_LITERAL(35, 0),  // ""
-        QT_MOC_LITERAL(36, 19),  // "on_enter_bt_clicked"
-        QT_MOC_LITERAL(56, 21),  // "on_mc_startBt_clicked"
-        QT_MOC_LITERAL(78, 20),  // "on_mt_stopBt_clicked"
-        QT_MOC_LITERAL(99, 13),  // "sendKpCommand"
-        QT_MOC_LITERAL(113, 13),  // "sendKiCommand"
-        QT_MOC_LITERAL(127, 13),  // "sendKcCommand"
-        QT_MOC_LITERAL(141, 13),  // "sendIdCommand"
-        QT_MOC_LITERAL(155, 13),  // "sendIqCommand"
-        QT_MOC_LITERAL(169, 16),  // "onReadSerialData"
-        QT_MOC_LITERAL(186, 20),  // "on_mc_pidset_clicked"
-        QT_MOC_LITERAL(207, 14),  // "sendParamEnter"
-        QT_MOC_LITERAL(222, 22),  // "on_mc_speed_Bt_clicked"
-        QT_MOC_LITERAL(245, 11),  // "processdata"
-        QT_MOC_LITERAL(257, 4)   // "data"
+        QT_MOC_LITERAL(36, 20),  // "on_mt_stopBt_clicked"
+        QT_MOC_LITERAL(57, 16),  // "onReadSerialData"
+        QT_MOC_LITERAL(74, 11),  // "processdata"
+        QT_MOC_LITERAL(86, 4),  // "data"
+        QT_MOC_LITERAL(91, 19),  // "on_debug_bt_clicked"
+        QT_MOC_LITERAL(111, 19),  // "onDataReceivedFromB"
+        QT_MOC_LITERAL(131, 19)   // "on_enseriBt_clicked"
     },
     "serialwindow",
-    "on_pushButton_clicked",
-    "",
-    "on_enter_bt_clicked",
     "on_mc_startBt_clicked",
+    "",
     "on_mt_stopBt_clicked",
-    "sendKpCommand",
-    "sendKiCommand",
-    "sendKcCommand",
-    "sendIdCommand",
-    "sendIqCommand",
     "onReadSerialData",
-    "on_mc_pidset_clicked",
-    "sendParamEnter",
-    "on_mc_speed_Bt_clicked",
     "processdata",
-    "data"
+    "data",
+    "on_debug_bt_clicked",
+    "onDataReceivedFromB",
+    "on_enseriBt_clicked"
 };
 #undef QT_MOC_LITERAL
 #endif // !QT_MOC_HAS_STRING_DATA
@@ -128,7 +100,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSserialwindowENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      14,   14, // methods
+       7,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -136,36 +108,22 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSserialwindowENDCLASS[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   98,    2, 0x08,    1 /* Private */,
-       3,    0,   99,    2, 0x08,    2 /* Private */,
-       4,    0,  100,    2, 0x08,    3 /* Private */,
-       5,    0,  101,    2, 0x08,    4 /* Private */,
-       6,    0,  102,    2, 0x08,    5 /* Private */,
-       7,    0,  103,    2, 0x08,    6 /* Private */,
-       8,    0,  104,    2, 0x08,    7 /* Private */,
-       9,    0,  105,    2, 0x08,    8 /* Private */,
-      10,    0,  106,    2, 0x08,    9 /* Private */,
-      11,    0,  107,    2, 0x08,   10 /* Private */,
-      12,    0,  108,    2, 0x08,   11 /* Private */,
-      13,    0,  109,    2, 0x08,   12 /* Private */,
-      14,    0,  110,    2, 0x08,   13 /* Private */,
-      15,    1,  111,    2, 0x08,   14 /* Private */,
+       1,    0,   56,    2, 0x08,    1 /* Private */,
+       3,    0,   57,    2, 0x08,    2 /* Private */,
+       4,    0,   58,    2, 0x08,    3 /* Private */,
+       5,    1,   59,    2, 0x08,    4 /* Private */,
+       7,    0,   62,    2, 0x08,    6 /* Private */,
+       8,    1,   63,    2, 0x08,    7 /* Private */,
+       9,    0,   66,    2, 0x08,    9 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::QByteArray,    6,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::QString,    6,
     QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void, QMetaType::QByteArray,   16,
 
        0        // eod
 };
@@ -179,35 +137,22 @@ Q_CONSTINIT const QMetaObject serialwindow::staticMetaObject = { {
     qt_incomplete_metaTypeArray<qt_meta_stringdata_CLASSserialwindowENDCLASS_t,
         // Q_OBJECT / Q_GADGET
         QtPrivate::TypeAndForceComplete<serialwindow, std::true_type>,
-        // method 'on_pushButton_clicked'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_enter_bt_clicked'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_mc_startBt_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_mt_stopBt_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'sendKpCommand'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'sendKiCommand'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'sendKcCommand'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'sendIdCommand'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'sendIqCommand'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'onReadSerialData'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_mc_pidset_clicked'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'sendParamEnter'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_mc_speed_Bt_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'processdata'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QByteArray, std::false_type>
+        QtPrivate::TypeAndForceComplete<QByteArray, std::false_type>,
+        // method 'on_debug_bt_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'onDataReceivedFromB'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
+        // method 'on_enseriBt_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
 } };
@@ -218,20 +163,13 @@ void serialwindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         auto *_t = static_cast<serialwindow *>(_o);
         (void)_t;
         switch (_id) {
-        case 0: _t->on_pushButton_clicked(); break;
-        case 1: _t->on_enter_bt_clicked(); break;
-        case 2: _t->on_mc_startBt_clicked(); break;
-        case 3: _t->on_mt_stopBt_clicked(); break;
-        case 4: _t->sendKpCommand(); break;
-        case 5: _t->sendKiCommand(); break;
-        case 6: _t->sendKcCommand(); break;
-        case 7: _t->sendIdCommand(); break;
-        case 8: _t->sendIqCommand(); break;
-        case 9: _t->onReadSerialData(); break;
-        case 10: _t->on_mc_pidset_clicked(); break;
-        case 11: _t->sendParamEnter(); break;
-        case 12: _t->on_mc_speed_Bt_clicked(); break;
-        case 13: _t->processdata((*reinterpret_cast< std::add_pointer_t<QByteArray>>(_a[1]))); break;
+        case 0: _t->on_mc_startBt_clicked(); break;
+        case 1: _t->on_mt_stopBt_clicked(); break;
+        case 2: _t->onReadSerialData(); break;
+        case 3: _t->processdata((*reinterpret_cast< std::add_pointer_t<QByteArray>>(_a[1]))); break;
+        case 4: _t->on_debug_bt_clicked(); break;
+        case 5: _t->onDataReceivedFromB((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 6: _t->on_enseriBt_clicked(); break;
         default: ;
         }
     }
@@ -256,13 +194,13 @@ int serialwindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 14)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 14;
+        _id -= 7;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 14)
+        if (_id < 7)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 14;
+        _id -= 7;
     }
     return _id;
 }

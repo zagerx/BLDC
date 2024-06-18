@@ -15,42 +15,30 @@ mc_tar_iq:0.8f
 #include <stdlib.h>  
 #include <ctype.h> // for isspace()  
 
-
+#include "debuglog.h"
 extern void _bsp_protransmit(unsigned char* pdata,unsigned short len);
 __attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 {
 }
 
 
-static void* _set_tarid(char *str,int32_t id);
-static void* _set_tariq(char *str,int32_t iq);
 static void* _set_motorstop(char *str,int32_t iq);
 static void* _set_motorstart(char *str,int32_t iq);
-static void* _set_d_kp(char *str,int32_t kp);
-static void* _set_d_ki(char *str,int32_t ki);
-static void* _set_pidpara_cmd(char *str,int32_t param);
-static void* _set_tarspeed(char *str,int32_t iq);
+static void* _set_pid_param(char *str,int32_t kp);
 
 static int _findF_from_str(const char *str, float *val) ;
 static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map, size_t mapSize);
- 
+static int parse_floats_from_string(const char *str, float vals[], int max_vals);
+
 // 命令映射表  
 commandmap_t sg_commandmap[] = {  
-    {"mc_tar_speed",    1,   NULL,                NULL},  
-    {"mc_tar_id",       2,   _set_tarid,          NULL},  
-    {"mc_tar_iq",       3,   _set_tariq,          NULL},
     {"motor_stop",      4,   _set_motorstop,      "motor state stop"},
     {"motor_start",     5,   _set_motorstart,     "motor state runing"},
-    {"mc_setd_kp",      6,   _set_d_kp,           NULL},
-    {"mc_setd_ki",      7,   _set_d_ki,           NULL},
-    {"mc_pid_paraset",  8,   _set_pidpara_cmd,    NULL},
-    {"mc_tar_speed",    9,   _set_tarspeed,       NULL},
-
+    {"pid_param",      6,   _set_pid_param,            "pid param set"},
 };
 static char *Rx_Buf[62] = {0};
 void motorprotocol_getdata(char *data,unsigned short len)
 {
-    // strcpy(Rx_Buf,data);
     memcpy(Rx_Buf,data,len);
 }
 
@@ -61,12 +49,11 @@ void motorprotocol_pause(char *cmd)
         return;
     }
     const size_t mapSize = sizeof(sg_commandmap) / sizeof(sg_commandmap[0]); 
-    _findcmd_from_map(cmd,sg_commandmap,mapSize);    
+    _findcmd_from_map(cmd,sg_commandmap,mapSize);
 }
 
 void motorprotocol_process(void)
 {   
-
     motorprotocol_pause((char *)Rx_Buf);
     memset((char *)Rx_Buf, 0, sizeof(Rx_Buf));
 }
@@ -74,29 +61,21 @@ void motorprotocol_transmit(char *pstr,uint16_t len)
 {
     _bsp_protransmit((unsigned char *)pstr,len);
 }
-static void* _set_d_kp(char *str,int32_t kp)
+static void* _set_pid_param(char *str,int32_t kp)
 {
     float val = 0.0f;
-    if (!_findF_from_str(str,&val))
-    {
-        return 0;
-    }
-    motordebug.pid_d_kp = val;
+    USER_DEBUG_NORMAL("%s\r\n",str);
+    float vals[3];
+    parse_floats_from_string(str,vals,3);
+    motordebug.pid_kp = vals[0];
+    motordebug.pid_ki = vals[1];
+    motordebug.pid_kc = vals[2];
+    USER_DEBUG_NORMAL("%f %f %f\r\n",vals[0],vals[1],vals[2]);
     return 0;    
 }
-static void* _set_d_ki(char *str,int32_t ki)
-{
-    float val = 0.0f;            
-    if (!_findF_from_str(str,&val))
-    {
-        return 0;
-    }  
-    motordebug.pid_d_ki = val;
-    return 0; 
-}
+
 static void* _set_motorstart(char *str,int32_t iq)
 {
-    // motordebug.cur_cmd = "motor start";// sg_commandmap[CMD_SET_START].cmd;
     motordebug.cur_cmd = sg_commandmap[CMD_SET_START].cmd;
     return 0;
 }
@@ -105,44 +84,7 @@ static void* _set_motorstop(char *str,int32_t iq)
     motordebug.cur_cmd = sg_commandmap[CMD_SET_STOP].cmd;
     return 0;
 }
-static void* _set_tarid(char *str,int32_t id)
-{
-    float val = 0.0f;            
-    if (!_findF_from_str(str,&val))
-    {
-        return 0;
-    }
-    motordebug.id_targe = val;
-    return 0;
-} 
 
-static void* _set_tariq(char *str,int32_t iq)
-{
-    float val = 0.0f;            
-    if (!_findF_from_str(str,&val))
-    {
-        return 0;
-    }
-    motordebug.iq_targe = val;
-    return 0;    
-}
-
-static void* _set_pidpara_cmd(char *str,int32_t param)
-{
-    motordebug.motor_stat = 4;
-    return 0;
-}
-
-static void* _set_tarspeed(char *str,int32_t iq)
-{
-    float val = 0.0f;            
-    if (!_findF_from_str(str,&val))
-    {
-        return 0;
-    }
-    motordebug.speed_targe = val;
-    return 0; 
-}
 // 查找命令的函数  
 static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map, size_t mapSize) {  
     if (str == NULL) {  
@@ -165,7 +107,64 @@ static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map
     }
     return 0; // 未找到匹配项，返回0  
 }  
-
+static int parse_floats_from_string(const char *str, float vals[], int max_vals)
+{  
+    // 查找冒号  
+    const char *colon_pos = strchr(str, ':');  
+    if (colon_pos == NULL) {  
+        return 0; // 没有找到冒号  
+    }  
+      
+    // 跳过冒号后的空格（如果有）  
+    colon_pos++;  
+    while (isspace((unsigned char)*colon_pos)) {  
+        colon_pos++;  
+    }  
+      
+    // 初始化解析位置  
+    const char *ptr = colon_pos;  
+    int num_floats = 0;  
+  
+    // 解析浮点数  
+    while (*ptr != '\0' && num_floats < max_vals) {  
+        // 跳过前面的空格（如果有）  
+        while (isspace((unsigned char)*ptr)) {  
+            ptr++;  
+        }  
+  
+        // 检查是否到达字符串末尾  
+        if (*ptr == '\0') {  
+            break;  
+        }  
+  
+        // 解析浮点数  
+        char *endptr;  
+        vals[num_floats] = strtof(ptr, &endptr);  
+  
+        // 更新解析位置  
+        ptr = endptr;  
+  
+        // 检查逗号或字符串末尾  
+        if (*ptr == ',') {  
+            ptr++; // 跳过逗号  
+            num_floats++; // 增加浮点数计数  
+  
+            // 跳过逗号后的空格（如果有）  
+            while (isspace((unsigned char)*ptr)) {  
+                ptr++;  
+            }  
+        } else if (*ptr == '\0') {  
+            num_floats++; // 如果到达字符串末尾，也计数为一个浮点数  
+            break;  
+        } else {  
+            // 非预期字符，退出循环  
+            break;  
+        }  
+    }  
+  
+    // 如果成功解析了至少一个浮点数，则返回其数量  
+    return num_floats > 0 ? num_floats : 0;  
+} 
 static int _findF_from_str(const char *str, float *val) {  
     if (str == NULL || val == NULL) {  
         return 0; // Invalid arguments  

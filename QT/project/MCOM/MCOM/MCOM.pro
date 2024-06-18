@@ -13,17 +13,17 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    pidwindow.cpp \
+    motordebug.cpp \
     serialwindow.cpp
 
 HEADERS += \
     mainwindow.h \
-    pidwindow.h \
+    motordebug.h \
     serialwindow.h
 
 FORMS += \
     mainwindow.ui \
-    pidwindow.ui \
+    motordebug.ui \
     serialwindow.ui
 
 # Default rules for deployment.

@@ -61,7 +61,7 @@ void serialwindow::processdata(QByteArray data)
     /*获取Kp文本框*/
     line_edit->append(textData);
 
-    ui->Kc_lineEdit->setEnabled(false);
+    // ui->Kc_lineEdit->setEnabled(false);
 
     QLabel *lightLabel;
     lightLabel = ui->LED_Label;
@@ -102,12 +102,45 @@ void serialwindow::onReadSerialData()
 }
 
 
-/*
-**  按键响应
-*/
-void serialwindow::on_pushButton_clicked()
+
+
+void serialwindow::on_mc_startBt_clicked()
 {
-    QPushButton *openbutton = ui->pushButton;
+    QString command = "motor_start:\r\n";
+    serial->write(command.toLatin1());
+}
+
+void serialwindow::on_mt_stopBt_clicked()
+{
+    QString command = "motor_stop:\r\n";
+    serial->write(command.toLatin1());
+}
+
+#include "motordebug.h"
+void serialwindow::onDataReceivedFromB(const QString &data) {
+    // 在这里处理从B界面接收到的数据
+    qDebug() << "Received data from B:" << data;
+    // 由于B界面在此时可能已经被销毁，确保不要再访问b的指针
+
+    QString command = "pid_param:";
+    command += data;
+    serial->write(command.toUtf8());
+}
+void serialwindow::on_debug_bt_clicked()
+{
+    /*发送命令 使电机进入debug模式*/
+    motordebug *pmd = new motordebug;
+
+    // /*connect*/(b, &B::dataReady, this, &A::onDataReceivedFromB); // 连接B界面的信号到A界面的槽
+    connect(pmd,&motordebug::dataReady,this,&serialwindow::onDataReceivedFromB);
+
+    pmd->show();
+}
+
+
+void serialwindow::on_enseriBt_clicked()
+{
+    QPushButton *openbutton = ui->enseriBt;
     QComboBox *portBt = ui->portBox;
     QString pstr = portBt->currentText();
 
@@ -162,143 +195,4 @@ void serialwindow::on_pushButton_clicked()
         serial = nullptr;
     }
 }
-
-/*LineEdit*/
-void serialwindow::on_enter_bt_clicked()
-{
-    // sendKpCommand();
-    sendIdCommand();
-}
-
-void serialwindow::on_mc_startBt_clicked()
-{
-    QString command = "motor_start:\r\n";
-    serial->write(command.toLatin1());
-}
-
-
-void serialwindow::on_mt_stopBt_clicked()
-{
-    QString command = "motor_stop:\r\n";
-    serial->write(command.toLatin1());
-}
-
-void serialwindow::on_mc_pidset_clicked()
-{
-    sendKpCommand();
-}
-
-void serialwindow::on_mc_speed_Bt_clicked()
-{
-    QLineEdit *line_edit;
-    QString pstr;
-    /*获取iq文本框*/
-    line_edit = ui->Speed_lineEdit;
-    pstr = line_edit->text();
-    if(!pstr.isEmpty())
-    {
-        qDebug() << "send speed";
-        QString command = "mc_tar_speed:";
-        command += pstr;
-        serial->write(command.toLatin1());
-    }
-}
-
-
-
-/*
-** 普通公共函数
-*/
-void serialwindow::sendKpCommand()
-{
-    QLineEdit *line_edit;
-    QString pstr;
-
-    /*获取Kp文本框*/
-    line_edit = ui->Kp_lineEdit;
-    pstr = line_edit->text();
-    if(!pstr.isEmpty())
-    {
-        qDebug() << "send kp";
-
-        QString command = "mc_setd_kp:";
-        command += pstr;
-        serial->write(command.toUtf8());
-    }
-    QTimer::singleShot(10, this, SLOT(sendKiCommand()));
-}
-
-void serialwindow::sendKiCommand()
-{
-    QLineEdit *line_edit;
-    QString pstr;
-    /*获取Ki文本框*/
-    line_edit = ui->Ki_lineEdit;
-    pstr = line_edit->text();
-    if(!pstr.isEmpty())
-    {
-        qDebug() << "send ki";
-        QString command = "mc_setd_ki:";
-        command += pstr;
-        serial->write(command.toLatin1());
-    }
-    QTimer::singleShot(10, this, SLOT(sendKcCommand()));
-}
-
-void serialwindow::sendKcCommand()
-{
-    QLineEdit *line_edit;
-    QString pstr;
-    /*获取Kc文本框*/
-    line_edit = ui->Kc_lineEdit;
-    pstr = line_edit->text();
-    if(!pstr.isEmpty())
-    {
-        QString command = "mc_setd_ki:";
-        command += pstr;
-        serial->write(command.toLatin1());
-    }
-
-    QTimer::singleShot(10, this, SLOT(sendParamEnter()));
-}
-
-void serialwindow::sendParamEnter()
-{
-    QString command = "mc_pid_paraset:";
-    serial->write(command.toLatin1());
-}
-
-void serialwindow::sendIdCommand()
-{
-    QLineEdit *line_edit;
-    QString pstr;
-    /*获取id文本框*/
-    line_edit = ui->id_lineEdit;
-    pstr = line_edit->text();
-    if(!pstr.isEmpty())
-    {
-        qDebug() << "send id";
-        QString command = "mc_tar_id:";
-        command += pstr;
-        serial->write(command.toLatin1());
-    }
-    QTimer::singleShot(10, this, SLOT(sendIqCommand()));
-}
-
-void serialwindow::sendIqCommand()
-{
-    QLineEdit *line_edit;
-    QString pstr;
-    /*获取iq文本框*/
-    line_edit = ui->iq_lineEdit;
-    pstr = line_edit->text();
-    if(!pstr.isEmpty())
-    {
-        qDebug() << "send iq";
-        QString command = "mc_tar_iq:";
-        command += pstr;
-        serial->write(command.toLatin1());
-    }
-}
-
 
