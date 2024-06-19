@@ -9,6 +9,7 @@
 #include "mc_speedmode.h"
 #include "mc_utils.h"
 #include "mc_angle.h"
+#include "fsm.h"
 #define CURRMENT_PERIOD      (0.000125f)
 #define TOTAL_DISTANCE       (_2PI)
 #define TOTAL_TIME           (6.0f)
@@ -27,10 +28,25 @@ motordebug_t motordebug = {0};
 static void mc_param_init(void);
 static void mc_param_deinit(void);
 static void mc_test(float *iabc,float omega);
+fsm_rt_t motor_debugmode(fsm_cb_t *pthis);
+fsm_rt_t motor_normalmode(fsm_cb_t *pthis);
+
+static fsm_cb_t debugmode_cb = {
+    .chState = START,
+    .fsm = motor_debugmode,
+};
+static fsm_cb_t pmotor_fsm;
 void motortctrl_process(void)
 {
     static uint16_t _state = MOTOR_INIT;
-
+    static unsigned char flag = 0;
+    if (!flag)
+    {
+        flag = 1;
+        pmotor_fsm.fsm = debugmode_cb.fsm;
+        return;
+    }
+    DISPATCH_FSM(&pmotor_fsm);
     motorprotocol_process();
     switch (_state)
     {
@@ -218,3 +234,59 @@ void motor_register(motor_t *motor)
 {
     motor_table[0] = motor;
 }
+
+
+fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
+{
+    enum{
+        IDLE = USER,
+    };
+    switch (pthis->chState)
+    {
+    case START:
+        USER_DEBUG_NORMAL("enter debugmode\r\n");
+        pthis->chState = IDLE;
+        break;
+    case IDLE:
+        if (pthis->count++ > 500)
+        {
+            pthis->count = 0;
+            TRAN_STATE(pthis,motor_normalmode);
+        }
+        
+        break;
+    case EXIT:
+        USER_DEBUG_NORMAL("exit debugmode\r\n");
+        break;
+    default:
+        break;
+    }
+}
+fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
+{
+    enum{
+        IDLE = USER,
+    };    
+    switch (pthis->chState)
+    {
+    case START:
+        USER_DEBUG_NORMAL("enter normalmode\r\n");
+        pthis->chState = IDLE;
+        break;
+    case IDLE:
+        if (pthis->count++ > 500)
+        {
+            pthis->count = 0;
+            TRAN_STATE(pthis,motor_debugmode);
+        }
+        
+        break;
+
+    case EXIT:
+        USER_DEBUG_NORMAL("exit normalmode\r\n");
+        break;
+    default:
+        break;
+    }
+}
+
