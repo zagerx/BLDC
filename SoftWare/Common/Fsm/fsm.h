@@ -11,7 +11,7 @@ typedef enum {
 } fsm_rt_t;
 
 enum {
-    START=0,
+    ENTER=0,
     EXIT,      
     USER
 };
@@ -32,7 +32,7 @@ struct fsm_cb{
                             (me)->chState = EXIT;\
                             (me)->fsm(me);\
                             (me)->fsm = (fsm_t *)(targe);\
-                            (me)->chState = START;\
+                            (me)->chState = ENTER;\
                             (me)->fsm(me);\
                                   }while(0)
 

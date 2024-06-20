@@ -6,6 +6,7 @@ enum{
 
     CMD_SET_STOP,
     CMD_SET_START,
+    CMD_SET_NORMALMODE,
     CMD_SET_D_KP,
 
 };

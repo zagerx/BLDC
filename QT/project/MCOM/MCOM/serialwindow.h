@@ -33,6 +33,8 @@ private slots:
 
     void on_enseriBt_clicked();
 
+    void on_normal_bt_clicked();
+
 private:
     Ui::serialwindow *ui;
     QSerialPort *serial;

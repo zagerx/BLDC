@@ -12,7 +12,7 @@ typedef struct _motor_
 }motor_t;
 
 
-
+void motorctrl_init(void);
 void motortctrl_process(void);
 void mc_hightfreq_task(float *iabc);
 void motorprotocol_pause(char *cmd);

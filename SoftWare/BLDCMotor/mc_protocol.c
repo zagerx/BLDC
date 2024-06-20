@@ -24,6 +24,8 @@ __attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short 
 
 static void* _set_motorstop(char *str,int32_t iq);
 static void* _set_motorstart(char *str,int32_t iq);
+static void* _set_motornormalmode(char *str,int32_t iq);
+
 static void* _set_pid_param(char *str,int32_t kp);
 
 static int _findF_from_str(const char *str, float *val) ;
@@ -34,6 +36,7 @@ static int parse_floats_from_string(const char *str, float vals[], int max_vals)
 commandmap_t sg_commandmap[] = {  
     {"motor_stop",      4,   _set_motorstop,      "motor state stop"},
     {"motor_start",     5,   _set_motorstart,     "motor state runing"},
+    {"motor_normalmode",     5,   _set_motornormalmode,     "motor state runing"},    
     {"pid_param",      6,   _set_pid_param,            "pid param set"},
 };
 static char *Rx_Buf[62] = {0};
@@ -83,6 +86,11 @@ static void* _set_motorstop(char *str,int32_t iq)
 {
     motordebug.cur_cmd = sg_commandmap[CMD_SET_STOP].cmd;
     return 0;
+}
+static void* _set_motornormalmode(char *str,int32_t iq)
+{
+    motordebug.cur_cmd = sg_commandmap[CMD_SET_NORMALMODE].cmd;
+    return 0;    
 }
 
 // 查找命令的函数  

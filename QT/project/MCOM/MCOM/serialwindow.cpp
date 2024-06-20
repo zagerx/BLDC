@@ -10,6 +10,8 @@ serialwindow::serialwindow(QWidget *parent)
 {
     ui->setupUi(this);
     SerialPortInit();
+    ui->mc_startBt->setDisabled(true);
+    ui->mt_stopBt->setDisabled(true);
 }
 
 serialwindow::~serialwindow()
@@ -194,5 +196,16 @@ void serialwindow::on_enseriBt_clicked()
         delete serial;
         serial = nullptr;
     }
+}
+
+
+void serialwindow::on_normal_bt_clicked()
+{
+    /**/
+    ui->mc_startBt->setDisabled(false);
+    ui->mt_stopBt->setDisabled(false);
+
+    QString command = "motor_normalmode:\r\n";
+    serial->write(command.toLatin1());
 }
 

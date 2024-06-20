@@ -7,7 +7,7 @@
 void fsm_init(fsm_cb_t *pThis, unsigned short cycle,fsm_t *machine)
 {
     pThis->fsm = (fsm_t *)machine;
-    pThis->chState = START;
+    pThis->chState = ENTER;
     pThis->cycle = cycle;
     return;
 }
