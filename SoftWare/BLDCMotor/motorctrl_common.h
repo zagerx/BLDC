@@ -57,7 +57,7 @@ typedef struct
     float pid_kp;
     float pid_ki;
     float pid_kc;
-
+    float pid_tar;
     float ele_angle;
     float self_ele_theta;
     char *cur_cmd;

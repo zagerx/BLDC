@@ -50,7 +50,8 @@ void motordebug::on_paramenterBT_clicked()
         pKpLE->setText("0.0");
     }
 
-    QString temdata = pKpLE->text() ;/*pKiLE->text();*/
+    QString temdata = "pid_param:";
+    temdata += pKpLE->text() ;/*pKiLE->text();*/
     temdata += ",";
     if(pKiLE->text().isEmpty())
     {
@@ -82,4 +83,22 @@ void motordebug::on_paramenterBT_clicked()
 
 
 
+
+
+void motordebug::on_start_bt_clicked()
+{
+    QString command = "motor_start:";
+    command += ui->tarlineEdit->text();
+    command += "\n";
+    emit dataReady(command); // 发射信号，传递数据
+}
+
+
+void motordebug::on_stop_bt_clicked()
+{
+    QString command = "motor_stop:";
+    command += ui->tarlineEdit->text();
+    command += "\n";
+    emit dataReady(command); // 发射信号，传递数据
+}
 

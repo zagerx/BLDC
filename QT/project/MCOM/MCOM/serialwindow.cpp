@@ -49,6 +49,13 @@ void serialwindow::SerialPortInit()
 
     connect(serial, &QSerialPort::readyRead, this, &serialwindow::onReadSerialData);
 }
+void serialwindow::closeEvent(QCloseEvent *event) {
+
+    // 请求在事件循环的下一个迭代中删除此对象
+
+    serial->close();
+    deleteLater();
+}
 
 /*
 **   数据处理
@@ -60,7 +67,6 @@ void serialwindow::processdata(QByteArray data)
     // 将数据转换为 QString，并将 "\r\n" 转换为 ""
     QString textData = QString::fromUtf8(data).replace("\r\n", "");
 
-    /*获取Kp文本框*/
     line_edit->append(textData);
 
     // ui->Kc_lineEdit->setEnabled(false);
@@ -124,20 +130,11 @@ void serialwindow::onDataReceivedFromB(const QString &data) {
     qDebug() << "Received data from B:" << data;
     // 由于B界面在此时可能已经被销毁，确保不要再访问b的指针
 
-    QString command = "pid_param:";
+    QString command;// = "pid_param:"
     command += data;
     serial->write(command.toUtf8());
 }
-void serialwindow::on_debug_bt_clicked()
-{
-    /*发送命令 使电机进入debug模式*/
-    motordebug *pmd = new motordebug;
 
-    // /*connect*/(b, &B::dataReady, this, &A::onDataReceivedFromB); // 连接B界面的信号到A界面的槽
-    connect(pmd,&motordebug::dataReady,this,&serialwindow::onDataReceivedFromB);
-
-    pmd->show();
-}
 
 
 void serialwindow::on_enseriBt_clicked()
@@ -208,4 +205,15 @@ void serialwindow::on_normal_bt_clicked()
     QString command = "motor_normalmode:\r\n";
     serial->write(command.toLatin1());
 }
+void serialwindow::on_debug_bt_clicked()
+{
+    /*发送命令 使电机进入debug模式*/
+    QString command = "motor_debugmode:\r\n";
+    serial->write(command.toLatin1());
 
+    motordebug *pmd = new motordebug;
+    // /*connect*/(b, &B::dataReady, this, &A::onDataReceivedFromB); // 连接B界面的信号到A界面的槽
+    connect(pmd,&motordebug::dataReady,this,&serialwindow::onDataReceivedFromB);
+
+    pmd->show();
+}

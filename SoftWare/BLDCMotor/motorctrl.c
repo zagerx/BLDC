@@ -144,8 +144,10 @@ void mc_test(float *iabc,float omega)
 
 static void mc_param_init(void)
 {
-    pid_init(&(mc_param.daxis_pi),0.0273f,166.2507f * CURRMENT_PERIOD,1.0f,D_MAX_VAL,D_MIN_VAL);
-    pid_init(&(mc_param.qaxis_pi),0.0273f,166.2507f * CURRMENT_PERIOD,1.0f,D_MAX_VAL,D_MIN_VAL);
+    // pid_init(&(mc_param.daxis_pi),0.0273f,166.2507f * CURRMENT_PERIOD,1.0f,D_MAX_VAL,D_MIN_VAL);
+    // pid_init(&(mc_param.qaxis_pi),0.0273f,166.2507f * CURRMENT_PERIOD,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(&(mc_param.daxis_pi),0.1,0.01f,1.0f,D_MAX_VAL,D_MIN_VAL);
+    pid_init(&(mc_param.qaxis_pi),0.1,0.01f,1.0f,D_MAX_VAL,D_MIN_VAL);
     pid_init(&(mc_param.speedloop_pi),0.9f,0.1f,1.0f,D_MAX_VAL,D_MIN_VAL);
     // lowfilter_init(&(mc_param.elefitler[0]),80);
     // lowfilter_init(&(mc_param.elefitler[1]),80);
@@ -163,7 +165,7 @@ fsm_rt_t motor_idlemode(fsm_cb_t *pthis)
     switch (pthis->chState)
     {
     case ENTER:
-        if(0)
+        if(!strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_DEBUGMODE].cmd)))
         {
             TRAN_STATE(pthis,motor_debugmode);
         }
@@ -181,29 +183,70 @@ fsm_rt_t motor_idlemode(fsm_cb_t *pthis)
 
 fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
 {
-
+    enum{
+        READY = USER,
+        RUN,
+    };
     switch (pthis->chState)
     {
     case ENTER:
-        USER_DEBUG_NORMAL("enter debugmode\r\n");
-        // pthis->chState = IDLE;
+        if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_D_KP].cmd)))
+        {
+            break;
+        }
+        USER_DEBUG_NORMAL("motor enable\n");
+        pid_init(&(mc_param.daxis_pi),motordebug.pid_kp,motordebug.pid_ki,1.0f,D_MAX_VAL,D_MIN_VAL);
+        pthis->chState = READY;
+    case READY:
+        if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
+        {
+            break;
+        }
+        motordebug.id_targe = motordebug.pid_tar;
+        motor_enable();
+        pthis->chState = RUN;
         break;
-    // case IDLE:
-    //     if (pthis->count++ > 500)
-    //     {
-    //         pthis->count = 0;
-    //         TRAN_STATE(pthis,motor_normalmode);
-    //     }
+    case RUN:
         
-    //     break;
+        {
+            int32_t cov = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
+            float vbus = (float)((float)cov / (1<<15));
+            static short falut_cnt = 0;
+            if (vbus > 22.0f)
+            {
+                falut_cnt = 0;
+            }else{
+                falut_cnt++;
+                if (falut_cnt > 10)
+                {
+                    falut_cnt = 0;
+                    motor_disable();
+                    pthis->chState = EXIT;
+                }
+            }           
+            motordebug.vbus = vbus;
+        }
+
+        if(!strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_STOP].cmd)))
+        {
+            motorprotocol_transmit(sg_commandmap[CMD_SET_STOP].res_cmd,strlen(sg_commandmap[CMD_SET_STOP].res_cmd));
+            pthis->chState = EXIT;
+        }
+        break;    
     case EXIT:
-        USER_DEBUG_NORMAL("exit debugmode\r\n");
+        USER_DEBUG_NORMAL("motor disable\n");
+        motor_disable();
+        mc_param_deinit();
+        pthis->chState = ENTER;
         break;
     default:
         break;
     }
     return 0;
 }
+
+
+
 fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
 {
     enum{
@@ -254,7 +297,7 @@ fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
             {
                 falut_cnt = 0;
                 motor_disable();
-                pthis->chState = MOTOR_STOP;
+                pthis->chState = EXIT;
             }
         }
 

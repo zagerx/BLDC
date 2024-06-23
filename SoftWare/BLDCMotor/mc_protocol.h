@@ -7,8 +7,9 @@ enum{
     CMD_SET_STOP,
     CMD_SET_START,
     CMD_SET_NORMALMODE,
+    CMD_SET_DEBUGMODE,
     CMD_SET_D_KP,
-
+    CMD_SET_PIDTAR,
 };
 typedef void* (*pfunc)(char *,int32_t);
 typedef struct {  

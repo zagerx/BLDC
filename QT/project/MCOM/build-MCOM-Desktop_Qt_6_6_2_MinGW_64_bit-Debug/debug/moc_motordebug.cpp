@@ -42,16 +42,20 @@ constexpr auto qt_meta_stringdata_CLASSmotordebugENDCLASS = QtMocHelpers::string
     "dataReady",
     "",
     "data",
-    "on_paramenterBT_clicked"
+    "on_paramenterBT_clicked",
+    "on_start_bt_clicked",
+    "on_stop_bt_clicked"
 );
 #else  // !QT_MOC_HAS_STRING_DATA
 struct qt_meta_stringdata_CLASSmotordebugENDCLASS_t {
-    uint offsetsAndSizes[10];
+    uint offsetsAndSizes[14];
     char stringdata0[11];
     char stringdata1[10];
     char stringdata2[1];
     char stringdata3[5];
     char stringdata4[24];
+    char stringdata5[20];
+    char stringdata6[19];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_CLASSmotordebugENDCLASS_t::offsetsAndSizes) + ofs), len 
@@ -61,13 +65,17 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSmotordebugENDCLASS_t qt_meta_st
         QT_MOC_LITERAL(11, 9),  // "dataReady"
         QT_MOC_LITERAL(21, 0),  // ""
         QT_MOC_LITERAL(22, 4),  // "data"
-        QT_MOC_LITERAL(27, 23)   // "on_paramenterBT_clicked"
+        QT_MOC_LITERAL(27, 23),  // "on_paramenterBT_clicked"
+        QT_MOC_LITERAL(51, 19),  // "on_start_bt_clicked"
+        QT_MOC_LITERAL(71, 18)   // "on_stop_bt_clicked"
     },
     "motordebug",
     "dataReady",
     "",
     "data",
-    "on_paramenterBT_clicked"
+    "on_paramenterBT_clicked",
+    "on_start_bt_clicked",
+    "on_stop_bt_clicked"
 };
 #undef QT_MOC_LITERAL
 #endif // !QT_MOC_HAS_STRING_DATA
@@ -79,7 +87,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSmotordebugENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -87,15 +95,19 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSmotordebugENDCLASS[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   26,    2, 0x06,    1 /* Public */,
+       1,    1,   38,    2, 0x06,    1 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       4,    0,   29,    2, 0x08,    3 /* Private */,
+       4,    0,   41,    2, 0x08,    3 /* Private */,
+       5,    0,   42,    2, 0x08,    4 /* Private */,
+       6,    0,   43,    2, 0x08,    5 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
 
  // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod
@@ -114,6 +126,10 @@ Q_CONSTINIT const QMetaObject motordebug::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
         // method 'on_paramenterBT_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_start_bt_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_stop_bt_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -127,6 +143,8 @@ void motordebug::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         switch (_id) {
         case 0: _t->dataReady((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         case 1: _t->on_paramenterBT_clicked(); break;
+        case 2: _t->on_start_bt_clicked(); break;
+        case 3: _t->on_stop_bt_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -160,13 +178,13 @@ int motordebug::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 4;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 2)
+        if (_id < 4)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 2;
+        _id -= 4;
     }
     return _id;
 }

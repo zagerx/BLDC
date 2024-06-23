@@ -1,13 +1,13 @@
 
-/*
-mc_tar_speed:200.0f  
-mc_tar_id0.5f
-mc_tar_iq:0.8f
+/*--------------
+"<mc><start><>"
+"<mc><stop><>"
+"<mc><set_pid_param><0.0f,2.0,3.0f>"
+"<mc><set_pid_tar><0.0f>"
+---------------*/
 
-*/
 #include "motorctrl_common.h"
 #include "mc_protocol.h"
-// #include "protocol.h"
 #include "board.h"
 #include "string.h"
 #include "stdio.h"
@@ -25,8 +25,10 @@ __attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short 
 static void* _set_motorstop(char *str,int32_t iq);
 static void* _set_motorstart(char *str,int32_t iq);
 static void* _set_motornormalmode(char *str,int32_t iq);
+static void* _set_motordebugmode(char *str,int32_t iq);
 
 static void* _set_pid_param(char *str,int32_t kp);
+static void* _set_tar(char *str,int32_t kp);
 
 static int _findF_from_str(const char *str, float *val) ;
 static unsigned short _findcmd_from_map(const char *str, const commandmap_t *map, size_t mapSize);
@@ -36,8 +38,10 @@ static int parse_floats_from_string(const char *str, float vals[], int max_vals)
 commandmap_t sg_commandmap[] = {  
     {"motor_stop",      4,   _set_motorstop,      "motor state stop"},
     {"motor_start",     5,   _set_motorstart,     "motor state runing"},
-    {"motor_normalmode",     5,   _set_motornormalmode,     "motor state runing"},    
+    {"motor_normalmode",     5,   _set_motornormalmode,     "motor state runing"},   
+    {"motor_debugmode",     5,   _set_motordebugmode,     "motor state debug runing"},       
     {"pid_param",      6,   _set_pid_param,            "pid param set"},
+    {"set_tar",      6,   _set_tar,            "pid param set"},
 };
 static char *Rx_Buf[62] = {0};
 void motorprotocol_getdata(char *data,unsigned short len)
@@ -73,12 +77,27 @@ static void* _set_pid_param(char *str,int32_t kp)
     motordebug.pid_kp = vals[0];
     motordebug.pid_ki = vals[1];
     motordebug.pid_kc = vals[2];
+    motordebug.cur_cmd = sg_commandmap[CMD_SET_D_KP].cmd;
     USER_DEBUG_NORMAL("%f %f %f\r\n",vals[0],vals[1],vals[2]);
     return 0;    
 }
-
+static void* _set_tar(char *str,int32_t kp)
+{
+    float val = 0.0f;
+    USER_DEBUG_NORMAL("%s\r\n",str);
+    float vals[3];
+    parse_floats_from_string(str,vals,3);
+    motordebug.pid_tar = vals[0];
+    motordebug.cur_cmd = sg_commandmap[CMD_SET_D_KP].cmd;
+    USER_DEBUG_NORMAL("%f %f %f\r\n",vals[0],vals[1],vals[2]);    
+}
 static void* _set_motorstart(char *str,int32_t iq)
 {
+    USER_DEBUG_NORMAL("cmd start motor  ");
+    float vals;
+    _findF_from_str(str,&vals);
+    motordebug.pid_tar = vals;
+    USER_DEBUG_NORMAL("%f \r\n",vals);
     motordebug.cur_cmd = sg_commandmap[CMD_SET_START].cmd;
     return 0;
 }
@@ -90,6 +109,11 @@ static void* _set_motorstop(char *str,int32_t iq)
 static void* _set_motornormalmode(char *str,int32_t iq)
 {
     motordebug.cur_cmd = sg_commandmap[CMD_SET_NORMALMODE].cmd;
+    return 0;    
+}
+static void* _set_motordebugmode(char *str,int32_t iq)
+{
+    motordebug.cur_cmd = sg_commandmap[CMD_SET_DEBUGMODE].cmd;
     return 0;    
 }
 

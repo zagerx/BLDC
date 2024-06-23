@@ -34,7 +34,8 @@ private slots:
     void on_enseriBt_clicked();
 
     void on_normal_bt_clicked();
-
+protected:
+    void closeEvent(QCloseEvent *event) override;
 private:
     Ui::serialwindow *ui;
     QSerialPort *serial;
