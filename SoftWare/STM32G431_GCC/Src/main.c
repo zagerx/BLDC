@@ -66,10 +66,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-__attribute__((section("my_section")))  
-void test_func(void) {  
-    USER_DEBUG_NORMAL(".s start test_func\r\n");
-}
 /* USER CODE END 0 */
 
 /**

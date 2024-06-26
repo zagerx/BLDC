@@ -98,7 +98,7 @@ LoopFillZerobss:
 /* Call static constructors */
     bl __libc_init_array
 
-	bl test_func
+	bl do_initcalls
 /* Call the application's entry point.*/
 	bl	main
 
