@@ -76,7 +76,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  // test_func();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -112,12 +111,9 @@ int main(void)
     delay_ms(1000);
   }
   USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/170);  
-  board_init();
   motorctrl_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
-    USER_DEBUG_NORMAL("SYS start runing\r\n");
-
-
+  USER_DEBUG_NORMAL("SYS start runing\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */

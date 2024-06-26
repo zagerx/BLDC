@@ -43,13 +43,15 @@ void motortctrl_process(void)
 
 void mc_hightfreq_task(float *iabc)
 {
-#if 0    
+#if 0
     mc_test(iabc,TOTAL_OMEGA);
 #else
 
     duty_t duty = {0};
     /*获取角度 速度*/
-    int32_t raw = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_RAW))[0];
+    // int32_t raw = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_RAW))[0];
+    int32_t raw = *((int32_t*)sensor_user_read(SENSOR_01));
+
 	float theta = 0.0f;
     float next_theta = 0.0f;
     float speed = 0.0f;
@@ -209,7 +211,7 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
     case RUN:
         
         {
-            int32_t cov = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
+            int32_t cov;// = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
             float vbus = (float)((float)cov / (1<<15));
             static short falut_cnt = 0;
             if (vbus > 22.0f)
@@ -285,8 +287,7 @@ fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
             motordebug.iq_targe = idq.q;
         }
 
-        int32_t cov = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
-        float vbus = (float)((float)cov / (1<<15));
+        float vbus = *((float*)sensor_user_read(SENSOR_02));
         static short falut_cnt = 0;
         if (vbus > 22.0f)
         {

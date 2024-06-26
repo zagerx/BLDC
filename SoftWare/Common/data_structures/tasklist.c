@@ -17,7 +17,8 @@ CREAT_LIST_WITH_TYPE(task, task_node_t)
 #define IS_LIST_EMPTY(list)                 is_##list##_empty(list)
 #define DELETE_LIST(list)                   delete_##list(list)
 #define DELETE_LIST_NODE(list, node)        delete_##list##_node(list, node)
-
+#define GET_LIST_NODE(list)                 get_##list##_head(list)
+#define TRAVERSE_LIST(list)                 traverse_##list(list)
 void tasklist_process(void)
 {
     // 创建任务链表
@@ -35,6 +36,14 @@ void tasklist_process(void)
         USER_DEBUG_NORMAL("Task list is empty.\n");
     } else {
         USER_DEBUG_NORMAL("Task list is not empty.\n");
+        task_node_t *cur_node;
+        do
+        {
+            cur_node = TRAVERSE_LIST(task_list);
+            cur_node->pfunc();
+        } while (cur_node);
+        
+        task_node_t *cur_task_node = GET_LIST_NODE(task_list);
     }
     
     // 在链表中删除任务节点

@@ -338,32 +338,31 @@ void adc_start(void)
 
 
 
-typedef struct vbus_data
-{
-    int32_t *raw_buf;
-    int32_t *covdata_buf;
-    int32_t *filterdata_buf;
-    int16_t buf_column;
-}vbus_data_t;
-static vbus_data_t vbus = {0};
-static int32_t rawdata = 0,covdata = 0,filterdata = 0;
-static int16_t column;
+// typedef struct vbus_data
+// {
+//     int32_t *raw_buf;
+//     int32_t *covdata_buf;
+//     int32_t *filterdata_buf;
+//     int16_t buf_column;
+// }vbus_data_t;
+static float vbus_data;
+// static int32_t rawdata = 0,covdata = 0,filterdata = 0;
+// static int16_t column;
 void adc_vbusinit(void)
 {
-  vbus.raw_buf = &rawdata;
-  vbus.covdata_buf = &covdata;
-  vbus.filterdata_buf = &filterdata;
+  vbus_data = 0;
   HAL_ADC_Start(&hadc1);
 
 }
 void* adc_readvbus(void)
 {
-
-  if (HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK) {
+  static int32_t rawdata;
+  if (HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK) 
+  {
     rawdata = HAL_ADC_GetValue(&hadc1);
-    covdata = ((4.7f+47.0f)/4.f) * (3.3f/4096) * rawdata * (1<<15);
+    vbus_data = ((4.7f+47.0f)/4.f) * (3.3f/4096) * rawdata;
   }
-  return (void*)&vbus;
+  return (void*)&vbus_data;
 }
 
 

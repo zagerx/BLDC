@@ -1,4 +1,5 @@
 #include "board.h"
+#include "initmodule.h"
 /************************传感器*****************************/
 #include "sensor.h"
 #include "as5047.h"
@@ -20,14 +21,13 @@ static sensor_t sg_sensor_vbus = {
         .cycle = 2,
         .status = EN_SENSOR_INIT
 };
-void board_init(void)
+void _board_init(void)
 {
     sensor_register(&sg_sensor_as5047,SENSOR_01);
     sensor_register(&sg_sensor_vbus,SENSOR_02);
-
 }
-
 void board_deinit(void)
 {
 
 }
+board_init(_board_init);

@@ -13,17 +13,12 @@
 #define SENSOR_MODE_EN (1)
 #ifdef SENSOR_MODE_EN
 /*定义传感器数量*/
-typedef enum{
-    SENSOR_NONE = -1,
-    SENSOR_01, //角度传感器
-    SENSOR_02, //角度传感器
-    SENSOR_NUMBER
-}ENUM_SENSOR;
+
 #else
 typedef enum{
     SENSOR_NONE = -1,
     SENSOR_NUMBER
-}ENUM_SENSOR;
+}sens_type_idx_t;
 
 #endif
 
@@ -60,7 +55,7 @@ typedef enum{
 
 
 
-void board_init(void);
+// void board_init(void);
 
 
 #endif
