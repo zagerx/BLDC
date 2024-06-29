@@ -15,6 +15,7 @@ typedef struct
     unsigned char state;
 }sys_run_t;
 static sys_run_t sg_SYSRuning;
+
 void sysrunning_process(void)
 {
     enum{
@@ -46,3 +47,81 @@ void sysrunning_process(void)
     }
 }
 
+
+#include "msgqueue.h"
+void msg_test(void)
+{
+    USER_DEBUG_NORMAL("Msg test\n");
+}
+void thread_01(void)
+{
+    msg_list_t* msg_list =0 ;
+    msg_list = CREAT_MSG_LIST();
+
+    msg_node_t* msg1 = (msg_node_t*)malloc(sizeof(msg_node_t));
+    if (msg1)
+    {
+        msg1->msg.msg_id = 1;
+        msg1->msg.pfunc = msg_test;
+        USER_DEBUG_NORMAL("msg malloc ok\n");
+    }
+
+    if (!INSERT_LIST_TAIL(msg_list, msg1))
+    {
+        return;
+    }
+
+    // 检查任务链表是否为空
+    if (IS_LIST_EMPTY(msg_list)) {
+        USER_DEBUG_NORMAL("msg list is empty.\n");
+        return;
+    } 
+
+    USER_DEBUG_NORMAL("msg list is not empty.\n");
+    msg_node_t *cur_node;
+
+    for (; ;)
+    {
+        USER_DEBUG_NORMAL("traverse msg list\n");
+        cur_node = TRAVERSE_LIST(msg_list);
+        if (!cur_node)
+        {
+            USER_DEBUG_NORMAL("traverse finish\n");
+            break;
+        }
+        
+        if (!(cur_node->msg.pfunc))
+        {
+            continue;
+        }
+        
+        cur_node->msg.pfunc();
+    }
+    
+    
+
+    // msg_node_t *cur_msg_node = GET_LIST_NODE(msg_list);
+
+}
+
+
+/*
+msg_queue.c     /     queue.c
+*/
+
+/*  
+thread01.c                  thread01.c                
+void thread_01(void)        void thread_01(void)        
+{                           {                     
+    生产一条消息                 消费一条消息
+}                           }                      
+*/                   
+
+
+/*
+thread02.c                   thread02.c                      
+void thead_02(void)          void thead_02(void)
+{                            {                  
+    生产一条消息                 消费一条消息     
+}                            }                  
+*/                 

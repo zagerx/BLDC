@@ -8,19 +8,21 @@
     typedef struct type##_list { \
         node_type* head; \
         node_type* tail; \
+        node_type* cur;\
         int16_t node_num; \
     } type##_list_t; \
     \
-    bool create_##type##_list(type##_list_t* list) { \
-        list = (type##_list_t*)malloc(sizeof(type##_list_t)); \
-        if (list == NULL) { \
-            return 1;\
-        } \
-        list->head = NULL; \
-        list->tail = NULL; \
-        list->node_num = 0; \
-        return 0; \
-    } \
+    type##_list_t* create_##type##_list() {  \
+        type##_list_t* list = (type##_list_t*)malloc(sizeof(type##_list_t)); \
+        if (list == NULL) {  \
+            return NULL;\
+        }  \
+        list->head = NULL;  \
+        list->tail = NULL;  \
+        list->cur = NULL;  \
+        list->node_num = 0;  \
+        return list; \
+    }\
     \
     void delete_##type##_list(type##_list_t* pthis) { \
         node_type *current = pthis->head; \
@@ -92,17 +94,16 @@ node_type* get_##type##_list_head(type##_list_t* pthis) { \
     } \
     \
 node_type* traverse_##type##_list(type##_list_t* pthis) { \
-    static node_type* current = NULL; \
     if (pthis == NULL) {\
-        current = NULL;\
+        pthis->cur = NULL;\
         return NULL;\
     }\
-    if (current == NULL) {\
-        current = pthis->head;\
+    if (pthis->cur == NULL) {\
+        pthis->cur = pthis->head;\
     } else {\
-        current = current->next_node;\
+        pthis->cur = pthis->cur->next_node;\
     }\
-    return current;\
+    return pthis->cur;\
 }
 
 #endif

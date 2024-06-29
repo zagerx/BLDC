@@ -88,6 +88,8 @@ C_SOURCES += $(wildcard ../Common/method/*.c)
 C_SOURCES += $(wildcard ../Common/IQMath/ti/*.c)
 C_SOURCES += $(wildcard ../Common/_assert/*.c)
 C_SOURCES += $(wildcard ../Common/data_structures/*.c)
+C_SOURCES += $(wildcard ../Common/messagequeue/*.c)
+
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32g431xx.s 
@@ -165,7 +167,8 @@ C_INCLUDES += -I../Common/method
 C_INCLUDES += -I../Common/_initmodule 
 C_INCLUDES += -I../Common/Fsm 
 C_INCLUDES += -I../Common/_assert 
-C_INCLUDES += -I../Common/data_structures 
+C_INCLUDES += -I../Common/data_structures
+C_INCLUDES += -I../Common/messagequeue 
 C_INCLUDES += -I../Common 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
