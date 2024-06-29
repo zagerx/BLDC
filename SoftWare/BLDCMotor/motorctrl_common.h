@@ -111,6 +111,9 @@ typedef struct curloop
 #pragma pack(pop)
 
 extern motordebug_t motordebug;
+extern mc_param_t mc_param;
+
+void mc_param_deinit(void);
 
 float _normalize_angle(float angle);
 duty_t _svpwm(float ualpha,float ubeta);
