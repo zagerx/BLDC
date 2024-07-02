@@ -1,5 +1,4 @@
 #include "./filter.h"
-#include "./method_cfg.h"
 void lowfilter_init(lowfilter_t *pfilter,float freq)
 {
     pfilter->freq = 1.0f/freq;

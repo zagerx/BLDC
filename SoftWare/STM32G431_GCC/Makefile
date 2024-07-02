@@ -74,21 +74,6 @@ Src/usart.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart_ex.c 
 
-C_SOURCES += $(wildcard ./Board/*.c)
-C_SOURCES += $(wildcard ./Hardware/*.c)
-C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-C_SOURCES += $(wildcard ../Sensor/*.c)
-C_SOURCES += $(wildcard ../Common/*.c)
-C_SOURCES += $(wildcard ../Common/_initmodule/*.c)
-C_SOURCES += $(wildcard ../Common/Fsm/*.c)
-C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
-C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
-C_SOURCES += $(wildcard ../Common/debuglog/*.c)
-C_SOURCES += $(wildcard ../Common/method/*.c)
-C_SOURCES += $(wildcard ../Common/IQMath/ti/*.c)
-C_SOURCES += $(wildcard ../Common/_assert/*.c)
-C_SOURCES += $(wildcard ../Common/data_structures/*.c)
-C_SOURCES += $(wildcard ../Common/messagequeue/*.c)
 
 # ASM sources
 ASM_SOURCES =  \
@@ -152,24 +137,55 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Device/ST/STM32G4xx/Include \
 -IDrivers/CMSIS/Include
 
-C_INCLUDES += -I./Board
-C_INCLUDES += -I../Common/Perf_counter
-C_INCLUDES += -I./Hardware 
-C_INCLUDES += -I../Sensor 
-C_INCLUDES += -I../BLDCMotor 
-# C_INCLUDES += -I../protocol 
-C_INCLUDES += -I../Common/IQMath/support 
-C_INCLUDES += -I../Common/IQMath/ti 
+DEBUGLOG_ENABLED = 1
+ifeq ($(DEBUGLOG_ENABLED),1)  
+C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
+C_SOURCES += $(wildcard ../Common/debuglog/*.c)
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
 C_INCLUDES += -I../Common/debuglog 
-C_INCLUDES += -I../Common/method 
-C_INCLUDES += -I../Common/_initmodule 
-C_INCLUDES += -I../Common/Fsm 
-C_INCLUDES += -I../Common/_assert 
-C_INCLUDES += -I../Common/data_structures
+endif  
+
+C_SOURCES += $(wildcard ../Common/messagequeue/*.c)
 C_INCLUDES += -I../Common/messagequeue 
-C_INCLUDES += -I../Common 
+
+C_INCLUDES += -I../Common/Perf_counter
+C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
+
+C_INCLUDES += -I../Common/_initmodule 
+C_SOURCES += $(wildcard ../Common/_initmodule/*.c)
+
+C_INCLUDES += -I../Common/Fsm 
+C_SOURCES += $(wildcard ../Common/Fsm/*.c)
+
+C_INCLUDES += -I../Common/method 
+C_SOURCES += $(wildcard ../Common/method/*.c)
+
+C_INCLUDES += -I../Common/_assert 
+C_SOURCES += $(wildcard ../Common/_assert/*.c)
+
+C_INCLUDES += -I../Common/data_structures
+C_SOURCES += $(wildcard ../Common/data_structures/*.c)
+
+C_INCLUDES += -I../Common
+C_SOURCES += $(wildcard ../Common/*.c)
+
+C_INCLUDES += -I../Sensor 
+C_SOURCES += $(wildcard ../Sensor/*.c)
+
+C_INCLUDES += -I../BLDCMotor 
+C_SOURCES += $(wildcard ../BLDCMotor/*.c)
+
+C_SOURCES += $(wildcard ./Hardware/*.c)
+C_INCLUDES += -I./Hardware 
+C_SOURCES += $(wildcard ./Board/*.c)
+C_INCLUDES += -I./Board
+
+
+
+
+
+
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
@@ -179,8 +195,6 @@ CFLAGS += -Werror=array-bounds
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2 
 endif
-
-
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"

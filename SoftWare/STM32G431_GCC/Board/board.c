@@ -21,7 +21,7 @@ static sensor_t sg_sensor_vbus = {
         .cycle = 2,
         .status = EN_SENSOR_INIT
 };
-void _board_init(void)
+void user_board_init(void)
 {
     sensor_register(&sg_sensor_as5047,SENSOR_01);
     sensor_register(&sg_sensor_vbus,SENSOR_02);
@@ -30,4 +30,4 @@ void board_deinit(void)
 {
 
 }
-board_init(_board_init);
+board_init(user_board_init)

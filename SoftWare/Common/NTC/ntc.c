@@ -18,7 +18,7 @@ typedef struct ntc_table {
 ntc_table_t ntc_lookup_table = {  
     {{4096, 80.0f}, {3072, 60.0f}, {2048, 25.0f}, {1024, 0.0f}, {0, -20.0f}}  
 };  
-  
+
 // 二分查找函数  
 int binary_search(uint16_t adc, ntc_point_t *points, int size) {  
     int left = 0;  
@@ -57,7 +57,7 @@ float ntc_readtemp(uint16_t adc) {
     // 如果index是最后一个点，则使用最后一个点和它自身进行插值（实际上不会改变值）  
     ntc_point_t *lower = &ntc_lookup_table.points[index];  
     ntc_point_t *upper = (index < ARRY_SIZE - 1) ? &ntc_lookup_table.points[index + 1] : lower;  
-  
+
     // 进行线性插值  
     float temp = lower->tem + (upper->tem - lower->tem) * ((float)(adc - lower->ADC) / (upper->ADC - lower->ADC));  
     return temp;  

@@ -1,15 +1,22 @@
-# 默认目标
-all: target1 target2
+# Makefile3 in SoftWare directory  
+  
+# Define the subdirectories containing Makefiles  
+SUBDIRS := STM32G431_GCC STM32F405RG_GCC  
+  
+# The default target is 'all'  
+all: $(SUBDIRS)  
+  
+# Define a rule for each subdirectory  
+# '@' prevents echoing the command itself  
+$(SUBDIRS):  
+	@echo "Building in $@"  
+	$(MAKE) -C $@  
 
-# 编译 target1
-target1:
-    @$(MAKE) -C STM32F405RG_GCC -f ../Makefile
-
-# 编译 target2
-target2:
-    @$(MAKE) -C STM32G431_GCC -f ../Makefile
-
-# 清理目标
-clean:
-    @$(MAKE) -C STM32F405RG_GCC -f ../Makefile clean
-    @$(MAKE) -C STM32G431_GCC -f ../Makefile clean
+# Clean target, defined to clean both subdirectories  
+clean:  
+	@for dir in $(SUBDIRS); do \  
+	$(MAKE) -C 
+	$$
+	dir clean; \  
+		done  
+.PHONY: all $(SUBDIRS) clean
