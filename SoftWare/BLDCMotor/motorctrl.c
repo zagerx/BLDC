@@ -44,13 +44,12 @@ void motortctrl_process(void)
 
 void mc_hightfreq_task(float *iabc)
 {
-#if 1
+#if 0
     mc_test(iabc,TOTAL_OMEGA);
 #else
 
     duty_t duty = {0};
     /*获取角度 速度*/
-    // int32_t raw = ((int32_t*)sensor_user_read(SENSOR_01,EN_SENSORDATA_RAW))[0];
     int32_t raw = *((int32_t*)sensor_user_read(SENSOR_01));
 
 	float theta = 0.0f;

@@ -35,7 +35,7 @@ void sysrunning_process(void)
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_500MS)))
             {
-            }            
+            }
             if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
             {
                 HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                

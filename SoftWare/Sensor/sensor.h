@@ -2,18 +2,19 @@
 #define __SENSOR__H
 #include "stdint.h"
 
+#ifdef ENABLE_SENSORMODULE
+    #include "sensor_enum.h"
+#else
+    #error "sensor_enum.h is not included because ENABLE_SENSORMODULE is not defined. Compilation will stop."  
+#endif
+
+
 typedef enum _sensor_stat{
     EN_SENSOR_INIT,
     EN_SENSOR_NORMAL,
     EN_SENSOR_STOP,
 }sens_type_sta_t;
 
-typedef enum{
-    SENSOR_NONE = -1,
-    SENSOR_01,
-    SENSOR_02,
-    SENSOR_NUMBER,
-}sens_type_idx_t;
 
 typedef struct sensor
 {

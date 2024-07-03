@@ -152,8 +152,8 @@ C_INCLUDES += -I../Common/messagequeue
 C_INCLUDES += -I../Common/Perf_counter
 C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
 
-C_INCLUDES += -I../Common/_initmodule 
-C_SOURCES += $(wildcard ../Common/_initmodule/*.c)
+C_INCLUDES += -I../Common/systemmodule 
+C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
 
 C_INCLUDES += -I../Common/Fsm 
 C_SOURCES += $(wildcard ../Common/Fsm/*.c)
@@ -170,8 +170,13 @@ C_SOURCES += $(wildcard ../Common/data_structures/*.c)
 C_INCLUDES += -I../Common
 C_SOURCES += $(wildcard ../Common/*.c)
 
+
+ENABLE_SENSOR = 1
+ifeq ($(ENABLE_SENSOR),1)
+C_DEFS += -DENABLE_SENSORMODULE
 C_INCLUDES += -I../Sensor 
 C_SOURCES += $(wildcard ../Sensor/*.c)
+endif
 
 C_INCLUDES += -I../BLDCMotor 
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
@@ -180,11 +185,6 @@ C_SOURCES += $(wildcard ./Hardware/*.c)
 C_INCLUDES += -I./Hardware 
 C_SOURCES += $(wildcard ./Board/*.c)
 C_INCLUDES += -I./Board
-
-
-
-
-
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

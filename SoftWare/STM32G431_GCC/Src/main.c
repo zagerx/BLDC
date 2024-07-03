@@ -31,6 +31,7 @@
 #include "debuglog.h"
 #include "perf_counter.h"
 #include "board.h"
+#include "taskmodule.h"
 #include "system_scheduler.h"
 /* USER CODE END Includes */
 
@@ -67,6 +68,7 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 extern void thread_01(void);
+
 
 /* USER CODE END 0 */
 
@@ -122,6 +124,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    do_taskcalls();
     sysrunning_process();
     sensor_process();
     motortctrl_process();

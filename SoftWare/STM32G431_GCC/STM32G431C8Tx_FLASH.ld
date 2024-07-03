@@ -90,6 +90,19 @@ SECTIONS
     . = ALIGN(8);
   } >FLASH
 
+  .taskcalls :
+  {
+    . = ALIGN(8);
+    __taskcall_start = .;
+    KEEP(*(.taskcall.0.task)) 
+    KEEP(*(.taskcall.1.task)) 
+    KEEP(*(.taskcall.2.task)) 
+    KEEP(*(.taskcall.3.task)) 
+    KEEP(*(.taskcall.4.task)) 
+    KEEP(*(.taskcall.5.task)) 
+    __taskcall_end = .;
+    . = ALIGN(8);
+  } >FLASH
 
   /* The program code and other data goes into FLASH */
   .text :
