@@ -336,18 +336,8 @@ void adc_start(void)
   HAL_ADCEx_InjectedStart_IT(&hadc2);
 }
 
-
-
-// typedef struct vbus_data
-// {
-//     int32_t *raw_buf;
-//     int32_t *covdata_buf;
-//     int32_t *filterdata_buf;
-//     int16_t buf_column;
-// }vbus_data_t;
 static float vbus_data;
-// static int32_t rawdata = 0,covdata = 0,filterdata = 0;
-// static int16_t column;
+
 void adc_vbusinit(void)
 {
   vbus_data = 0;

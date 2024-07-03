@@ -1,8 +1,6 @@
 #include "protocol_cfg.h"
 #include "protocol_comment.h"
-/*
-该文件需完善
-*/
+
 static char pro_testfunc(cmdmsg_t *p,void *pdata,unsigned short datalen);
 static char write_opt(cmdmsg_t *p,void *pdata,unsigned short datalen);
 

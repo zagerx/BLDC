@@ -24,9 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-// #include "ipc.h"
 #include "sensor.h"
-// #include "../Protocol/protocol.h"
 #include "../../BLDCMotor/motorctrl.h"
 #include "debuglog.h"
 #include "perf_counter.h"
@@ -69,6 +67,20 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 extern void thread_01(void);
 
+void StackFlow(void)
+{
+ 
+    int a[3],i;
+ 
+    for(i=0; i<10000; i++)
+    {
+ 
+    a[i]=1;
+ 
+    }
+
+    USER_DEBUG_NORMAL("222\n");
+}
 
 /* USER CODE END 0 */
 
@@ -118,6 +130,11 @@ int main(void)
   // motorctrl_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
   USER_DEBUG_NORMAL("SYS start runing\r\n");
+
+
+  StackFlow();
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

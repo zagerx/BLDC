@@ -1,8 +1,8 @@
 #ifndef __PROTOCOL_COMMENT__H
 #define __PROTOCOL_COMMENT__H
 /*------------------------------------------
-¸ÃÎÄ¼þ½ö¹©Ä£¿éÄÚ²¿Ê¹ÓÃ£¬½ûÖ¹±»½Ó¿ÚÎÄ¼þ°üº¬
-±ØÐëÊ¹ÓÃÏà¶ÔÂ·¾¶°üº¬¸ÃÎÄ¼þ
+ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½Ú²ï¿½Ê¹ï¿½Ã£ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 --------------------------------------------*/
 
 #include "protocol_cfg.h"
@@ -20,9 +20,9 @@ extern unsigned short g_protocol_event;
 #define FRAM_TAIL_OFFSET    FRAM_CRC_OFFSET   + sizeof(unsigned short)
 #define FRAM_BUF_OFFSET     FRAM_TAIL_OFFSET  + sizeof(unsigned short)
 
-#pragma pack(push,4)//±ØÐëËÄ×Ö½Ú¶ÔÆë£¬1×Ö½Ú¶ÔÆë£¬¸øpdata¸³Öµ£¬³ÌÐòhardfalut(Ô­ÒòÎ´Öª)
+#pragma pack(push,4)
 typedef struct pro_frame{
-    unsigned short _x_x;//ÎÞÒâÒå£¬½â¾ö½á¹¹Ìå4×Ö½Ú¶ÔÆë
+    unsigned short _x_x;
 	unsigned short head;
 	unsigned short func_c;
 	unsigned short len;
@@ -37,24 +37,23 @@ typedef struct pro_pack
 {
     fsm_cb_t statemach_cb;
     /* data */
-    unsigned int timeout;//³¬Ê±Ê±¼ä
-    unsigned short recnt;//ÖØ·¢´ÎÊý
-    unsigned short t0;   //   
+    unsigned int timeout;
+    unsigned short recnt;
+    unsigned short t0;
     pro_frame_t *frame; 
 }pro_pack_t;
 #pragma pack(pop)
 
-/*-----------------------------------ÏûÏ¢µØÍ¼Ïà¹Ø-----------------------------------------*/
 typedef enum{
     CMD_EVENT_UNINVAIL = -1,
     CMD_EVENT_01,
     CMD_EVENT_02,
     CMD_EVENT_NUMBER
-}E_CMD_EVENT;//ÊÂ¼þ   1¡¢ÓÃÀ´Í¬²½Ð­ÒéÖ®¼äµÄÍ¨ÐÅ
+}E_CMD_EVENT;
 
 typedef struct cmdmsg_t cmdmsg_t;
 struct cmdmsg_t {
-    unsigned short cmd;                 //!< Ö¸Áî
+    unsigned short cmd;
     E_CMD_EVENT flagbit;
     char (*fnHandler)(cmdmsg_t *pmsg,   
                       void *pdata, 

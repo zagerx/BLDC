@@ -1,4 +1,3 @@
-// #include "protocol.h"
 #include "protocol_comment.h"
 #include "protocol_cfg.h"
 
@@ -8,19 +7,14 @@
 #define RESEND_CNT  5
 #define TIMEOUT     1000
 
-/*
-**  Э��ײ㷢�ͽӿڣ�Ӧ����Ӳ���ӿ����ⲿʵ��
-*/
+
 __attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 {
 }
 
-/*
-**  len: ֡���ܳ�
-*/
+
 static char _send_proframe(pro_frame_t *msg,unsigned short len)
 {
-    /*����֡����*/
     unsigned char *pucmsg;
     unsigned char *pdata;
     unsigned short data_len;
@@ -47,9 +41,7 @@ char protocol_nowtransmit(unsigned char cmd_type,unsigned char cmd,\
                             void *pdata,unsigned short data_len)
 {
     pro_frame_t* p_fram;
-    /*Э��֡���*/
     p_fram = _packet_proframe(cmd | (cmd_type<<8),pdata,data_len);
-    /*׼������*/
     _send_proframe(p_fram,sizeof(pro_frame_t)+data_len);
     heap_free(p_fram);
     return NULL;
@@ -57,7 +49,6 @@ char protocol_nowtransmit(unsigned char cmd_type,unsigned char cmd,\
 
 
 
-/*---------------------------------------Э���ط�����--------------------------------------------------*/
 fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
 {
     enum{
@@ -86,23 +77,20 @@ fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
     case START:
         ptThis->chState = SEND_CMD;
     case SEND_CMD:
-        // _send_proframe(pframe,data_len+sizeof(pro_frame_t));
         USER_DEBUG_NORMAL("send one cmd = 0x%x\r\n",cmd_fun);
         ptThis->chState = WAIT_ACK;        
     case WAIT_ACK:
         if (pmsg->recnt >= RESEND_CNT)
         {
             pmsg->recnt = 0;
-            /* û�н��յ����������Ӧ */
             USER_DEBUG_NORMAL("cmd=0x%x no ack\r\n",cmd_fun);
             ptThis->chState = EXIT;
             break;
         }
         event =search_msgmap_event(cmd_fun);
-        // if (!IPC_GET_EVENT(g_protocol_event,event))//û�н��յ���Ӧ
         {
             /* code */
-            if (pmsg->timeout++ >= TIMEOUT/fsm_cycle)//��ʱ
+            if (pmsg->timeout++ >= TIMEOUT/fsm_cycle)
             {
                 /* code */
                 USER_DEBUG_NORMAL("cmd=0x%x timeout\r\n",cmd_fun);
@@ -112,11 +100,9 @@ fsm_rt_t _trancemit_statemach(fsm_cb_t *ptThis)
             }
             break;
         }
-        // IPC_CLEAR_EVENT(g_protocol_event,event);
         ptThis->chState = RECIVE_ACK;
     case RECIVE_ACK:
         USER_DEBUG_NORMAL("recive cmd(0x%x) ack\r\n",cmd_fun);
-        /*���յ������Ӧ����Ӧ �������ݴ���*/
         ptThis->chState = EXIT;        
     case EXIT:
         pmsg->timeout = 0;
@@ -132,18 +118,12 @@ void protocol_transmit(unsigned char cmd_type,unsigned char cmd,\
                             void *pdata,unsigned short data_len)
 {
     pro_frame_t* p_fram;
-    /*Э��֡���*/
     p_fram = _packet_proframe(cmd | (cmd_type<<8),pdata,data_len);
 
-    /*��Ϣ���з��*/
     pro_pack_t *pmsg;
     pmsg = _packet_propack(p_fram,1000,5);
-/*-------------------------------list node ���--------------------*/
-    /*list�ڵ���*/
     _node_t *pnode;
     pnode = list_creatnode(pmsg,sizeof(node_item_t));
-/*-----------------------------------------------------------------*/    
-    /*���ӵ���Ϣ�б�����*/
     list_insert_node(gtransmit_list,pnode);
 }
 

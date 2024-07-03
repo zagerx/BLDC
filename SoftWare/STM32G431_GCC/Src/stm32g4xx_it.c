@@ -60,6 +60,7 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 extern void USER_UART_IRQHandler(UART_HandleTypeDef *huart);
+#include "debuglog.h"
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -83,17 +84,17 @@ void NMI_Handler(void)
 /**
   * @brief This function handles Hard fault interrupt.
   */
-void HardFault_Handler(void)
-{
-  /* USER CODE BEGIN HardFault_IRQn 0 */
-
-  /* USER CODE END HardFault_IRQn 0 */
-  while (1)
-  {
-    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-    /* USER CODE END W1_HardFault_IRQn 0 */
-  }
-}
+// void HardFault_Handler(void)
+// {
+//   /* USER CODE BEGIN HardFault_IRQn 0 */
+//   USER_DEBUG_NORMAL("hardFault\n");
+//   /* USER CODE END HardFault_IRQn 0 */
+//   while (1)
+//   {
+//     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+//     /* USER CODE END W1_HardFault_IRQn 0 */
+//   }
+// }
 
 /**
   * @brief This function handles Memory management fault.

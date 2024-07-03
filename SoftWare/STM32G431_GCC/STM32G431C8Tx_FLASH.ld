@@ -79,6 +79,7 @@ SECTIONS
   .initcalls :
   {
     . = ALIGN(8);
+    _stext = .;
     __initcall_start = .;
     KEEP(*(.initcall.0.init)) 
     KEEP(*(.initcall.1.init)) 
@@ -197,6 +198,8 @@ SECTIONS
     PROVIDE ( end = . );
     PROVIDE ( _end = . );
     . = . + _Min_Heap_Size;
+    . = ALIGN(8);
+    _sstack = .;
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM

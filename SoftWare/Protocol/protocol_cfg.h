@@ -1,7 +1,3 @@
-/*---------------------------------------
-���ļ�Ϊģ��������ļ������е�������Ϣ��Ӧ
-�ɸ��ļ��ṩ
-----------------------------------------*/
 #ifndef __PROTOCOL_CFG__H
 #define __PROTOCOL_CFG__H
 
@@ -15,7 +11,6 @@
 #include "list.h"
 #include "fsm.h"
 #include "debuglog.h"
-// #include "_common.h"
 #include "heap.h"
 
 
