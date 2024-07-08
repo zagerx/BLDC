@@ -23,8 +23,6 @@ serialwindow::~serialwindow()
     delete ui;
 }
 
-
-
 /*
  * 串口初始化
 */
@@ -52,7 +50,6 @@ void serialwindow::SerialPortInit()
 void serialwindow::closeEvent(QCloseEvent *event) {
 
     // 请求在事件循环的下一个迭代中删除此对象
-
     serial->close();
     deleteLater();
 }
@@ -68,8 +65,6 @@ void serialwindow::processdata(QByteArray data)
     QString textData = QString::fromUtf8(data).replace("\r\n", "");
 
     line_edit->append(textData);
-
-    // ui->Kc_lineEdit->setEnabled(false);
 
     QLabel *lightLabel;
     lightLabel = ui->LED_Label;
@@ -124,7 +119,7 @@ void serialwindow::on_mt_stopBt_clicked()
     serial->write(command.toLatin1());
 }
 
-#include "motordebug.h"
+#include "debugwindow.h"
 void serialwindow::onDataReceivedFromB(const QString &data) {
     // 在这里处理从B界面接收到的数据
     qDebug() << "Received data from B:" << data;

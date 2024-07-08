@@ -11,19 +11,22 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    debugwindow.cpp \
     main.cpp \
     mainwindow.cpp \
-    motordebug.cpp \
+    protocol.cpp \
     serialwindow.cpp
 
 HEADERS += \
+    commands.h \
+    debugwindow.h \
     mainwindow.h \
-    motordebug.h \
+    protocol.h \
     serialwindow.h
 
 FORMS += \
+    debugwindow.ui \
     mainwindow.ui \
-    motordebug.ui \
     serialwindow.ui
 
 # Default rules for deployment.
