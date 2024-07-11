@@ -1,15 +1,14 @@
-#include "protocol.h"
+#include "frame.h"
 #include <cstring> // 用于memcpy等函数
 unsigned short calculateCRC16(unsigned short head, unsigned short cmd, unsigned short length, const unsigned char *data, unsigned short dataLength);
 
-protocol::protocol() {
+Frame::Frame() {
     // 初始化frame成员，例如可以设置head和tail为特定的值
     frame.head = 0xAA55; // 示例值
     frame.tail = 0x55AA; // 示例值
     frame.data = nullptr; // 初始时data不指向任何内存
 }
-
-protocol::~protocol() {
+Frame::~Frame() {
     // 释放动态分配的内存
     if (frame.data != nullptr) {
         delete[] frame.data;
@@ -17,7 +16,7 @@ protocol::~protocol() {
     }
 }
 
-bool protocol::pack(unsigned short cmd, const unsigned char *data, unsigned short dataLength, frame_t &frame) {
+bool Frame::pack(unsigned short cmd, const unsigned char *data, unsigned short dataLength, frame_t &frame) {
     // 设置frame的各个字段
     frame.CMD = cmd;
     frame.length = dataLength;
@@ -32,7 +31,7 @@ bool protocol::pack(unsigned short cmd, const unsigned char *data, unsigned shor
     return true;
 }
 
-bool protocol::unpack(const frame_t &frame, unsigned short &cmd, unsigned char *&data, unsigned short &dataLength) {
+bool Frame::unpack(const frame_t &frame, unsigned short &cmd, unsigned char *&data, unsigned short &dataLength) {
     // 从frame中提取数据
     cmd = frame.CMD;
     dataLength = frame.length;
@@ -50,3 +49,5 @@ unsigned short calculateCRC16(unsigned short head, unsigned short cmd, unsigned 
     // 这里应该是CRC16的计算代码，这里只是一个占位符
     return 0; // 返回实际的CRC16值
 }
+
+

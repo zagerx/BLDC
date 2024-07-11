@@ -1,5 +1,6 @@
-#ifndef PROTOCOL_H
-#define PROTOCOL_H
+#ifndef FRAME_H
+#define FRAME_H
+
 
 typedef struct _frame
 {
@@ -12,13 +13,11 @@ typedef struct _frame
 }frame_t;
 
 
-
-class protocol
+class Frame
 {
 public:
-    protocol();
-    ~protocol(); // 添加析构函数以确保动态分配的内存得到释放
-
+    Frame();
+    ~Frame();
     // 封包函数
     bool pack(unsigned short cmd, const unsigned char *data, unsigned short dataLength, frame_t &frame);
 
@@ -29,4 +28,4 @@ private:
     frame_t frame; // 添加frame_t类型的成员
 };
 
-#endif // PROTOCOL_H
+#endif // FRAME_H

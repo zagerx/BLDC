@@ -3,7 +3,7 @@
 #include <QtDebug>
 #include <QThread>
 #include <QTimer>
-
+#include "mcprotocol.h"
 serialwindow::serialwindow(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::serialwindow)
@@ -12,6 +12,10 @@ serialwindow::serialwindow(QWidget *parent)
     SerialPortInit();
     ui->mc_startBt->setDisabled(true);
     ui->mt_stopBt->setDisabled(true);
+
+    size_t sendBufferSize = 512; // 假设的发送缓冲区大小
+    McProtocol* pMcProtocol = new McProtocol(sendBufferSize);
+
 }
 
 serialwindow::~serialwindow()
@@ -20,6 +24,9 @@ serialwindow::~serialwindow()
     qDebug()<< "Eite SerialWindow";
     delete serial; // 确保删除 serial 指向的对象
     serial = nullptr; // 防止悬空指针
+
+    delete pMcProtocl;
+    pMcProtocl = nullptr;
     delete ui;
 }
 
@@ -72,12 +79,13 @@ void serialwindow::processdata(QByteArray data)
 
     lightLabel->setScaledContents(true); // /*根据控件大小缩放图片*/
     lightLabel->setFixedSize(50, 50); // 设置控件大小为 50x50
-    /* 设置小灯 */
 
 }
+
 /*
  * 串口接收槽函数
 */
+
 void serialwindow::onReadSerialData()
 {
     // 假设 serial 已经被正确初始化和打开
@@ -103,14 +111,17 @@ void serialwindow::onReadSerialData()
         qDebug() << "Serial port is not open or not initialized.";
     }
 }
-
-
-
-
+#include "frame.h"
 void serialwindow::on_mc_startBt_clicked()
 {
     QString command = "motor_start:\r\n";
     serial->write(command.toLatin1());
+
+    // unsigned char buf[8]= {0xAA,0x55};
+    // pMcProtocl->send_data(buf,8);
+
+    Frame datafram;
+    // datafram.pack();
 }
 
 void serialwindow::on_mt_stopBt_clicked()
@@ -129,8 +140,6 @@ void serialwindow::onDataReceivedFromB(const QString &data) {
     command += data;
     serial->write(command.toUtf8());
 }
-
-
 
 void serialwindow::on_enseriBt_clicked()
 {
@@ -189,7 +198,6 @@ void serialwindow::on_enseriBt_clicked()
         serial = nullptr;
     }
 }
-
 
 void serialwindow::on_normal_bt_clicked()
 {

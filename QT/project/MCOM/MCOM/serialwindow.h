@@ -5,6 +5,8 @@
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QLabel>
+#include "mcprotocol.h"
+
 
 namespace Ui {
 class serialwindow;
@@ -19,6 +21,7 @@ public:
     explicit serialwindow(QWidget *parent = nullptr);
     ~serialwindow();
     void SerialPortInit(void);
+    McProtocol *pMcProtocl;
 private slots:
 
     void on_mc_startBt_clicked();

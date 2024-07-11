@@ -41,7 +41,7 @@ void motordebug::closeEvent(QCloseEvent *event) {
     deleteLater();
 }
 
-void motordebug::on_paramenterBT_clicked()
+void motordebug::on_param_enter_bt_clicked()
 {
     QLineEdit *pKpLE = ui->Kp_lineEdit;
     QLineEdit *pKiLE = ui->Ki_lineEdit;

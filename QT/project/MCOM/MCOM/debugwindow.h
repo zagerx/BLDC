@@ -1,7 +1,8 @@
 #ifndef DEBUGWINDOW_H
 #define DEBUGWINDOW_H
-
 #include <QWidget>
+
+
 
 namespace Ui {
 class motordebug;
@@ -22,7 +23,7 @@ void closeEvent(QCloseEvent *event) override;
 signals:
     void dataReady(const QString &data); // 当数据准备好时发射的信号
 private slots:
-    void on_paramenterBT_clicked();
+    void on_param_enter_bt_clicked();
     void on_start_bt_clicked();
     void on_stop_bt_clicked();
 };
