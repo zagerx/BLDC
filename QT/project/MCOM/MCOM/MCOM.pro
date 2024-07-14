@@ -12,18 +12,18 @@ CONFIG += c++17
 
 SOURCES += \
     debugwindow.cpp \
-    frame.cpp \
     main.cpp \
     mainwindow.cpp \
-    mcprotocol.cpp \
+    ./mc_protocol/mc_frame.cpp \
+    ./mc_protocol/mc_protocol.cpp \
     serialwindow.cpp
 
 HEADERS += \
     commands.h \
     debugwindow.h \
-    frame.h \
     mainwindow.h \
-    mcprotocol.h \
+    ./mc_protocol/mc_frame.h \
+    ./mc_protocol/mc_protocol.h \
     serialwindow.h
 
 FORMS += \

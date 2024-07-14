@@ -3,10 +3,14 @@
 #include <QtDebug>
 #include <QThread>
 #include <QTimer>
-#include "mcprotocol.h"
+#include "mc_protocol/mc_protocol.h"
+#include "mc_protocol/mc_frame.h"
+#include "debugwindow.h"
+
 serialwindow::serialwindow(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::serialwindow)
+    , timer(new QTimer(this))
 {
     ui->setupUi(this);
     SerialPortInit();
@@ -14,8 +18,13 @@ serialwindow::serialwindow(QWidget *parent)
     ui->mt_stopBt->setDisabled(true);
 
     size_t sendBufferSize = 512; // 假设的发送缓冲区大小
-    McProtocol* pMcProtocol = new McProtocol(sendBufferSize);
-
+    pMcProtocl = new MCProtocol(sendBufferSize);
+    // 设置定时器的时间间隔为1ms  
+    timer->setInterval(1000);
+    // 将定时器的timeout()信号连接到槽函数timerTick()  
+    connect(timer, &QTimer::timeout, this, &serialwindow::timerTick);  
+    // 启动定时器  
+    timer->start(); 
 }
 
 serialwindow::~serialwindow()
@@ -27,7 +36,15 @@ serialwindow::~serialwindow()
 
     delete pMcProtocl;
     pMcProtocl = nullptr;
+
+    delete timer;
     delete ui;
+}
+void serialwindow::closeEvent(QCloseEvent *event) {
+
+    // 请求在事件循环的下一个迭代中删除此对象
+    serial->close();
+    deleteLater();
 }
 
 /*
@@ -54,13 +71,36 @@ void serialwindow::SerialPortInit()
 
     connect(serial, &QSerialPort::readyRead, this, &serialwindow::onReadSerialData);
 }
-void serialwindow::closeEvent(QCloseEvent *event) {
 
-    // 请求在事件循环的下一个迭代中删除此对象
-    serial->close();
-    deleteLater();
+void serialwindow::on_mc_startBt_clicked()
+{
+    QString command = "motor_start:\r\n";
+    serial->write(command.toLatin1());
+
+    qDebug() << "send data frame\n";
+    MC_Frame datafram;
+    datafram.CMD = 0x0102;
+    datafram.data = {0x03,0x04};
+    datafram.Pack();
+    pMcProtocl->SendFrame(datafram);
 }
+void serialwindow::timerTick()  
+{  
+    // 检查协议的发送缓冲区，不为空就发送
+    if (!pMcProtocl->SendbufIsFull())
+    {
+        return;
+    }
+    qDebug() << "mc_protocol send\n";
+    // 假设 serial 是一个指向 QSerialPort 对象的指针
+    // 并且 pMcProtocl->RDFromSendBuf() 返回一个 std::vector<unsigned char>
+    std::vector<unsigned char> data = pMcProtocl->RDFromSendBuf();
+    QByteArray byteArray;
+    byteArray.resize(data.size());
+    std::copy(data.begin(), data.end(), byteArray.begin());
 
+    // serial->write(byteArray);
+}  
 /*
 **   数据处理
 */
@@ -111,18 +151,9 @@ void serialwindow::onReadSerialData()
         qDebug() << "Serial port is not open or not initialized.";
     }
 }
-#include "frame.h"
-void serialwindow::on_mc_startBt_clicked()
-{
-    QString command = "motor_start:\r\n";
-    serial->write(command.toLatin1());
 
-    // unsigned char buf[8]= {0xAA,0x55};
-    // pMcProtocl->send_data(buf,8);
 
-    Frame datafram;
-    // datafram.pack();
-}
+
 
 void serialwindow::on_mt_stopBt_clicked()
 {
@@ -130,7 +161,6 @@ void serialwindow::on_mt_stopBt_clicked()
     serial->write(command.toLatin1());
 }
 
-#include "debugwindow.h"
 void serialwindow::onDataReceivedFromB(const QString &data) {
     // 在这里处理从B界面接收到的数据
     qDebug() << "Received data from B:" << data;
