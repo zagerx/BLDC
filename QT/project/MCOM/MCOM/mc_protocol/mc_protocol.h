@@ -18,8 +18,8 @@ public:
     // 将MC_Frame对象封包后发送到缓冲区  
     void SendFrame(const MC_Frame& frame);  
   
-    // 检查发送缓冲区是否已满  
-    bool SendbufIsFull() const;  
+    // 检查发送缓冲区是否已满
+    bool SendbufHasData() const;
   
     // 从发送缓冲区读取一个完整的帧（注意：这里不直接返回MC_Frame，而是返回字节数组）  
     // 调用者需要自行处理字节数组以构造MC_Frame对象  

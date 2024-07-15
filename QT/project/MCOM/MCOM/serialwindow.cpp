@@ -77,29 +77,29 @@ void serialwindow::on_mc_startBt_clicked()
     QString command = "motor_start:\r\n";
     serial->write(command.toLatin1());
 
-    qDebug() << "send data frame\n";
     MC_Frame datafram;
     datafram.CMD = 0x0102;
     datafram.data = {0x03,0x04};
     datafram.Pack();
+    // datafram.PrintFrame();
     pMcProtocl->SendFrame(datafram);
 }
 void serialwindow::timerTick()  
 {  
     // 检查协议的发送缓冲区，不为空就发送
-    if (!pMcProtocl->SendbufIsFull())
+    if (!pMcProtocl->SendbufHasData())
     {
         return;
     }
-    qDebug() << "mc_protocol send\n";
     // 假设 serial 是一个指向 QSerialPort 对象的指针
     // 并且 pMcProtocl->RDFromSendBuf() 返回一个 std::vector<unsigned char>
     std::vector<unsigned char> data = pMcProtocl->RDFromSendBuf();
     QByteArray byteArray;
     byteArray.resize(data.size());
     std::copy(data.begin(), data.end(), byteArray.begin());
-
-    // serial->write(byteArray);
+    QString hexString = byteArray.toHex(' ').toUpper(); // ' ' 作为分隔符，toUpper() 使输出大写
+    qDebug() << "ByteArray in hex:" << hexString;
+    serial->write(byteArray);
 }  
 /*
 **   数据处理

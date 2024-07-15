@@ -1,7 +1,7 @@
-// MC_Frame.cpp  
-#include "MC_Frame.h"  
-#include <cstring> // 用于memcpy  
-  
+// MC_Frame.cpp
+#include "MC_Frame.h"
+#include <cstring> // 用于memcpy
+#include <cstdio>
 // 假设的CRC16计算函数（你应该用实际的实现替换它）  
 // 这里我们仅返回一个示例值  
 uint16_t CalculateCRC16(const unsigned char* data, size_t length) {  
@@ -96,10 +96,11 @@ bool MC_Frame::Unpack(const unsigned char* input, size_t length) {
     return true;  
 }  
   
-// 用于打印帧内容的辅助函数实现  
-void MC_Frame::PrintFrame(const std::vector<unsigned char>& frame) const {  
-    for (unsigned char byte : frame) {  
-        // printf("%02X ", byte);  
-    }  
-    // printf("\n");  
+// 用于打印帧内容的辅助函数实现
+void MC_Frame::PrintFrame() const {
+    // 注意：这里我们直接打印MC_Frame对象的data成员
+    for (unsigned char byte : data) {
+        printf("%02X ", byte);
+    }
+    printf("\n"); // 打印换行符
 }
