@@ -644,7 +644,7 @@ void adc_pollvale(void)
 
 
 
-#include "motorctrl.h"
+// #include "motorctrl.h"
 void adc_start(void)
 {
   HAL_ADCEx_Calibration_Start(&hadc3,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
@@ -654,7 +654,7 @@ void adc_stop(void)
 {
   HAL_ADCEx_InjectedStop_IT(&hadc3);
 }
-#include "perf_counter.h"
+// #include "perf_counter.h"
 float BusVolite = 0.0F;
 uint32_t ADC_BUS = 0;
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
@@ -666,10 +666,10 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     ADC_BUS =     HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_4);
     BusVolite = ADC_BUS/65536.0f*3.0f * (104.7f/4.7f);
 
-  unsigned int nCycleUsed = 0;
-  __cycleof__("full test",{nCycleUsed = _;}){
-    _50uscycle_process(adc_vale,0.0f);
-  }
+  // unsigned int nCycleUsed = 0;
+  // __cycleof__("full test",{nCycleUsed = _;}){
+  //   _50uscycle_process(adc_vale,0.0f);
+  // }
   // USER_DEBUG_NORMAL("nCycleUsed %d\r\n",nCycleUsed/550);
 
 }

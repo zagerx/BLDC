@@ -21,7 +21,7 @@
 #include "i2c.h"
 
 /* USER CODE BEGIN 0 */
-#include "_common.h"
+// #include "_common.h"
 
 static volatile uint8_t i2cx_RxBuf[2] = {0};
 static volatile uint8_t i2cx_TxBuf[2] = {0};

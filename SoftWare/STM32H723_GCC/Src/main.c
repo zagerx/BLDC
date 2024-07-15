@@ -25,9 +25,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "motorctrl.h"
-#include "hardware.h"
-#include "perf_counter.h"
+// #include "motorctrl.h"
+// #include "hardware.h"
+// #include "perf_counter.h"
+#include "debuglog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -135,7 +136,7 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  init_cycle_counter(true);
+  // init_cycle_counter(true);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -148,12 +149,12 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("H7 hello word\r\n");
-  unsigned int nCycleUsed = 0;
-  __cycleof__("full test",{nCycleUsed = _;}){
-    delay_ms(1000);
-  }
-  USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/550);
-  hw_init();
+  // unsigned int nCycleUsed = 0;
+  // __cycleof__("full test",{nCycleUsed = _;}){
+  //   delay_ms(1000);
+  // }
+  // USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/550);
+  // hw_init();
 
   /* USER CODE END 2 */
 
@@ -161,9 +162,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    sensor_process();
+    // sensor_process();
     sysrunning_process();
-    motortctrl_process();
+    // motortctrl_process();
     HAL_Delay(1);
 
     /* USER CODE END WHILE */

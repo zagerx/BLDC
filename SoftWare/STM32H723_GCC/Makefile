@@ -70,20 +70,6 @@ Src/system_stm32h7xx.c \
 Src/tim.c \
 Src/i2c.c
 
-
-C_SOURCES += $(wildcard ./Hardware/*.c)
-C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-C_SOURCES += $(wildcard ../Sensor/*.c)
-C_SOURCES += $(wildcard ../Common/*.c)
-C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
-C_SOURCES += $(wildcard ../Common/IPC/*.c)
-C_SOURCES += $(wildcard ../Common/Fsm/*.c)
-C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
-C_SOURCES += $(wildcard ../Common/debuglog/*.c)
-C_SOURCES += $(wildcard ../Common/method/*.c)
-C_SOURCES += $(wildcard ../Common/IQMath/ti/*.c)
-C_SOURCES += $(wildcard ../Common/_assert/*.c)
-C_SOURCES += $(wildcard ../Common/data_structures/*.c)
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32h723xx.s
@@ -141,28 +127,83 @@ C_DEFS =  \
 
 # C includes
 C_INCLUDES =  \
--I./Hardware \
--I../Sensor \
--I../BLDCMotor \
--I../protocol \
--I../Common/IQMath/support \
--I../Common/IQMath/ti \
--I../Common/debuglog/SEGGER_RTT_V792h/Config \
--I../Common/debuglog/SEGGER_RTT_V792h/RTT \
--I../Common/debuglog \
--I../Common/method \
--I../Common/IPC \
--I../Common/Fsm \
--I../Common/data_structures \
--I../Common \
 -IInc \
 -IDrivers/STM32H7xx_HAL_Driver/Inc \
 -IDrivers/STM32H7xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32H7xx/Include \
 -IDrivers/CMSIS/Include
 
-C_INCLUDES += -I./Board
+DEBUGLOG_ENABLE = 1
+ifeq ($(DEBUGLOG_ENABLE),1)  
+C_DEFS += -DENABLE_DEBUG 
+C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
+C_SOURCES += $(wildcard ../Common/debuglog/*.c)
+C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
+C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
+C_INCLUDES += -I../Common/debuglog 
+endif
+
+
+
+MESSAGEQUEUE_ENABLE = 0
+ifeq ($(MESSAGEQUEUE_ENABLE),1) 
+C_SOURCES += $(wildcard ../Common/messagequeue/*.c)
+C_INCLUDES += -I../Common/messagequeue 
+endif
+
+PERF_COUNTER_ENABLE = 0
+ifeq ($(PERF_COUNTER_ENABLE),1)
 C_INCLUDES += -I../Common/Perf_counter
+C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
+endif
+
+SYSTEMMODULE_ENABLE = 1
+ifeq ($(SYSTEMMODULE_ENABLE),1)
+C_INCLUDES += -I../Common/systemmodule 
+C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
+C_DEFS += -DENABLE_SYSTEMMODULE
+
+endif
+
+ENABLE_SENSOR = 0
+ifeq ($(ENABLE_SENSOR),1)
+C_DEFS += -DENABLE_SENSORMODULE
+C_INCLUDES += -I../Sensor 
+C_SOURCES += $(wildcard ../Sensor/*.c)
+endif
+
+# C_INCLUDES += -I../Common/Fsm 
+# C_SOURCES += $(wildcard ../Common/Fsm/*.c)
+
+# C_INCLUDES += -I../Common/method 
+# C_SOURCES += $(wildcard ../Common/method/*.c)
+
+# C_INCLUDES += -I../Common/_assert 
+# C_SOURCES += $(wildcard ../Common/_assert/*.c)
+
+# C_INCLUDES += -I../Common/data_structures
+# C_SOURCES += $(wildcard ../Common/data_structures/*.c)
+
+# C_INCLUDES += -I../Common
+# C_SOURCES += $(wildcard ../Common/*.c)
+
+# C_INCLUDES += -I../BLDCMotor 
+# C_SOURCES += $(wildcard ../BLDCMotor/*.c)
+
+# C_SOURCES += $(wildcard ./Hardware/*.c)
+# C_INCLUDES += -I./Hardware 
+
+# C_SOURCES += $(wildcard ./Board/*.c)
+# C_INCLUDES += -I./Board
+
+CMBACKTRACE_ENABLE = 0
+ifeq ($(CMBACKTRACE_ENABLE),1) 
+C_DEFS += -DCMB_USER_CFG
+C_SOURCES += $(wildcard ../Common/CmBacktrace/cm_backtrace/*.c)
+C_INCLUDES += -I../Common/CmBacktrace/cm_backtrace 
+ASM_SOURCES += $(wildcard ../Common/CmBacktrace/cm_backtrace/fault_handler/gcc/cmb_fault.s)
+endif
+
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

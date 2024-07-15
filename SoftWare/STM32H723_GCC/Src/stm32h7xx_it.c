@@ -59,8 +59,8 @@ extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 extern I2C_HandleTypeDef hi2c2;
 /* USER CODE BEGIN EV */
-#include "_common.h"
-extern void user_i2cirq_cb(I2C_HandleTypeDef *hi2c);
+// #include "_common.h"
+// extern void user_i2cirq_cb(I2C_HandleTypeDef *hi2c);
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -87,7 +87,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-  USER_DEBUG_NORMAL("HardFault\r\n");
+  // USER_DEBUG_NORMAL("HardFault\r\n");
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -190,7 +190,7 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-  user_code_insert_to_systick_handler();
+  // user_code_insert_to_systick_handler();
   /* USER CODE END SysTick_IRQn 1 */
 }
 
