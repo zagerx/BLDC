@@ -21,6 +21,7 @@
 #include "adc.h"
 #include "i2c.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -136,7 +137,6 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  // init_cycle_counter(true);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -147,25 +147,18 @@ int main(void)
   MX_I2C2_Init();
   MX_ADC1_Init();
   MX_TIM4_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("H7 hello word\r\n");
-  // unsigned int nCycleUsed = 0;
-  // __cycleof__("full test",{nCycleUsed = _;}){
-  //   delay_ms(1000);
-  // }
-  // USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/550);
-  // hw_init();
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // sensor_process();
-    sysrunning_process();
-    // motortctrl_process();
-    HAL_Delay(1);
+    uart2_process();
+    
+    // HAL_Delay(1);
 
     /* USER CODE END WHILE */
 
