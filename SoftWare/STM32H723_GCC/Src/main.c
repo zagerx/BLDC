@@ -148,6 +148,7 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM4_Init();
   MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("H7 hello word\r\n");
   /* USER CODE END 2 */
