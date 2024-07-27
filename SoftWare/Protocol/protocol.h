@@ -8,7 +8,7 @@
 
 extern void protocol_init(void);
 extern void protocol_process(void);
-extern unsigned char protocol_getdata_tofifo(unsigned char *pdata,unsigned short len);
+extern void protocol_getdata_tofifo(unsigned char *pdata, unsigned short len);
 
 
 /*

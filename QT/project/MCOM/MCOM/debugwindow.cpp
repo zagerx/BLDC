@@ -1,7 +1,7 @@
 #include "debugwindow.h"
 #include "ui_debugwindow.h"
 #include <QtDebug>
-#include "commands.h"
+#include "mc_protocol/commands.h"
 
 commandmap_t gCMDMap[] = {
     {0x0305},

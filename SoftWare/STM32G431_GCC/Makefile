@@ -176,6 +176,11 @@ C_INCLUDES += -I../Sensor
 C_SOURCES += $(wildcard ../Sensor/*.c)
 endif
 
+
+C_INCLUDES += -I../Protocol
+C_SOURCES += $(wildcard ../Protocol/*.c)
+
+
 C_INCLUDES += -I../Common/Fsm 
 C_SOURCES += $(wildcard ../Common/Fsm/*.c)
 

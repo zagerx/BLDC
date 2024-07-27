@@ -31,6 +31,7 @@
 #include "board.h"
 #include "taskmodule.h"
 #include "system_scheduler.h"
+#include "protocol.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,22 +66,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern void thread_01(void);
-
-void StackFlow(void)
-{
- 
-    int a[3],i;
- 
-    for(i=0; i<10000; i++)
-    {
- 
-    a[i]=1;
- 
-    }
-
-    USER_DEBUG_NORMAL("222\n");
-}
 
 /* USER CODE END 0 */
 
@@ -131,10 +116,6 @@ int main(void)
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
   USER_DEBUG_NORMAL("SYS start runing\r\n");
 
-
-  StackFlow();
-
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -145,6 +126,7 @@ int main(void)
     sysrunning_process();
     sensor_process();
     motortctrl_process();
+    // protocol_process();
     HAL_Delay(1);
     /* USER CODE END WHILE */
 

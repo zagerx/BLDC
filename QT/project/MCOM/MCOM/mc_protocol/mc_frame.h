@@ -5,6 +5,9 @@
 #include <vector>
 #include <cstdint>
 
+
+#define FRAME_HEAD       (0xA5A5)
+#define FRAME_TAIL       (0x5A5A)
 class MC_Frame {
 public:
     uint16_t CMD;

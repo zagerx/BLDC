@@ -22,9 +22,10 @@ HEADERS += \
     commands.h \
     debugwindow.h \
     mainwindow.h \
+    serialwindow.h \
     ./mc_protocol/mc_frame.h \
     ./mc_protocol/mc_protocol.h \
-    serialwindow.h
+    ./mc_protocol/commands.h
 
 FORMS += \
     debugwindow.ui \

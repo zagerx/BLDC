@@ -17,14 +17,14 @@ bool VerifyCRC16(const unsigned char* data, size_t length, uint16_t expectedCRC)
     return calculatedCRC == expectedCRC;  
 }  
   
-// MC_Frame类的成员函数实现  
+// MC_Frame类的成员函数实现
   
-std::vector<unsigned char> MC_Frame::Pack() const {  
-    std::vector<unsigned char> frame;  
+std::vector<unsigned char> MC_Frame::Pack() const {
+    std::vector<unsigned char> frame;
   
-    // 添加帧头  
-    frame.push_back(0xAA);  
-    frame.push_back(0x55);  
+    // 添加帧头
+    frame.push_back((uint8_t)(FRAME_HEAD>>8));
+    frame.push_back((uint8_t)(FRAME_HEAD));
   
     // 添加CMD  
     frame.push_back(static_cast<unsigned char>((CMD >> 8) & 0xFF));  
@@ -46,9 +46,8 @@ std::vector<unsigned char> MC_Frame::Pack() const {
     frame.push_back(static_cast<unsigned char>(crc & 0xFF));  
   
     // 添加帧尾  
-    frame.push_back(0x55);  
-    frame.push_back(0xAA);  
-  
+    frame.push_back((uint8_t)(FRAME_TAIL>>8));
+    frame.push_back((uint8_t)(FRAME_TAIL));
     return frame;  
 }  
 // MC_Frame.cpp (继续)  

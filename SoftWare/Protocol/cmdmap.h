@@ -1,5 +1,11 @@
 #ifndef __PROTOCOL_CMDMAP__H
 #define __PROTOCOL_CMDMAP__H
-void _forch_cmdmap(unsigned short cmd,unsigned char *pdata,unsigned short len);
-#endif
 
+typedef struct _cmdmap
+{
+    unsigned short cmd;
+    void *(*pfunc)(unsigned char *pdata, unsigned short datalen);
+} cmdmap_t;
+
+void _forch_cmdmap(unsigned short cmd, unsigned char *pdata, unsigned short len);
+#endif

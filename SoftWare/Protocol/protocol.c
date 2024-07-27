@@ -1,13 +1,17 @@
-#include "protocol_comment.h"
-#include "protocol_cfg.h"
-#include "protocol.h"
+#include "frame.h"
+#include "cmdmap.h"
 #include "fifo.h"
+#include "initmodule.h"
+#include "taskmodule.h"
+#include "protocol.h"
+
+#include "debuglog.h"
 
 static unsigned char pro_recivefifo_buf[PRO_FIFO_SIZE];
 static byte_fifo_t pro_recivefifo;
 
 static char _readdata_fromrecivefifo(unsigned char *pbuf, unsigned short *buf_size);
-static void _recivethead(void);
+static void _recivethread(void);
 
 extern void protocol_init(void)
 {
@@ -16,23 +20,26 @@ extern void protocol_init(void)
 }
 extern void protocol_process(void)
 {
-    _recivethead();
+    _recivethread();
 }
 extern void protocol_getdata_tofifo(unsigned char *pdata, unsigned short len)
 {
     bytefifo_writemulitebyge(&pro_recivefifo, pdata, len);
 }
 
-static void _recivethead(void)
+static void _recivethread(void)
 {
     unsigned char pbuf[64] = {0};
-    unsigned short datalen = 0;
-    if (!_readdata_fromrecivefifo(pbuf, datalen))
+    unsigned short len = 0;
+    if (_readdata_fromrecivefifo(pbuf, &len))
     {
         return;
     }
-
-    protocol_pause(pbuf, datalen); // todo
+    frame_t frame;
+    _unpack_proframe(pbuf, len, &frame);
+    USER_DEBUG_NORMAL("head: %04X, cmd: %04X, datalen: %04X, crc: %04X, tail: %04X\n",
+                      frame.head, frame.cmd, frame.datalen, frame.crc, frame.tail);
+    _forch_cmdmap(frame.cmd, frame.pdata, frame.datalen);
 }
 static char _readdata_fromrecivefifo(unsigned char *pbuf, unsigned short *buf_size)
 {
@@ -109,3 +116,6 @@ static char _readdata_fromrecivefifo(unsigned char *pbuf, unsigned short *buf_si
     }
     return 1;
 }
+
+board_init(protocol_init)
+board_task(protocol_process)

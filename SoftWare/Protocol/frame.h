@@ -1,6 +1,7 @@
 #ifndef __FRAME__H
 #define __FRAME__H
 
+#pragma pack(push,1)
 typedef struct _frame
 {
     unsigned short head;
@@ -10,5 +11,9 @@ typedef struct _frame
     unsigned short crc;
     unsigned short tail;
 }frame_t;
+#pragma pack(pop)
+
+void _unpack_proframe(unsigned char *pdata, unsigned short len, frame_t *frame);
+
 
 #endif
