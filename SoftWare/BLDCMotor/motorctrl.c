@@ -37,8 +37,6 @@ void motorctrl_init(void)
 
 void motortctrl_process(void)
 {
-
-    motorprotocol_process();
     DISPATCH_FSM(&pmotor_fsm);
 }
 
@@ -128,7 +126,6 @@ static fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
     case MOTOR_START:
         motor_enable();
         pthis->chState = MOTOR_RUNING;
-        motorprotocol_transmit(sg_commandmap[CMD_SET_START].res_cmd,strlen(sg_commandmap[CMD_SET_START].res_cmd));
         break;
 
     case MOTOR_RUNING:
@@ -162,7 +159,6 @@ static fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
 
         if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
         {
-            motorprotocol_transmit(sg_commandmap[CMD_SET_STOP].res_cmd,strlen(sg_commandmap[CMD_SET_STOP].res_cmd));
             pthis->chState = EXIT;
         }
         break;

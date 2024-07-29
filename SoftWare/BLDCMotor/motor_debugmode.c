@@ -138,7 +138,6 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
 
         if(!strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_STOP].cmd)))
         {
-            motorprotocol_transmit(sg_commandmap[CMD_SET_STOP].res_cmd,strlen(sg_commandmap[CMD_SET_STOP].res_cmd));
             pthis->chState = EXIT;
         }
         break;    
