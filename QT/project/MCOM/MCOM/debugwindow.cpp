@@ -3,9 +3,9 @@
 #include <QtDebug>
 #include "mc_protocol/commands.h"
 
-commandmap_t gCMDMap[] = {
-    {0x0305},
-};
+// commandmap_t gCMDMap[] = {
+//     {0x0305},
+// };
 motordebug::motordebug(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::motordebug)

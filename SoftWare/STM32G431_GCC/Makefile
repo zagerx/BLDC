@@ -205,7 +205,7 @@ C_INCLUDES += -I./Hardware
 C_SOURCES += $(wildcard ./Board/*.c)
 C_INCLUDES += -I./Board
 
-CMBACKTRACE_ENABLE = 1
+CMBACKTRACE_ENABLE = 0
 ifeq ($(CMBACKTRACE_ENABLE),1) 
 C_DEFS += -DCMB_USER_CFG
 C_SOURCES += $(wildcard ../Common/CmBacktrace/cm_backtrace/*.c)

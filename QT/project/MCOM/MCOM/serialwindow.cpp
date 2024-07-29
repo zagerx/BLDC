@@ -51,20 +51,17 @@ void serialwindow::closeEvent(QCloseEvent *event)
  */
 void serialwindow::on_mc_startBt_clicked()
 {
-    QString command = "motor_start:\r\n";
-    serial->write(command.toLatin1());
-
     MC_Frame datafram;
-    datafram.CMD = 0x0102;
-    datafram.data = {0x03, 0x04};
+    datafram.CMD = M_SET_START;
     datafram.Pack();
-    // datafram.PrintFrame();
     pMcProtocl->SendFrame(datafram);
 }
 void serialwindow::on_mt_stopBt_clicked()
 {
-    QString command = "motor_stop:\r\n";
-    serial->write(command.toLatin1());
+    MC_Frame datafram;
+    datafram.CMD = M_SET_STOP;
+    datafram.Pack();
+    pMcProtocl->SendFrame(datafram);
 }
 void serialwindow::on_enseriBt_clicked()
 {
@@ -125,12 +122,12 @@ void serialwindow::on_enseriBt_clicked()
 }
 void serialwindow::on_normal_bt_clicked()
 {
-    /**/
+    MC_Frame datafram;
+    datafram.CMD = M_SET_NormalM;
+    datafram.Pack();
+    pMcProtocl->SendFrame(datafram);
     ui->mc_startBt->setDisabled(false);
     ui->mt_stopBt->setDisabled(false);
-
-    QString command = "motor_normalmode:\r\n";
-    serial->write(command.toLatin1());
 }
 void serialwindow::on_debug_bt_clicked()
 {
@@ -141,7 +138,6 @@ void serialwindow::on_debug_bt_clicked()
     motordebug *pmd = new motordebug;
     // /*connect*/(b, &B::dataReady, this, &A::onDataReceivedFromB); // 连接B界面的信号到A界面的槽
     connect(pmd, &motordebug::dataReady, this, &serialwindow::onDataReceivedFromB);
-
     pmd->show();
 }
 

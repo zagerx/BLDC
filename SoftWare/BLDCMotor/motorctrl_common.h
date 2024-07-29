@@ -60,7 +60,7 @@ typedef struct
     float pid_tar;
     float ele_angle;
     float self_ele_theta;
-    char *cur_cmd;
+    unsigned short rec_cmd;
 }motordebug_t;
 
 

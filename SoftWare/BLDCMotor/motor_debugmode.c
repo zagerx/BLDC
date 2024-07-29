@@ -76,7 +76,7 @@ void mc_test(float *iabc,float omega)
 
     case STOP:
 
-        if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
+        if (motordebug.rec_cmd == M_SET_START)
         {
             cnt = 0;
             state = PREPOSITIONING;
@@ -99,7 +99,7 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
     switch (pthis->chState)
     {
     case ENTER:
-        if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_D_KP].cmd)))
+        // if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_D_KP].cmd)))
         {
             break;
         }
@@ -107,7 +107,7 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
         pid_init(&(mc_param.daxis_pi),motordebug.pid_kp,motordebug.pid_ki,1.0f,D_MAX_VAL,D_MIN_VAL);
         pthis->chState = READY;
     case READY:
-        if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
+        // if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
         {
             break;
         }
@@ -136,9 +136,8 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
             motordebug.vbus = vbus;
         }
 
-        if(!strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_STOP].cmd)))
+        // if(!strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_STOP].cmd)))
         {
-            motorprotocol_transmit(sg_commandmap[CMD_SET_STOP].res_cmd,strlen(sg_commandmap[CMD_SET_STOP].res_cmd));
             pthis->chState = EXIT;
         }
         break;    

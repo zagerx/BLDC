@@ -24,8 +24,8 @@ public:
     MCProtocol *pMcProtocl;
     QMap<QString, int> commandMap = {
                                      {"速度", M_SET_SPEED},
-                                     {"急停", M_SET_STOP},
-                                     {"位置", M_SET_POS},
+                                     {"启动", M_SET_START},
+                                     {"停止", M_SET_STOP},
                                      };
 private slots:
     void on_mc_startBt_clicked();
