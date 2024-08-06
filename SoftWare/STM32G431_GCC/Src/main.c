@@ -102,7 +102,6 @@ int main(void)
   MX_TIM1_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
-  MX_ADC2_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   User_Printf_Init();
@@ -111,7 +110,7 @@ int main(void)
   __cycleof__("full test",{nCycleUsed = _;}){
     delay_ms(1000);
   }
-  USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/170);  
+  USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/168);  
   // motorctrl_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
   USER_DEBUG_NORMAL("SYS start runing\r\n");

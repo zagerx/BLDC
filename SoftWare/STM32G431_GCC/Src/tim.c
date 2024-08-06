@@ -45,7 +45,7 @@ void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = _PSC-1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED3;
-  htim1.Init.Period = 3500;
+  htim1.Init.Period = 4200;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV2;
   htim1.Init.RepetitionCounter = 2;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
@@ -62,7 +62,7 @@ void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_OC4REF;
   sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
@@ -85,6 +85,11 @@ void MX_TIM1_Init(void)
     Error_Handler();
   }
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.Pulse = 2100;
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
   {
     Error_Handler();
   }
@@ -122,10 +127,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM1_MspInit 0 */
     /* TIM1 clock enable */
     __HAL_RCC_TIM1_CLK_ENABLE();
-
-    /* TIM1 interrupt Init */
-    HAL_NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
   /* USER CODE BEGIN TIM1_MspInit 1 */
 
   /* USER CODE END TIM1_MspInit 1 */
@@ -189,9 +190,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_TIM1_CLK_DISABLE();
-
-    /* TIM1 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(TIM1_UP_TIM16_IRQn);
   /* USER CODE BEGIN TIM1_MspDeInit 1 */
 
   /* USER CODE END TIM1_MspDeInit 1 */
@@ -211,6 +209,8 @@ void tim_set_pwm(float _a,float _b,float _c)
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,b);
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,c);
 
+  // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,_ARR-30);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,30);
 }
 
 void tim_pwm_enable(void)
@@ -224,6 +224,9 @@ void tim_pwm_enable(void)
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3); 
+
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
+
 }
 void tim_pwm_disable(void)
 {
@@ -239,10 +242,11 @@ void tim_pwm_disable(void)
 
 void tim_tigger_adc(void)
 {
+  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
 #include "motorctrl.h"
 
-extern ADC_HandleTypeDef hadc2;
+// extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc1;
 
 #define  CURRENT_SENSE_MIN_VOLT           0.3f
@@ -267,16 +271,17 @@ static void _convert_current(uint16_t* adc_buf,float *i_abc)
     return;
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+// void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
   unsigned short adc_vale[3];
   float iabc[3];
-  uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;  
-	if(!counting_down)   
+  // uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;  
+	// if(!counting_down)   
 	{
     adc_vale[0] = (uint16_t)0;
     adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
-    adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
+    adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_2);
     _convert_current((uint16_t*)adc_vale,iabc);
     mc_hightfreq_task(iabc);
 	}

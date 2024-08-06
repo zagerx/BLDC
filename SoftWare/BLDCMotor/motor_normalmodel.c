@@ -4,9 +4,11 @@
 #include "board.h"
 #include "string.h"
 #include "mc_speedmode.h"
+#include "mc_torquemode.h"
 
 static void mc_param_init(void);
 void mc_param_deinit(void);
+#define CURRMENTLOOP_PERIOD      (0.0001f)
 
 fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
 {
@@ -83,8 +85,8 @@ fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
 
 static void mc_param_init(void)
 {
-    // pid_init(&(mc_param.daxis_pi),0.0273f,166.2507f * CURRMENT_PERIOD,1.0f,D_MAX_VAL,D_MIN_VAL);
-    // pid_init(&(mc_param.qaxis_pi),0.0273f,166.2507f * CURRMENT_PERIOD,1.0f,D_MAX_VAL,D_MIN_VAL);
+    // pid_init(&(mc_param.daxis_pi),0.0273f,166.2507f * CURRMENTLOOP_PERIOD,1.0f,D_MAX_VAL,D_MIN_VAL);
+    // pid_init(&(mc_param.qaxis_pi),0.0273f,166.2507f * CURRMENTLOOP_PERIOD,1.0f,D_MAX_VAL,D_MIN_VAL);
     pid_init(&(mc_param.daxis_pi),0.1,0.01f,1.0f,D_MAX_VAL,D_MIN_VAL);
     pid_init(&(mc_param.qaxis_pi),0.1,0.01f,1.0f,D_MAX_VAL,D_MIN_VAL);
     pid_init(&(mc_param.speedloop_pi),0.9f,0.1f,1.0f,D_MAX_VAL,D_MIN_VAL);

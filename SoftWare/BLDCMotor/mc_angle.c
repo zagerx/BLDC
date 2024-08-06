@@ -9,7 +9,7 @@ static float pll_ki_ = 1000000.0f;   // [(count/s^2) / count]
 #define  ENCODER_DIR             1
 #define  ENCODER_OFFSET          23406
 #define  ENCODER_OFFSET_FLOAT    0.56f
-#define  ENCODER_PERIOD          0.000125f
+#define  ENCODER_PERIOD          0.0001f
 #define  ENCODER_MOTOR_PAIR      7.0f
 #define  ENCODER_CPR             16384
 

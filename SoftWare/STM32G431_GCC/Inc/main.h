@@ -58,7 +58,7 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define _PSC 1
-#define _ARR 3500
+#define _ARR 4200
 #define LED_01_Pin GPIO_PIN_13
 #define LED_01_GPIO_Port GPIOC
 #define KEY_01_Pin GPIO_PIN_12

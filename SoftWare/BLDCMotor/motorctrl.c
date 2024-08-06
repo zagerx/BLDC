@@ -4,18 +4,18 @@
 #include "mc_protocol.h"
 #include "board.h"
 #include "string.h"
-#include "mc_torquemode.h"
 #include "mc_currmentmode.h"
 #include "mc_utils.h"
 #include "mc_angle.h"
 #include "fsm.h"
 #include "motor_debugmode.h"
 #include "initmodule.h"
-
+#include "perf_counter.h"
 #define CURRMENT_PERIOD      (0.000125f)
 #define TOTAL_DISTANCE       (_2PI)
 #define TOTAL_TIME           (6.0f)
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)
+// unsigned int nCycleUsed = 0;
 
 
 extern fsm_rt_t motor_normalmode(fsm_cb_t *pthis);
@@ -55,7 +55,10 @@ void mc_hightfreq_task(float *iabc)
     next_theta = theta + 1.5f * CURRMENT_PERIOD * speed;
     motordebug.ele_angle = theta;
     motordebug.real_speed = speed;
+
+  __cycleof__("full test",{motordebug.nCycleUsed = _;}){
     duty = currment_loop(iabc,theta,next_theta);
+  }
     motor_set_pwm(duty._a,duty._b,duty._c);
 #endif
 }
@@ -69,8 +72,6 @@ static fsm_rt_t motor_idlemode(fsm_cb_t *pthis)
         {
             TRAN_STATE(pthis,motor_normalmode);
         }
-        
-        
         break;
     case EXIT:
         break;
