@@ -191,19 +191,21 @@ void serialwindow::timerTick()
 
 void serialwindow::processdata(QByteArray data)
 {
-    QTextEdit *line_edit;
-    line_edit = ui->textEdit;
-    // 将数据转换为 QString，并将 "\r\n" 转换为 ""
-    QString textData = QString::fromUtf8(data).replace("\r\n", "");
+    // qDebug() << "QByteArray in hex:" << data.toHex();
 
-    line_edit->append(textData);
-
+    static unsigned char _state = 0;
     QLabel *lightLabel;
-    lightLabel = ui->LED_Label;
-    lightLabel->setPixmap(QPixmap("../MCOM/images/GreenLED.png")); // 设置初始状态为灭灯
-
+    lightLabel = ui->LED_Label;    
     lightLabel->setScaledContents(true); // /*根据控件大小缩放图片*/
-    lightLabel->setFixedSize(50, 50);    // 设置控件大小为 50x50
+    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 50x50
+    if (_state)
+    {
+        _state = 0;
+        lightLabel->setPixmap(QPixmap("../MCOM/images/GreenLED.png")); // 设置初始状态为灭灯
+    }else{
+        _state = 1;
+        lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png")); // 设置初始状态为灭灯
+    }
 }
 
 void serialwindow::onReadSerialData()

@@ -76,7 +76,7 @@ void MX_USART1_UART_Init(void)
   /*-----------------使能USART DMA接收----------------------------*/
    __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
     HAL_UART_Receive_DMA(&huart1, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));  
-    /*---------------关闭USART DMA发送--------------------------*/
+  /*---------------关闭USART DMA发送--------------------------*/
   /* USER CODE END USART1_Init 2 */
 
 }

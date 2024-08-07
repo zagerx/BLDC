@@ -33,9 +33,19 @@ void motorctrl_init(void)
     pmotor_fsm.chState = ENTER;
 }
 
+
+__attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len){}
 void motortctrl_process(void)
 {
     DISPATCH_FSM(&pmotor_fsm);
+    static unsigned short cnt = 0;
+    if (cnt++>200)
+    {
+        cnt = 0;
+        unsigned char buf[] = {0xA5,0xA5,0x02,0x00,0x00,0x00,0xFF,0xFF,0x5A,0x5A};
+        _bsp_protransmit(buf,sizeof(buf));
+    }
+    
 }
 
 void mc_hightfreq_task(float *iabc)
