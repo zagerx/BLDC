@@ -15,7 +15,6 @@
 #define TOTAL_DISTANCE       (_2PI)
 #define TOTAL_TIME           (6.0f)
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)
-// unsigned int nCycleUsed = 0;
 
 
 extern fsm_rt_t motor_normalmode(fsm_cb_t *pthis);

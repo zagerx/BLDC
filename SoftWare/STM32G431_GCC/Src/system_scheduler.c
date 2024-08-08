@@ -48,61 +48,61 @@ void sysrunning_process(void)
 }
 
 
-#include "msgqueue.h"
-void msg_test(void)
-{
-    USER_DEBUG_NORMAL("Msg test\n");
-}
-void thread_01(void)
-{
-    msg_list_t* msg_list =0 ;
-    msg_list = CREAT_MSG_LIST();
+// #include "msgqueue.h"
+// void msg_test(void)
+// {
+//     USER_DEBUG_NORMAL("Msg test\n");
+// }
+// void thread_01(void)
+// {
+//     msg_list_t* msg_list =0 ;
+//     msg_list = CREAT_MSG_LIST();
 
-    msg_node_t* msg1 = (msg_node_t*)malloc(sizeof(msg_node_t));
-    if (msg1)
-    {
-        msg1->msg.msg_id = 1;
-        msg1->msg.pfunc = msg_test;
-        USER_DEBUG_NORMAL("msg malloc ok\n");
-    }
+//     msg_node_t* msg1 = (msg_node_t*)malloc(sizeof(msg_node_t));
+//     if (msg1)
+//     {
+//         msg1->msg.msg_id = 1;
+//         msg1->msg.pfunc = msg_test;
+//         USER_DEBUG_NORMAL("msg malloc ok\n");
+//     }
 
-    if (!INSERT_LIST_TAIL(msg_list, msg1))
-    {
-        return;
-    }
+//     if (!INSERT_LIST_TAIL(msg_list, msg1))
+//     {
+//         return;
+//     }
 
-    // 检查任务链表是否为空
-    if (IS_LIST_EMPTY(msg_list)) {
-        USER_DEBUG_NORMAL("msg list is empty.\n");
-        return;
-    } 
+//     // 检查任务链表是否为空
+//     if (IS_LIST_EMPTY(msg_list)) {
+//         USER_DEBUG_NORMAL("msg list is empty.\n");
+//         return;
+//     } 
 
-    USER_DEBUG_NORMAL("msg list is not empty.\n");
-    msg_node_t *cur_node;
+//     USER_DEBUG_NORMAL("msg list is not empty.\n");
+//     msg_node_t *cur_node;
 
-    for (; ;)
-    {
-        USER_DEBUG_NORMAL("traverse msg list\n");
-        cur_node = TRAVERSE_LIST(msg_list);
-        if (!cur_node)
-        {
-            USER_DEBUG_NORMAL("traverse finish\n");
-            break;
-        }
+//     for (; ;)
+//     {
+//         USER_DEBUG_NORMAL("traverse msg list\n");
+//         cur_node = TRAVERSE_LIST(msg_list);
+//         if (!cur_node)
+//         {
+//             USER_DEBUG_NORMAL("traverse finish\n");
+//             break;
+//         }
         
-        if (!(cur_node->msg.pfunc))
-        {
-            continue;
-        }
+//         if (!(cur_node->msg.pfunc))
+//         {
+//             continue;
+//         }
         
-        cur_node->msg.pfunc();
-    }
+//         cur_node->msg.pfunc();
+//     }
     
     
 
     // msg_node_t *cur_msg_node = GET_LIST_NODE(msg_list);
 
-}
+// }
 
 
 /*

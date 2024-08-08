@@ -21,6 +21,7 @@ static void _cmd_motorstart(cmdmap_t *pactor,unsigned char *pdata, unsigned shor
 static void _cmd_motorstop(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setMotorNormalM(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
+static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static cmdmap_t commend_map[] = {
     {M_SET_SPEED,      test_func,              },
     {M_SET_START,      _cmd_motorstart,        },
@@ -28,7 +29,7 @@ static cmdmap_t commend_map[] = {
     {M_SET_NormalM,    _cmd_setMotorNormalM,   },
     {M_SET_DebugM,     test_func,              },
     {M_GET_MotorInfo,  test_func,              },
-    {M_GET_PCBAInfo,   test_func,              },
+    {M_GET_PCBAInfo,   _cmd_getpcbainfo,       },
     {M_SET_PIDParam,   _cmd_setpidparam,       },
 };
 
@@ -71,6 +72,28 @@ static void _cmd_setMotorNormalM(cmdmap_t *pactor,unsigned char *pdata, unsigned
 static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
     USER_DEBUG_NORMAL("Set Motor PID Param CMD\n");
+}
+
+
+#include "prot_send.h"
+#include "frame.h"
+// extern msg_list_t* msg_list;
+
+static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
+{
+
+    unsigned char buf[] = {0x02,0x03};
+    frame_t frame;
+    frame.cmd = ~(pactor->cmd);
+    frame.pdata = buf;
+    frame.datalen = sizeof(buf);
+    /*封包*/
+    unsigned char *p = 0;
+    p = _pack_proframe(&frame);
+
+    // msg_node_t* msg1 = (msg_node_t*)malloc(sizeof(msg_node_t));
+    // msg1->fsm_cblock.time_count = 20;
+    // INSERT_LIST_TAIL(msg_list, msg1);    
 }
 
 

@@ -256,6 +256,7 @@ void serialwindow::on_cmd_enBt_clicked()
         datafram.CMD = commandMap.value(currentText);
     } else {
         qDebug() << "未知命令：" << currentText;
+        return;
     }
 
     currentText = ui->data_lineEdit->text();

@@ -26,7 +26,8 @@ public:
                                      {"速度", M_SET_SPEED},
                                      {"启动", M_SET_START},
                                      {"停止", M_SET_STOP},
-                                     };
+                                     {"板子信息",M_GET_PCBAInfo}
+    };
 private slots:
     void on_mc_startBt_clicked();
     void on_mt_stopBt_clicked();

@@ -119,3 +119,13 @@ static char _readdata_fromrecivefifo(unsigned char *pbuf, unsigned short *buf_si
 
 board_init(protocol_init)
 board_task(protocol_process)
+
+
+
+
+
+
+
+
+
+
