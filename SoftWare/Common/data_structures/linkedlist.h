@@ -5,13 +5,6 @@
 #include "stdint.h"
 
 #define CREAT_LIST_WITH_TYPE(type, node_type) \
-    typedef struct type##_list { \
-        node_type* head; \
-        node_type* tail; \
-        node_type* cur;\
-        int16_t node_num; \
-    } type##_list_t; \
-    \
     type##_list_t* create_##type##_list() {  \
         type##_list_t* list = (type##_list_t*)malloc(sizeof(type##_list_t)); \
         if (list == NULL) {  \

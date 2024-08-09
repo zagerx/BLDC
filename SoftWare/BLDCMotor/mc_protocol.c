@@ -77,8 +77,7 @@ static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
 
 #include "prot_send.h"
 #include "frame.h"
-// extern msg_list_t* msg_list;
-
+extern msg_list_t* msg_list;
 static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
 
@@ -91,9 +90,17 @@ static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
     unsigned char *p = 0;
     p = _pack_proframe(&frame);
 
-    // msg_node_t* msg1 = (msg_node_t*)malloc(sizeof(msg_node_t));
-    // msg1->fsm_cblock.time_count = 20;
-    // INSERT_LIST_TAIL(msg_list, msg1);    
+    // for (uint16_t i = 0; i < (frame.datalen + sizeof(frame_t) - 4); i++)
+    // {
+    //     USER_DEBUG_NORMAL("0x%02x ",p[i]);
+    // }
+    // USER_DEBUG_NORMAL("\n");
+    
+    msg_node_t* msg1 = (msg_node_t*)malloc(sizeof(msg_node_t));
+    msg1->fsm_cblock.time_count = 20;
+    msg1->fsm_cblock._state = 0;
+    msg1->pdata = p;
+    insert_msg_list_tail(msg_list, msg1);
 }
 
 

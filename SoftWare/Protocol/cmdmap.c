@@ -6,8 +6,6 @@
 #undef NULL
 #define NULL (0)
 
-
-
 typedef struct _cmdmap
 {
     unsigned short cmd;

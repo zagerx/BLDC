@@ -34,7 +34,8 @@ unsigned char* _pack_proframe(frame_t *frame)
         // 内存分配失败，可以返回 NULL 或处理错误  
         return NULL;  
     }  
-  
+    frame->head = 0xA5A5;
+    frame->tail = 0x5A5A;
     // 填充头部  
     packed_data[0] = (frame->head >> 8) & 0xFF;  
     packed_data[1] = frame->head & 0xFF;  
@@ -53,13 +54,14 @@ unsigned char* _pack_proframe(frame_t *frame)
     }  
   
     // 填充 CRC  
+    frame->crc = 0x1234;
     packed_data[6 + frame->datalen] = (frame->crc >> 8) & 0xFF;  
     packed_data[7 + frame->datalen] = frame->crc & 0xFF;  
   
     // 填充尾部  
     packed_data[8 + frame->datalen] = (frame->tail >> 8) & 0xFF;  
     packed_data[9 + frame->datalen] = frame->tail & 0xFF;  
-  
+
     return packed_data;  
 }
 

@@ -271,13 +271,10 @@ static void _convert_current(uint16_t* adc_buf,float *i_abc)
     return;
 }
 
-// void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
   unsigned short adc_vale[3];
-  float iabc[3];
-  // uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;  
-	// if(!counting_down)   
+  float iabc[3]; 
 	{
     adc_vale[0] = (uint16_t)0;
     adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);

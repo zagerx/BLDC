@@ -37,8 +37,8 @@ static void _recivethread(void)
     }
     frame_t frame;
     _unpack_proframe(pbuf, len, &frame);
-    USER_DEBUG_NORMAL("head: %04X, cmd: %04X, datalen: %04X, crc: %04X, tail: %04X\n",
-                      frame.head, frame.cmd, frame.datalen, frame.crc, frame.tail);
+    // USER_DEBUG_NORMAL("head: %04X, cmd: %04X, datalen: %04X, crc: %04X, tail: %04X\n",
+    //                   frame.head, frame.cmd, frame.datalen, frame.crc, frame.tail);
     _forch_cmdmap(frame.cmd, frame.pdata, frame.datalen);
 }
 static char _readdata_fromrecivefifo(unsigned char *pbuf, unsigned short *buf_size)

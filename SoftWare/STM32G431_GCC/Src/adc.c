@@ -206,12 +206,8 @@ void adc_init(void)
 }
 void adc_start(void)
 {
-
   HAL_ADCEx_Calibration_Start(&hadc1,ADC_SINGLE_ENDED);
   HAL_ADCEx_InjectedStart_IT(&hadc1);
-
-  // HAL_ADCEx_Calibration_Start(&hadc2,ADC_SINGLE_ENDED);
-  // HAL_ADCEx_InjectedStart_IT(&hadc2);
 }
 
 static float vbus_data;
@@ -236,7 +232,6 @@ void* adc_readvbus(void)
 
 void adc_stop(void)
 {
-  // HAL_ADCEx_InjectedStop(&hadc2);
   HAL_ADCEx_InjectedStop(&hadc1);
 }
 /* USER CODE END 1 */

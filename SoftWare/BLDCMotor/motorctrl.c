@@ -44,7 +44,6 @@ void motortctrl_process(void)
         unsigned char buf[] = {0xA5,0xA5,0x02,0x00,0x00,0x00,0xFF,0xFF,0x5A,0x5A};
         _bsp_protransmit(buf,sizeof(buf));
     }
-    
 }
 
 void mc_hightfreq_task(float *iabc)
@@ -88,7 +87,5 @@ static fsm_rt_t motor_idlemode(fsm_cb_t *pthis)
         break;
     }
 }
-
-
 
 board_init(motorctrl_init)
