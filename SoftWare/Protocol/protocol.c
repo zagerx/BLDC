@@ -1,10 +1,8 @@
-#include "frame.h"
-#include "cmdmap.h"
+#include "protocol.h"
+#include "protocol_cmdmap.h"
 #include "fifo.h"
 #include "initmodule.h"
 #include "taskmodule.h"
-#include "protocol.h"
-
 #include "debuglog.h"
 
 static unsigned char pro_recivefifo_buf[PRO_FIFO_SIZE];
@@ -119,13 +117,3 @@ static char _readdata_fromrecivefifo(unsigned char *pbuf, unsigned short *buf_si
 
 board_init(protocol_init)
 board_task(protocol_process)
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,10 @@
 #ifndef __PROTOCOL__H
 #define __PROTOCOL__H
 
+#include "protocol_frame.h"
+#include "protocol_transmit.h"
+
+
 #define PRO_FIFO_SIZE           (256U)
 #define PRO_FRAME_HEAD          (0xA5A5)
 #define PRO_FRAME_TAIL          (0x5A5A)

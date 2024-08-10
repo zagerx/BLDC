@@ -8,12 +8,14 @@
 #include <ctype.h> // for isspace()  
 #include "heap.h"
 #include "debuglog.h"
+#include "protocol.h"
+extern msg_list_t* msg_list;
 
 typedef struct _cmdmap cmdmap_t;
 struct _cmdmap
 {
     unsigned short cmd;
-    void *(*pfunc)(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
+    void (*pfunc)(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 };
 
 static void test_func(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
@@ -44,7 +46,7 @@ void _forch_cmdmap(unsigned short cmd, unsigned char *pdata, unsigned short len)
 
         if (commend_map[i].pfunc != NULL)
         {
-            commend_map[i].pfunc(&(commend_map[i]),pdata, len);
+            commend_map[i].pfunc((cmdmap_t *)&(commend_map[i]),pdata, len);
         }
     }
 }
@@ -74,10 +76,6 @@ static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
     USER_DEBUG_NORMAL("Set Motor PID Param CMD\n");
 }
 
-
-#include "prot_send.h"
-#include "frame.h"
-extern msg_list_t* msg_list;
 static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
 

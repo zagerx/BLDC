@@ -25,8 +25,6 @@ duty_t currment_loop(float *abc,float theta,float next_theta)
 	float Iq_des,Id_des;
 	Id_des = motordebug.id_targe;
 	Iq_des = motordebug.iq_targe;
-	float Ierr_d = Id_des - idq.d;
-	float Ierr_q = Iq_des - idq.q;
 
 	motordebug.id_real  = idq.d;
 	motordebug.iq_real  = idq.q;

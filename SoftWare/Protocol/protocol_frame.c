@@ -1,4 +1,6 @@
-#include "frame.h"
+#include "protocol_frame.h"
+#include "string.h"  
+#include "heap.h"
 void _unpack_proframe(unsigned char *pdata, unsigned short len, frame_t *frame)
 {
     if (len < 8)
@@ -17,9 +19,6 @@ void _unpack_proframe(unsigned char *pdata, unsigned short len, frame_t *frame)
     frame->tail = (pdata[8 + frame->datalen] << 8) | pdata[9 + frame->datalen];
 }
 
-#include <stdlib.h>  
-#include <string.h>  
-  #include "heap.h"
 unsigned char* _pack_proframe(frame_t *frame)  
 {  
     // 计算整个帧的总长度（不包括 pdata 指向的内存，因为我们需要单独处理它）  

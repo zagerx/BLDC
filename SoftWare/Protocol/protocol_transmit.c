@@ -1,4 +1,4 @@
-#include "prot_send.h"
+#include "protocol_transmit.h"
 #include "taskmodule.h"
 #include "main.h"
 #include "linkedlist.h"
@@ -39,7 +39,7 @@ void msglist_process(void)
             {
                 return;
             }
-            if (msg_send(&(cur_node->fsm_cblock)) == RT_FINISH)
+            if (msg_send((msg_node_t*)&(cur_node->fsm_cblock)) == RT_FINISH)
             {
                 heap_free(cur_node->pdata);
                 DELETE_LIST_NODE(msg_list, cur_node);

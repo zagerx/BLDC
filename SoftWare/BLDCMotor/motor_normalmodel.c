@@ -81,6 +81,7 @@ fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
     default:
         break;
     }
+    return 0;
 }
 
 static void mc_param_init(void)
