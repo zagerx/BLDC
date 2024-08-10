@@ -1,4 +1,5 @@
 #include "./motorctrl.h"
+#include "taskmodule.h"
 #include "debuglog.h"
 #include "motorctrl_common.h"
 #include "mc_protocol.h"
@@ -89,3 +90,4 @@ static fsm_rt_t motor_idlemode(fsm_cb_t *pthis)
 }
 
 board_init(motorctrl_init)
+board_task(motortctrl_process)

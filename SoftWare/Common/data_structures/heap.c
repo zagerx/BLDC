@@ -3,7 +3,6 @@
 #include "stdint.h"
 
 #if 1
-
 #define user_assert_param(expr) ((void)0U)
 
 #define TOTAL_HEAP_SIZE                    ((size_t)4096)
@@ -39,7 +38,7 @@ static size_t minimum_everfreebytes_remaining = 0U;
 static size_t block_allocatedbit = 0;
 
 /*-----------------------------------------------------------*/
-
+#include "debuglog.h"
 void *heap_malloc( size_t wanted_size )
 {
     blocklink_t *pxBlock, *p_previous_block, *p_new_blocklink;
@@ -49,6 +48,7 @@ void *heap_malloc( size_t wanted_size )
 		if( pend == NULL )
 		{
 			heap_init();
+			USER_DEBUG_NORMAL("HEAP INIT\n");
 		}
 		if( ( wanted_size & block_allocatedbit ) == 0 )
 		{

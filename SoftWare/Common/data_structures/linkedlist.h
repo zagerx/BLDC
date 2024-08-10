@@ -3,10 +3,10 @@
 
 #include "stdbool.h"
 #include "stdint.h"
-
+#include "heap.h"
 #define CREAT_LIST_WITH_TYPE(type, node_type) \
     type##_list_t* create_##type##_list() {  \
-        type##_list_t* list = (type##_list_t*)malloc(sizeof(type##_list_t)); \
+        type##_list_t* list = (type##_list_t*)heap_malloc(sizeof(type##_list_t)); \
         if (list == NULL) {  \
             return NULL;\
         }  \
@@ -22,9 +22,9 @@
         while (current != NULL) { \
             node_type *temp = current; \
             current = current->next_node; \
-            free(temp); \
+            heap_free(temp); \
         } \
-        free(pthis); \
+        heap_free(pthis); \
     } \
     \
     bool insert_##type##_list_tail(type##_list_t* pthis, node_type* node) { \
@@ -64,7 +64,7 @@
                     pthis->tail = prev; \
                 } \
                 \
-                free(current); \
+                heap_free(current); \
                 pthis->node_num--; \
                 return true; \
             } \

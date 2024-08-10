@@ -23,14 +23,11 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "sensor.h"
-#include "../../BLDCMotor/motorctrl.h"
 #include "debuglog.h"
 #include "perf_counter.h"
 #include "board.h"
 #include "taskmodule.h"
-#include "system_scheduler.h"
-#include "protocol.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,11 +47,6 @@
 
 /* USER CODE BEGIN PV */
 
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  // IPC_SET_EVENT(gEventGroup,KEY01_SHORT_PRESS);
-}
 
 /* USER CODE END PV */
 
@@ -110,7 +102,6 @@ int main(void)
     delay_ms(1000);
   }
   USER_DEBUG_NORMAL("full test runing time %d\r\n",nCycleUsed/168);  
-  // motorctrl_init();
   HAL_GPIO_WritePin(LED_01_GPIO_Port,LED_01_Pin,GPIO_PIN_SET);
   USER_DEBUG_NORMAL("SYS start runing\r\n");
 
@@ -121,9 +112,6 @@ int main(void)
   while (1)
   {
     do_taskcalls();
-    sysrunning_process();
-    sensor_process();
-    motortctrl_process();
     HAL_Delay(1);
     /* USER CODE END WHILE */
 

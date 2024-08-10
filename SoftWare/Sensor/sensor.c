@@ -1,4 +1,5 @@
 #include "sensor.h"
+#include "taskmodule.h"
 #undef  NULL
 #define NULL 0
 #define SENSORE_PERCI            (1)
@@ -92,3 +93,4 @@ void sensor_user_pause(sens_type_idx_t sensor_id)
 
 }
 
+board_task(sensor_process)

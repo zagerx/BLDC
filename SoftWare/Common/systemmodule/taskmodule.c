@@ -11,8 +11,8 @@ void do_taskcalls(void)
    // do loop call call taskcall functions;
    for( fn_entry =   &__taskcall_start  ; fn_entry <  &__taskcall_end ; fn_entry++)
    {
-	fc = (taskcall_t *) (*fn_entry);
-	fc();
+      fc = (taskcall_t *) (*fn_entry);
+      fc();
    }
 }
 

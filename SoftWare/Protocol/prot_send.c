@@ -4,6 +4,7 @@
 #include "linkedlist.h"
 #include "debuglog.h"
 #include "string.h"
+#include "heap.h"
 
 CREAT_LIST_WITH_TYPE(msg, msg_node_t)
 // 创建任务链表
@@ -14,45 +15,16 @@ CREAT_LIST_WITH_TYPE(msg, msg_node_t)
 #define GET_LIST_NODE(list)                 get_##list##_head(list)
 #define TRAVERSE_LIST(list)                 traverse_##list(list)//遍历链表
 
-static fsm_rt_t msg_send(fsmcb_t *fsm)
-{
-    enum{
-        ENTER = 0,
-        TIME_OUT,
-        IDLE,
-        EXIT,
-    };
-    switch (fsm->_state)
-    {
-    case ENTER:
-        if (fsm->time_count++ > 1500)
-        {
-            fsm->time_count = 0;
-            USER_DEBUG_NORMAL("msg timeout\n");
-            fsm->_state = TIME_OUT;
-        }
-        break;
-    case TIME_OUT:
-        return RT_FINISH;
-        break;
-    case IDLE:
-        
-        break;              
-    default:
-        break;
-    }
-    return RT_RUNING;
-}
 msg_list_t* msg_list = 0;
-static unsigned int pre_tick = 0;
+static fsm_rt_t msg_send(msg_node_t *msg);
+
 void msglist_process(void)
 {
     enum{
         INIT = 0,
         RUNING,
     };
-    static short _state = INIT;
-
+    static short _state = INIT; 
     switch (_state)
     {
     case INIT:
@@ -62,19 +34,14 @@ void msglist_process(void)
     case RUNING:
         {
             msg_node_t *cur_node;
-            cur_node = TRAVERSE_LIST(msg_list);
+            cur_node = GET_LIST_NODE(msg_list);
             if (cur_node == NULL)
             {
                 return;
             }
             if (msg_send(&(cur_node->fsm_cblock)) == RT_FINISH)
             {
-                unsigned int delt,cur;
-                cur = HAL_GetTick();
-                delt = cur - pre_tick;
-                pre_tick = cur;
-                USER_DEBUG_NORMAL("msglist cycle  %d\n",delt);                
-                free(cur_node->pdata);
+                heap_free(cur_node->pdata);
                 DELETE_LIST_NODE(msg_list, cur_node);
             }
         }
@@ -83,6 +50,33 @@ void msglist_process(void)
         break;
     }
 }
-
+static fsm_rt_t msg_send(msg_node_t *msg)
+{
+    enum{
+        ENTER = 0,
+        TIME_OUT,
+        IDLE,
+        EXIT,
+    };
+    switch (msg->fsm_cblock._state)
+    {
+    case ENTER:
+        if (msg->fsm_cblock.time_count++ > msg->fsm_cblock.time_out)
+        {
+            msg->fsm_cblock.time_count = 0;
+            msg->fsm_cblock._state = TIME_OUT;
+        }
+        break;
+    case TIME_OUT:
+        USER_DEBUG_NORMAL(" send finish\n");
+        return RT_FINISH;
+        break;
+    case IDLE:
+        break;              
+    default:
+        break;
+    }
+    return RT_RUNING;
+}
 board_task(msglist_process)
 

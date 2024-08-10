@@ -19,7 +19,7 @@ void _unpack_proframe(unsigned char *pdata, unsigned short len, frame_t *frame)
 
 #include <stdlib.h>  
 #include <string.h>  
-  
+  #include "heap.h"
 unsigned char* _pack_proframe(frame_t *frame)  
 {  
     // 计算整个帧的总长度（不包括 pdata 指向的内存，因为我们需要单独处理它）  
@@ -29,7 +29,7 @@ unsigned char* _pack_proframe(frame_t *frame)
     }  
   
     // 分配足够的内存来存储整个帧  
-    unsigned char *packed_data = (unsigned char *)malloc(total_length);  
+    unsigned char *packed_data = (unsigned char *)heap_malloc(total_length);  
     if (packed_data == NULL) {  
         // 内存分配失败，可以返回 NULL 或处理错误  
         return NULL;  

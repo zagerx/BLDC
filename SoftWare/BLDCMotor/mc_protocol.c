@@ -6,7 +6,7 @@
 #include "stdint.h"
 #include <stdlib.h>  
 #include <ctype.h> // for isspace()  
-
+#include "heap.h"
 #include "debuglog.h"
 
 typedef struct _cmdmap cmdmap_t;
@@ -96,8 +96,15 @@ static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
     // }
     // USER_DEBUG_NORMAL("\n");
     
-    msg_node_t* msg1 = (msg_node_t*)malloc(sizeof(msg_node_t));
+    msg_node_t* msg1 = (msg_node_t*)heap_malloc(sizeof(msg_node_t));
+    if (msg1 == NULL)
+    {
+        USER_DEBUG_NORMAL("malloc fail\n");
+        return;
+    }
+    
     msg1->fsm_cblock.time_count = 20;
+    msg1->fsm_cblock.time_out = 0;
     msg1->fsm_cblock._state = 0;
     msg1->pdata = p;
     insert_msg_list_tail(msg_list, msg1);
