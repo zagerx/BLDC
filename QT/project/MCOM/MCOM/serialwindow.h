@@ -45,6 +45,7 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+    void charts_init(void);
     Ui::serialwindow *ui;
     QSerialPort *serial;
     QTimer *timer;

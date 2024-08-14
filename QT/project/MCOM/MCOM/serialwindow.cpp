@@ -6,7 +6,7 @@
 #include "mc_protocol/mc_protocol.h"
 #include "mc_protocol/mc_frame.h"
 #include "debugwindow.h"
-
+#include <QtCharts>
 /*
  * 界面初始化 && 界面反初始化 && 界面退出
  */
@@ -17,7 +17,8 @@ serialwindow::serialwindow(QWidget *parent)
     SerialPortInit();
     ui->mc_startBt->setDisabled(true);
     ui->mt_stopBt->setDisabled(true);
-
+    /*初始化图表*/
+    charts_init();
     // 设置定时器的时间间隔为1ms
     timer->setInterval(2);
     // 将定时器的timeout()信号连接到槽函数timerTick()
@@ -38,7 +39,71 @@ serialwindow::~serialwindow()
     delete timer;
     delete ui;
 }
+/*
+* 图表初始化
+*/
+void serialwindow::charts_init()
+{
+    QChart *chart_1 = new QChart;
+    chart_1->setTitle("data collo");
+    ui->graphicsView->setChart(chart_1);
+    //设置X轴
+    QValueAxis *axis_x = new QValueAxis;
+    axis_x->setTitleText("时间");
+    axis_x->setRange(0,100);
+    chart_1->addAxis(axis_x,Qt::AlignBottom);
+    //设置Y轴
+    QValueAxis *axis_y = new QValueAxis;
+    axis_y->setTitleText("时间");
+    axis_y->setRange(-1.5,1.5);
+    chart_1->addAxis(axis_y,Qt::AlignLeft);
+    //增加数据
+    QLineSeries *line = new QLineSeries;
+    line->setName("正弦函数");
+    chart_1->addSeries(line);
+    qreal y;
+    for(int x = 0;x<100;x++)
+    {
+        y = qSin(0.1*x);
+        line->append(x,y);
+    }
+    line->attachAxis(axis_x);
+    line->attachAxis(axis_y);
+}
 
+/*
+ *  串口初始化
+ */
+void serialwindow::SerialPortInit()
+{
+    serial = new (QSerialPort);
+    QSerialPort *curPort;
+    curPort = new (QSerialPort);
+    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
+    {
+        curPort->setPort(info);
+        if (curPort->open(QIODevice::ReadWrite))
+        {
+            ui->portBox->addItem(info.portName());
+            curPort->close();
+            qDebug() << "串口打开成功";
+        }
+        else
+        {
+            qDebug() << "串口打开失败，请重试";
+        }
+    }
+    delete (curPort);
+
+    size_t sendBufferSize = 512; // 假设的发送缓冲区大小
+    pMcProtocl = new MCProtocol(sendBufferSize);
+
+    connect(serial, &QSerialPort::readyRead, this, &serialwindow::onReadSerialData);
+}
+
+/*
+* 窗口关闭回调
+*/
 void serialwindow::closeEvent(QCloseEvent *event)
 {
     // 请求在事件循环的下一个迭代中删除此对象
@@ -142,37 +207,7 @@ void serialwindow::on_debug_bt_clicked()
 }
 
 /*
- *  串口初始化
- */
-void serialwindow::SerialPortInit()
-{
-    serial = new (QSerialPort);
-    QSerialPort *curPort;
-    curPort = new (QSerialPort);
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
-    {
-        curPort->setPort(info);
-        if (curPort->open(QIODevice::ReadWrite))
-        {
-            ui->portBox->addItem(info.portName());
-            curPort->close();
-            qDebug() << "串口打开成功";
-        }
-        else
-        {
-            qDebug() << "串口打开失败，请重试";
-        }
-    }
-    delete (curPort);
-
-    size_t sendBufferSize = 512; // 假设的发送缓冲区大小
-    pMcProtocl = new MCProtocol(sendBufferSize);
-
-    connect(serial, &QSerialPort::readyRead, this, &serialwindow::onReadSerialData);
-}
-
-/*
- *  定时器回调 && 数据处理
+ *  定时器回调 
  */
 void serialwindow::timerTick()
 {
@@ -189,25 +224,10 @@ void serialwindow::timerTick()
     serial->write(byteArray);
 }
 
-void serialwindow::processdata(QByteArray data)
-{
-    // qDebug() << "QByteArray in hex:" << data.toHex();
 
-    static unsigned char _state = 0;
-    QLabel *lightLabel;
-    lightLabel = ui->LED_Label;    
-    lightLabel->setScaledContents(true); // /*根据控件大小缩放图片*/
-    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 50x50
-    if (_state)
-    {
-        _state = 0;
-        lightLabel->setPixmap(QPixmap("../MCOM/images/GreenLED.png")); // 设置初始状态为灭灯
-    }else{
-        _state = 1;
-        lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png")); // 设置初始状态为灭灯
-    }
-}
-
+/*
+*   串口接收回调
+*/
 void serialwindow::onReadSerialData()
 {
     // 假设 serial 已经被正确初始化和打开
@@ -231,6 +251,24 @@ void serialwindow::onReadSerialData()
     {
         // 串口未打开或未初始化，可以给出警告或错误提示
         qDebug() << "Serial port is not open or not initialized.";
+    }
+}
+
+void serialwindow::processdata(QByteArray data)
+{
+
+    static unsigned char _state = 0;
+    QLabel *lightLabel;
+    lightLabel = ui->LED_Label;    
+    lightLabel->setScaledContents(true); // /*根据控件大小缩放图片*/
+    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 50x50
+    if (_state)
+    {
+        _state = 0;
+        lightLabel->setPixmap(QPixmap("../MCOM/images/GreenLED.png")); // 设置初始状态为灭灯
+    }else{
+        _state = 1;
+        lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png")); // 设置初始状态为灭灯
     }
 }
 
