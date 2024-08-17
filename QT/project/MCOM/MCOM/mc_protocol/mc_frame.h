@@ -13,12 +13,11 @@ public:
     uint16_t CMD;
     std::vector<unsigned char> data;
 
-    // 封包函数声明
-    std::vector<unsigned char> Pack() const;
-
     // 解包函数声明
-    bool Unpack(const unsigned char* input, size_t length);
+    std::vector<unsigned char> UnPack() const;
 
+    // 封包函数声明
+    bool Pack(const std::vector<unsigned char>& input);
     // 可选：用于打印帧内容的辅助函数声明
     void PrintFrame(void) const;
 

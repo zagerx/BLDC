@@ -46,6 +46,8 @@ protected:
 
 private:
     void charts_init(void);
+    void SendThread(void);
+    void ReciveThread(void);
     Ui::serialwindow *ui;
     QSerialPort *serial;
     QTimer *timer;

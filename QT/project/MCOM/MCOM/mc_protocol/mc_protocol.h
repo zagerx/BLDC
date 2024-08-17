@@ -1,22 +1,25 @@
 #ifndef MC_PROTOCOL_H  
 #define MC_PROTOCOL_H  
   
-#include <vector>  
-#include <queue>  // 添加这一行以包含 queue 头文件  
+#include <vector>
+#include <queue>  // 添加这一行以包含 queue 头文件
 
-#include "MC_Frame.h"  
+#include "mc_frame.h"
   
 class MCProtocol {  
 private:  
     std::queue<std::vector<unsigned char>> sendBuffer;  
-    size_t bufferSize;  
-    size_t currentBufferSize;  
+    std::queue<std::vector<unsigned char>> recvQueue;  // 新增接收缓冲区
+
+    size_t bufferSize;
+    size_t currentSendBufferSize;
+    size_t currentRecvBufferSize;  // 跟踪接收缓冲区当前大小
   
-public:  
-    MCProtocol(size_t size) : bufferSize(size), currentBufferSize(0) {}  
+public:
+    MCProtocol(size_t size) : bufferSize(size), currentSendBufferSize(0) {}  
   
     // 将MC_Frame对象封包后发送到缓冲区  
-    void SendFrame(const MC_Frame& frame);  
+    void AddFrameToBuf(const MC_Frame& frame);  
   
     // 检查发送缓冲区是否已满
     bool SendbufHasData() const;
@@ -27,6 +30,13 @@ public:
   
     // 可选：清空发送缓冲区  
     void ClearSendBuffer();  
-};  
+
+    // 接收数据到接收缓冲区  
+    void ReceiveData(const std::vector<unsigned char>& data);  
   
+    // 尝试从接收缓冲区读取并解析一个完整的MC_Frame
+    bool RDFrameFromRecvBuf(MC_Frame *revframe);
+
+};  
+
 #endif // MC_PROTOCOL_H

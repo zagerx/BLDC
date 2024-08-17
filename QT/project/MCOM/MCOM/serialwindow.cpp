@@ -7,6 +7,7 @@
 #include "mc_protocol/mc_frame.h"
 #include "debugwindow.h"
 #include <QtCharts>
+#include "comment.h"
 /*
  * 界面初始化 && 界面反初始化 && 界面退出
  */
@@ -118,15 +119,15 @@ void serialwindow::on_mc_startBt_clicked()
 {
     MC_Frame datafram;
     datafram.CMD = M_SET_START;
-    datafram.Pack();
-    pMcProtocl->SendFrame(datafram);
+    datafram.UnPack();
+    pMcProtocl->AddFrameToBuf(datafram);
 }
 void serialwindow::on_mt_stopBt_clicked()
 {
     MC_Frame datafram;
     datafram.CMD = M_SET_STOP;
-    datafram.Pack();
-    pMcProtocl->SendFrame(datafram);
+    datafram.UnPack();
+    pMcProtocl->AddFrameToBuf(datafram);
 }
 void serialwindow::on_enseriBt_clicked()
 {
@@ -189,8 +190,8 @@ void serialwindow::on_normal_bt_clicked()
 {
     MC_Frame datafram;
     datafram.CMD = M_SET_NormalM;
-    datafram.Pack();
-    pMcProtocl->SendFrame(datafram);
+    datafram.UnPack();
+    pMcProtocl->AddFrameToBuf(datafram);
     ui->mc_startBt->setDisabled(false);
     ui->mt_stopBt->setDisabled(false);
 }
@@ -209,7 +210,7 @@ void serialwindow::on_debug_bt_clicked()
 /*
  *  定时器回调 
  */
-void serialwindow::timerTick()
+void serialwindow::SendThread()
 {
     if (!pMcProtocl->SendbufHasData())
     {
@@ -219,9 +220,32 @@ void serialwindow::timerTick()
     QByteArray byteArray;
     byteArray.resize(data.size());
     std::copy(data.begin(), data.end(), byteArray.begin());
-    QString hexString = byteArray.toHex(' ').toUpper(); // ' ' 作为分隔符，toUpper() 使输出大写
-    qDebug() << "ByteArray in hex:" << hexString;
     serial->write(byteArray);
+}
+
+
+
+void serialwindow::ReciveThread()
+{
+    MC_Frame curframe;
+    if(pMcProtocl->RDFrameFromRecvBuf(&curframe) == false)
+    {
+        return;
+    }
+    if (curframe.CMD == S_HeartP)
+    {
+        return;
+    }
+    printFloatsFromBytes(curframe.data);
+
+    //遍历整个协议地图
+
+}
+
+void serialwindow::timerTick()
+{
+    SendThread();
+    ReciveThread();
 }
 
 /*
@@ -238,6 +262,8 @@ void serialwindow::onReadSerialData()
         // 如果读取到了数据
         if (!data.isEmpty())
         {
+            std::vector<unsigned char> vecData(data.constBegin(), data.constEnd());
+            pMcProtocl->ReceiveData(vecData);
             processdata(data);
         }
         else
@@ -276,13 +302,10 @@ void serialwindow::onDataReceivedFromB(const QString &data)
     // 在这里处理从B界面接收到的数据
     qDebug() << "Received data from B:" << data;
     // 由于B界面在此时可能已经被销毁，确保不要再访问b的指针
-
-    QString command; // = "pid_param:"
+    QString command;
     command += data;
     serial->write(command.toUtf8());
 }
-
-std::vector<unsigned char> stringToUCharVectorOptimized(const QString &str);
 
 void serialwindow::on_cmd_enBt_clicked()
 {
@@ -297,33 +320,11 @@ void serialwindow::on_cmd_enBt_clicked()
     }
 
     currentText = ui->data_lineEdit->text();
+    qDebug()<<currentText;
     datafram.data = stringToUCharVectorOptimized(currentText);// 调用函数，将QString中的浮点数转换为unsigned char向量;
-    datafram.Pack();
-    pMcProtocl->SendFrame(datafram);    
+    datafram.UnPack();
+    datafram.PrintFrame();
+    pMcProtocl->AddFrameToBuf(datafram);    
 }
 
-std::vector<unsigned char> stringToUCharVectorOptimized(const QString &str)
-{
-    QStringList floatsStr = str.split(',');
-    std::vector<float> floatVector;
 
-    // 提取所有浮点数到float向量中
-    for (const QString &floatStr : floatsStr) {
-        bool ok;
-        float value = floatStr.toFloat(&ok);
-        if (!ok) {
-            // 如果转换失败，可以选择跳过或抛出异常
-            // 这里我们选择跳过
-            continue;
-        }
-        floatVector.push_back(value);
-    }
-
-    // 将float向量中的每个浮点数的字节表示添加到std::vector<unsigned char>中
-    std::vector<unsigned char> result;
-    result.reserve(floatVector.size() * sizeof(float));
-    for (const float &f : floatVector) {
-        result.insert(result.end(), reinterpret_cast<const unsigned char*>(&f), reinterpret_cast<const unsigned char*>(&f) + sizeof(float));
-    }
-    return result;
-}

@@ -16,13 +16,15 @@ SOURCES += \
     mainwindow.cpp \
     ./mc_protocol/mc_frame.cpp \
     ./mc_protocol/mc_protocol.cpp \
-    serialwindow.cpp
+    serialwindow.cpp \
+    comment.cpp
 
 HEADERS += \
     commands.h \
     debugwindow.h \
     mainwindow.h \
     serialwindow.h \
+    comment.h \
     ./mc_protocol/mc_frame.h \
     ./mc_protocol/mc_protocol.h \
     ./mc_protocol/commands.h

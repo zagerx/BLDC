@@ -2,29 +2,18 @@
 #include <stdexcept> // 用于抛出异常
 #include <QtDebug>
 
+#include "comment.h"
 
-#include <iostream>
-#include <vector>
-#include <iomanip> // 用于 std::hex 和 std::setw
-void PrintBytes(const std::vector<unsigned char>& bytes) {
-    for (auto byte : bytes) {
-        // 打印每个字节，以十六进制形式，前面补0以保持两位宽度
-        std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)byte << ' ';
-    }
-    std::cout << std::endl; // 打印完毕后换行
-}
-
-
-void MCProtocol::SendFrame(const MC_Frame& frame) {  
-    if (currentBufferSize + frame.Pack().size() > bufferSize) {  
+void MCProtocol::AddFrameToBuf(const MC_Frame& frame) {  
+    if (currentSendBufferSize + frame.UnPack().size() > bufferSize) {  
         // 处理缓冲区溢出（例如：抛出异常、记录错误、丢弃旧数据等）
         throw std::runtime_error("Send buffer overflow");
     }
 
-    std::vector<unsigned char> frameBytes = frame.Pack();
+    std::vector<unsigned char> frameBytes = frame.UnPack();
     sendBuffer.push(frameBytes);
     // PrintBytes(frameBytes);
-    currentBufferSize += frameBytes.size();  
+    currentSendBufferSize += frameBytes.size();  
 }
 
 bool MCProtocol::SendbufHasData() const {
@@ -39,8 +28,9 @@ std::vector<unsigned char> MCProtocol::RDFromSendBuf() {
     }
     std::vector<unsigned char> data = sendBuffer.front();  
     sendBuffer.pop();  
-    currentBufferSize -= data.size();
-    // PrintBytes(data);
+    currentSendBufferSize -= data.size();
+    qDebug()<<"RDFromSendBuf";
+    PrintBytes(data);
 
     return data;  
 }  
@@ -49,5 +39,32 @@ void MCProtocol::ClearSendBuffer() {
     while (!sendBuffer.empty()) {  
         sendBuffer.pop();  
     }  
-    currentBufferSize = 0;  
+    currentSendBufferSize = 0;  
 }
+
+void MCProtocol::ReceiveData(const std::vector<unsigned char>& data) {
+    if (currentRecvBufferSize + data.size() > bufferSize) {
+        // 处理接收缓冲区溢出
+        throw std::runtime_error("Receive buffer overflow");
+    }
+    // PrintBytes(data);
+    recvQueue.push(data);
+    currentRecvBufferSize += data.size();  
+}
+
+
+bool MCProtocol::RDFrameFromRecvBuf(MC_Frame *revframe) {
+    if (recvQueue.empty()) {  
+        // 如果缓冲区为空，则无法读取帧  
+        // throw std::runtime_error("No data in receive buffer");
+        return false;
+    }
+    std::vector<unsigned char> frameData = recvQueue.front();
+    recvQueue.pop();
+    currentRecvBufferSize -= frameData.size();
+    revframe->Pack(frameData);
+    return true;
+}
+
+
+

@@ -75,36 +75,66 @@ static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
 {
     USER_DEBUG_NORMAL("Set Motor PID Param CMD\n");
 }
-
+typedef union {  
+    float f;  
+    uint32_t i;  
+} float_int_union; 
+void convert_floats(unsigned char *pdata, unsigned short datalen, float *floats) {  
+    if (datalen % 4 != 0) {  
+        // 如果datalen不是4的倍数，则不能完整地包含float数  
+        printf("Error: Data length must be a multiple of 4.\n");  
+        return;  
+    }  
+  
+    unsigned int num_floats = datalen / 4;  
+    for (unsigned int i = 0; i < num_floats; i++) {  
+        float_int_union u;  
+        // 从pdata中读取4个字节（即一个float）  
+        u.i = (uint32_t)pdata[i*4]  | (uint32_t)pdata[i*4+1] << 8 |  
+              (uint32_t)pdata[i*4+2] << 16 | (uint32_t)pdata[i*4+3]<< 24;          
+        floats[i] = u.f; // 转换为float并存储  
+    }  
+} 
 static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
+    float fbuf[5];
+    convert_floats(pdata,datalen,fbuf);
+    for (unsigned short i = 0; i < 5; i++)
+    {
+        USER_DEBUG_NORMAL("%f ",fbuf[i]);
+    }
+    USER_DEBUG_NORMAL("\n");
 
+    //响应部分
     unsigned char buf[] = {0x02,0x03};
+    float f_val[2] = {3.1415926f,2.2154f};
     frame_t frame;
     frame.cmd = ~(pactor->cmd);
-    frame.pdata = buf;
-    frame.datalen = sizeof(buf);
+    frame.pdata = (unsigned char*)&f_val;
+    frame.datalen = sizeof(f_val);
     /*封包*/
     unsigned char *p = 0;
     p = _pack_proframe(&frame);
 
+    // USER_DEBUG_NORMAL("get baord info\n");
     // for (uint16_t i = 0; i < (frame.datalen + sizeof(frame_t) - 4); i++)
     // {
     //     USER_DEBUG_NORMAL("0x%02x ",p[i]);
     // }
     // USER_DEBUG_NORMAL("\n");
-    
+
     msg_node_t* msg1 = (msg_node_t*)heap_malloc(sizeof(msg_node_t));
     if (msg1 == NULL)
     {
         USER_DEBUG_NORMAL("malloc fail\n");
         return;
     }
-    
+
     msg1->fsm_cblock.time_count = 20;
     msg1->fsm_cblock.time_out = 0;
     msg1->fsm_cblock._state = 0;
     msg1->pdata = p;
+    msg1->datalen = frame.datalen + sizeof(frame_t) - 4;
     insert_msg_list_tail(msg_list, msg1);
 }
 

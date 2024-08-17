@@ -17,7 +17,7 @@ CREAT_LIST_WITH_TYPE(msg, msg_node_t)
 
 msg_list_t* msg_list = 0;
 static fsm_rt_t msg_send(msg_node_t *msg);
-
+extern void _bsp_protransmit(unsigned char* pdata,unsigned short len);
 void msglist_process(void)
 {
     enum{
@@ -69,6 +69,13 @@ static fsm_rt_t msg_send(msg_node_t *msg)
         break;
     case TIME_OUT:
         USER_DEBUG_NORMAL(" send finish\n");
+        for (unsigned short i = 0; i < msg->datalen; i++)
+        {
+            /* code */
+            USER_DEBUG_NORMAL("0x%x  ",msg->pdata[i]);
+        }
+        USER_DEBUG_NORMAL("\n");
+        _bsp_protransmit(msg->pdata,msg->datalen);
         return RT_FINISH;
         break;
     case IDLE:
