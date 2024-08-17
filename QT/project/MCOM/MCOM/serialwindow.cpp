@@ -224,7 +224,6 @@ void serialwindow::timerTick()
     serial->write(byteArray);
 }
 
-
 /*
 *   串口接收回调
 */

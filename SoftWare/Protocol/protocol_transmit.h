@@ -18,6 +18,7 @@ typedef enum{
 
 typedef struct msg_node {
     fsmcb_t fsm_cblock;
+    unsigned char ack;
     unsigned char *pdata;
     unsigned short datalen;
     struct msg_node* next_node;

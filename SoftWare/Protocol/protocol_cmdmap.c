@@ -3,9 +3,9 @@
 
 #undef NULL
 #define NULL (0)
-#define TEST_CMD0 0X0101
+#define TEST_CMD0 0X0100
 #define TEST_CMD1 0X0101
-
+#define TEST_CMD2 0X0102
 typedef struct _cmdmap
 {
     unsigned short cmd;
