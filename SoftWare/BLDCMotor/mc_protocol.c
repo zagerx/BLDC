@@ -139,3 +139,33 @@ static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
 }
 
 
+
+#include "math.h"
+void mc_protocol_sendspeed(void)
+{
+    float fspeed;
+    frame_t frame;
+    frame.cmd = S_MotorSpeed;
+    static float theta = 0.0f;
+    fspeed = sinf(theta);
+    theta += 0.01f;
+    frame.pdata = (unsigned char*)&fspeed;
+    frame.datalen = sizeof(float);   
+    unsigned char *p = 0;
+    p = _pack_proframe(&frame);    
+    msg_node_t* msg1 = (msg_node_t*)heap_malloc(sizeof(msg_node_t));
+    if (msg1 == NULL)
+    {
+        USER_DEBUG_NORMAL("malloc fail\n");
+        return;
+    }
+    msg1->fsm_cblock.time_count = 20;
+    msg1->fsm_cblock.time_out = 0;
+    msg1->fsm_cblock._state = 0;
+    msg1->pdata = p;
+    msg1->datalen = frame.datalen + sizeof(frame_t) - 4;
+    insert_msg_list_tail(msg_list, msg1);
+}
+
+
+

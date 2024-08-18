@@ -13,10 +13,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
 void MainWindow::on_serialButton_clicked()
 {
     /*创建一个串口窗口*/
-    serialwindow *pserialwind = new serialwindow;
+    pserialwind = new serialwindow;
     pserialwind->show();
 }
 

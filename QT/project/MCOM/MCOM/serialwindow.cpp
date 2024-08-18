@@ -8,6 +8,9 @@
 #include "debugwindow.h"
 #include <QtCharts>
 #include "comment.h"
+
+serialwindow *pserialwind;
+
 /*
  * 界面初始化 && 界面反初始化 && 界面退出
  */
@@ -21,7 +24,7 @@ serialwindow::serialwindow(QWidget *parent)
     /*初始化图表*/
     charts_init();
     // 设置定时器的时间间隔为1ms
-    timer->setInterval(2);
+    timer->setInterval(1);
     // 将定时器的timeout()信号连接到槽函数timerTick()
     connect(timer, &QTimer::timeout, this, &serialwindow::timerTick);
     // 启动定时器
@@ -30,7 +33,6 @@ serialwindow::serialwindow(QWidget *parent)
 
 serialwindow::~serialwindow()
 {
-    qDebug() << "Eite SerialWindow";
     delete serial;    // 确保删除 serial 指向的对象
     serial = nullptr; // 防止悬空指针
 
@@ -232,20 +234,22 @@ void serialwindow::ReciveThread()
     {
         return;
     }
-    if (curframe.CMD == S_HeartP)
-    {
-        return;
-    }
-    printFloatsFromBytes(curframe.data);
+    // if (curframe.CMD == S_HeartP)
+    // {
+    //     return;
+    // }
+
+    // printFloatsFromBytes(curframe.data);
 
     //遍历整个协议地图
-
+    _forch_cmdmap(curframe.CMD,curframe.data);
 }
 
 void serialwindow::timerTick()
 {
-    SendThread();
     ReciveThread();
+
+    SendThread();
 }
 
 /*
@@ -264,7 +268,6 @@ void serialwindow::onReadSerialData()
         {
             std::vector<unsigned char> vecData(data.constBegin(), data.constEnd());
             pMcProtocl->ReceiveData(vecData);
-            processdata(data);
         }
         else
         {
@@ -276,24 +279,6 @@ void serialwindow::onReadSerialData()
     {
         // 串口未打开或未初始化，可以给出警告或错误提示
         qDebug() << "Serial port is not open or not initialized.";
-    }
-}
-
-void serialwindow::processdata(QByteArray data)
-{
-
-    static unsigned char _state = 0;
-    QLabel *lightLabel;
-    lightLabel = ui->LED_Label;    
-    lightLabel->setScaledContents(true); // /*根据控件大小缩放图片*/
-    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 50x50
-    if (_state)
-    {
-        _state = 0;
-        lightLabel->setPixmap(QPixmap("../MCOM/images/GreenLED.png")); // 设置初始状态为灭灯
-    }else{
-        _state = 1;
-        lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png")); // 设置初始状态为灭灯
     }
 }
 
@@ -327,4 +312,34 @@ void serialwindow::on_cmd_enBt_clicked()
     pMcProtocl->AddFrameToBuf(datafram);    
 }
 
+void serialwindow::led_blink(std::vector<unsigned char>& input)
+{
+    static unsigned char _state = 0;
+    QLabel *lightLabel;
+    lightLabel = ui->LED_Label;    
+    lightLabel->setScaledContents(true); // /*根据控件大小缩放图片*/
+    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 50x50
+    if (_state)
+    {
+        _state = 0;
+        lightLabel->setPixmap(QPixmap("../MCOM/images/GreenLED.png")); // 设置初始状态为灭灯
+    }else{
+        _state = 1;
+        lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png")); // 设置初始状态为灭灯
+    }
+}
 
+void serialwindow::_forch_cmdmap(unsigned short cmd, std::vector<unsigned char>& input)
+{
+    switch (cmd)
+    {
+    case S_HeartP:
+        led_blink(input);
+        break;
+    case S_MotorSpeed:
+        printFloatsFromBytes(input);
+        break;
+    default:
+        break;
+    }
+}

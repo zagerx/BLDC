@@ -18,5 +18,9 @@
 #define S_SMInfo                     (0x0201)
 #define S_PCBAInfo                   (0x0202)
 #define S_MotorInfo                  (0x0203)
+#define S_MotorSpeed                 (0x0204)
+
+
+void mc_protocol_sendspeed(void);
 
 #endif

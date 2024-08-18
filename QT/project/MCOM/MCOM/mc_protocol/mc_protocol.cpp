@@ -44,6 +44,7 @@ void MCProtocol::ClearSendBuffer() {
 
 void MCProtocol::ReceiveData(const std::vector<unsigned char>& data) {
     if (currentRecvBufferSize + data.size() > bufferSize) {
+        return;
         // 处理接收缓冲区溢出
         throw std::runtime_error("Receive buffer overflow");
     }

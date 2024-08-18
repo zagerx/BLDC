@@ -7,6 +7,7 @@
 #include <QLabel>
 #include "mc_protocol/mc_protocol.h"
 #include "mc_protocol/commands.h"
+#include <functional>  
 
 namespace Ui
 {
@@ -21,6 +22,8 @@ public:
     explicit serialwindow(QWidget *parent = nullptr);
     ~serialwindow();
     void SerialPortInit(void);
+    void led_blink(std::vector<unsigned char>& input);
+
     MCProtocol *pMcProtocl;
     QMap<QString, int> commandMap = {
                                      {"速度", M_SET_SPEED},
@@ -28,6 +31,8 @@ public:
                                      {"停止", M_SET_STOP},
                                      {"板子信息",M_GET_PCBAInfo}
     };
+
+    void _forch_cmdmap(unsigned short cmd, std::vector<unsigned char>& input);
 private slots:
     void on_mc_startBt_clicked();
     void on_mt_stopBt_clicked();
@@ -37,7 +42,6 @@ private slots:
     void on_cmd_enBt_clicked();
 
     void onReadSerialData();
-    void processdata(QByteArray data);
     void onDataReceivedFromB(const QString &data); // 接收B界面传递的数据
     void timerTick(void);
 
@@ -48,9 +52,13 @@ private:
     void charts_init(void);
     void SendThread(void);
     void ReciveThread(void);
+    void processdata(void);
     Ui::serialwindow *ui;
     QSerialPort *serial;
     QTimer *timer;
 };
+
+
+extern serialwindow *pserialwind;
 
 #endif // SERIALWINDOW_H
