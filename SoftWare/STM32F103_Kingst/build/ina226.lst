@@ -1,0 +1,187 @@
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc4CafmS.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"ina226.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.ina226_init,"ax",%progbits
+  18              		.align	1
+  19              		.global	ina226_init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	ina226_init:
+  25              	.LFB69:
+  26              		.file 1 "./Hardware/ina226.c"
+   1:./Hardware/ina226.c **** /*
+   2:./Hardware/ina226.c ****     INA226:电流/功率监视器
+   3:./Hardware/ina226.c **** */
+   4:./Hardware/ina226.c **** // #include "i2c.h"
+   5:./Hardware/ina226.c **** #include "_common.h"
+   6:./Hardware/ina226.c **** 
+   7:./Hardware/ina226.c **** #define IAN226_BASE_ADDR                (0x40)
+   8:./Hardware/ina226.c **** #define IAN226_DEVICE_READADDR          (IAN226_BASE_ADDR)<<1
+   9:./Hardware/ina226.c **** #define IAN226_DEVICE_WRITEADDR         ((IAN226_BASE_ADDR)<<1)|0X01
+  10:./Hardware/ina226.c **** #define IAN226_MANUFIDREGISTER_ADDR     (0xFE00)
+  11:./Hardware/ina226.c **** #define IAN226_DIEIDREGISTER_ADDR       (0xFF00)
+  12:./Hardware/ina226.c **** 
+  13:./Hardware/ina226.c **** typedef struct _data
+  14:./Hardware/ina226.c **** {
+  15:./Hardware/ina226.c ****     unsigned int *raw_buf;
+  16:./Hardware/ina226.c ****     unsigned int *covdata_buf;
+  17:./Hardware/ina226.c ****     unsigned int *filterdata_buf;
+  18:./Hardware/ina226.c ****     unsigned short buf_column;
+  19:./Hardware/ina226.c **** }ina622_data_t;
+  20:./Hardware/ina226.c **** 
+  21:./Hardware/ina226.c **** static ina622_data_t sg_data;
+  22:./Hardware/ina226.c **** static signed int rawdata_buf[3] = {1,2,33};
+  23:./Hardware/ina226.c **** static signed int covdata_buf[3] = {4,5,-23};
+  24:./Hardware/ina226.c **** static signed int filterdata_buf[3] = {7,8,9};
+  25:./Hardware/ina226.c **** static void ina226_read(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size)
+  26:./Hardware/ina226.c **** {
+  27:./Hardware/ina226.c ****     // i2c2_read(DevAddress, MemAddress, 1, pData, Size);
+  28:./Hardware/ina226.c **** }
+  29:./Hardware/ina226.c **** 
+  30:./Hardware/ina226.c **** void ina226_init(void)
+  31:./Hardware/ina226.c **** {
+  27              		.loc 1 31 1 view -0
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc4CafmS.s 			page 2
+
+
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32:./Hardware/ina226.c ****     sg_data.raw_buf = rawdata_buf;
+  32              		.loc 1 32 5 view .LVU1
+  33              		.loc 1 32 21 is_stmt 0 view .LVU2
+  34 0000 044B     		ldr	r3, .L2
+  35 0002 054A     		ldr	r2, .L2+4
+  36 0004 1A60     		str	r2, [r3]
+  33:./Hardware/ina226.c ****     sg_data.covdata_buf = covdata_buf;
+  37              		.loc 1 33 5 is_stmt 1 view .LVU3
+  38              		.loc 1 33 25 is_stmt 0 view .LVU4
+  39 0006 054A     		ldr	r2, .L2+8
+  40 0008 5A60     		str	r2, [r3, #4]
+  34:./Hardware/ina226.c ****     sg_data.filterdata_buf = filterdata_buf;
+  41              		.loc 1 34 5 is_stmt 1 view .LVU5
+  42              		.loc 1 34 28 is_stmt 0 view .LVU6
+  43 000a 054A     		ldr	r2, .L2+12
+  44 000c 9A60     		str	r2, [r3, #8]
+  35:./Hardware/ina226.c ****     sg_data.buf_column = 3;
+  45              		.loc 1 35 5 is_stmt 1 view .LVU7
+  46              		.loc 1 35 24 is_stmt 0 view .LVU8
+  47 000e 0322     		movs	r2, #3
+  48 0010 9A81     		strh	r2, [r3, #12]	@ movhi
+  36:./Hardware/ina226.c **** }
+  49              		.loc 1 36 1 view .LVU9
+  50 0012 7047     		bx	lr
+  51              	.L3:
+  52              		.align	2
+  53              	.L2:
+  54 0014 00000000 		.word	.LANCHOR0
+  55 0018 00000000 		.word	.LANCHOR1
+  56 001c 00000000 		.word	.LANCHOR2
+  57 0020 00000000 		.word	.LANCHOR3
+  58              		.cfi_endproc
+  59              	.LFE69:
+  61              		.section	.text.ina226_read_data,"ax",%progbits
+  62              		.align	1
+  63              		.global	ina226_read_data
+  64              		.syntax unified
+  65              		.thumb
+  66              		.thumb_func
+  68              	ina226_read_data:
+  69              	.LFB70:
+  37:./Hardware/ina226.c **** void* ina226_read_data(void)
+  38:./Hardware/ina226.c **** {
+  70              		.loc 1 38 1 is_stmt 1 view -0
+  71              		.cfi_startproc
+  72              		@ args = 0, pretend = 0, frame = 0
+  73              		@ frame_needed = 0, uses_anonymous_args = 0
+  74              		@ link register save eliminated.
+  39:./Hardware/ina226.c ****     static uint8_t id_buf[2] = {0xFF,0xFF};
+  75              		.loc 1 39 5 view .LVU11
+  40:./Hardware/ina226.c ****     // ina226_read(IAN226_DEVICE_READADDR,IAN226_MANUFIDREGISTER_ADDR,id_buf,sizeof(id_buf));
+  41:./Hardware/ina226.c ****     return (void *)(&sg_data);
+  76              		.loc 1 41 5 view .LVU12
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc4CafmS.s 			page 3
+
+
+  42:./Hardware/ina226.c **** }
+  77              		.loc 1 42 1 is_stmt 0 view .LVU13
+  78 0000 0048     		ldr	r0, .L5
+  79 0002 7047     		bx	lr
+  80              	.L6:
+  81              		.align	2
+  82              	.L5:
+  83 0004 00000000 		.word	.LANCHOR0
+  84              		.cfi_endproc
+  85              	.LFE70:
+  87              		.section	.bss.sg_data,"aw",%nobits
+  88              		.align	2
+  89              		.set	.LANCHOR0,. + 0
+  92              	sg_data:
+  93 0000 00000000 		.space	16
+  93      00000000 
+  93      00000000 
+  93      00000000 
+  94              		.section	.data.covdata_buf,"aw"
+  95              		.align	2
+  96              		.set	.LANCHOR2,. + 0
+  99              	covdata_buf:
+ 100 0000 04000000 		.word	4
+ 101 0004 05000000 		.word	5
+ 102 0008 E9FFFFFF 		.word	-23
+ 103              		.section	.data.filterdata_buf,"aw"
+ 104              		.align	2
+ 105              		.set	.LANCHOR3,. + 0
+ 108              	filterdata_buf:
+ 109 0000 07000000 		.word	7
+ 110 0004 08000000 		.word	8
+ 111 0008 09000000 		.word	9
+ 112              		.section	.data.rawdata_buf,"aw"
+ 113              		.align	2
+ 114              		.set	.LANCHOR1,. + 0
+ 117              	rawdata_buf:
+ 118 0000 01000000 		.word	1
+ 119 0004 02000000 		.word	2
+ 120 0008 21000000 		.word	33
+ 121              		.text
+ 122              	.Letext0:
+ 123              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+ 124              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+ARM GAS  C:\Users\57308\AppData\Local\Temp\cc4CafmS.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 ina226.c
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:18     .text.ina226_init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:24     .text.ina226_init:00000000 ina226_init
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:54     .text.ina226_init:00000014 $d
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:62     .text.ina226_read_data:00000000 $t
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:68     .text.ina226_read_data:00000000 ina226_read_data
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:83     .text.ina226_read_data:00000004 $d
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:88     .bss.sg_data:00000000 $d
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:92     .bss.sg_data:00000000 sg_data
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:95     .data.covdata_buf:00000000 $d
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:99     .data.covdata_buf:00000000 covdata_buf
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:104    .data.filterdata_buf:00000000 $d
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:108    .data.filterdata_buf:00000000 filterdata_buf
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:113    .data.rawdata_buf:00000000 $d
+C:\Users\57308\AppData\Local\Temp\cc4CafmS.s:117    .data.rawdata_buf:00000000 rawdata_buf
+
+NO UNDEFINED SYMBOLS

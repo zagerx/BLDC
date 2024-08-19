@@ -1,0 +1,61 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "STM32_Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/STM32G431.hex",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": true, 
+            "targetArchitecture": "arm",
+            "MIMode":"gdb",
+            "miDebuggerPath": "D:\\Program Files (x86)\\gcc-arm-none-eabi-10-2020-q4-major-win32\\tool\\bin\\arm-none-eabi-gdb.exe",
+            // "miDebuggerPath": "D://Program Files//gcc-arm-none-eabi-10.3-2021.10//bin//arm-none-eabi-gdb.exe",
+              
+            "setupCommands": [ // 进入GDB以后，自动执行的一些配置  
+              {
+                  "text": "cd ${workspaceFolder}",
+                  "description": "change directory to workspace",
+                  "ignoreFailures": false
+              },
+              {
+                  "description": "选择调试文件(.elf)到gdb",
+                  "text": "file build/STM32G431.elf",
+                  "ignoreFailures": false
+               },
+               
+               {
+                   "description": "连接GDB Server",
+                   "text": "target remote localhost:2331",                                 
+                   "ignoreFailures": false
+               },
+               {
+                   "description": "Reset MCU",
+                   "text": "monitor reset",                                              
+                   "ignoreFailures": false
+               },
+               {
+                   "description": "Halt",
+                   "text": "monitor halt",                                                  
+                   "ignoreFailures": false
+               },
+               {
+                   "description":"下载代码到MCU",
+                   "text": "load" ,              
+                   "ignoreFailures": false                                      
+               }
+           ],
+          }
+    ]
+
+
+
+
+}

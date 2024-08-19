@@ -1,0 +1,125 @@
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.arch armv7-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"printf_log.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text._write,"ax",%progbits
+  18              		.align	1
+  19              		.global	_write
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	_write:
+  25              	.LVL0:
+  26              	.LFB68:
+  27              		.file 1 "../Common/debuglog/printf_log.c"
+   1:../Common/debuglog/printf_log.c **** #include "debuglog_cfg.h"
+   2:../Common/debuglog/printf_log.c **** #if (DEBUG_SW == DEBUG_UART)
+   3:../Common/debuglog/printf_log.c ****     int _write(int file, char *data, int len)
+   4:../Common/debuglog/printf_log.c ****     {
+  28              		.loc 1 4 5 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		.loc 1 4 5 is_stmt 0 view .LVU1
+  33 0000 10B5     		push	{r4, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 4, -8
+  37              		.cfi_offset 14, -4
+  38 0002 1446     		mov	r4, r2
+   5:../Common/debuglog/printf_log.c ****         HAL_StatusTypeDef status = HAL_UART_Transmit(&huart1, (uint8_t*)data, len, 1000);
+  39              		.loc 1 5 9 is_stmt 1 view .LVU2
+  40              		.loc 1 5 36 is_stmt 0 view .LVU3
+  41 0004 4FF47A73 		mov	r3, #1000
+  42 0008 92B2     		uxth	r2, r2
+  43              	.LVL1:
+  44              		.loc 1 5 36 view .LVU4
+  45 000a 0448     		ldr	r0, .L5
+  46              	.LVL2:
+  47              		.loc 1 5 36 view .LVU5
+  48 000c FFF7FEFF 		bl	HAL_UART_Transmit
+  49              	.LVL3:
+   6:../Common/debuglog/printf_log.c ****         return (status == HAL_OK ? len : 0);
+  50              		.loc 1 6 9 is_stmt 1 view .LVU6
+  51              		.loc 1 6 40 is_stmt 0 view .LVU7
+  52 0010 08B9     		cbnz	r0, .L3
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s 			page 2
+
+
+  53 0012 2046     		mov	r0, r4
+  54              	.LVL4:
+  55              	.L1:
+   7:../Common/debuglog/printf_log.c ****     }
+  56              		.loc 1 7 5 view .LVU8
+  57 0014 10BD     		pop	{r4, pc}
+  58              	.LVL5:
+  59              	.L3:
+   6:../Common/debuglog/printf_log.c ****         return (status == HAL_OK ? len : 0);
+  60              		.loc 1 6 40 view .LVU9
+  61 0016 0020     		movs	r0, #0
+  62              	.LVL6:
+   6:../Common/debuglog/printf_log.c ****         return (status == HAL_OK ? len : 0);
+  63              		.loc 1 6 40 view .LVU10
+  64 0018 FCE7     		b	.L1
+  65              	.L6:
+  66 001a 00BF     		.align	2
+  67              	.L5:
+  68 001c 00000000 		.word	huart1
+  69              		.cfi_endproc
+  70              	.LFE68:
+  72              		.section	.text.User_Printf_Init,"ax",%progbits
+  73              		.align	1
+  74              		.weak	User_Printf_Init
+  75              		.syntax unified
+  76              		.thumb
+  77              		.thumb_func
+  79              	User_Printf_Init:
+  80              	.LFB69:
+   8:../Common/debuglog/printf_log.c ****     __attribute__((weak)) void User_Printf_Init(void){}
+  81              		.loc 1 8 54 is_stmt 1 view -0
+  82              		.cfi_startproc
+  83              		@ args = 0, pretend = 0, frame = 0
+  84              		@ frame_needed = 0, uses_anonymous_args = 0
+  85              		@ link register save eliminated.
+  86              		.loc 1 8 55 view .LVU12
+  87 0000 7047     		bx	lr
+  88              		.cfi_endproc
+  89              	.LFE69:
+  91              		.text
+  92              	.Letext0:
+  93              		.file 2 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\machine\\_defa
+  94              		.file 3 "d:\\program files\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\include\\sys\\_stdint.h
+  95              		.file 4 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+  96              		.file 5 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+  97              		.file 6 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+  98              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
+  99              		.file 8 "Inc/usart.h"
+ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 printf_log.c
+C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:18     .text._write:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:24     .text._write:00000000 _write
+C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:68     .text._write:0000001c $d
+C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:73     .text.User_Printf_Init:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:79     .text.User_Printf_Init:00000000 User_Printf_Init
+
+UNDEFINED SYMBOLS
+HAL_UART_Transmit
+huart1
