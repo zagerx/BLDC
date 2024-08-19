@@ -47,7 +47,6 @@ void printFloatsFromBytes(const std::vector<unsigned char>& data) {
         return;
     }
 
-    // 使用memcpy将字节复制到float数组中
     // 注意：这里假设了系统是小端字节序
     size_t numFloats = data.size() / 4;
     std::vector<float> floats(numFloats);
@@ -61,4 +60,21 @@ void printFloatsFromBytes(const std::vector<unsigned char>& data) {
     for (float f : floats) {
         qDebug() << f;
     }
+}
+
+void getFloatsFromBytes(const std::vector<unsigned char>& data, float *fbuf) {  
+    // 检查数据长度是否足够至少转换成一个float  
+    if (data.size() < 4) {   
+        qDebug() << "Warning: Data size is not sufficient to convert to at least one float.";  
+        return;  
+    }  
+
+    // 计算可以转换的float数量  
+    size_t numFloats = data.size() / 4;  
+
+    // 使用memcpy将字节数据复制到float数组中  
+    // 注意：这里假设了系统是小端字节序  
+    for (size_t i = 0; i < numFloats; ++i) {  
+        memcpy(fbuf + i, data.data() + i * 4, 4);  
+    }  
 }

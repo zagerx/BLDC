@@ -9,6 +9,8 @@
 #include "heap.h"
 #include "debuglog.h"
 #include "protocol.h"
+#include "math.h"
+
 extern msg_list_t* msg_list;
 
 typedef struct _cmdmap cmdmap_t;
@@ -17,7 +19,10 @@ struct _cmdmap
     unsigned short cmd;
     void (*pfunc)(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 };
-
+typedef union {  
+    float f;  
+    uint32_t i;  
+} float_int_union; 
 static void test_func(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_motorstart(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_motorstop(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
@@ -75,17 +80,13 @@ static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
 {
     USER_DEBUG_NORMAL("Set Motor PID Param CMD\n");
 }
-typedef union {  
-    float f;  
-    uint32_t i;  
-} float_int_union; 
-void convert_floats(unsigned char *pdata, unsigned short datalen, float *floats) {  
+
+static void convert_floats(unsigned char *pdata, unsigned short datalen, float *floats) {  
     if (datalen % 4 != 0) {  
         // 如果datalen不是4的倍数，则不能完整地包含float数  
         printf("Error: Data length must be a multiple of 4.\n");  
         return;  
-    }  
-  
+    }
     unsigned int num_floats = datalen / 4;  
     for (unsigned int i = 0; i < num_floats; i++) {  
         float_int_union u;  
@@ -99,12 +100,6 @@ static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
 {
     float fbuf[5];
     convert_floats(pdata,datalen,fbuf);
-    for (unsigned short i = 0; i < 5; i++)
-    {
-        USER_DEBUG_NORMAL("%f ",fbuf[i]);
-    }
-    USER_DEBUG_NORMAL("\n");
-
     //响应部分
     unsigned char buf[] = {0x02,0x03};
     float f_val[2] = {3.1415926f,2.2154f};
@@ -115,21 +110,12 @@ static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
     /*封包*/
     unsigned char *p = 0;
     p = _pack_proframe(&frame);
-
-    // USER_DEBUG_NORMAL("get baord info\n");
-    // for (uint16_t i = 0; i < (frame.datalen + sizeof(frame_t) - 4); i++)
-    // {
-    //     USER_DEBUG_NORMAL("0x%02x ",p[i]);
-    // }
-    // USER_DEBUG_NORMAL("\n");
-
     msg_node_t* msg1 = (msg_node_t*)heap_malloc(sizeof(msg_node_t));
     if (msg1 == NULL)
     {
         USER_DEBUG_NORMAL("malloc fail\n");
         return;
     }
-
     msg1->fsm_cblock.time_count = 20;
     msg1->fsm_cblock.time_out = 0;
     msg1->fsm_cblock._state = 0;
@@ -138,17 +124,24 @@ static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
     insert_msg_list_tail(msg_list, msg1);
 }
 
-
-
-#include "math.h"
+/**  
+ * @brief 发送周期性变化的电机速度控制命令到协议层（待优化，后续改为通用的发送函数）    
+ *  
+ * @param 无  
+ * @return 无（通过修改全局或外部资源）  
+ *  
+ * @author [zager]  
+ * @version 1.0  
+ * @date [2024-08-19]  
+ */  
 void mc_protocol_sendspeed(void)
 {
     float fspeed;
     frame_t frame;
     frame.cmd = S_MotorSpeed;
     static float theta = 0.0f;
-    fspeed = sinf(theta);
-    theta += 0.01f;
+    fspeed = 10.0f*sinf(theta);
+    theta += 0.1f;
     frame.pdata = (unsigned char*)&fspeed;
     frame.datalen = sizeof(float);   
     unsigned char *p = 0;

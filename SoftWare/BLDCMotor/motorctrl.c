@@ -44,9 +44,7 @@ void motortctrl_process(void)
         cnt = 0;
         unsigned char buf[] = {0xA5,0xA5,0x02,0x00,0x00,0x00,0xFF,0xFF,0x5A,0x5A};
         _bsp_protransmit(buf,sizeof(buf));
-
         mc_protocol_sendspeed();
-
     }
 }
 

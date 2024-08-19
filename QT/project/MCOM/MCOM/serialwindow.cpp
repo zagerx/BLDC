@@ -6,13 +6,12 @@
 #include "mc_protocol/mc_protocol.h"
 #include "mc_protocol/mc_frame.h"
 #include "debugwindow.h"
-#include <QtCharts>
 #include "comment.h"
 
 serialwindow *pserialwind;
 
 /*
- * 界面初始化 && 界面反初始化 && 界面退出
+ * 界面初始化
  */
 serialwindow::serialwindow(QWidget *parent)
     : QWidget(parent), ui(new Ui::serialwindow), timer(new QTimer(this))
@@ -21,6 +20,13 @@ serialwindow::serialwindow(QWidget *parent)
     SerialPortInit();
     ui->mc_startBt->setDisabled(true);
     ui->mt_stopBt->setDisabled(true);
+
+    QLabel *lightLabel;
+    lightLabel = ui->LED_Label;
+    lightLabel->setScaledContents(true); // /*根据控件大小缩放图片*/
+    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 50x50
+    lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png")); // 设置初始状态为灭灯
+
     /*初始化图表*/
     charts_init();
     // 设置定时器的时间间隔为1ms
@@ -30,7 +36,9 @@ serialwindow::serialwindow(QWidget *parent)
     // 启动定时器
     timer->start();
 }
-
+/*
+ * 界面反向初始化
+ */
 serialwindow::~serialwindow()
 {
     delete serial;    // 确保删除 serial 指向的对象
@@ -43,65 +51,29 @@ serialwindow::~serialwindow()
     delete ui;
 }
 /*
-* 图表初始化
+* 图表charts的初始化
 */
 void serialwindow::charts_init()
 {
-    QChart *chart_1 = new QChart;
-    chart_1->setTitle("data collo");
+    chart_1 = new QChart;
+    // chart_1->setTitle("data collo");
     ui->graphicsView->setChart(chart_1);
     //设置X轴
-    QValueAxis *axis_x = new QValueAxis;
+    axis_x = new QValueAxis;
     axis_x->setTitleText("时间");
     axis_x->setRange(0,100);
     chart_1->addAxis(axis_x,Qt::AlignBottom);
     //设置Y轴
-    QValueAxis *axis_y = new QValueAxis;
-    axis_y->setTitleText("时间");
-    axis_y->setRange(-1.5,1.5);
+    axis_y = new QValueAxis;
+    axis_y->setTitleText("value");
+    axis_y->setRange(-13,13);
     chart_1->addAxis(axis_y,Qt::AlignLeft);
     //增加数据
-    QLineSeries *line = new QLineSeries;
+    line = new QLineSeries;
     line->setName("正弦函数");
     chart_1->addSeries(line);
-    qreal y;
-    for(int x = 0;x<100;x++)
-    {
-        y = qSin(0.1*x);
-        line->append(x,y);
-    }
     line->attachAxis(axis_x);
     line->attachAxis(axis_y);
-}
-
-/*
- *  串口初始化
- */
-void serialwindow::SerialPortInit()
-{
-    serial = new (QSerialPort);
-    QSerialPort *curPort;
-    curPort = new (QSerialPort);
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
-    {
-        curPort->setPort(info);
-        if (curPort->open(QIODevice::ReadWrite))
-        {
-            ui->portBox->addItem(info.portName());
-            curPort->close();
-            qDebug() << "串口打开成功";
-        }
-        else
-        {
-            qDebug() << "串口打开失败，请重试";
-        }
-    }
-    delete (curPort);
-
-    size_t sendBufferSize = 512; // 假设的发送缓冲区大小
-    pMcProtocl = new MCProtocol(sendBufferSize);
-
-    connect(serial, &QSerialPort::readyRead, this, &serialwindow::onReadSerialData);
 }
 
 /*
@@ -115,7 +87,11 @@ void serialwindow::closeEvent(QCloseEvent *event)
 }
 
 /*
- *   按键回调
+ *   按键回调  on_mc_startBt_clicked/
+ *            on_mt_stopBt_clicked/
+ *            on_normal_bt_clicked/
+ *            on_debug_bt_clicked
+ *   后续使用单选框，以简化代码
  */
 void serialwindow::on_mc_startBt_clicked()
 {
@@ -130,6 +106,26 @@ void serialwindow::on_mt_stopBt_clicked()
     datafram.CMD = M_SET_STOP;
     datafram.UnPack();
     pMcProtocl->AddFrameToBuf(datafram);
+}
+void serialwindow::on_normal_bt_clicked()
+{
+    MC_Frame datafram;
+    datafram.CMD = M_SET_NormalM;
+    datafram.UnPack();
+    pMcProtocl->AddFrameToBuf(datafram);
+    ui->mc_startBt->setDisabled(false);
+    ui->mt_stopBt->setDisabled(false);
+}
+void serialwindow::on_debug_bt_clicked()
+{
+    /*发送命令 使电机进入debug模式*/
+    QString command = "motor_debugmode:\r\n";
+    serial->write(command.toLatin1());
+
+    motordebug *pmd = new motordebug;
+    // /*connect*/(b, &B::dataReady, this, &A::onDataReceivedFromB); // 连接B界面的信号到A界面的槽
+    connect(pmd, &motordebug::dataReady, this, &serialwindow::onDataReceivedFromB);
+    pmd->show();
 }
 void serialwindow::on_enseriBt_clicked()
 {
@@ -188,25 +184,24 @@ void serialwindow::on_enseriBt_clicked()
         serial = nullptr;
     }
 }
-void serialwindow::on_normal_bt_clicked()
+void serialwindow::on_cmd_enBt_clicked()
 {
     MC_Frame datafram;
-    datafram.CMD = M_SET_NormalM;
-    datafram.UnPack();
-    pMcProtocl->AddFrameToBuf(datafram);
-    ui->mc_startBt->setDisabled(false);
-    ui->mt_stopBt->setDisabled(false);
-}
-void serialwindow::on_debug_bt_clicked()
-{
-    /*发送命令 使电机进入debug模式*/
-    QString command = "motor_debugmode:\r\n";
-    serial->write(command.toLatin1());
 
-    motordebug *pmd = new motordebug;
-    // /*connect*/(b, &B::dataReady, this, &A::onDataReceivedFromB); // 连接B界面的信号到A界面的槽
-    connect(pmd, &motordebug::dataReady, this, &serialwindow::onDataReceivedFromB);
-    pmd->show();
+    QString currentText = ui->cmd_portBox->currentText();
+    if (commandMap.contains(currentText)) {
+        datafram.CMD = commandMap.value(currentText);
+    } else {
+        qDebug() << "未知命令：" << currentText;
+        return;
+    }
+
+    currentText = ui->data_lineEdit->text();
+    qDebug()<<currentText;
+    datafram.data = stringToUCharVectorOptimized(currentText);// 调用函数，将QString中的浮点数转换为unsigned char向量;
+    datafram.UnPack();
+    datafram.PrintFrame();
+    pMcProtocl->AddFrameToBuf(datafram);    
 }
 
 /*
@@ -225,8 +220,6 @@ void serialwindow::SendThread()
     serial->write(byteArray);
 }
 
-
-
 void serialwindow::ReciveThread()
 {
     MC_Frame curframe;
@@ -234,13 +227,6 @@ void serialwindow::ReciveThread()
     {
         return;
     }
-    // if (curframe.CMD == S_HeartP)
-    // {
-    //     return;
-    // }
-
-    // printFloatsFromBytes(curframe.data);
-
     //遍历整个协议地图
     _forch_cmdmap(curframe.CMD,curframe.data);
 }
@@ -248,8 +234,35 @@ void serialwindow::ReciveThread()
 void serialwindow::timerTick()
 {
     ReciveThread();
-
     SendThread();
+}
+
+/*
+ *  串口初始化
+ */
+void serialwindow::SerialPortInit()
+{
+    serial = new (QSerialPort);
+    QSerialPort *curPort;
+    curPort = new (QSerialPort);
+    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
+    {
+        curPort->setPort(info);
+        if (curPort->open(QIODevice::ReadWrite))
+        {
+            ui->portBox->addItem(info.portName());
+            curPort->close();
+            qDebug() << "串口打开成功";
+        }
+        else
+        {
+            qDebug() << "串口打开失败，请重试";
+        }
+    }
+    delete (curPort);
+    size_t sendBufferSize = 512; // 假设的发送缓冲区大小
+    pMcProtocl = new MCProtocol(sendBufferSize);
+    connect(serial, &QSerialPort::readyRead, this, &serialwindow::onReadSerialData);
 }
 
 /*
@@ -292,33 +305,11 @@ void serialwindow::onDataReceivedFromB(const QString &data)
     serial->write(command.toUtf8());
 }
 
-void serialwindow::on_cmd_enBt_clicked()
-{
-    MC_Frame datafram;
-
-    QString currentText = ui->cmd_portBox->currentText();
-    if (commandMap.contains(currentText)) {
-        datafram.CMD = commandMap.value(currentText);
-    } else {
-        qDebug() << "未知命令：" << currentText;
-        return;
-    }
-
-    currentText = ui->data_lineEdit->text();
-    qDebug()<<currentText;
-    datafram.data = stringToUCharVectorOptimized(currentText);// 调用函数，将QString中的浮点数转换为unsigned char向量;
-    datafram.UnPack();
-    datafram.PrintFrame();
-    pMcProtocl->AddFrameToBuf(datafram);    
-}
-
 void serialwindow::led_blink(std::vector<unsigned char>& input)
 {
     static unsigned char _state = 0;
     QLabel *lightLabel;
     lightLabel = ui->LED_Label;    
-    lightLabel->setScaledContents(true); // /*根据控件大小缩放图片*/
-    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 50x50
     if (_state)
     {
         _state = 0;
@@ -337,7 +328,16 @@ void serialwindow::_forch_cmdmap(unsigned short cmd, std::vector<unsigned char>&
         led_blink(input);
         break;
     case S_MotorSpeed:
-        printFloatsFromBytes(input);
+        {
+            qreal y;
+            static unsigned int x = 0;
+            x++;
+            axis_x->setRange(0,x+20);
+            float value;
+            getFloatsFromBytes(input,&value);
+            y = value;
+            line->append(x,y);            
+        }
         break;
     default:
         break;

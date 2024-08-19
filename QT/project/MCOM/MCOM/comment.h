@@ -10,4 +10,5 @@
 std::vector<unsigned char> stringToUCharVectorOptimized(const QString &str);
 void PrintBytes(const std::vector<unsigned char>& bytes);
 void printFloatsFromBytes(const std::vector<unsigned char>& data);
+void getFloatsFromBytes(const std::vector<unsigned char>& data, float *fbuf) ;
 #endif

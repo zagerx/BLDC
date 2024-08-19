@@ -7,7 +7,8 @@
 #include <QLabel>
 #include "mc_protocol/mc_protocol.h"
 #include "mc_protocol/commands.h"
-#include <functional>  
+#include <functional>
+#include <QtCharts>
 
 namespace Ui
 {
@@ -53,6 +54,10 @@ private:
     void SendThread(void);
     void ReciveThread(void);
     void processdata(void);
+    QChart *chart_1;
+    QValueAxis *axis_x;
+    QValueAxis *axis_y;
+    QLineSeries *line;
     Ui::serialwindow *ui;
     QSerialPort *serial;
     QTimer *timer;

@@ -1,7 +1,6 @@
 #include "mc_protocol.h"
 #include <stdexcept> // 用于抛出异常
 #include <QtDebug>
-
 #include "comment.h"
 
 void MCProtocol::AddFrameToBuf(const MC_Frame& frame) {  
@@ -29,9 +28,6 @@ std::vector<unsigned char> MCProtocol::RDFromSendBuf() {
     std::vector<unsigned char> data = sendBuffer.front();  
     sendBuffer.pop();  
     currentSendBufferSize -= data.size();
-    qDebug()<<"RDFromSendBuf";
-    PrintBytes(data);
-
     return data;  
 }  
   
