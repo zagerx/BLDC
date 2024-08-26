@@ -68,21 +68,8 @@ Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_adc.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_adc_ex.c \
 Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_ll_adc.c
 
-C_SOURCES += $(wildcard ../Actuator/*.c)
-C_SOURCES += $(wildcard ./Board/*.c)
-C_SOURCES += $(wildcard ./Hardware/*.c)
-C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-C_SOURCES += $(wildcard ../Sensor/*.c)
-C_SOURCES += $(wildcard ../Common/*.c)
-C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
-C_SOURCES += $(wildcard ../Common/IPC/*.c)
-C_SOURCES += $(wildcard ../Common/Fsm/*.c)
 C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
 C_SOURCES += $(wildcard ../Common/debuglog/*.c)
-C_SOURCES += $(wildcard ../Common/method/*.c)
-C_SOURCES += $(wildcard ../Common/IQMath/ti/*.c)
-C_SOURCES += $(wildcard ../Common/_assert/*.c)
-C_SOURCES += $(wildcard ../Common/data_structures/*.c)
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32g473xx.s
@@ -141,30 +128,14 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--I./Hardware \
--I../Sensor \
--I../BLDCMotor \
--I../protocol \
--I../Common/IQMath/support \
--I../Common/IQMath/ti \
 -I../Common/debuglog/SEGGER_RTT_V792h/Config \
 -I../Common/debuglog/SEGGER_RTT_V792h/RTT \
 -I../Common/debuglog \
--I../Common/method \
--I../Common/IPC \
--I../Common/Fsm \
--I../Common/_assert \
--I../Common/data_structures \
--I../Common \
 -IInc \
 -IDrivers/STM32G4xx_HAL_Driver/Inc \
 -IDrivers/STM32G4xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32G4xx/Include \
 -IDrivers/CMSIS/Include
-
-C_INCLUDES += -I../Actuator
-C_INCLUDES += -I./Board
-C_INCLUDES += -I../Common/Perf_counter
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

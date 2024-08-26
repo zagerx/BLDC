@@ -73,10 +73,10 @@ void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
-  /*-----------------Ê¹ÄÜUSART DMA½ÓÊÕ----------------------------*/
+  /*-----------------Ê¹ï¿½ï¿½USART DMAï¿½ï¿½ï¿½ï¿½----------------------------*/
    __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
     HAL_UART_Receive_DMA(&huart1, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));  
-  /*---------------¹Ø±ÕUSART DMA·¢ËÍ--------------------------*/
+  /*---------------ï¿½Ø±ï¿½USART DMAï¿½ï¿½ï¿½ï¿½--------------------------*/
   /* USER CODE END USART1_Init 2 */
 
 }
@@ -199,17 +199,17 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 extern void motorprotocol_getdata(char *data,unsigned short len);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
-    if(USART1 == huart1.Instance)                                   //ÅÐ¶ÏÊÇ·ñÊÇ´®¿Ú1£¨£¡´Ë´¦Ó¦Ð´(huart->Instance == USART1)
+    if(USART1 == huart1.Instance)                                   //ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½Ç´ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½Ë´ï¿½Ó¦Ð´(huart->Instance == USART1)
     {
-        if(RESET != __HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))   //ÅÐ¶ÏÊÇ·ñÊÇ¿ÕÏÐÖÐ¶Ï
+        if(RESET != __HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))   //ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
         {
-            __HAL_UART_CLEAR_IDLEFLAG(&huart1);                     //Çå³þ¿ÕÏÐÖÐ¶Ï±êÖ¾£¨·ñÔò»áÒ»Ö±²»¶Ï½øÈëÖÐ¶Ï£©
-            HAL_UART_DMAStop(&huart1);//Í£Ö¹±¾´ÎDMA´«Êä
-            unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);   //¼ÆËã½ÓÊÕµ½µÄÊý¾Ý³¤¶È
+            __HAL_UART_CLEAR_IDLEFLAG(&huart1);                     //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö±ï¿½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ï¿½Ð¶Ï£ï¿½
+            HAL_UART_DMAStop(&huart1);//Í£
+            unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½
             protocol_getdata_tofifo(sg_uartreceive_buff,data_length);
-            memset(sg_uartreceive_buff,0,data_length);                                            //ÇåÁã½ÓÊÕ»º³åÇø
+            memset(sg_uartreceive_buff,0,data_length);                                            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½
             data_length = 0;
-            HAL_UART_Receive_DMA(&huart1, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));                    //ÖØÆô¿ªÊ¼DMA´«Êä Ã¿´Î255×Ö½ÚÊý¾Ý                    
+            HAL_UART_Receive_DMA(&huart1, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));                    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼DMAï¿½ï¿½ï¿½ï¿½ Ã¿ï¿½ï¿½255ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½                    
         }
     }
 }

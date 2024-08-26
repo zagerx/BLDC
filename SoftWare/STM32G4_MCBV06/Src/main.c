@@ -26,11 +26,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "debuglog.h"
-#include "hardware.h"
-#include "motorctrl.h"
-#include "sensor.h"
-#include "board.h"
-#include "actuator.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -147,21 +142,15 @@ int main(void)
   MX_TIM4_Init();
   MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
-  User_Printf_Init();
   USER_DEBUG_NORMAL("MCB_V06 start runing\r\n");
   HAL_Delay(800);
-  hw_init();
-  board_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    sensor_process();
-    actuator_process();
     sysrunning_process();
-    motortctrl_process();
     HAL_Delay(1);
     /* USER CODE END WHILE */
 
