@@ -70,6 +70,7 @@ Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_ll_adc.c
 
 C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
 C_SOURCES += $(wildcard ../Common/debuglog/*.c)
+C_SOURCES += $(wildcard ../Common/flash/*.c)
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32g473xx.s
@@ -128,6 +129,7 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
+-I../Common/flash \
 -I../Common/debuglog/SEGGER_RTT_V792h/Config \
 -I../Common/debuglog/SEGGER_RTT_V792h/RTT \
 -I../Common/debuglog \

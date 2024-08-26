@@ -1,92 +1,125 @@
 #include "bsp_flash.h"
+#include "string.h"
 
 #include "debuglog.h"
 #include "main.h"
-
-#define FLASH_USER_START_ADDR   ADDR_FLASH_PAGE_4   /* Start @ of user Flash area */
-#define FLASH_USER_END_ADDR     (ADDR_FLASH_PAGE_63 + FLASH_PAGE_SIZE - 1)   /* End @ of user Flash area */
-
-#define DATA_32                 ((uint32_t)0x12345678)
-#define DATA_64                 ((uint64_t)0x1234567812345678)
-
-uint32_t FirstPage = 0, NbOfPages = 0;
-uint32_t Address = 0, PageError = 0;
-__IO uint32_t MemoryProgramStatus = 0;
-__IO uint32_t data32 = 0;
-static uint32_t GetPage(uint32_t Address);
-
-/*Variable used for Erase procedure*/
-static FLASH_EraseInitTypeDef EraseInitStruct;
-
-void bsp_flash_write(uint32_t addr,uint8_t *padta,uint16_t datalen)
+#pragma pack(push,1)
+typedef struct bsp_flash
 {
-    HAL_FLASH_Unlock();
-    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+  char name[32];
+  float fbuf[2];
+}flash_t;
+#pragma pack(pop)
 
-  FirstPage = GetPage(FLASH_USER_START_ADDR);
-  /* Get the number of pages to erase from 1st page */
-  NbOfPages = GetPage(FLASH_USER_END_ADDR) - FirstPage + 1;
+typedef union {  
+    uint8_t bytes[8];  
+    uint64_t value; 
+} Uint8ToUint64;  
+  
+typedef union {  
+    uint32_t value;    
+    uint8_t bytes[4];  
+} Uint32ToUint8Array;  
+  
+static inline uint64_t uint8_array_to_uint64(const uint8_t *p) {  
+    Uint8ToUint64 converter;  
+    memcpy(converter.bytes, p, sizeof(converter.bytes));  
+    return converter.value;  
+}    
+static inline void uint32_to_uint8_array(uint32_t data, uint8_t *pdata) {  
+    Uint32ToUint8Array converter;  
+    converter.value = data;  
+    pdata[0] = converter.bytes[0];  
+    pdata[1] = converter.bytes[1];  
+    pdata[2] = converter.bytes[2];  
+    pdata[3] = converter.bytes[3];  
+}
+static uint32_t GetPage(uint32_t Address);
+static uint32_t GetBank(uint32_t Addr);
 
+uint8_t bsp_flash_earse(uint32_t addr,uint16_t datalen)
+{
+  HAL_FLASH_Unlock();
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+  uint32_t FirstPage = 0, NbOfPages = 0,BankNumber = 0;
+  FirstPage = GetPage(addr);
+  NbOfPages = GetPage(addr + datalen) - FirstPage + 1;
+  BankNumber = GetBank(addr);
+  uint32_t PageError = 0;
+  FLASH_EraseInitTypeDef EraseInitStruct;
+  EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
+  EraseInitStruct.Page        = FirstPage;
+  EraseInitStruct.NbPages     = NbOfPages;
+  EraseInitStruct.Banks = BankNumber;
   if (HAL_FLASHEx_Erase(&EraseInitStruct, &PageError) != HAL_OK)
   {
-    while (1)
-    {
-        USER_DEBUG_NORMAL("FLASH Erase Err\n");
-        HAL_Delay(1000);
-    }
-  }
-
-
-    Address = FLASH_USER_START_ADDR;
-  while (Address < FLASH_USER_END_ADDR)
-  {
-    if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, Address, DATA_64) == HAL_OK)
-    {
-      Address = Address + 8;  /* increment to next double word*/
-    }
-   else
-    {
-      /* Error occurred while writing data in Flash memory.
-         User can add here some code to deal with this error */
-      while (1)
-      {
-        USER_DEBUG_NORMAL("Flash Write Err\n");
-      }
-    }
-
     HAL_FLASH_Lock();
+    return -1;
   }
+  return 0;
 }
+
+uint8_t bsp_flash_write(uint32_t addr,uint8_t *padta,uint16_t datalen)
+{
+  if (datalen%8 != 0)
+  {
+    return -1;
+  }
+  uint32_t end_addr = addr + datalen;
+  HAL_FLASH_Unlock();
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+  while (addr < end_addr)
+  {
+    uint64_t data = uint8_array_to_uint64(padta);
+    if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, addr, data) != HAL_OK)
+    {
+       USER_DEBUG_NORMAL("FLASH write ERR\n");
+       HAL_FLASH_Lock();
+       return -1;
+    }
+    padta += 8; 
+    addr += 8;
+  }
+  HAL_FLASH_Lock();
+  return 0;
+}
+
 void bsp_flash_read(uint32_t addr,uint8_t *pdata,uint16_t datalen)
 {
-  Address = FLASH_USER_START_ADDR;
-  MemoryProgramStatus = 0x0;    
-  while (Address < FLASH_USER_END_ADDR)
-  {
-    data32 = *(__IO uint32_t *)Address;
+  __IO uint32_t data32 = 0;
 
-    if (data32 != DATA_32)
-    {
-      MemoryProgramStatus++;
-    }
-    Address = Address + 4;
-  }  
-  /*Check if there is an issue to program data*/
-  if (MemoryProgramStatus == 0)
+  uint32_t end_addr = addr+datalen;
+  while (addr < end_addr)
   {
-    USER_DEBUG_NORMAL("flash read OK\n");
+    data32 = *(__IO uint32_t *)addr;
+    uint32_to_uint8_array(data32,pdata);
+    pdata += 4;
+    addr = addr + 4;
   }
-  else
-  {
-    /* Error detected. LED2 will blink with 1s period */
-    while (1)
-    {
-        USER_DEBUG_NORMAL("Flash read Err\n");
-    }
-  }  
+}
+
+void user_flash_test(void)
+{
+  flash_t test_write = {
+    .name = "hello world,hi zager",
+    .fbuf = {1.28f,2.78f},
+  };
+  bsp_flash_earse(ADDR_FLASH_PAGE_31,40);
+  bsp_flash_write(ADDR_FLASH_PAGE_31,(uint8_t *)&test_write,40);
+  flash_t read_data;
+  bsp_flash_read(ADDR_FLASH_PAGE_31,(uint8_t *)&read_data,40);
+  USER_DEBUG_NORMAL("%s\n",read_data.name);
+  USER_DEBUG_NORMAL("%f %f\n",read_data.fbuf[0],read_data.fbuf[1]);
 }
 
 static uint32_t GetPage(uint32_t Addr)
 {
   return (Addr - FLASH_BASE) / FLASH_PAGE_SIZE;;
 }
+
+static uint32_t GetBank(uint32_t Addr)
+{
+  return FLASH_BANK_1;
+}
+
+

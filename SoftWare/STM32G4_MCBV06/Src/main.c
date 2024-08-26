@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "debuglog.h"
+#include "bsp_flash.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -144,6 +145,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("MCB_V06 start runing\r\n");
   HAL_Delay(800);
+  user_flash_test();
   /* USER CODE END 2 */
 
   /* Infinite loop */

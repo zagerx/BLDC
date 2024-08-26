@@ -3,8 +3,9 @@
 
 #include "stdint.h"
 
-void bsp_flash_write(uint32_t addr,uint8_t *padta,uint16_t datalen);
+uint8_t bsp_flash_write(uint32_t addr,uint8_t *padta,uint16_t datalen);
 void bsp_flash_read(uint32_t addr,uint8_t *pdata,uint16_t datalen);
+void user_flash_test(void);
 
 #define ADDR_FLASH_PAGE_0     ((uint32_t)0x08000000) /* Base @ of Page 0, 2 Kbytes */
 #define ADDR_FLASH_PAGE_1     ((uint32_t)0x08000800) /* Base @ of Page 1, 2 Kbytes */

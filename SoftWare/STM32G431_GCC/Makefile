@@ -215,7 +215,8 @@ ASM_SOURCES += $(wildcard ../Common/CmBacktrace/cm_backtrace/fault_handler/gcc/c
 endif
 
 
-
+C_INCLUDES += -I../Common/flash 
+C_SOURCES += $(wildcard ../Common/flash/*.c)
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
