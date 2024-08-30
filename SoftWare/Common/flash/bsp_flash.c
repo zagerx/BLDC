@@ -1,6 +1,5 @@
 #include "bsp_flash.h"
 #include "string.h"
-
 #include "debuglog.h"
 #include "main.h"
 #pragma pack(push,1)
@@ -101,8 +100,8 @@ void bsp_flash_read(uint32_t addr,uint8_t *pdata,uint16_t datalen)
 void user_flash_test(void)
 {
   flash_t test_write = {
-    .name = "hello world,hi zager",
-    .fbuf = {1.28f,2.78f},
+    .name = "hello world,dev1_flash",
+    .fbuf = {-1.28f,2.78f},
   };
   bsp_flash_earse(ADDR_FLASH_PAGE_31,40);
   bsp_flash_write(ADDR_FLASH_PAGE_31,(uint8_t *)&test_write,40);

@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "usart.h"
 #include "spi.h"
 #include "tim.h"
 #include "gpio.h"
@@ -27,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "debuglog.h"
 #include "bsp_flash.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,7 +98,9 @@ void sysrunning_process(void)
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
             {
-                // HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);                
+                // HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);       
+                    printf("xxxxxAPP Runing\r\n");
+         
             }
             if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
                 HAL_GPIO_TogglePin(SF_DOG_GPIO_Port,SF_DOG_Pin);
@@ -142,10 +146,11 @@ int main(void)
   MX_ADC4_Init();
   MX_TIM4_Init();
   MX_ADC2_Init();
+  MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  USER_DEBUG_NORMAL("MCB_V06 start runing\r\n");
+  // USER_DEBUG_NORMAL("MCB_V06 start runing\r\n");
   HAL_Delay(800);
-  user_flash_test();
+  printf("lpuart :hello world\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -17,7 +17,7 @@ typedef struct ntc_table {
 // 假设我们有一个全局的查找表，并且已经按ADC值排序  
 ntc_table_t ntc_lookup_table = {  
     {{4096, 80.0f}, {3072, 60.0f}, {2048, 25.0f}, {1024, 0.0f}, {0, -20.0f}}  
-};  
+};
 
 // 二分查找函数  
 int binary_search(uint16_t adc, ntc_point_t *points, int size) {  

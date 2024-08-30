@@ -28,6 +28,7 @@
 #include "board.h"
 #include "taskmodule.h"
 #include "bsp_flash.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -78,8 +79,6 @@ int main(void)
     do_taskcalls();
     HAL_Delay(1);
   }
-  
-
 }
 /* USER CODE END 0 */
 
