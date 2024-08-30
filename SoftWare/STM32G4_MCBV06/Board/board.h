@@ -30,12 +30,12 @@ typedef enum{
     SENSOR_NONE = -1,
     SENSOR_01, //角度传感器
     SENSOR_NUMBER
-}sens_type_idx_t;
+}sens_idx_t;
 #else
 typedef enum{
     SENSOR_NONE = -1,
     SENSOR_NUMBER
-}sens_type_idx_t;
+}sens_idx_t;
 
 #endif
 

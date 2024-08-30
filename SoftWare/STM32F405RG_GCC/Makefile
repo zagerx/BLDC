@@ -144,8 +144,41 @@ endif
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 
+
+C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
+C_SOURCES += $(wildcard ../Common/debuglog/*.c)
+C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
+C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
+C_INCLUDES += -I../Common/debuglog 
+C_DEFS += -DDEBUG_MODE_UART
+
 C_SOURCES += $(wildcard ./Hardware/*.c)
 C_INCLUDES += -I./Hardware 
+C_SOURCES += $(wildcard ./Board/*.c)
+C_INCLUDES += -I./Board
+
+C_INCLUDES += -I../Common/systemmodule 
+C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
+
+C_DEFS += -DENABLE_SENSORMODULE
+C_INCLUDES += -I../Sensor 
+C_SOURCES += $(wildcard ../Sensor/*.c)
+
+C_INCLUDES += -I../Protocol
+C_SOURCES += $(wildcard ../Protocol/*.c)
+
+C_INCLUDES += -I../Common/data_structures
+C_SOURCES += $(wildcard ../Common/data_structures/heap.c)
+C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
+
+C_INCLUDES += -I../Common/method 
+C_SOURCES += $(wildcard ../Common/method/pid.c)
+
+C_INCLUDES += -I../Common/Fsm 
+
+
+C_INCLUDES += -I../BLDCMotor 
+C_SOURCES += $(wildcard ../BLDCMotor/*.c)
 
 
 #######################################

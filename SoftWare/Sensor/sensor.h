@@ -8,13 +8,11 @@
     #error "sensor_enum.h is not included because ENABLE_SENSORMODULE is not defined. Compilation will stop."  
 #endif
 
-
 typedef enum _sensor_stat{
     EN_SENSOR_INIT,
     EN_SENSOR_NORMAL,
     EN_SENSOR_STOP,
 }sens_type_sta_t;
-
 
 typedef struct sensor
 {
@@ -30,6 +28,6 @@ typedef struct sensor
 }sensor_t;
 
 void sensor_process(void);
-void* sensor_user_read(sens_type_idx_t sensor_id);
-void sensor_register(sensor_t *this,sens_type_idx_t index);
+void* sensor_user_read(sens_idx_t sensor_id);
+void sensor_register(sensor_t *this,sens_idx_t index);
 #endif

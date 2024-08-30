@@ -163,6 +163,13 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+
+int _write(int file, char *data, int len)
+{
+    HAL_StatusTypeDef status = HAL_UART_Transmit(&huart2, (uint8_t*)data, len, 1000);
+    return (status == HAL_OK ? len : 0);
+}
+
 // void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 // {
 //     memcpy(sg_uartsend_buf,pdata,len);

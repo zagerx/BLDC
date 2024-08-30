@@ -33,6 +33,7 @@
 // #include "hardware.h"
 // #include "motorctrl.h"
 // #include "protocol.h"
+#include "taskmodule.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -110,7 +111,6 @@ void sysrunning_process(void)
   }
 }
 
-static unsigned short test_adc_vale[3];
 
 /* USER CODE END 0 */
 
@@ -148,7 +148,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_ADC3_Init();
   /* USER CODE BEGIN 2 */
-  // User_Printf_Init();
+  // USER_DEBUG_INIT();
   // USER_DEBUG_NORMAL("F405 Hello world\r\n");
   // hw_init();
   // protocol_init();
@@ -161,7 +161,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    do_taskcalls();
     HAL_Delay(1);
+    // sensor_process();
     // sysrunning_process();
     // hw_sensor_process();
     // motortctrl_process();  

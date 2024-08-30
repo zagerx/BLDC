@@ -244,7 +244,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-// #include "motorctrl.h"
 void adc_init(void)
 {
 
@@ -252,11 +251,11 @@ void adc_init(void)
 void adc_start(void)
 {
   // HAL_ADCEx_Calibration_Start(&hadc2);
-  // HAL_ADCEx_InjectedStart_IT(&hadc2);
+  HAL_ADCEx_InjectedStart_IT(&hadc2);
 }
 void adc_stop(void)
 {
-  // HAL_ADCEx_InjectedStop_IT(&hadc2);
+  HAL_ADCEx_InjectedStop_IT(&hadc2);
 }
 
 /* USER CODE END 1 */

@@ -11,7 +11,7 @@
 #include "fsm.h"
 #include "motor_debugmode.h"
 #include "initmodule.h"
-#include "perf_counter.h"
+// #include "perf_counter.h"
 #define CURRMENT_PERIOD      (0.000125f)
 #define TOTAL_DISTANCE       (_2PI)
 #define TOTAL_TIME           (6.0f)
@@ -66,9 +66,7 @@ void mc_hightfreq_task(float *iabc)
     motordebug.ele_angle = theta;
     motordebug.real_speed = speed;
 
-  __cycleof__("full test",{motordebug.nCycleUsed = _;}){
     duty = currment_loop(iabc,theta,next_theta);
-  }
     motor_set_pwm(duty._a,duty._b,duty._c);
 #endif
 }
@@ -88,6 +86,7 @@ static fsm_rt_t motor_idlemode(fsm_cb_t *pthis)
     default:
         break;
     }
+    return 0;
 }
 
 board_init(motorctrl_init)

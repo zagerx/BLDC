@@ -28,7 +28,7 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s 			page 1
   26              	.LFB68:
   27              		.file 1 "../Common/debuglog/printf_log.c"
    1:../Common/debuglog/printf_log.c **** #include "debuglog_cfg.h"
-   2:../Common/debuglog/printf_log.c **** #if (DEBUG_SW == DEBUG_UART)
+   2:../Common/debuglog/printf_log.c **** #else
    3:../Common/debuglog/printf_log.c ****     int _write(int file, char *data, int len)
    4:../Common/debuglog/printf_log.c ****     {
   28              		.loc 1 4 5 view -0
@@ -82,15 +82,15 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s 			page 1
   68 001c 00000000 		.word	huart1
   69              		.cfi_endproc
   70              	.LFE68:
-  72              		.section	.text.User_Printf_Init,"ax",%progbits
+  72              		.section	.text.USER_DEBUG_INIT,"ax",%progbits
   73              		.align	1
-  74              		.weak	User_Printf_Init
+  74              		.weak	USER_DEBUG_INIT
   75              		.syntax unified
   76              		.thumb
   77              		.thumb_func
-  79              	User_Printf_Init:
+  79              	USER_DEBUG_INIT:
   80              	.LFB69:
-   8:../Common/debuglog/printf_log.c ****     __attribute__((weak)) void User_Printf_Init(void){}
+   8:../Common/debuglog/printf_log.c ****     __attribute__((weak)) void USER_DEBUG_INIT(void){}
   81              		.loc 1 8 54 is_stmt 1 view -0
   82              		.cfi_startproc
   83              		@ args = 0, pretend = 0, frame = 0
@@ -117,8 +117,8 @@ DEFINED SYMBOLS
 C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:18     .text._write:00000000 $t
 C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:24     .text._write:00000000 _write
 C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:68     .text._write:0000001c $d
-C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:73     .text.User_Printf_Init:00000000 $t
-C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:79     .text.User_Printf_Init:00000000 User_Printf_Init
+C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:73     .text.USER_DEBUG_INIT:00000000 $t
+C:\Users\57308\AppData\Local\Temp\ccNJzEZx.s:79     .text.USER_DEBUG_INIT:00000000 USER_DEBUG_INIT
 
 UNDEFINED SYMBOLS
 HAL_UART_Transmit

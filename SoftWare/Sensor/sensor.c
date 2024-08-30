@@ -23,7 +23,7 @@ static sens_fsm_t gsens_fsm = {
     .state = INIT,
 };
 
-void sensor_register(sensor_t *this,sens_type_idx_t index)
+void sensor_register(sensor_t *this,sens_idx_t index)
 {
     if (index > SENSOR_NUMBER || index <= SENSOR_NONE)
     {
@@ -37,7 +37,7 @@ void sensor_process(void)
     switch (gsens_fsm.state)
     {
     case INIT:
-        for (sens_type_idx_t sensor_id = 0; sensor_id < SENSOR_NUMBER; sensor_id++) //遍历整个传感器数组
+        for (sens_idx_t sensor_id = 0; sensor_id < SENSOR_NUMBER; sensor_id++) //遍历整个传感器数组
         {
             if (!gsensor_arry[sensor_id].pf_init)
             {
@@ -49,7 +49,7 @@ void sensor_process(void)
         break;
     case UPDATE:
         gsens_fsm.tim++;
-        for (sens_type_idx_t sensor_id = 0; sensor_id < SENSOR_NUMBER; sensor_id++) //遍历整个传感器数组
+        for (sens_idx_t sensor_id = 0; sensor_id < SENSOR_NUMBER; sensor_id++) //遍历整个传感器数组
         {
             if (!gsensor_arry[sensor_id].pf_read || !gsensor_arry[sensor_id].cycle)
             {
@@ -66,7 +66,7 @@ void sensor_process(void)
     }
 }
 
-void* sensor_user_read(sens_type_idx_t sensor_id)
+void* sensor_user_read(sens_idx_t sensor_id)
 {
     if (sensor_id <= SENSOR_NONE || sensor_id > SENSOR_NUMBER)
     {
@@ -83,12 +83,12 @@ void* sensor_user_read(sens_type_idx_t sensor_id)
     }
 }
 
-void* sensor_user_write(sens_type_idx_t sensor_id,int8_t *pdata,uint16_t size)
+void* sensor_user_write(sens_idx_t sensor_id,int8_t *pdata,uint16_t size)
 {
     return (void*)0;
 }
 
-void sensor_user_pause(sens_type_idx_t sensor_id)
+void sensor_user_pause(sens_idx_t sensor_id)
 {
 
 }

@@ -17,7 +17,10 @@ CREAT_LIST_WITH_TYPE(msg, msg_node_t)
 
 msg_list_t* msg_list = 0;
 static fsm_rt_t msg_send(msg_node_t *msg);
-extern void _bsp_protransmit(unsigned char* pdata,unsigned short len);
+__attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len)
+{
+    
+}
 void msglist_process(void)
 {
     enum{

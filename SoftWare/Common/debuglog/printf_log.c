@@ -1,37 +1,21 @@
 #include "debuglog_cfg.h"
-#if (DEBUG_SW == DEBUG_UART)
-    int _write(int file, char *data, int len)
-    {
-        HAL_StatusTypeDef status = HAL_UART_Transmit(&huart1, (uint8_t*)data, len, 1000);
-        return (status == HAL_OK ? len : 0);
-    }
-    __attribute__((weak)) void User_Printf_Init(void)
-    {
 
-    }
-    __attribute__((weak)) char readline_fromPC(char* buffer, int bufferSize) 
-    {
-
-    }
-#elif (DEBUG_SW == DEBUG_RTT)
-
-#define DOWN_BUFFER_NAME "DownBuffer"  
-#define DOWN_BUFFER_SIZE 1024  
-unsigned char downBuffer[DOWN_BUFFER_SIZE]; 
-
-    __attribute__((weak)) void User_Printf_Init(void)
+#ifndef DEBUG_MODE_UART
+    #define DOWN_BUFFER_NAME "DownBuffer"  
+    #define DOWN_BUFFER_SIZE 1024  
+    unsigned char downBuffer[DOWN_BUFFER_SIZE]; 
+    __attribute__((weak)) void USER_DEBUG_INIT(void)
     {
         SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
         SEGGER_RTT_ConfigDownBuffer(0, DOWN_BUFFER_NAME, (void*)downBuffer, DOWN_BUFFER_SIZE, SEGGER_RTT_MODE_NO_BLOCK_SKIP);  
     }
-
 
     /*----------------RTT解析命令--------------------------*/
     #include "string.h"
     __attribute__((weak)) char readline_fromPC(char* buffer, int bufferSize) {  
         int index = 0; // 缓冲区中的当前位置  
         int c; // 读取的字符  
-    
+
         // 清空缓冲区  
         memset(buffer, 0, bufferSize);  
     
@@ -50,9 +34,16 @@ unsigned char downBuffer[DOWN_BUFFER_SIZE];
             }
         }
         return index;
-    }    
+    } 
 #else
-    __attribute__((weak)) void User_Printf_Init(void)
+
+    __attribute__((weak)) void USER_DEBUG_INIT(void)
     {
+        return;
     }
+    __attribute__((weak)) char readline_fromPC(char* buffer, int bufferSize) 
+    {
+        return 0;
+    }
+
 #endif
