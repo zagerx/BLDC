@@ -244,7 +244,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-#include "motorctrl.h"
+// #include "motorctrl.h"
 void adc_init(void)
 {
 

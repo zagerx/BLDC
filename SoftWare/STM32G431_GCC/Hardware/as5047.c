@@ -2,20 +2,20 @@
 #include "spi.h"
 #include "gpio.h"
 
-static uint32_t as5047_data;
-static uint16_t SPI_ReadWrite_OneByte(uint16_t _txdata);
+static uint32_t g_rawdata;
+static uint16_t spi_rw_onebyte(uint16_t _txdata);
 static uint8_t ams_parity(uint16_t v);
 
 void as5047_init(void)
 {
-    as5047_data = 0;
+    g_rawdata = 0;
 }
 void* as5047_readangle(void)
 {
 	uint16_t data;
-    data = SPI_ReadWrite_OneByte(0xFFFF); 
-	as5047_data = (uint32_t)data;
-	return (void*)&as5047_data;
+    data = spi_rw_onebyte(0xFFFF); 
+	g_rawdata = (uint32_t)data;
+	return (void*)&g_rawdata;
 }
 
 static uint8_t ams_parity(uint16_t v)
@@ -26,7 +26,7 @@ static uint8_t ams_parity(uint16_t v)
 	v ^= v >> 1;
 	return v & 1;
 }
-static uint16_t SPI_ReadWrite_OneByte(uint16_t _txdata)
+static uint16_t spi_rw_onebyte(uint16_t _txdata)
 {
     uint16_t pos,rawVal;
 

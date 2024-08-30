@@ -27,12 +27,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "debuglog.h"
-#include "as5047.h"
-#include "sensor.h"
-#include "hardware.h"
-#include "motorctrl.h"
-#include "protocol.h"
+// #include "debuglog.h"
+// #include "as5047.h"
+// #include "sensor.h"
+// #include "hardware.h"
+// #include "motorctrl.h"
+// #include "protocol.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -148,9 +148,9 @@ int main(void)
   MX_USART2_UART_Init();
   MX_ADC3_Init();
   /* USER CODE BEGIN 2 */
-  User_Printf_Init();
-  USER_DEBUG_NORMAL("F405 Hello world\r\n");
-  hw_init();
+  // User_Printf_Init();
+  // USER_DEBUG_NORMAL("F405 Hello world\r\n");
+  // hw_init();
   // protocol_init();
   HAL_Delay(1500);
   HAL_ADCEx_InjectedStart(&hadc2);
@@ -162,9 +162,9 @@ int main(void)
   while (1)
   {
     HAL_Delay(1);
-    sysrunning_process();
-    hw_sensor_process();
-    motortctrl_process();  
+    // sysrunning_process();
+    // hw_sensor_process();
+    // motortctrl_process();  
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
