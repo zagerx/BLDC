@@ -99,7 +99,6 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
     switch (pthis->chState)
     {
     case ENTER:
-        // if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_D_KP].cmd)))
         {
             break;
         }
@@ -107,7 +106,6 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
         pid_init(&(mc_param.daxis_pi),motordebug.pid_kp,motordebug.pid_ki,1.0f,D_MAX_VAL,D_MIN_VAL);
         pthis->chState = READY;
     case READY:
-        // if(strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_START].cmd)))
         {
             break;
         }

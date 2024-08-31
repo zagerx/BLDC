@@ -246,16 +246,18 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 /* USER CODE BEGIN 1 */
 void adc_init(void)
 {
-
+  MX_ADC2_Init();
+  MX_ADC3_Init();
 }
 void adc_start(void)
 {
-  // HAL_ADCEx_Calibration_Start(&hadc2);
-  HAL_ADCEx_InjectedStart_IT(&hadc2);
+  HAL_ADCEx_InjectedStart(&hadc2);
+  HAL_ADCEx_InjectedStart(&hadc3);
 }
 void adc_stop(void)
 {
-  HAL_ADCEx_InjectedStop_IT(&hadc2);
+  HAL_ADCEx_InjectedStop(&hadc2);
+  HAL_ADCEx_InjectedStop(&hadc3);
 }
 
 /* USER CODE END 1 */

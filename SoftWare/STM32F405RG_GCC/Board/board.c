@@ -46,7 +46,7 @@ static void _convert_current(uint16_t* adc_buf,float *i_abc)
 	}else{
 		i_abc[1]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[1] - (1 << 11)) * (1/PHASE_CURRENT_GAIN)) * (1/SHUNT_RESISTANCE);          //shunt_conductance_ = 1/0.001采样电阻;
 		i_abc[2]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[2] - (1 << 11)) * (1/PHASE_CURRENT_GAIN)) * (1/SHUNT_RESISTANCE);
-		i_abc[0] = -i_abc[1] - i_abc[2];    // i_abc[0] = -i_abc[1]-i_abc[2]
+		i_abc[0] = -i_abc[1] - i_abc[2];
 	}
 		i_abc[1]  += 0.2f;
 		i_abc[2]  -= 0.2f;

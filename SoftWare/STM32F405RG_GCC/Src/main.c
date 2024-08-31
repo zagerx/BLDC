@@ -153,8 +153,7 @@ int main(void)
   // hw_init();
   // protocol_init();
   HAL_Delay(1500);
-  HAL_ADCEx_InjectedStart(&hadc2);
-  HAL_ADCEx_InjectedStart(&hadc3);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
