@@ -27,6 +27,8 @@ static void test_func(cmdmap_t *pactor,unsigned char *pdata, unsigned short data
 static void _cmd_motorstart(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_motorstop(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setMotorNormalM(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
+static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
+
 static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static cmdmap_t commend_map[] = {
@@ -34,7 +36,7 @@ static cmdmap_t commend_map[] = {
     {M_SET_START,      _cmd_motorstart,        },
     {M_SET_STOP,       _cmd_motorstop,         },
     {M_SET_NormalM,    _cmd_setMotorNormalM,   },
-    {M_SET_DebugM,     test_func,              },
+    {M_SET_DebugM,     _cmd_setMotorNormalD,   },
     {M_GET_MotorInfo,  test_func,              },
     {M_GET_PCBAInfo,   _cmd_getpcbainfo,       },
     {M_SET_PIDParam,   _cmd_setpidparam,       },
@@ -76,6 +78,12 @@ static void _cmd_setMotorNormalM(cmdmap_t *pactor,unsigned char *pdata, unsigned
     motordebug.rec_cmd = pactor->cmd;
     USER_DEBUG_NORMAL("Set Motor enter Normal Model CMD\n");
 }
+static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
+{
+    motordebug.rec_cmd = pactor->cmd;
+    USER_DEBUG_NORMAL("Set Motor enter Debug Model CMD\n");    
+}
+
 static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
     USER_DEBUG_NORMAL("Set Motor PID Param CMD\n");

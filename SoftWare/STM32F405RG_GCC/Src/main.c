@@ -34,6 +34,7 @@
 // #include "motorctrl.h"
 // #include "protocol.h"
 #include "taskmodule.h"
+#include "debuglog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,42 +71,38 @@ void SystemClock_Config(void);
 #define DELAY_2MS                   (2)/SYSRUNNING_PERCI
 #define DELAY_5MS                   (5)/SYSRUNNING_PERCI
 #define DELAY_20MS                  (20)/SYSRUNNING_PERCI
+#define DELAY_100MS                 (100)/SYSRUNNING_PERCI
 #define DELAY_500MS                 (500)/SYSRUNNING_PERCI
 #define DELAY_1000MS                (1000)/SYSRUNNING_PERCI
 #define DELAY_5000MS                (5000)/SYSRUNNING_PERCI
+  enum{
+      SYS_IDLE = 0,
+      SYS_NORMLE,
+  };
 typedef struct
 {
-    /* data */
     unsigned int time_cnt;
     unsigned char state;
 }sys_run_t;
-static sys_run_t sg_SYSRuning;
+static sys_run_t sg_SYSRuning = {.time_cnt = 0, .state = SYS_IDLE};
 void sysrunning_process(void)
 {
-  enum{
-      SYS_IDLE,
-      SYS_NORMLE,
-  };
-
   sg_SYSRuning.time_cnt++;
   switch (sg_SYSRuning.state)
   {
       case SYS_IDLE:
-          if(!(sg_SYSRuning.time_cnt % (DELAY_5000MS))){
-              sg_SYSRuning.time_cnt = 0;
-              break;
-          }
           if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
           }
           if(!(sg_SYSRuning.time_cnt % (DELAY_500MS)))
           {
           }            
-          if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
+          if((sg_SYSRuning.time_cnt % (DELAY_100MS)) == 0)
           {
-              HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);                
+            HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);  
           }
           if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
           }
+          break;
       default:
           break;
   }
@@ -148,11 +145,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_ADC3_Init();
   /* USER CODE BEGIN 2 */
-  // USER_DEBUG_INIT();
-  // USER_DEBUG_NORMAL("F405 Hello world\r\n");
-  // hw_init();
-  // protocol_init();
-  HAL_Delay(1500);
+  USER_DEBUG_NORMAL("F405 Hello World\n");
 
   /* USER CODE END 2 */
 
@@ -160,12 +153,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    do_taskcalls();
     HAL_Delay(1);
-    // sensor_process();
-    // sysrunning_process();
-    // hw_sensor_process();
-    // motortctrl_process();  
+    do_taskcalls();
+    sysrunning_process();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

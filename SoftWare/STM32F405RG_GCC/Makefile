@@ -117,7 +117,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F405xx
+-DSTM32F405xx \
+-DARM_MATH_CM4
 
 # AS includes
 AS_INCLUDES = 
@@ -150,7 +151,7 @@ C_SOURCES += $(wildcard ../Common/debuglog/*.c)
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
 C_INCLUDES += -I../Common/debuglog 
-C_DEFS += -DDEBUG_MODE_UART
+# C_DEFS += -DDEBUG_MODE_UART
 
 C_SOURCES += $(wildcard ./Hardware/*.c)
 C_INCLUDES += -I./Hardware 
@@ -164,18 +165,16 @@ C_DEFS += -DENABLE_SENSORMODULE
 C_INCLUDES += -I../Sensor 
 C_SOURCES += $(wildcard ../Sensor/*.c)
 
-C_INCLUDES += -I../Protocol
-C_SOURCES += $(wildcard ../Protocol/*.c)
-
 C_INCLUDES += -I../Common/data_structures
 C_SOURCES += $(wildcard ../Common/data_structures/heap.c)
 C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
+C_INCLUDES += -I../Protocol
+C_SOURCES += $(wildcard ../Protocol/*.c)
 
 C_INCLUDES += -I../Common/method 
 C_SOURCES += $(wildcard ../Common/method/pid.c)
 
 C_INCLUDES += -I../Common/Fsm 
-
 
 C_INCLUDES += -I../BLDCMotor 
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
@@ -225,6 +224,19 @@ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	
 $(BUILD_DIR):
 	mkdir $@		
+
+JLINKEXE := JLink.exe 
+JLINKGDBSERVER := JLinkGDBServer.exe
+CHIP := STM32F405RG
+GDB := arm-none-eabi-gdb.exe
+jlinkdown:
+	$(Q)echo "h" >> jlink.jlink
+	$(Q)echo "loadfile" $(BUILD_DIR)/$(TARGET).hex >> jlink.jlink
+	$(Q)echo "r" >> jlink.jlink             
+	$(Q)echo "q" >> jlink.jlink   
+	$(Q)$(JLINKEXE) -device $(CHIP) -Speed 4000 -IF SWD -CommanderScript jlink.jlink
+  
+
 
 #######################################
 # clean up

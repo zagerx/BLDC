@@ -16,7 +16,7 @@ static float pll_ki_ = 1000000.0f;   // [(count/s^2) / count]
 
 static void mc_encoder_readTEST(int32_t data,float *theta,float *speed);
 
-
+static int32_t test_data;
 void mc_encoder_readspeedangle(int32_t *data,float *theta,float *speed)
 {
 
@@ -28,7 +28,6 @@ void mc_encoder_readspeedangle(int32_t *data,float *theta,float *speed)
 	static float vel_estimate_counts_ = 0.0f;   //当前估算转速，单位[count/s]
 
 	mc_encoder_readTEST(*data,theta,0);
-
 	pos_abs_latched = *data;
 	delta_enc = pos_abs_latched - count_in_cpr_; //LATCH
 	delta_enc = mod(delta_enc, ENCODER_CPR);
@@ -65,19 +64,35 @@ void mc_encoder_readspeedangle(int32_t *data,float *theta,float *speed)
 	return;
 }
 
+
+
+static  float wrap_pm_pi_user(float x) {  
+    // 使用fmodf函数来获取x除以2π的余数，这将把x包裹到[-2π, 2π)范围内  
+    float wrapped = fmodf(x, 2.0f * 3.14159265358979323846f);  
+  
+    // 如果结果小于-π，则加上2π将其移动到[0, π)范围内  
+    // 如果结果大于等于π，则减去2π将其移动到[-π, 0)范围内  
+    // 实际上，由于我们只关心[-π, π)范围，所以只需检查大于等于π的情况  
+    if (wrapped >= 3.14159265358979323846f) {  
+        wrapped -= 2.0f * 3.14159265358979323846f;  
+    }  
+  
+    // 注意：这里假设输入的x已经是弧度制。如果x是度数，则需要先转换为弧度（x * (π/180)）  
+  
+    return wrapped;  
+}  
+float test_data1,test_data2;
 static void mc_encoder_readTEST(int32_t data,float *theta,float *speed)
 {
 	// float theta = 0.0f;
+	test_data = data;
     float mec_theta = data * 0.00038349f - 0.0056f;
+	test_data1 = mec_theta;
     float ele_theta = mec_theta * 7.0f;
+	test_data2 = ele_theta;
     *theta = wrap_pm_pi(ele_theta);
+    motordebug.ele_angle = *theta;
 
-    // static float pre_angle = 0.0f;
-    // float speed = 0.0f;
-    // *speed = (*theta - pre_angle) * 0.000125f;
-    // pre_angle = *theta;
-    // motordebug.ele_angle = *theta;
-    // motordebug.real_speed = *speed;
 
 }
 

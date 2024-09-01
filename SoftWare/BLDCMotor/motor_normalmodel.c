@@ -39,9 +39,6 @@ fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
 
     case MOTOR_RUNING:
         {
-            // dq_t idq = mc_update_torque(0.1f);//更新iq限制值
-            // motordebug.id_targe = idq.d;
-            // motordebug.iq_targe = idq.q;
             dq_t idq = {0.0f};
             idq.q = speed_loop(10.0f);
             motordebug.speed_targe = 10.0f;
@@ -49,22 +46,6 @@ fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
             motordebug.iq_targe = idq.q;
         }
 
-        float vbus = *((float*)sensor_user_read(SENSOR_02));
-        static short falut_cnt = 0;
-        if (vbus > 22.0f)
-        {
-            falut_cnt = 0;
-        }else{
-            falut_cnt++;
-            if (falut_cnt > 10)
-            {
-                falut_cnt = 0;
-                motor_disable();
-                pthis->chState = EXIT;
-            }
-        }
-
-        motordebug.vbus = vbus;
 
         if (motordebug.rec_cmd == M_SET_STOP)
         {

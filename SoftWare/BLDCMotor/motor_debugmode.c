@@ -2,7 +2,7 @@
 #include "mc_protocol.h"
 #include "motorctrl_common.h"
 #include "string.h"
-
+#include "mc_angle.h"
 #define CURRMENT_PERIOD      (0.000125f)
 #define TOTAL_DISTANCE       (_2PI)
 #define TOTAL_TIME           (6.0f)
@@ -26,7 +26,10 @@ void mc_test(float *iabc,float omega)
 	i_abc.b = iabc[1];
 	i_abc.c = iabc[2];
 
-
+    int32_t raw = *((int32_t*)sensor_user_read(SENSOR_01));
+	float xtheta = 0.0f;
+    float speed = 0.0f;
+    mc_encoder_readspeedangle(&raw,&xtheta,&speed);
     enum{
         PREPOSITIONING,
         RUNING,
@@ -62,7 +65,7 @@ void mc_test(float *iabc,float omega)
         motordebug.id_real = i_dq.d;
         motordebug.iq_real = i_dq.q;
         next_theta = omega * CURRMENT_PERIOD * (cnt+1) * 7.0f;
-        motordebug.ele_angle = next_theta;
+        // motordebug.ele_angle = next_theta;
         temp_ab = _2r_2s(idq,next_theta);
         duty = SVM(temp_ab.alpha,temp_ab.beta);
         motor_set_pwm(duty._a,duty._b,duty._c);
@@ -99,13 +102,14 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
     switch (pthis->chState)
     {
     case ENTER:
-        {
-            break;
-        }
+        // {
+        //     break;
+        // }
         USER_DEBUG_NORMAL("motor enable\n");
         pid_init(&(mc_param.daxis_pi),motordebug.pid_kp,motordebug.pid_ki,1.0f,D_MAX_VAL,D_MIN_VAL);
         pthis->chState = READY;
     case READY:
+        if (motordebug.rec_cmd != M_SET_START)
         {
             break;
         }
@@ -114,27 +118,7 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
         pthis->chState = RUN;
         break;
     case RUN:
-        
-        {
-            int32_t cov;// = ((int32_t*)sensor_user_read(SENSOR_02,EN_SENSORDATA_COV))[0];
-            float vbus = (float)((float)cov / (1<<15));
-            static short falut_cnt = 0;
-            if (vbus > 22.0f)
-            {
-                falut_cnt = 0;
-            }else{
-                falut_cnt++;
-                if (falut_cnt > 10)
-                {
-                    falut_cnt = 0;
-                    motor_disable();
-                    pthis->chState = EXIT;
-                }
-            }           
-            motordebug.vbus = vbus;
-        }
-
-        // if(!strcmp(motordebug.cur_cmd,(sg_commandmap[CMD_SET_STOP].cmd)))
+        if (motordebug.rec_cmd == M_SET_STOP)
         {
             pthis->chState = EXIT;
         }

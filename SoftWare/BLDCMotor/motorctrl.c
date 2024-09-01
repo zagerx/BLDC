@@ -19,6 +19,8 @@
 
 
 extern fsm_rt_t motor_normalmode(fsm_cb_t *pthis);
+// extern fsm_rt_t motor_debugmode(fsm_cb_t *pthis);
+
 static fsm_rt_t motor_idlemode(fsm_cb_t *pthis);
 
 static fsm_cb_t pmotor_fsm;
@@ -50,7 +52,7 @@ void motortctrl_process(void)
 
 void mc_hightfreq_task(float *iabc)
 {
-#if 0
+#if 1
     mc_test(iabc,TOTAL_OMEGA);
 #else
 
@@ -62,6 +64,7 @@ void mc_hightfreq_task(float *iabc)
     float next_theta = 0.0f;
     float speed = 0.0f;
     mc_encoder_readspeedangle(&raw,&theta,&speed);
+    motordebug.ele_angle = theta;
     next_theta = theta + 1.5f * CURRMENT_PERIOD * speed;
     motordebug.ele_angle = theta;
     motordebug.real_speed = speed;
@@ -80,6 +83,10 @@ static fsm_rt_t motor_idlemode(fsm_cb_t *pthis)
         {
             TRAN_STATE(pthis,motor_normalmode);
         }
+        if (motordebug.rec_cmd == M_SET_DebugM)
+        {
+            TRAN_STATE(pthis,motor_debugmode);
+        }        
         break;
     case EXIT:
         break;

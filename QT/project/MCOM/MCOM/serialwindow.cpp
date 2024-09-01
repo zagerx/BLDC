@@ -21,12 +21,10 @@ serialwindow::serialwindow(QWidget *parent)
     ui->mc_startBt->setDisabled(true);
     ui->mt_stopBt->setDisabled(true);
 
-    QLabel *lightLabel;
-    lightLabel = ui->LED_Label;
-    lightLabel->setScaledContents(true); // /*根据控件大小缩放图片*/
-    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 50x50
-    lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png")); // 设置初始状态为灭灯
-
+    QLabel *lightLabel = ui->LED_Label;
+    lightLabel->setScaledContents(true); // 根据控件大小缩放图片
+    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 30x30（注意这里的修改）
+    lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png"));       // 设置初始状态为灭灯（使用加载成功的pixmap）
     /*初始化图表*/
     charts_init();
     // 设置定时器的时间间隔为1ms
@@ -118,14 +116,19 @@ void serialwindow::on_normal_bt_clicked()
 }
 void serialwindow::on_debug_bt_clicked()
 {
-    /*发送命令 使电机进入debug模式*/
-    QString command = "motor_debugmode:\r\n";
-    serial->write(command.toLatin1());
-
-    motordebug *pmd = new motordebug;
-    // /*connect*/(b, &B::dataReady, this, &A::onDataReceivedFromB); // 连接B界面的信号到A界面的槽
-    connect(pmd, &motordebug::dataReady, this, &serialwindow::onDataReceivedFromB);
-    pmd->show();
+    MC_Frame datafram;
+    datafram.CMD = M_SET_DebugM;
+    datafram.UnPack();
+    pMcProtocl->AddFrameToBuf(datafram);
+    ui->mc_startBt->setDisabled(false);
+    ui->mt_stopBt->setDisabled(false);    
+    // //显示Debug界面  TODO
+    // QString command = "motor_debugmode:\r\n";
+    // serial->write(command.toLatin1());
+    // motordebug *pmd = new motordebug;
+    // // /*connect*/(b, &B::dataReady, this, &A::onDataReceivedFromB); // 连接B界面的信号到A界面的槽
+    // connect(pmd, &motordebug::dataReady, this, &serialwindow::onDataReceivedFromB);
+    // pmd->show();
 }
 void serialwindow::on_enseriBt_clicked()
 {

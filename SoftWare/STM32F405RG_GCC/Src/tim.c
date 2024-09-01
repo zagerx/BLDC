@@ -185,7 +185,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
+#include "debuglog.h"
 void tim_set_pwm(float _a,float _b,float _c)
 {
   uint16_t a,b,c;
@@ -196,14 +196,14 @@ void tim_set_pwm(float _a,float _b,float _c)
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,b);
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,c);
 
-  //   unsigned short max = 0;
-  //   max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
-  // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR>>1));  
+    // unsigned short max = 0;
+    // max = max_val_01((uint16_t)a,(uint16_t)b,(uint16_t)c);
+  // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR-50));  
 }
 
 void tim_pwm_enable(void)
 {
-  
+    USER_DEBUG_NORMAL("TIM pwm enable\n");
     HAL_TIM_Base_Start_IT(&htim1);
 
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
@@ -222,13 +222,13 @@ void tim_pwm_disable(void)
     HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_3); 
 
-    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_4);      
+    // HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_4);      
 }
 
 void tim_tigger_adc(void)
 {
-  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR>>1));  
-  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
+  // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,(uint16_t)(_ARR>>1));  
+  // HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
 
 
