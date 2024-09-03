@@ -91,7 +91,36 @@ void mc_test(float *iabc,float omega)
     }
 
 }
+void mc_encoderopenlooptest(float *iabc,float omega)
+{
+	float theta = 0.0f;
+    float next_theta = 0.0f;
+    dq_t idq = {0.0f,0.04f};
+    alpbet_t temp_ab = {0};
+    duty_t duty = {0};
+    alpbet_t i_ab;
+    dq_t i_dq;    
+    int32_t raw = *((int32_t*)sensor_user_read(SENSOR_01));
+    float speed = 0.0f;
+    mc_encoder_readspeedangle(&raw,&theta,&speed);
+    abc_t i_abc = {0};
+	i_abc.a = iabc[0];
+	i_abc.b = iabc[1];
+	i_abc.c = iabc[2];
+    _3s_2s(i_abc,&i_ab);
+    _2s_2r(i_ab,theta,&i_dq);
+    motordebug.ia_real = i_abc.a;
+    motordebug.ib_real = i_abc.b;
+    motordebug.ic_real = i_abc.c;
+    motordebug.id_real = i_dq.d;
+    motordebug.iq_real = i_dq.q;
+    motordebug.real_speed = speed;
+    next_theta = theta + (1.5f * speed * CURRMENT_PERIOD);
+    temp_ab = _2r_2s(idq,next_theta);    
 
+    duty = SVM(temp_ab.alpha,temp_ab.beta);
+    motor_set_pwm(duty._a,duty._b,duty._c);
+}
 fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
 {
     enum{

@@ -23,6 +23,7 @@ typedef union {
     float f;  
     uint32_t i;  
 } float_int_union; 
+static void convert_floats(unsigned char *pdata, unsigned short datalen, float *floats); 
 static void test_func(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_motorstart(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_motorstop(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
@@ -89,7 +90,8 @@ static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
     USER_DEBUG_NORMAL("Set Motor PID Param CMD\n");
 }
 
-static void convert_floats(unsigned char *pdata, unsigned short datalen, float *floats) {  
+static void convert_floats(unsigned char *pdata, unsigned short datalen, float *floats) 
+{  
     if (datalen % 4 != 0) {  
         // 如果datalen不是4的倍数，则不能完整地包含float数  
         printf("Error: Data length must be a multiple of 4.\n");  
@@ -160,8 +162,8 @@ void mc_protocol_sendspeed(void)
         USER_DEBUG_NORMAL("malloc fail\n");
         return;
     }
-    msg1->fsm_cblock.time_count = 20;
-    msg1->fsm_cblock.time_out = 0;
+    msg1->fsm_cblock.time_count = 0;
+    msg1->fsm_cblock.time_out = 20;
     msg1->fsm_cblock._state = 0;
     msg1->pdata = p;
     msg1->datalen = frame.datalen + sizeof(frame_t) - 4;
@@ -183,11 +185,11 @@ void mc_protocol_send(unsigned short cmd,unsigned char* pdata,unsigned short dat
         USER_DEBUG_NORMAL("msg_node_t malloc fail\n");
         return;
     }
-    msg1->fsm_cblock.time_count = time_out;
-    msg1->fsm_cblock.time_out = time_count;
-    msg1->fsm_cblock._state = 0;
-    msg1->pdata = p;
-    msg1->datalen = frame.datalen + sizeof(frame_t) - 4;
+    msg->fsm_cblock.time_count = time_count;
+    msg->fsm_cblock.time_out = time_out;
+    msg->fsm_cblock._state = 0;
+    msg->pdata = p;
+    msg->datalen = frame.datalen + sizeof(frame_t) - 4;
     insert_msg_list_tail(msg_list, msg);
 }
 

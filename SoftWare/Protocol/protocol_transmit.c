@@ -64,9 +64,10 @@ static fsm_rt_t msg_send(msg_node_t *msg)
     switch (msg->fsm_cblock._state)
     {
     case ENTER:
-        if (msg->fsm_cblock.time_count++ > msg->fsm_cblock.time_out)
+        if (msg->fsm_cblock.time_count++/(1u) > msg->fsm_cblock.time_out)
         {
             msg->fsm_cblock.time_count = 0;
+            msg->fsm_cblock.time_out = 0;
             msg->fsm_cblock._state = TIME_OUT;
         }
         break;

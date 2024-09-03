@@ -53,10 +53,10 @@ static void _convert_current(uint16_t* adc_buf,float *i_abc)
 		i_abc[0]  -= 0.0f;
     return;
 }
- unsigned short adc_vale[3];
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
+ unsigned short adc_vale[3];
 
   uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;
 

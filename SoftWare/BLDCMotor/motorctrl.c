@@ -43,8 +43,7 @@ void motortctrl_process(void)
     if (cnt++>200)
     {
         cnt = 0;
-        unsigned char buf[] = {0xA5,0xA5,0x02,0x00,0x00,0x00,0xFF,0xFF,0x5A,0x5A};
-        _bsp_protransmit(buf,sizeof(buf));
+        mc_protocol_send(S_HeartP,NULL,0,0,0);
         mc_protocol_sendspeed();
     }
 }
@@ -52,7 +51,8 @@ void motortctrl_process(void)
 void mc_hightfreq_task(float *iabc)
 {
 #if 1
-    mc_test(iabc,TOTAL_OMEGA);
+    // mc_test(iabc,TOTAL_OMEGA);
+    mc_encoderopenlooptest(iabc,TOTAL_OMEGA);    
 #else
 
     duty_t duty = {0};
