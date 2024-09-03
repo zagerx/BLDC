@@ -1,6 +1,6 @@
 #include "motorctrl_cfg.h"
 
-void motor_enable(void)
+__attribute__((weak)) void motor_enable(void)
 {
 #ifdef BOARD_STM32H723
     gpio_setmotor_power();
@@ -10,7 +10,7 @@ void motor_enable(void)
     tim_tigger_adc();
     adc_start();
 }
-void motor_disable(void)
+__attribute__((weak)) void motor_disable(void)
 {
 #ifdef BOARD_STM32H723
     gpio_setmotor_powerdown();
@@ -18,7 +18,11 @@ void motor_disable(void)
     tim_pwm_disable();
     adc_stop();
 }
-void motor_set_pwm(float _a,float _b,float _c)
+__attribute__((weak)) void motor_set_pwm(float _a,float _b,float _c)
 {
     tim_set_pwm(_a ,_b,_c);
+}
+__attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len)
+{
+
 }

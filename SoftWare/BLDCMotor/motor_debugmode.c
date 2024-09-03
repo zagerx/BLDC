@@ -65,7 +65,6 @@ void mc_test(float *iabc,float omega)
         motordebug.id_real = i_dq.d;
         motordebug.iq_real = i_dq.q;
         next_theta = omega * CURRMENT_PERIOD * (cnt+1) * 7.0f;
-        // motordebug.ele_angle = next_theta;
         temp_ab = _2r_2s(idq,next_theta);
         duty = SVM(temp_ab.alpha,temp_ab.beta);
         motor_set_pwm(duty._a,duty._b,duty._c);

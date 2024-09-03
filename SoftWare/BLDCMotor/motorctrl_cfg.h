@@ -8,7 +8,6 @@
 
 #include "pid.h"
 #include "filter.h"
-// #include "IQmathLib.h"
 #include "debuglog.h"
 // #include "perf_counter.h"
 #include "motorctrl_common.h"
@@ -22,9 +21,10 @@
 
 
 
-void motor_enable(void);
-void motor_disable(void);
-void motor_set_pwm(float _a,float _b,float _c);
+__attribute__((weak)) void motor_enable(void);
+__attribute__((weak)) void motor_disable(void);
+__attribute__((weak)) void motor_set_pwm(float _a,float _b,float _c);
+__attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len);
 
 
 

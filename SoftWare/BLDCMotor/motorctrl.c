@@ -36,7 +36,6 @@ void motorctrl_init(void)
 }
 
 
-__attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len){}
 void motortctrl_process(void)
 {
     DISPATCH_FSM(&pmotor_fsm);
