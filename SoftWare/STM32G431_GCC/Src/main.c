@@ -27,7 +27,6 @@
 #include "perf_counter.h"
 #include "board.h"
 #include "taskmodule.h"
-#include "bsp_flash.h"
 
 /* USER CODE END Includes */
 
@@ -72,8 +71,6 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   MX_ADC1_Init();
-  USER_DEBUG_NORMAL("SYS start runing\r\n");
-  user_flash_test();
   while (1)
   {
     do_taskcalls();

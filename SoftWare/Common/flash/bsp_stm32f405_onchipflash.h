@@ -1,11 +1,6 @@
-#ifndef __BSP_FLASH__H
-#define __BSP_FLASH__H
+#ifndef __BSP_STM32F405_ONCHIPFLASH__H
+#define __BSP_STM32F405_ONCHIPFLASH__H
 
-#include "stdint.h"
-
-uint8_t bsp_flash_write(uint32_t addr,uint8_t *padta,uint16_t datalen);
-void bsp_flash_read(uint32_t addr,uint8_t *pdata,uint16_t datalen);
-void user_flash_test(void);
 
 #define ADDR_FLASH_PAGE_0     ((uint32_t)0x08000000) /* Base @ of Page 0, 2 Kbytes */
 #define ADDR_FLASH_PAGE_1     ((uint32_t)0x08000800) /* Base @ of Page 1, 2 Kbytes */
@@ -71,5 +66,6 @@ void user_flash_test(void);
 #define ADDR_FLASH_PAGE_61    ((uint32_t)0x0801E800) /* Base @ of Page 61, 2 Kbytes */
 #define ADDR_FLASH_PAGE_62    ((uint32_t)0x0801F000) /* Base @ of Page 62, 2 Kbytes */
 #define ADDR_FLASH_PAGE_63    ((uint32_t)0x0801F800) /* Base @ of Page 63, 2 Kbytes */
+
 
 #endif

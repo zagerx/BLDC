@@ -1,14 +1,9 @@
-#include "bsp_flash.h"
+#include "bsp_onchipflash.h"
 #include "string.h"
 #include "debuglog.h"
 #include "main.h"
-#pragma pack(push,1)
-typedef struct bsp_flash
-{
-  char name[32];
-  float fbuf[2];
-}flash_t;
-#pragma pack(pop)
+
+#include "bsp_stm32f405_onchipflash.h"
 
 typedef union {  
     uint8_t bytes[8];  
@@ -19,23 +14,12 @@ typedef union {
     uint32_t value;    
     uint8_t bytes[4];  
 } Uint32ToUint8Array;  
-  
-static inline uint64_t uint8_array_to_uint64(const uint8_t *p) {  
-    Uint8ToUint64 converter;  
-    memcpy(converter.bytes, p, sizeof(converter.bytes));  
-    return converter.value;  
-}    
-static inline void uint32_to_uint8_array(uint32_t data, uint8_t *pdata) {  
-    Uint32ToUint8Array converter;  
-    converter.value = data;  
-    pdata[0] = converter.bytes[0];  
-    pdata[1] = converter.bytes[1];  
-    pdata[2] = converter.bytes[2];  
-    pdata[3] = converter.bytes[3];  
-}
+
+
 static uint32_t GetPage(uint32_t Address);
 static uint32_t GetBank(uint32_t Addr);
-
+static inline void uint32_to_uint8_array(uint32_t data, uint8_t *pdata);
+static inline uint64_t uint8_array_to_uint64(const uint8_t *p);
 uint8_t bsp_flash_earse(uint32_t addr,uint16_t datalen)
 {
   HAL_FLASH_Unlock();
@@ -97,19 +81,6 @@ void bsp_flash_read(uint32_t addr,uint8_t *pdata,uint16_t datalen)
   }
 }
 
-void user_flash_test(void)
-{
-  flash_t test_write = {
-    .name = "hello world,dev1_flash",
-    .fbuf = {-1.28f,2.78f},
-  };
-  bsp_flash_earse(ADDR_FLASH_PAGE_31,40);
-  bsp_flash_write(ADDR_FLASH_PAGE_31,(uint8_t *)&test_write,40);
-  flash_t read_data;
-  bsp_flash_read(ADDR_FLASH_PAGE_31,(uint8_t *)&read_data,40);
-  USER_DEBUG_NORMAL("%s\n",read_data.name);
-  USER_DEBUG_NORMAL("%f %f\n",read_data.fbuf[0],read_data.fbuf[1]);
-}
 
 static uint32_t GetPage(uint32_t Addr)
 {
@@ -121,4 +92,17 @@ static uint32_t GetBank(uint32_t Addr)
   return FLASH_BANK_1;
 }
 
+static inline uint64_t uint8_array_to_uint64(const uint8_t *p) {  
+    Uint8ToUint64 converter;  
+    memcpy(converter.bytes, p, sizeof(converter.bytes));  
+    return converter.value;  
+}    
+static inline void uint32_to_uint8_array(uint32_t data, uint8_t *pdata) {  
+    Uint32ToUint8Array converter;  
+    converter.value = data;  
+    pdata[0] = converter.bytes[0];  
+    pdata[1] = converter.bytes[1];  
+    pdata[2] = converter.bytes[2];  
+    pdata[3] = converter.bytes[3];  
+}
 
