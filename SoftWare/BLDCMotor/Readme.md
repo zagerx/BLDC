@@ -6,10 +6,10 @@
 -   `motorctrl_init()函数`
 -   `mc_hightfreq_task(float *iabc)函数`
 ### 对内配置
-- __attribute__((weak)) void motor_enable(void)
-- __attribute__((weak)) void motor_disable(void)
-- __attribute__((weak)) void motor_set_pwm(...)
-- __attribute__((weak)) void _bsp_protransmit(...)
+- `__attribute__((weak)) void motor_enable(void)`
+- `__attribute__((weak)) void motor_disable(void)`
+- `__attribute__((weak)) void motor_set_pwm(...)`
+- `__attribute__((weak)) void _bsp_protransmit(...)`
 一般情况，上面的函数放在`board.c/h`定义和声明
 
 ## 函数说明

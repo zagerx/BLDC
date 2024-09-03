@@ -168,5 +168,26 @@ void mc_protocol_sendspeed(void)
     insert_msg_list_tail(msg_list, msg1);
 }
 
-
+void mc_protocol_send(unsigned short cmd,unsigned char* pdata,unsigned short datalen,\
+                      unsigned char time_count,unsigned short time_out)
+{
+    frame_t frame;
+    frame.cmd = cmd;
+    frame.pdata = (unsigned char*)pdata;
+    frame.datalen = datalen;
+    unsigned char *p = 0;
+    p = _pack_proframe(&frame); 
+    msg_node_t* msg = (msg_node_t*)heap_malloc(sizeof(msg_node_t));
+    if (msg == NULL)
+    {
+        USER_DEBUG_NORMAL("msg_node_t malloc fail\n");
+        return;
+    }
+    msg1->fsm_cblock.time_count = time_out;
+    msg1->fsm_cblock.time_out = time_count;
+    msg1->fsm_cblock._state = 0;
+    msg1->pdata = p;
+    msg1->datalen = frame.datalen + sizeof(frame_t) - 4;
+    insert_msg_list_tail(msg_list, msg);
+}
 
