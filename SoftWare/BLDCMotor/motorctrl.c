@@ -50,7 +50,7 @@ void motortctrl_process(void)
 
 void mc_hightfreq_task(float *iabc)
 {
-#if 1
+#if 0
     // mc_test(iabc,TOTAL_OMEGA);
     mc_encoderopenlooptest(iabc,TOTAL_OMEGA);    
 #else

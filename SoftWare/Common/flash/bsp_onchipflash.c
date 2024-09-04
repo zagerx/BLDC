@@ -18,6 +18,16 @@ static inline uint64_t uint8_array_to_uint64(const uint8_t *p) {
     memcpy(converter.bytes, p, sizeof(converter.bytes));  
     return converter.value;  
 }    
+static inline uint32_t unsigned_char_array_to_uint32(const uint8_t *p) 
+{  
+    if (p == NULL) {  
+        return 0; 
+    }
+    Uint32ToUint8Array converter;  
+    memcpy(converter.bytes, p, sizeof(converter.bytes));  
+    return converter.value;  
+}  
+
 static inline void uint32_to_uint8_array(uint32_t data, uint8_t *pdata) {  
     Uint32ToUint8Array converter;  
     converter.value = data;  
@@ -28,10 +38,10 @@ static inline void uint32_to_uint8_array(uint32_t data, uint8_t *pdata) {
 }
 
 
-#if defined(STM32F405XX)
+#if defined(STM32F405xx)
 #include "main.h"
 #include "_stm32F405_onchipflash.h"
-#define FLASH_USER_START_ADDR   ADDR_FLASH_SECTOR_2   /* Start @ of user Flash area */
+#define FLASH_USER_START_ADDR   ADDR_FLASH_SECTOR_10   /* Start @ of user Flash area */
 #define FLASH_USER_END_ADDR     ADDR_FLASH_SECTOR_11  +  GetSectorSize(ADDR_FLASH_SECTOR_11) -1 /* End @ of user Flash area : sector start address + sector size -1 */
 #define DATA_32                 ((uint32_t)0x12345678)
 uint32_t FirstSector = 0, NbOfSectors = 0, Address = 0;
@@ -44,13 +54,14 @@ static uint32_t GetSectorSize(uint32_t Sector);
 uint8_t bsp_flash_earse(uint32_t addr,uint16_t datalen)
 {
   HAL_FLASH_Unlock();
-  FirstSector = GetSector(FLASH_USER_START_ADDR);
+  FirstSector = GetSector(addr);
+  NbOfSectors = GetSector(addr + datalen) - FirstSector + 1;
   /* Get the number of sector to erase from 1st sector*/
   EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
   EraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_3;
   EraseInitStruct.Sector = FirstSector;
   EraseInitStruct.NbSectors = NbOfSectors;
-  if (HAL_FLASHEx_Erase(&EraseInitStruct, &PageError) != HAL_OK)
+  if (HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError) != HAL_OK)
   {
     HAL_FLASH_Lock();
     return -1;
@@ -74,19 +85,20 @@ uint8_t bsp_flash_write(uint32_t addr,uint8_t *padta,uint16_t datalen)
     return -1;
   }
   HAL_FLASH_Unlock();
-  Address = FLASH_USER_START_ADDR;
+  Address = addr;
 
-  while (Address < FLASH_USER_END_ADDR)
+  while (Address < addr+datalen)
   {
-    if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address, DATA_32) == HAL_OK)
+    uint32_t data = unsigned_char_array_to_uint32(padta);
+    if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address, data) != HAL_OK)
     {
-      Address = Address + 4;
-    }else
-    { 
       HAL_FLASH_Lock(); 
       USER_DEBUG_NORMAL("flash write err\n");
-      return -1;
+      return -1;      
+
     }
+    Address = Address + 4;
+    padta += 4;    
   }
   /* Lock the Flash to disable the flash control register access (recommended
      to protect the FLASH memory against possible unwanted operation) *********/
@@ -95,22 +107,15 @@ uint8_t bsp_flash_write(uint32_t addr,uint8_t *padta,uint16_t datalen)
 }
 void bsp_flash_read(uint32_t addr,uint8_t *pdata,uint16_t datalen)
 {
-  Address = FLASH_USER_START_ADDR;
-  MemoryProgramStatus = 0x0;
+  Address = addr;
   
-  while (Address < FLASH_USER_END_ADDR)
+  while (Address < addr+datalen)
   {
     data32 = *(__IO uint32_t*)Address;
-
-    if (data32 != DATA_32)
-    {
-      USER_DEBUG_NORMAL("Flash read err\n");
-      return ;
-    }
-
+    uint32_to_uint8_array(data32,pdata);
+    pdata += 4;
     Address = Address + 4;
-  }  
-  USER_DEBUG_NORMAL("Flash read sucessful\n");
+  }
   return;
 }
 

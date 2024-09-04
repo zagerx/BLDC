@@ -35,6 +35,7 @@
 // #include "protocol.h"
 #include "taskmodule.h"
 #include "debuglog.h"
+#include "flash.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -146,7 +147,7 @@ int main(void)
   MX_ADC3_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("F405 Hello World\n");
-
+  // user_flash_test();
   /* USER CODE END 2 */
 
   /* Infinite loop */

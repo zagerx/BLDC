@@ -3,6 +3,7 @@
 #include "motorctrl_common.h"
 #include "string.h"
 #include "mc_angle.h"
+#include "flash.h"
 #define CURRMENT_PERIOD      (0.000125f)
 #define TOTAL_DISTANCE       (_2PI)
 #define TOTAL_TIME           (6.0f)
@@ -123,6 +124,8 @@ void mc_encoderopenlooptest(float *iabc,float omega)
 }
 fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
 {
+    flash_t temp;
+
     enum{
         READY = USER,
         RUN,
@@ -130,13 +133,13 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
     switch (pthis->chState)
     {
     case ENTER:
-        // {
-        //     break;
-        // }
-        USER_DEBUG_NORMAL("motor enable\n");
         /*从FLASH指定位置读取PID参数数据*/
+        user_flash_read(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
+        USER_DEBUG_NORMAL("motor enable PID kp = %f ki=%f kc=%f\n",temp.fbuf[0],temp.fbuf[1],temp.fbuf[2]);
         /*初始化PID参数*/
-        pid_init(&(mc_param.daxis_pi),motordebug.pid_kp,motordebug.pid_ki,1.0f,D_MAX_VAL,D_MIN_VAL);
+        pid_init(&(mc_param.daxis_pi),temp.fbuf[0],temp.fbuf[1],temp.fbuf[2],D_MAX_VAL,D_MIN_VAL);
+        motordebug.id_targe = 0.0f;
+        motordebug.iq_targe = 0.0f;
         pthis->chState = READY;
     case READY:
         if (motordebug.rec_cmd != M_SET_START)

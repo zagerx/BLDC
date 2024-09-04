@@ -58,6 +58,7 @@ typedef struct
     float pid_ki;
     float pid_kc;
     float pid_tar;
+    float pid_out;
     float ele_angle;
     float self_ele_theta;
     unsigned int nCycleUsed;    

@@ -28,14 +28,15 @@ duty_t currment_loop(float *abc,float theta,float next_theta)
 
 	motordebug.id_real  = idq.d;
 	motordebug.iq_real  = idq.q;
-#if 0
+#if 1
 	float Vd = pid_contrl(&(mc_param.daxis_pi),Id_des,idq.d);
 	float Vq = pid_contrl(&(mc_param.qaxis_pi),Iq_des,idq.q);
+	motordebug.pid_out = Vd;
 #else
 	float Vd = 0.0f;
 	float Vq = 0.8f;
 #endif
-	float mod_to_V = (2.0f / 3.0f) * motordebug.vbus;//vbus_voltage;
+	float mod_to_V = (2.0f / 3.0f) * 24.0f;//motordebug.vbus;//vbus_voltage;
 	float V_to_mod = 1.0f / mod_to_V;
 	float mod_d = V_to_mod * Vd;
 	float mod_q = V_to_mod * Vq;

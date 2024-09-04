@@ -10,7 +10,7 @@
 #include "debuglog.h"
 #include "protocol.h"
 #include "math.h"
-
+#include "flash.h"
 extern msg_list_t* msg_list;
 
 typedef struct _cmdmap cmdmap_t;
@@ -41,7 +41,7 @@ static cmdmap_t commend_map[] = {
     {M_GET_MotorInfo,  test_func,              },
     {M_GET_PCBAInfo,   _cmd_getpcbainfo,       },
     {M_SET_PIDParam,   _cmd_setpidparam,       },
-    {M_SET_PIDParam,   _cmd_setpidparam,       },    
+    {M_SET_PIDTarge,   _cmd_setpidparam,       },    
 };
 
 void _forch_cmdmap(unsigned short cmd, unsigned char *pdata, unsigned short len)
@@ -91,12 +91,30 @@ static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
     if(pactor->cmd == M_SET_PIDParam)
     {
         USER_DEBUG_NORMAL("Set Motor PID Param CMD\n");
+        // HAL_Delay(1);
         /*写入FLASH指定位置 TODO*/
+        user_flash_earse(PID_PARSE_ADDR,PID_PARSE_SIZE);
+
+        // flash_t temp;
+        float fbuf[4];
+        convert_floats(pdata,datalen,fbuf);
+        flash_t temp = {
+            .name = "hello world,dev1_flash",
+            .fbuf = {-1.28f,2.78f,1.0f,0.0f},
+        };
+        temp.fbuf[0] = fbuf[0];
+        temp.fbuf[1] = fbuf[1];
+        temp.fbuf[2] = fbuf[2];
+        temp.fbuf[3] = fbuf[3];
+        user_flash_write(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
         /*复位系统 TODO*/
         user_softresetsystem();
     }else if(pactor->cmd == M_SET_PIDTarge){
-        // motordebug.id_targe = 
+        float temp;
+        convert_floats(pdata,datalen,&(temp));   
+        motordebug.id_targe = temp;
         motordebug.iq_targe = 0.0f;
+        USER_DEBUG_NORMAL("PID Targe update id_targe = %.02f\n",motordebug.id_targe);
     }
 }
 
