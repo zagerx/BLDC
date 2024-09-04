@@ -72,7 +72,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 
 
-
+void user_softresetsystem(void)
+{
+	HAL_NVIC_SystemReset();
+}
 
 
 

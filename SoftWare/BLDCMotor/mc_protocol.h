@@ -12,6 +12,7 @@
 #define M_GET_MotorInfo              (0x0107)
 #define M_GET_PCBAInfo               (0x0108)
 #define M_SET_PIDParam               (0x0109)
+#define M_SET_PIDTarge               (0x010A)
 
 #define S_CMD                        (0x02)
 #define S_HeartP                     (0x0200)

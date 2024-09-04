@@ -9,7 +9,6 @@
 #include "pid.h"
 #include "filter.h"
 #include "debuglog.h"
-// #include "perf_counter.h"
 #include "motorctrl_common.h"
 
 #include "board.h"
@@ -25,6 +24,7 @@ __attribute__((weak)) void motor_enable(void);
 __attribute__((weak)) void motor_disable(void);
 __attribute__((weak)) void motor_set_pwm(float _a,float _b,float _c);
 __attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len);
+__attribute__((weak)) void user_softresetsystem(void);
 
 
 

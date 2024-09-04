@@ -134,6 +134,8 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
         //     break;
         // }
         USER_DEBUG_NORMAL("motor enable\n");
+        /*从FLASH指定位置读取PID参数数据*/
+        /*初始化PID参数*/
         pid_init(&(mc_param.daxis_pi),motordebug.pid_kp,motordebug.pid_ki,1.0f,D_MAX_VAL,D_MIN_VAL);
         pthis->chState = READY;
     case READY:
@@ -141,7 +143,6 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
         {
             break;
         }
-        motordebug.id_targe = motordebug.pid_tar;
         motor_enable();
         pthis->chState = RUN;
         break;

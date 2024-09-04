@@ -41,6 +41,7 @@ static cmdmap_t commend_map[] = {
     {M_GET_MotorInfo,  test_func,              },
     {M_GET_PCBAInfo,   _cmd_getpcbainfo,       },
     {M_SET_PIDParam,   _cmd_setpidparam,       },
+    {M_SET_PIDParam,   _cmd_setpidparam,       },    
 };
 
 void _forch_cmdmap(unsigned short cmd, unsigned char *pdata, unsigned short len)
@@ -87,7 +88,16 @@ static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned
 
 static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
-    USER_DEBUG_NORMAL("Set Motor PID Param CMD\n");
+    if(pactor->cmd == M_SET_PIDParam)
+    {
+        USER_DEBUG_NORMAL("Set Motor PID Param CMD\n");
+        /*写入FLASH指定位置 TODO*/
+        /*复位系统 TODO*/
+        user_softresetsystem();
+    }else if(pactor->cmd == M_SET_PIDTarge){
+        // motordebug.id_targe = 
+        motordebug.iq_targe = 0.0f;
+    }
 }
 
 static void convert_floats(unsigned char *pdata, unsigned short datalen, float *floats) 
