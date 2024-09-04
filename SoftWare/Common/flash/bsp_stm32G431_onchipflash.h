@@ -1,5 +1,5 @@
-#ifndef __BSP_STM32F405_ONCHIPFLASH__H
-#define __BSP_STM32F405_ONCHIPFLASH__H
+#ifndef __BSP_STM32G431_ONCHIPFLASH__H
+#define __BSP_STM32G431_ONCHIPFLASH__H
 
 
 #define ADDR_FLASH_PAGE_0     ((uint32_t)0x08000000) /* Base @ of Page 0, 2 Kbytes */
