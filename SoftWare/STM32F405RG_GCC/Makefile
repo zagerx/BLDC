@@ -151,7 +151,7 @@ C_SOURCES += $(wildcard ../Common/debuglog/*.c)
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
 C_INCLUDES += -I../Common/debuglog 
-# C_DEFS += -DDEBUG_MODE_UART
+C_DEFS += -DDEBUG_MODE_UART
 
 C_SOURCES += $(wildcard ./Hardware/*.c)
 C_INCLUDES += -I./Hardware 

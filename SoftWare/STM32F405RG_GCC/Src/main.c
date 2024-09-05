@@ -96,6 +96,7 @@ void sysrunning_process(void)
           }
           if(!(sg_SYSRuning.time_cnt % (DELAY_500MS)))
           {
+            
           }            
           if((sg_SYSRuning.time_cnt % (DELAY_100MS)) == 0)
           {

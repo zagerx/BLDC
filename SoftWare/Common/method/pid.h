@@ -8,8 +8,8 @@ typedef struct pid_contrlblock
     float kc;
     float u_i;
     float satErr;
-    unsigned short out_max;
-    unsigned short out_min;
+    float out_max;
+    float out_min;
 }pid_cb_t;
 
 extern float pid_contrl(pid_cb_t *pid,float tar,float cur);

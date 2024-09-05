@@ -8,12 +8,19 @@
 #define TOTAL_DISTANCE       (_2PI)
 #define TOTAL_TIME           (6.0f)
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)
-
-
+static void mc_self_openlooptest(void);
+static void mc_encoderopenlooptest(float *iabc,float omega);
 void mc_test(float *iabc,float omega)
 {
+#if 0    
+    mc_self_openlooptest();
+#else
+    mc_encoderopenlooptest(iabc,omega);
+#endif
+}
+static void mc_self_openlooptest(void)
+{
     static unsigned short cnt = 0;
-
 	float theta = 0.0f;
     float next_theta = 0.0f;
     dq_t idq = {0.0f,0.04f};
@@ -90,9 +97,8 @@ void mc_test(float *iabc,float omega)
     default:
         break;
     }
-
 }
-void mc_encoderopenlooptest(float *iabc,float omega)
+static void mc_encoderopenlooptest(float *iabc,float omega)
 {
 	float theta = 0.0f;
     float next_theta = 0.0f;
@@ -137,7 +143,7 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
         user_flash_read(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
         USER_DEBUG_NORMAL("motor enable PID kp = %f ki=%f kc=%f\n",temp.fbuf[0],temp.fbuf[1],temp.fbuf[2]);
         /*初始化PID参数*/
-        pid_init(&(mc_param.daxis_pi),temp.fbuf[0],temp.fbuf[1],temp.fbuf[2],D_MAX_VAL,D_MIN_VAL);
+        pid_init(&(mc_param.daxis_pi),temp.fbuf[0],temp.fbuf[1],1.0,D_MAX_VAL,D_MIN_VAL);
         motordebug.id_targe = 0.0f;
         motordebug.iq_targe = 0.0f;
         pthis->chState = READY;

@@ -282,8 +282,20 @@ void serialwindow::onReadSerialData()
         // 如果读取到了数据
         if (!data.isEmpty())
         {
-            std::vector<unsigned char> vecData(data.constBegin(), data.constEnd());
-            pMcProtocl->ReceiveData(vecData);
+            // 直接比较前两个字节是否等于 0xA5A5  
+            if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)  
+            {  
+                // 帧头匹配，处理数据  
+                std::vector<unsigned char> vecData(data.constBegin(), data.constEnd());  
+                pMcProtocl->ReceiveData(vecData);
+            }
+            else
+            {
+                QString stringData = QString::fromUtf8(data.constData(), data.size());
+                // 将字符串显示到QTextEdit
+                QTextEdit *edit = ui->textEdit;
+                edit->append(stringData);
+            }  
         }
         else
         {
