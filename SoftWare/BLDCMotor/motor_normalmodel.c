@@ -40,7 +40,7 @@ fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
     case MOTOR_RUNING:
         {
             dq_t idq = {0.0f};
-            idq.q = speed_loop(10.0f);
+            idq.q = speed_loop(10.0f,motordebug.real_speed);
             motordebug.speed_targe = 10.0f;
             motordebug.id_targe = idq.d;
             motordebug.iq_targe = idq.q;

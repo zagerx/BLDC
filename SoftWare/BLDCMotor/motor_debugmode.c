@@ -4,21 +4,22 @@
 #include "string.h"
 #include "mc_angle.h"
 #include "flash.h"
+#include "mc_speedmode.h"
 #define CURRMENT_PERIOD      (0.000125f)
 #define TOTAL_DISTANCE       (_2PI)
 #define TOTAL_TIME           (6.0f)
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)
-static void mc_self_openlooptest(void);
+static void mc_self_openlooptest(float *iabc,float omega);
 static void mc_encoderopenlooptest(float *iabc,float omega);
 void mc_test(float *iabc,float omega)
 {
 #if 0    
-    mc_self_openlooptest();
+    mc_self_openlooptest(iabc,omega);
 #else
     mc_encoderopenlooptest(iabc,omega);
 #endif
 }
-static void mc_self_openlooptest(void)
+static void mc_self_openlooptest(float *iabc,float omega)
 {
     static unsigned short cnt = 0;
 	float theta = 0.0f;
@@ -102,14 +103,16 @@ static void mc_encoderopenlooptest(float *iabc,float omega)
 {
 	float theta = 0.0f;
     float next_theta = 0.0f;
-    dq_t idq = {0.0f,0.04f};
+    dq_t idq = {0.0f,-0.04f};
     alpbet_t temp_ab = {0};
     duty_t duty = {0};
     alpbet_t i_ab;
     dq_t i_dq;    
     int32_t raw = *((int32_t*)sensor_user_read(SENSOR_01));
     float speed = 0.0f;
-    mc_encoder_readspeedangle(&raw,&theta,&speed);
+    mc_encoder_readspeedangle(&raw,&theta,&(motordebug.real_speed));
+    speed = motordebug.real_speed;
+    motordebug.ele_angle = theta;
     abc_t i_abc = {0};
 	i_abc.a = iabc[0];
 	i_abc.b = iabc[1];
@@ -121,8 +124,7 @@ static void mc_encoderopenlooptest(float *iabc,float omega)
     motordebug.ic_real = i_abc.c;
     motordebug.id_real = i_dq.d;
     motordebug.iq_real = i_dq.q;
-    motordebug.real_speed = speed;
-    next_theta = theta + (1.5f * speed * CURRMENT_PERIOD);
+    next_theta = theta + (1.5f * speed * CURRMENT_PERIOD);//TODO
     temp_ab = _2r_2s(idq,next_theta);    
 
     duty = SVM(temp_ab.alpha,temp_ab.beta);
@@ -144,6 +146,11 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
         USER_DEBUG_NORMAL("motor enable PID kp = %f ki=%f kc=%f\n",temp.fbuf[0],temp.fbuf[1],temp.fbuf[2]);
         /*初始化PID参数*/
         pid_init(&(mc_param.daxis_pi),temp.fbuf[0],temp.fbuf[1],1.0,D_MAX_VAL,D_MIN_VAL);
+        pid_init(&(mc_param.qaxis_pi),temp.fbuf[0],temp.fbuf[1],1.0,D_MAX_VAL,D_MIN_VAL);
+        // pid_init(&(mc_param.daxis_pi),0.01f,0.001f,1.0,D_MAX_VAL,D_MIN_VAL);
+        // pid_init(&(mc_param.qaxis_pi),0.01f,0.001f,1.0,D_MAX_VAL,D_MIN_VAL);        
+        pid_init(&(mc_param.speedloop_pi),0.01f,0.001f,1.0,D_MAX_VAL,D_MIN_VAL);
+
         motordebug.id_targe = 0.0f;
         motordebug.iq_targe = 0.0f;
         pthis->chState = READY;
@@ -159,6 +166,9 @@ fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
         if (motordebug.rec_cmd == M_SET_STOP)
         {
             pthis->chState = EXIT;
+        }else{
+            motordebug.iq_targe = speed_loop(motordebug.speed_targe,motordebug.real_speed);
+            motordebug.id_targe = 0.0f;
         }
         break;    
     case EXIT:

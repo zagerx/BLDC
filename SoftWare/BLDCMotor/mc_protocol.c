@@ -33,7 +33,7 @@ static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned
 static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static cmdmap_t commend_map[] = {
-    {M_SET_SPEED,      test_func,              },
+    {M_SET_SPEED,      _cmd_setpidparam,              },
     {M_SET_START,      _cmd_motorstart,        },
     {M_SET_STOP,       _cmd_motorstop,         },
     {M_SET_NormalM,    _cmd_setMotorNormalM,   },
@@ -115,6 +115,10 @@ static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
         motordebug.id_targe = temp;
         motordebug.iq_targe = 0.0f;
         USER_DEBUG_NORMAL("PID Targe update id_targe = %.02f\n",motordebug.id_targe);
+    }else if(pactor->cmd == M_SET_SPEED){
+        float temp;
+        convert_floats(pdata,datalen,&(temp));         
+        motordebug.speed_targe = temp;
     }
 }
 

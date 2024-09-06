@@ -60,7 +60,7 @@ void mc_hightfreq_task(float *iabc)
 
 	float theta = 0.0f;
     float next_theta = 0.0f;
-    float speed = 0.0f;
+    static float speed = 0.0f;
     mc_encoder_readspeedangle(&raw,&theta,&speed);
     motordebug.ele_angle = theta;
     next_theta = theta + 1.5f * CURRMENT_PERIOD * speed;
