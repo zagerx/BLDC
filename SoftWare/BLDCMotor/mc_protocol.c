@@ -37,7 +37,7 @@ static cmdmap_t commend_map[] = {
     {M_SET_START,      _cmd_motorstart,        },
     {M_SET_STOP,       _cmd_motorstop,         },
     {M_SET_NormalM,    _cmd_setMotorNormalM,   },
-    {M_SET_DebugM,     _cmd_setMotorNormalD,   },
+    {M_SET_SpeedM,     _cmd_setMotorNormalD,   },
     {M_GET_MotorInfo,  test_func,              },
     {M_GET_PCBAInfo,   _cmd_getpcbainfo,       },
     {M_SET_PIDParam,   _cmd_setpidparam,       },

@@ -1,5 +1,5 @@
-#ifndef __MC_CURRMENTMODE__H
-#define __MC_CURRMENTMODE__H
+#ifndef __MC_CURRMENTLOOP__H
+#define __MC_CURRMENTLOOP__H
 
 #include "motorctrl_common.h"
 

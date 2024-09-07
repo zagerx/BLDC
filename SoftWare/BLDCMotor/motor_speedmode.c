@@ -1,12 +1,12 @@
-#include "motor_debugmode.h"
+#include "motor_speedmode.h"
 #include "mc_protocol.h"
 #include "motorctrl_common.h"
 #include "string.h"
 #include "mc_angle.h"
 #include "flash.h"
-#include "mc_speedmode.h"
+#include "mc_speedloop.h"
 
-fsm_rt_t motor_debugmode(fsm_cb_t *pthis)
+fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
 {
     flash_t temp;
 

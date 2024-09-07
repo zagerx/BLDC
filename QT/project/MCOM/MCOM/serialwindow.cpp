@@ -117,13 +117,13 @@ void serialwindow::on_normal_bt_clicked()
 void serialwindow::on_debug_bt_clicked()
 {
     MC_Frame datafram;
-    datafram.CMD = M_SET_DebugM;
+    datafram.CMD = M_SET_SpeedM;
     datafram.UnPack();
     pMcProtocl->AddFrameToBuf(datafram);
     ui->mc_startBt->setDisabled(false);
     ui->mt_stopBt->setDisabled(false);    
     // //显示Debug界面  TODO
-    // QString command = "motor_debugmode:\r\n";
+    // QString command = "motor_speedmode:\r\n";
     // serial->write(command.toLatin1());
     // motordebug *pmd = new motordebug;
     // // /*connect*/(b, &B::dataReady, this, &A::onDataReceivedFromB); // 连接B界面的信号到A界面的槽

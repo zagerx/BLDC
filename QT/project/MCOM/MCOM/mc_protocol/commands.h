@@ -7,7 +7,7 @@
 #define M_SET_START                  (0x0103)
 #define M_SET_STOP                   (0x0104)
 #define M_SET_NormalM                (0x0105)
-#define M_SET_DebugM                 (0x0106)
+#define M_SET_SpeedM                 (0x0106)
 #define M_GET_MotorInfo              (0x0107)
 #define M_GET_PCBAInfo               (0x0108)
 #define M_SET_PIDParam               (0x0109)

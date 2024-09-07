@@ -5,11 +5,11 @@
 #include "mc_protocol.h"
 #include "board.h"
 #include "string.h"
-#include "mc_currmentmode.h"
+#include "mc_currmentloop.h"
 #include "mc_utils.h"
 #include "mc_angle.h"
 #include "fsm.h"
-#include "motor_debugmode.h"
+#include "motor_speedmode.h"
 #include "initmodule.h"
 #define CURRMENT_PERIOD      (0.000125f)
 
@@ -76,11 +76,10 @@ static fsm_rt_t motor_idlemode(fsm_cb_t *pthis)
     switch (pthis->chState)
     {
     case ENTER:
-
-        if (motordebug.rec_cmd == M_SET_DebugM)
+        if (motordebug.rec_cmd == M_SET_SpeedM)
         {
-            TRAN_STATE(pthis,motor_debugmode);
-        }        
+            TRAN_STATE(pthis,motor_speedmode);
+        }
         break;
     case EXIT:
         break;
