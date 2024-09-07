@@ -41,7 +41,7 @@
     - 用手堵转电机，`i_abc,iq,id`如下:
 <img src="./images/编码器开环效果图.png" alt="编码器开环效果图" width="280" >
 - 速度调试
-    - 观察输出`mc_encoder_readspeedangle()`函数输出角度和测速仪之间的关系
+    - 观察输出`mc_encoder_read()`函数输出角度和测速仪之间的关系
 ## 编码器获取速度
 1. 使用`mc_encoderopenlooptest()`函数，给定`Ud=0,Uq=0.8`
 2. 电机转动，使用测速器测试当前转速`300ramp`

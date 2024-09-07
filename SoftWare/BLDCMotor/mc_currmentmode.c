@@ -7,15 +7,19 @@
 extern mc_param_t mc_param;
 float  vbus_voltage=24.0f;
 
-duty_t currment_loop(float *abc,float theta,float next_theta)
+duty_t currment_loop(mc_currment_t *curloop_handle)
 {
+	float theta, next_theta;
     abc_t i_abc = {0};
-	i_abc.a = abc[0];
-	i_abc.b = abc[1];
-	i_abc.c = abc[2];
+	i_abc.a = curloop_handle->i_abc[0];
+	i_abc.b = curloop_handle->i_abc[1];
+	i_abc.c = curloop_handle->i_abc[2];
 	motordebug.ia_real = i_abc.a;
 	motordebug.ib_real = i_abc.b;
 	motordebug.ic_real = i_abc.c;
+
+	theta = curloop_handle->theta;
+	next_theta = curloop_handle->next_theta;
 
     alpbet_t motor_Ialphabeta;
 	_3s_2s(i_abc,&motor_Ialphabeta);
@@ -28,8 +32,8 @@ duty_t currment_loop(float *abc,float theta,float next_theta)
 
 	motordebug.id_real  = idq.d;
 	motordebug.iq_real  = idq.q;
-	float Vd = pid_contrl(&(mc_param.daxis_pi),Id_des,idq.d);
-	float Vq = pid_contrl(&(mc_param.qaxis_pi),Iq_des,idq.q);
+	float Vd = pid_contrl(&(curloop_handle->d_pid),Id_des,idq.d);
+	float Vq = pid_contrl(&(curloop_handle->q_pid),Iq_des,idq.q);
 	motordebug.pid_out = Vd;
 	float mod_to_V = (2.0f / 3.0f) * 24.0f;//motordebug.vbus;//vbus_voltage;
 	float V_to_mod = 1.0f / mod_to_V;

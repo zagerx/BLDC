@@ -118,7 +118,7 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F405xx \
--DARM_MATH_CM4
+-DARM_MATH_CM4 
 
 # AS includes
 AS_INCLUDES = 
@@ -178,10 +178,10 @@ C_SOURCES += $(wildcard ../Common/flash/*.c)
 
 
 C_INCLUDES += -I../Common/Fsm 
-
 C_INCLUDES += -I../BLDCMotor 
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-
+# C_DEFS += -DMOTOR_OPENLOOP 
+# C_DEFS += -DMOTOR_OPENLOOP_ENCODER
 
 #######################################
 # LDFLAGS

@@ -3,7 +3,9 @@
 
 #include "motorctrl_common.h"
 
-duty_t currment_loop(float *abc,float theta,float next_theta);
+
+
+duty_t currment_loop(mc_currment_t *curloop_handle);
 
 #endif
 

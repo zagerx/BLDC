@@ -90,8 +90,6 @@ static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned sho
 {
     if(pactor->cmd == M_SET_PIDParam)
     {
-        USER_DEBUG_NORMAL("Set Motor PID Param CMD\n");
-        // HAL_Delay(1);
         /*写入FLASH指定位置 TODO*/
         user_flash_earse(PID_PARSE_ADDR,PID_PARSE_SIZE);
 

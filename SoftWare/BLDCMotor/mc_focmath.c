@@ -2,11 +2,7 @@
 #include "debuglog.h"
 #include "mc_utils.h"
 
-
-
-
-
-
+#if 1
 duty_t SVM(float alpha, float beta) 
 {
 	float tA,tB,tC;
@@ -129,10 +125,9 @@ duty_t SVM(float alpha, float beta)
     return duty ;
 }
 
+#else
 
-
-
-duty_t _svpwm(float ualpha,float ubeta)
+duty_t SVM(float ualpha,float ubeta)
 {
     unsigned char sector;    
     sector = 0;
@@ -218,7 +213,7 @@ duty_t _svpwm(float ualpha,float ubeta)
 
     return sg_duty;
 }
-
+#endif
 
  void _3s_2s(abc_t i_abc,alpbet_t *alp_bet)
 {

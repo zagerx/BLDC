@@ -1,27 +1,82 @@
 #include "math.h"
 #include "stdbool.h"
 #include "stdint.h"
-#include "mc_utils.h"
 #include "motorctrl_common.h"
-float vel_estimate_ = 0.0f;          //当前估算转速，单位[turn/s]
-static float pll_kp_ = 2000.0f;      // [count/s / count]
-static float pll_ki_ = 1000000.0f;   // [(count/s^2) / count]
+#include "mc_utils.h"
+
+void mc_encoder_read(mc_encoder_t *encoder)
+{
+	int32_t data;float *theta;float *speed;
+
+	data = encoder->raw_data;
+	theta = &(encoder->ele_theta);
+	speed = &(encoder->speed);
+    float mec_theta = data * 0.00038349f - 0.0056f;
+    float ele_theta = mec_theta * 7.0f;
+    *theta = wrap_pm_pi(ele_theta);
+
+	static unsigned short cnt = 0;
+	if (cnt++<16)
+	{
+		return;
+	}
+	cnt = 0;
+	static float pre_theta = 0.0f;
+    // 将mec_theta归一化到[0, 2π)区间  
+    float normalized_mec_theta = fmodf(mec_theta, 2.0f * M_PI);  
+    if (normalized_mec_theta < 0.0f) {  
+        normalized_mec_theta += 2.0f * M_PI; // 处理负值  
+    }  
+    // 计算角度变化  
+    float delt_theta = normalized_mec_theta - pre_theta;  
+    // 处理跨越周期边界的情况  
+    if (delt_theta > M_PI) {  
+        delt_theta -= 2.0f * M_PI; // 逆时针大跳转  
+    } else if (delt_theta < -M_PI) {  
+        delt_theta += 2.0f * M_PI; // 顺时针大跳转  
+    }  
+    // 更新上一次的角度值  
+    pre_theta = normalized_mec_theta;  
+    // 计算角速度（这里假设时间间隔为2ms，因此乘以500来得到每秒的角速度）  
+    float omega = delt_theta * 500.0f; // 注意：这里的时间间隔是假设的，根据实际情况调整  
+  
+    // 计算转速（这里使用了您提供的转换因子）  
+    float n_rap = 9.5492965f * omega;  
+    // 更新转速  
+    *speed = n_rap;
+}
+
+float mc_read_virvalencoder(float ialpha,float ibeta)
+{
+	return 0.0f;
+}
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------//
+#if 0 
+#include "mc_utils.h"
+
 #define  ENCODER_DIR             1
 #define  ENCODER_OFFSET          23406
 #define  ENCODER_OFFSET_FLOAT    0.56f
 #define  ENCODER_PERIOD          0.000125f
 #define  ENCODER_MOTOR_PAIR      7.0f
 #define  ENCODER_CPR             16384
+float vel_estimate_ = 0.0f;          //当前估算转速，单位[turn/s]
+static float pll_kp_ = 2000.0f;      // [count/s / count]
+static float pll_ki_ = 1000000.0f;   // [(count/s^2) / count]
 
 
 static void mc_encoder_readTEST(int32_t data,float *theta,float *speed);
-float test_speed;
-void mc_encoder_readspeedangle(int32_t *data,float *theta,float *speed)
+static void mc_encoder_readTEST(int32_t data,float *theta,float *speed)
 {
-#if 1
-	mc_encoder_readTEST(*data,theta,speed);
-	test_speed = *speed;
-#else
 	int32_t delta_enc = 0;
 	int32_t pos_abs_latched;                    //LATCH
 	static int32_t shadow_count_ = 0;           //编码器累计计数。
@@ -58,54 +113,5 @@ void mc_encoder_readspeedangle(int32_t *data,float *theta,float *speed)
 	// *theta = wrap_pm_pi(ph) * ENCODER_DIR;
 	*speed = (2*M_PI) * vel_estimate_ * ENCODER_MOTOR_PAIR * ENCODER_DIR;
 	return;
-#endif	
 }
-float test_speed2;
-static void mc_encoder_readTEST(int32_t data,float *theta,float *speed)
-{
-    float mec_theta = data * 0.00038349f - 0.0056f;
-    float ele_theta = mec_theta * 7.0f;
-    *theta = wrap_pm_pi(ele_theta);
-
-	static unsigned short cnt = 0;
-	if (cnt++<16)
-	{
-		return;
-	}
-	cnt = 0;
-	static float pre_theta = 0.0f; // 上一次的角度值  
-    // 将mec_theta归一化到[0, 2π)区间  
-    float normalized_mec_theta = fmodf(mec_theta, 2.0f * M_PI);  
-    if (normalized_mec_theta < 0.0f) {  
-        normalized_mec_theta += 2.0f * M_PI; // 处理负值  
-    }  
-  
-    // 计算角度变化  
-    float delt_theta = normalized_mec_theta - pre_theta;  
-      
-    // 处理跨越周期边界的情况  
-    if (delt_theta > M_PI) {  
-        delt_theta -= 2.0f * M_PI; // 逆时针大跳转  
-    } else if (delt_theta < -M_PI) {  
-        delt_theta += 2.0f * M_PI; // 顺时针大跳转  
-    }  
-  
-    // 更新上一次的角度值  
-    pre_theta = normalized_mec_theta;  
-  
-    // 计算角速度（这里假设时间间隔为2ms，因此乘以500来得到每秒的角速度）  
-    float omega = delt_theta * 500.0f; // 注意：这里的时间间隔是假设的，根据实际情况调整  
-  
-    // 计算转速（这里使用了您提供的转换因子）  
-    float n_rap = 9.5492965f * omega;  
-	test_speed2 = n_rap;
-    // 更新转速  
-    *speed = n_rap;
-}
-
-float mc_read_virvalencoder(float ialpha,float ibeta)
-{
-	return 0.0f;
-}
-
-
+#endif

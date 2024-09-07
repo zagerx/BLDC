@@ -11,15 +11,7 @@
 #include "fsm.h"
 #include "motor_debugmode.h"
 #include "initmodule.h"
-// #include "perf_counter.h"
 #define CURRMENT_PERIOD      (0.000125f)
-#define TOTAL_DISTANCE       (_2PI)
-#define TOTAL_TIME           (6.0f)
-#define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)
-
-
-extern fsm_rt_t motor_normalmode(fsm_cb_t *pthis);
-// extern fsm_rt_t motor_debugmode(fsm_cb_t *pthis);
 
 static fsm_rt_t motor_idlemode(fsm_cb_t *pthis);
 
@@ -50,24 +42,31 @@ void motortctrl_process(void)
 
 void mc_hightfreq_task(float *iabc)
 {
-#if 0
-    mc_test(iabc,TOTAL_OMEGA);
+#ifdef MOTOR_OPENLOOP
+    mc_test(iabc);
 #else
-
     duty_t duty = {0};
     /*获取角度 速度*/
     int32_t raw = *((int32_t*)sensor_user_read(SENSOR_01));
-
 	float theta = 0.0f;
     float next_theta = 0.0f;
-    static float speed = 0.0f;
-    mc_encoder_readspeedangle(&raw,&theta,&speed);
-    motordebug.ele_angle = theta;
+    float speed = 0.0f;
+
+    mc_param.encoder_handle.raw_data = raw;
+    mc_encoder_read(&(mc_param.encoder_handle));
+    theta = mc_param.encoder_handle.ele_theta;
+    speed = mc_param.encoder_handle.speed;
+
     next_theta = theta + 1.5f * CURRMENT_PERIOD * speed;
     motordebug.ele_angle = theta;
-    motordebug.real_speed = speed;
-
-    duty = currment_loop(iabc,theta,next_theta);
+    motordebug.speed_real = speed;
+    
+    mc_param.currment_handle.i_abc[0] = iabc[0];
+    mc_param.currment_handle.i_abc[1] = iabc[1];
+    mc_param.currment_handle.i_abc[2] = iabc[2];
+    mc_param.currment_handle.theta = theta;
+    mc_param.currment_handle.next_theta = next_theta;
+    duty = currment_loop(&(mc_param.currment_handle));
     motor_set_pwm(duty._a,duty._b,duty._c);
 #endif
 }
@@ -77,10 +76,7 @@ static fsm_rt_t motor_idlemode(fsm_cb_t *pthis)
     switch (pthis->chState)
     {
     case ENTER:
-        if (motordebug.rec_cmd == M_SET_NormalM)
-        {
-            TRAN_STATE(pthis,motor_normalmode);
-        }
+
         if (motordebug.rec_cmd == M_SET_DebugM)
         {
             TRAN_STATE(pthis,motor_debugmode);
