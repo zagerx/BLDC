@@ -3,6 +3,7 @@
 #include "mc_utils.h"
 #include "mc_angle.h"
 #include "motor_speedmode.h"
+#include "motor_normalmode.h"
 #include "motorctrl_cfg.h"
 #include "motorctrl_common.h"
 
@@ -14,31 +15,54 @@
 #include "debuglog.h"
 #include "string.h"
 
-
-static fsm_rt_t motor_idlemode(fsm_cb_t *pthis);
-
 static fsm_cb_t pmotor_fsm;
 mc_param_t mc_param = {0};
 motordebug_t motordebug = {0};
 
-
-void motorctrl_init(void)
+static void motorthread_init(void)
 {
-    pmotor_fsm.fsm = (fsm_t *)motor_idlemode;
+    pmotor_fsm.fsm = (fsm_t *)motor_normalmode;
     pmotor_fsm.count = 0;
     pmotor_fsm.chState = ENTER;
 }
 
-
 void motortctrl_process(void)
 {
-    DISPATCH_FSM(&pmotor_fsm);
+    enum{
+        MOTOR_INIT = 0,
+        MOTOR_RUNING,
+        MOTOR_EXIT
+    };
+    static short state = MOTOR_INIT;
+    switch (state)
+    {
+    case MOTOR_INIT:
+        motorthread_init();
+        state = MOTOR_RUNING;
+        break;
+    case MOTOR_RUNING:
+        DISPATCH_FSM(&pmotor_fsm);
+        if (motordebug.rec_cmd == M_SET_SpeedM)
+        {
+            motordebug.rec_cmd = 0;//TODO
+            TRAN_STATE(&pmotor_fsm,motor_speedmode);
+        }else if(motordebug.rec_cmd == M_SET_NormalM){
+            TRAN_STATE(&pmotor_fsm,motor_normalmode);
+            motordebug.rec_cmd = 0;
+        }
+        break;    
+    default:
+        break;
+    }
+
     static unsigned short cnt = 0;
     if (cnt++>200)
     {
         cnt = 0;
         mc_protocol_send(S_HeartP,NULL,0,0,0);
-        mc_protocol_sendspeed();
+        float fspeed;
+        fspeed = motordebug.speed_real;
+        mc_protocol_send(S_MotorSpeed,(uint8_t *)(&fspeed),4,0,0);
     }
 }
 
@@ -73,23 +97,4 @@ void mc_hightfreq_task(float *iabc)
 #endif
 }
 
-static fsm_rt_t motor_idlemode(fsm_cb_t *pthis)
-{
-    switch (pthis->chState)
-    {
-    case ENTER:
-        if (motordebug.rec_cmd == M_SET_SpeedM)
-        {
-            TRAN_STATE(pthis,motor_speedmode);
-        }
-        break;
-    case EXIT:
-        break;
-    default:
-        break;
-    }
-    return 0;
-}
-
-board_init(motorctrl_init)
 board_task(motortctrl_process)
