@@ -1,4 +1,8 @@
 #include "motorctrl_cfg.h"
+#include "adc.h"
+#include "tim.h"
+#include "board.h"
+#include "debuglog.h"
 
 __attribute__((weak)) void motor_enable(void)
 {

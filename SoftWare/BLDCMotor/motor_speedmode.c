@@ -5,7 +5,9 @@
 #include "mc_angle.h"
 #include "flash.h"
 #include "mc_speedloop.h"
-
+#include "board.h"
+#include "motorctrl_cfg.h"
+#include "debuglog.h"
 fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
 {
     flash_t temp;

@@ -1,17 +1,19 @@
-#include "./motorctrl.h"
-#include "taskmodule.h"
-#include "debuglog.h"
-#include "motorctrl_common.h"
 #include "mc_protocol.h"
-#include "board.h"
-#include "string.h"
 #include "mc_currmentloop.h"
 #include "mc_utils.h"
 #include "mc_angle.h"
-#include "fsm.h"
 #include "motor_speedmode.h"
+#include "motorctrl_cfg.h"
+#include "motorctrl_common.h"
+
+#include "board.h"
+#include "sensor.h"
+#include "fsm.h"
+#include "taskmodule.h"
 #include "initmodule.h"
-#define CURRMENT_PERIOD      (0.000125f)
+#include "debuglog.h"
+#include "string.h"
+
 
 static fsm_rt_t motor_idlemode(fsm_cb_t *pthis);
 

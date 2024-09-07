@@ -1,12 +1,14 @@
 #ifndef ___COMMON___H
 #define ___COMMON___H
-#include "./motorctrl_cfg.h"
+
+#include "stdint.h"
+#include "pid.h"
 
 #define PI               3.14159260f
 #define _2PI             6.2831852f
 #define sqrt3            1.73205f
 #define sqrt3_2          0.866025f
-#define PI_2                       (1.570796f)
+#define PI_2             (1.570796f)
 
 
 
@@ -82,8 +84,6 @@ typedef struct
     float pid_out;
     unsigned short rec_cmd;
 }motordebug_t;
-
-
 
 typedef struct _duty
 {

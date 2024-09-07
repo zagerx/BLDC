@@ -4,6 +4,7 @@
 #include "motorctrl_common.h"
 #include "mc_utils.h"
 
+//TODO
 void mc_encoder_read(mc_encoder_t *encoder)
 {
 	int32_t data;float *theta;float *speed;

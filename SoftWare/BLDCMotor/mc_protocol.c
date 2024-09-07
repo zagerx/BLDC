@@ -11,6 +11,7 @@
 #include "protocol.h"
 #include "math.h"
 #include "flash.h"
+#include "motorctrl_cfg.h"
 extern msg_list_t* msg_list;
 
 typedef struct _cmdmap cmdmap_t;
