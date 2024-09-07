@@ -10,7 +10,7 @@
 #define M_SET_NormalM                (0x0105)
 #define M_SET_SpeedM                 (0x0106)
 #define M_GET_MotorInfo              (0x0107)
-#define M_GET_PCBAInfo               (0x0108)
+#define M_GET_CtrlParaseInfo               (0x0108)
 #define M_SET_PIDParam               (0x0109)
 #define M_SET_PIDTarge               (0x010A)
 
@@ -21,8 +21,6 @@
 #define S_MotorInfo                  (0x0203)
 #define S_MotorSpeed                 (0x0204)
 
-
-void mc_protocol_sendspeed(void);
 void mc_protocol_send(unsigned short cmd,unsigned char* pdata,unsigned short datalen,\
                       unsigned char time_count,unsigned short time_out);
 #endif

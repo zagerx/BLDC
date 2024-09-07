@@ -274,39 +274,34 @@ void serialwindow::SerialPortInit()
 void serialwindow::onReadSerialData()
 {
     // 假设 serial 已经被正确初始化和打开
-    if (serial && serial->isOpen())
-    {
-        // 读取串口上所有可用的数据
-        QByteArray data = serial->readAll();
-
-        // 如果读取到了数据
-        if (!data.isEmpty())
-        {
-            // 直接比较前两个字节是否等于 0xA5A5  
-            if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)  
-            {  
-                // 帧头匹配，处理数据  
-                std::vector<unsigned char> vecData(data.constBegin(), data.constEnd());  
-                pMcProtocl->ReceiveData(vecData);
-            }
-            else
-            {
-                QString stringData = QString::fromUtf8(data.constData(), data.size());
-                // 将字符串显示到QTextEdit
-                QTextEdit *edit = ui->textEdit;
-                edit->append(stringData);
-            }  
-        }
-        else
-        {
-            // 没有读取到数据，可以按需处理
-            qDebug() << "No data available.";
-        }
-    }
-    else
+    if (serial == NULL)
     {
         // 串口未打开或未初始化，可以给出警告或错误提示
         qDebug() << "Serial port is not open or not initialized.";
+        return;
+    }
+    // 读取串口上所有可用的数据
+    QByteArray data = serial->readAll();
+    // 如果读取到了数据
+    if (data.isEmpty())
+    {
+        return;
+    }
+
+    // 直接比较前两个字节是否等于 0xA5A5
+    if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)
+    {
+        // 帧头匹配，处理数据
+        std::vector<unsigned char> vecData(data.constBegin(), data.constEnd());
+        pMcProtocl->ReceiveData(vecData);
+    }else{
+        QString stringData = QString::fromUtf8(data.constData(), data.size());
+        QRegularExpression re("[\r\n]+$");
+        stringData.remove(re);//TODO
+        // 将字符串显示到QTextEdit
+        QTextEdit *edit = ui->textEdit;
+        edit->append(stringData);
+        qDebug() << "Displaying text:" << stringData;
     }
 }
 
@@ -342,19 +337,43 @@ void serialwindow::_forch_cmdmap(unsigned short cmd, std::vector<unsigned char>&
     case S_HeartP:
         led_blink(input);
         break;
-    case S_MotorSpeed:
+    case S_MotorSpeed://TODO
         {
+            static qreal minY = 0, maxY = 0;
+            static qint64 x = 0;
             qreal y;
-            static unsigned int x = 0;
             x++;
-            axis_x->setRange(0,x+20);
+            axis_x->setRange(x-200, x + 200);
+
             float value;
-            getFloatsFromBytes(input,&value);
+            getFloatsFromBytes(input, &value);
             y = value;
-            line->append(x,y);            
+
+            // 更新最小值和最大值（这里仍然每次更新，但你可以根据需要调整）
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+
+            // 计算新的范围，并设置y轴
+            qreal rangeBuffer = qMax(1.0, qAbs(maxY - minY) * 0.1);
+            axis_y->setRange(minY - rangeBuffer, maxY + rangeBuffer);
+
+            line->append(x, y);
         }
         break;
     default:
         break;
     }
 }
+
+void serialwindow::on_ClearRicevBt_clicked()
+{
+    QTextEdit *edit = ui->textEdit;
+    edit->clear();
+}
+
+
+void serialwindow::on_enseriBt_3_clicked()
+{
+    line->clear();
+}
+

@@ -1,7 +1,7 @@
 #include "mc_protocol.h"
 #include "mc_currmentloop.h"
 #include "mc_utils.h"
-#include "mc_angle.h"
+#include "mc_encoder.h"
 #include "motor_speedmode.h"
 #include "motor_normalmode.h"
 #include "motorctrl_cfg.h"

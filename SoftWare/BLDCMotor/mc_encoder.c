@@ -3,7 +3,7 @@
 #include "stdint.h"
 #include "motorctrl_common.h"
 #include "mc_utils.h"
-
+#include "board.h"
 //TODO
 void mc_encoder_read(mc_encoder_t *encoder)
 {
@@ -12,12 +12,13 @@ void mc_encoder_read(mc_encoder_t *encoder)
 	data = encoder->raw_data;
 	theta = &(encoder->ele_theta);
 	speed = &(encoder->speed);
-    float mec_theta = data * 0.00038349f - 0.0056f;
-    float ele_theta = mec_theta * 7.0f;
+    float mec_theta = data * ENCODER_CPR - MEC_ANGLE_OFFSET;
+    float ele_theta = mec_theta * MOTOR_PAIRS;
     *theta = wrap_pm_pi(ele_theta);
 
+	/*更新速度*/
 	static unsigned short cnt = 0;
-	if (cnt++<16)
+	if (cnt++ < SPEED_UPDATE_COUNT)
 	{
 		return;
 	}
@@ -39,9 +40,9 @@ void mc_encoder_read(mc_encoder_t *encoder)
     // 更新上一次的角度值  
     pre_theta = normalized_mec_theta;  
     // 计算角速度（这里假设时间间隔为2ms，因此乘以500来得到每秒的角速度）  
-    float omega = delt_theta * 500.0f; // 注意：这里的时间间隔是假设的，根据实际情况调整  
+    float omega = delt_theta / SPEED_UPDATE_PERIOD; // 注意：这里的时间间隔是假设的，根据实际情况调整  
   
-    // 计算转速（这里使用了您提供的转换因子）  
+    // 计算转速  
     float n_rap = 9.5492965f * omega;  
     // 更新转速  
     *speed = n_rap;

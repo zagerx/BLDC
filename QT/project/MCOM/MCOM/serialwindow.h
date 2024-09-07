@@ -30,7 +30,7 @@ public:
                                      {"速度", M_SET_SPEED},
                                      {"启动", M_SET_START},
                                      {"停止", M_SET_STOP},
-                                     {"板子信息",M_GET_PCBAInfo},
+                                     {"板子信息",M_GET_CtrlParaseInfo},
                                      {"设置PID参数",M_SET_PIDParam},
                                      {"设置PID目标",M_SET_PIDTarge}
     };
@@ -47,6 +47,10 @@ private slots:
     void onReadSerialData();
     void onDataReceivedFromB(const QString &data); // 接收B界面传递的数据
     void timerTick(void);
+
+    void on_ClearRicevBt_clicked();
+
+    void on_enseriBt_3_clicked();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

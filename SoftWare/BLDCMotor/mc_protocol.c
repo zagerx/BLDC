@@ -31,18 +31,18 @@ static void _cmd_motorstop(cmdmap_t *pactor,unsigned char *pdata, unsigned short
 static void _cmd_setMotorNormalM(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 
-static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
-static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
+static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
+static void _cmd_getinfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static cmdmap_t commend_map[] = {
-    {M_SET_SPEED,      _cmd_setpidparam,              },
+    {M_SET_SPEED,      _cmd_setparam,              },
     {M_SET_START,      _cmd_motorstart,        },
     {M_SET_STOP,       _cmd_motorstop,         },
     {M_SET_NormalM,    _cmd_setMotorNormalM,   },
     {M_SET_SpeedM,     _cmd_setMotorNormalD,   },
     {M_GET_MotorInfo,  test_func,              },
-    {M_GET_PCBAInfo,   _cmd_getpcbainfo,       },
-    {M_SET_PIDParam,   _cmd_setpidparam,       },
-    {M_SET_PIDTarge,   _cmd_setpidparam,       },    
+    {M_GET_CtrlParaseInfo,   _cmd_getinfo,       },
+    {M_SET_PIDParam,   _cmd_setparam,       },
+    {M_SET_PIDTarge,   _cmd_setparam,       },    
 };
 
 void _forch_cmdmap(unsigned short cmd, unsigned char *pdata, unsigned short len)
@@ -87,7 +87,7 @@ static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned
     USER_DEBUG_NORMAL("Set Motor enter Debug Model CMD\n");    
 }
 
-static void _cmd_setpidparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
+static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
     if(pactor->cmd == M_SET_PIDParam)
     {
@@ -125,7 +125,7 @@ static void convert_floats(unsigned char *pdata, unsigned short datalen, float *
 {  
     if (datalen % 4 != 0) {  
         // 如果datalen不是4的倍数，则不能完整地包含float数  
-        printf("Error: Data length must be a multiple of 4.\n");  
+        USER_DEBUG_NORMAL("Error: Data length must be a multiple of 4.\n");  
         return;  
     }
     unsigned int num_floats = datalen / 4;  
@@ -137,68 +137,11 @@ static void convert_floats(unsigned char *pdata, unsigned short datalen, float *
         floats[i] = u.f; // 转换为float并存储  
     }  
 } 
-static void _cmd_getpcbainfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
+static void _cmd_getinfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
-    float fbuf[5];
-    convert_floats(pdata,datalen,fbuf);
-    //响应部分
-    unsigned char buf[] = {0x02,0x03};
-    float f_val[2] = {3.1415926f,2.2154f};
-    frame_t frame;
-    frame.cmd = ~(pactor->cmd);
-    frame.pdata = (unsigned char*)&f_val;
-    frame.datalen = sizeof(f_val);
-    /*封包*/
-    unsigned char *p = 0;
-    p = _pack_proframe(&frame);
-    msg_node_t* msg1 = (msg_node_t*)heap_malloc(sizeof(msg_node_t));
-    if (msg1 == NULL)
-    {
-        USER_DEBUG_NORMAL("malloc fail\n");
-        return;
-    }
-    msg1->fsm_cblock.time_count = 20;
-    msg1->fsm_cblock.time_out = 0;
-    msg1->fsm_cblock._state = 0;
-    msg1->pdata = p;
-    msg1->datalen = frame.datalen + sizeof(frame_t) - 4;
-    insert_msg_list_tail(msg_list, msg1);
-}
-
-/**  
- * @brief 发送周期性变化的电机速度控制命令到协议层（待优化，后续改为通用的发送函数）    
- *  
- * @param 无  
- * @return 无（通过修改全局或外部资源）  
- *  
- * @author [zager]  
- * @version 1.0  
- * @date [2024-08-19]  
- */  
-void mc_protocol_sendspeed(void)
-{
-    float fspeed;
-    frame_t frame;
-    frame.cmd = S_MotorSpeed;
-    static float theta = 0.0f;
-    fspeed = 10.0f*sinf(theta);
-    theta += 0.1f;
-    frame.pdata = (unsigned char*)&fspeed;
-    frame.datalen = sizeof(float);   
-    unsigned char *p = 0;
-    p = _pack_proframe(&frame);    
-    msg_node_t* msg1 = (msg_node_t*)heap_malloc(sizeof(msg_node_t));
-    if (msg1 == NULL)
-    {
-        USER_DEBUG_NORMAL("malloc fail\n");
-        return;
-    }
-    msg1->fsm_cblock.time_count = 0;
-    msg1->fsm_cblock.time_out = 20;
-    msg1->fsm_cblock._state = 0;
-    msg1->pdata = p;
-    msg1->datalen = frame.datalen + sizeof(frame_t) - 4;
-    insert_msg_list_tail(msg_list, msg1);
+    USER_DEBUG_NORMAL("D Axise PID:Kp=%.4f Ki=%.4f\n",mc_param.currment_handle.d_pid.kp,mc_param.currment_handle.d_pid.ki);
+    USER_DEBUG_NORMAL("Q Axise PID:Kp=%.4f Ki=%.4f\n",mc_param.currment_handle.q_pid.kp,mc_param.currment_handle.q_pid.ki);
+    USER_DEBUG_NORMAL("Speed   PID:Kp=%.4f Ki=%.4f\n",mc_param.speed_handle.pid.kp,mc_param.speed_handle.pid.ki);
 }
 
 void mc_protocol_send(unsigned short cmd,unsigned char* pdata,unsigned short datalen,\

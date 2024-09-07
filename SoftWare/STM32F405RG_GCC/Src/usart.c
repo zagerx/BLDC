@@ -170,28 +170,23 @@ int _write(int file, char *data, int len)
     return (status == HAL_OK ? len : 0);
 }
 
-void _bsp_protransmit(unsigned char* pdata,unsigned short len)
-{
-  static unsigned char sg_uartsend_buf[64];
-  memcpy(sg_uartsend_buf,pdata,len);
-  HAL_UART_Transmit_DMA(&huart2,sg_uartsend_buf,len);
-}
+
 #include "usart.h"
 #include "string.h"
 extern void protocol_getdata_tofifo(unsigned char *data,unsigned short len);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
-    if(USART2 == huart2.Instance)                                   //判断是否是串�??1（！此处应写(huart->Instance == USART2)
+    if(USART2 == huart2.Instance)                                   //ĺ¤ć­ćŻĺŚćŻä¸˛ďż??1ďźďźć­¤ĺ¤ĺşĺ(huart->Instance == USART2)
     {
-        if(RESET != __HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE))   //判断是否是空闲中�??
+        if(RESET != __HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE))   //ĺ¤ć­ćŻĺŚćŻçŠşé˛ä¸­ďż??
         {
-            __HAL_UART_CLEAR_IDLEFLAG(&huart2);                     //清楚空闲中断标志（否则会�??直不断进入中断）
-            HAL_UART_DMAStop(&huart2);//停止本次DMA传输
-            unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart2_rx);   //计算接收到的数据长度
+            __HAL_UART_CLEAR_IDLEFLAG(&huart2);                     //ć¸ćĽçŠşé˛ä¸­ć­ć ĺżďźĺŚĺäźďż??ç´ä¸ć­čżĺĽä¸­ć­ďź
+            HAL_UART_DMAStop(&huart2);//ĺć­˘ćŹćŹĄDMAäź čž
+            unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart2_rx);   //čŽĄçŽćĽćśĺ°çć°ćŽéżĺşŚ
             protocol_getdata_tofifo(sg_uartreceive_buff,data_length);
-            memset(sg_uartreceive_buff,0,data_length);                                            //清零接收缓冲�??
+            memset(sg_uartreceive_buff,0,data_length);                                            //ć¸éśćĽćśçźĺ˛ďż??
             data_length = 0;
-            HAL_UART_Receive_DMA(&huart2, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));                    //重启�??始DMA传输 每次255字节数据                    
+            HAL_UART_Receive_DMA(&huart2, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));                    //éĺŻďż??ĺ§DMAäź čž ćŻćŹĄ255ĺ­čć°ćŽ                    
         }
     }
 }

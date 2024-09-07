@@ -2,7 +2,7 @@
 #include "mc_protocol.h"
 #include "motorctrl_common.h"
 #include "string.h"
-#include "mc_angle.h"
+#include "mc_encoder.h"
 #include "flash.h"
 #include "mc_speedloop.h"
 #include "board.h"

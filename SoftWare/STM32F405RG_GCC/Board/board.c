@@ -2,6 +2,11 @@
 #include "initmodule.h"
 #include "sensor.h"
 #include "as5047.h"
+#include "string.h"
+#include "debuglog.h"
+#include "motorctrl.h"
+#include "adc.h"
+#include "tim.h"
 
 #undef NULL
 #define NULL 0
@@ -22,13 +27,6 @@ void board_deinit(void)
     
 }
 
-
-
-
-
-#include "debuglog.h"
-#include "motorctrl.h"
-#include "adc.h"
 #define  CURRENT_SENSE_MIN_VOLT           0.3f
 #define  CURRENT_SENSE_MAX_VOLT           3.0f
 #define  CURRENT_ADC_LOWER_BOUND          (uint32_t)((float)(1 << 12) * CURRENT_SENSE_MIN_VOLT / 3.3f)
@@ -71,6 +69,28 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
+void motor_enable(void)
+{
+    tim_pwm_enable();
+    tim_tigger_adc();
+    adc_start();
+}
+void motor_disable(void)
+{
+    tim_pwm_disable();
+    adc_stop();
+}
+void motor_set_pwm(float _a,float _b,float _c)
+{
+    tim_set_pwm(_a ,_b,_c);
+}
+
+void _bsp_protransmit(unsigned char* pdata,unsigned short len)
+{
+  static unsigned char sg_uartsend_buf[64];
+  memcpy(sg_uartsend_buf,pdata,len);
+  HAL_UART_Transmit_DMA(&huart2,sg_uartsend_buf,len);
+}
 
 void user_softresetsystem(void)
 {
