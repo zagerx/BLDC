@@ -30,7 +30,7 @@ public:
                                      {"速度", M_SET_SPEED},
                                      {"启动", M_SET_START},
                                      {"停止", M_SET_STOP},
-                                     {"板子信息",M_GET_CtrlParaseInfo},
+                                     {"控制参数信息",M_GET_CtrlParaseInfo},
                                      {"设置PID参数",M_SET_PIDParam},
                                      {"设置PID目标",M_SET_PIDTarge}
     };
