@@ -24,10 +24,9 @@
 /* USER CODE BEGIN Includes */
 
 #include "debuglog.h"
-#include "perf_counter.h"
 #include "board.h"
 #include "taskmodule.h"
-
+#include "mt6816.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

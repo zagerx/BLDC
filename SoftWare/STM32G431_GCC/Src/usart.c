@@ -22,11 +22,8 @@
 
 /* USER CODE BEGIN 0 */
 #include "string.h"
-// #include "protocol_cfg.h"
-// #include "protocol.h"
 
 static uint8_t sg_uartreceive_buff[125];
-static unsigned char sg_uartsend_buf[125];
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -190,13 +187,15 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
-#include "protocol.h"
-void _bsp_protransmit(unsigned char* pdata,unsigned short len)
+int _write(int file, char *data, int len)
 {
-    memcpy(sg_uartsend_buf,pdata,len);
-    HAL_UART_Transmit_DMA(&huart1,sg_uartsend_buf,len);
+    HAL_StatusTypeDef status = HAL_UART_Transmit(&huart1, (uint8_t*)data, len, 1000);
+    return (status == HAL_OK ? len : 0);
 }
-extern void motorprotocol_getdata(char *data,unsigned short len);
+
+#include "protocol.h"
+
+extern void protocol_getdata_tofifo(unsigned char *data,unsigned short len);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
     if(USART1 == huart1.Instance)                                   //�ж��Ƿ��Ǵ���1�����˴�Ӧд(huart->Instance == USART1)
@@ -205,9 +204,9 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
         {
             __HAL_UART_CLEAR_IDLEFLAG(&huart1);                     //��������жϱ�־�������һֱ���Ͻ����жϣ�
             HAL_UART_DMAStop(&huart1);//ͣ
-            unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);   //������յ������ݳ���
+            unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);   //������յ������ݳ���?
             protocol_getdata_tofifo(sg_uartreceive_buff,data_length);
-            memset(sg_uartreceive_buff,0,data_length);                                            //������ջ�����
+            memset(sg_uartreceive_buff,0,data_length);                                            //������ջ�����?
             data_length = 0;
             HAL_UART_Receive_DMA(&huart1, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));                    //������ʼDMA���� ÿ��255�ֽ�����                    
         }

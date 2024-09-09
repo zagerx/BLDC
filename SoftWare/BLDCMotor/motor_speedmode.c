@@ -19,15 +19,19 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     switch (pthis->chState)
     {
     case ENTER:
+#if  !(defined(MOTOR_OPENLOOP) || defined(MOTOR_OPENLOOP_ENCODER))   
         /*从FLASH指定位置读取PID参数数据*/
         user_flash_read(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
         /*初始化PID参数*/
         pid_init(&(mc_param.currment_handle.d_pid),temp.fbuf[0],temp.fbuf[1],1.0,D_MAX_VAL,D_MIN_VAL);
         pid_init(&(mc_param.currment_handle.q_pid),temp.fbuf[0],temp.fbuf[1],1.0,D_MAX_VAL,D_MIN_VAL);       
         pid_init(&(mc_param.speed_handle.pid),0.01f,0.001f,1.0,D_MAX_VAL,D_MIN_VAL);
-
+        USER_DEBUG_NORMAL("D Kp%.04f Ki%.04f\n",temp.fbuf[0],temp.fbuf[1]);
+        USER_DEBUG_NORMAL("Q Kp%.04f Ki%.04f\n",mc_param.currment_handle.q_pid.kp,mc_param.currment_handle.q_pid.ki);
+#endif
         motordebug.id_targe = 0.0f;
         motordebug.iq_targe = 0.0f;
+        motordebug.speed_targe = 0.0f;
         pthis->chState = READY;
     case READY:
         if (motordebug.rec_cmd != M_SET_START)
@@ -66,7 +70,8 @@ void mc_param_deinit(void)
 }
 
 #ifdef MOTOR_OPENLOOP
-    #define CURRMENT_PERIOD      (0.000125f)
+    #include "sensor.h"
+    // #define CURRMENT_PERIOD      (0.000125f)
     #define TOTAL_DISTANCE       (_2PI)
     #define TOTAL_TIME           (6.0f)
     #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)
@@ -97,12 +102,12 @@ void mc_param_deinit(void)
         i_abc.c = iabc[2];
 
         int32_t raw = *((int32_t*)sensor_user_read(SENSOR_01));
-        float xtheta = 0.0f;
-        float speed = 0.0f;
+        // float xtheta = 0.0f;
+        // float speed = 0.0f;
         mc_param.encoder_handle.raw_data = raw;
         mc_encoder_read(&(mc_param.encoder_handle));
-        xtheta = mc_param.encoder_handle.ele_theta;
-        speed = mc_param.encoder_handle.speed;
+        // xtheta = mc_param.encoder_handle.ele_theta;
+        // speed = mc_param.encoder_handle.speed;
         enum{
             PREPOSITIONING,
             RUNING,

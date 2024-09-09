@@ -1,8 +1,6 @@
 #include "motorctrl_cfg.h"
-
 __attribute__((weak)) void motor_enable(void)
 {
-
 }
 __attribute__((weak)) void motor_disable(void)
 {
