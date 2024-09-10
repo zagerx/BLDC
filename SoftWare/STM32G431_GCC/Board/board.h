@@ -1,13 +1,18 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
-#define CURRMENT_PERIOD      (0.0001f)
-#define SPEED_UPDATE_PERIOD  (0.002f)
-#define SPEED_UPDATE_COUNT   (20)       //0.002/CURRMENT_PERIOD
-#define MEC_ANGLE_OFFSET     (0.0056f)
 
-#define MOTOR_PAIRS          (7.0f)
+#define TOTAL_DISTANCE       (_2PI)//自开环距离
+#define TOTAL_TIME           (6.0f)//自开环时间
+#define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)//自开环角速度
+
+#define CURRMENT_PERIOD      (0.0001f)//电流环周期
+#define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期
+#define SPEED_UPDATE_COUNT   (20)       //0.002/CURRMENT_PERIOD
+
+#define MEC_ANGLE_OFFSET     (0.0056f)//编码器偏移值
 #define ENCODER_CPR          (0.00038349f)//2PI/16384 16384为AS5047旋转一圈的计数值
+#define MOTOR_PAIRS          (7.0f)//电机极对数
 
 #define CIRCLE_MAX_VAL       (24.0f)
 #define D_MAX_VAL            (12.0f)

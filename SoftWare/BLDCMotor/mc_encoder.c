@@ -4,18 +4,17 @@
 #include "motorctrl_common.h"
 #include "mc_utils.h"
 #include "board.h"
+#include "sensor.h"
 //TODO
 void mc_encoder_read(mc_encoder_t *encoder)
 {
-	int32_t data;float *theta;float *speed;
-
-	data = encoder->raw_data;
-	theta = &(encoder->ele_theta);
-	speed = &(encoder->speed);
+	int32_t data = *((int32_t*)sensor_user_read(SENSOR_01));
+	encoder->raw_data = data;
     float mec_theta = data * ENCODER_CPR - MEC_ANGLE_OFFSET;
     float ele_theta = mec_theta * MOTOR_PAIRS;
-    *theta = wrap_pm_pi(ele_theta);
-
+    encoder->ele_theta = wrap_pm_pi(ele_theta);
+    motordebug.ele_angle = encoder->ele_theta;
+	
 	/*更新速度*/
 	static unsigned short cnt = 0;
 	if (cnt++ < SPEED_UPDATE_COUNT)
@@ -45,7 +44,8 @@ void mc_encoder_read(mc_encoder_t *encoder)
     // 计算转速  
     float n_rap = 9.5492965f * omega;  
     // 更新转速  
-    *speed = n_rap;
+    encoder->speed = n_rap;
+	motordebug.speed_real = n_rap;
 }
 
 float mc_read_virvalencoder(float ialpha,float ibeta)

@@ -73,19 +73,15 @@ void mc_hightfreq_task(float *iabc)
 #else
     duty_t duty = {0};
     /*获取角度 速度*/
-    int32_t raw = *((int32_t*)sensor_user_read(SENSOR_01));
 	float theta = 0.0f;
     float next_theta = 0.0f;
     float speed = 0.0f;
 
-    mc_param.encoder_handle.raw_data = raw;
     mc_encoder_read(&(mc_param.encoder_handle));
     theta = mc_param.encoder_handle.ele_theta;
     speed = mc_param.encoder_handle.speed;
 
     next_theta = theta + 1.5f * CURRMENT_PERIOD * speed;
-    motordebug.ele_angle = theta;
-    motordebug.speed_real = speed;
     
     mc_param.currment_handle.i_abc[0] = iabc[0];
     mc_param.currment_handle.i_abc[1] = iabc[1];

@@ -1,7 +1,11 @@
 #include "as5047.h"
 #include "spi.h"
 #include "gpio.h"
-
+/*
+*  hspi1.Init.DataSize = SPI_DATASIZE_16BIT;
+*  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+*  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;   
+*/
 static uint32_t g_rawdata;
 static uint16_t spi_rw_onebyte(uint16_t _txdata);
 static uint8_t ams_parity(uint16_t v);

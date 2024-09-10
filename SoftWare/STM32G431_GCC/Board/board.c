@@ -32,7 +32,7 @@ static sensor_t sg_sensor_vbus = {
 };
 void user_board_init(void)
 {
-    sensor_register(&sg_sensor_as5047,SENSOR_01);
+    sensor_register(&sg_sensor_mt6816,SENSOR_01);
     sensor_register(&sg_sensor_vbus,SENSOR_02);
 }
 void board_deinit(void)
@@ -107,8 +107,6 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     adc_vale[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_3);
     _convert_current((uint16_t*)adc_vale,iabc);
 
-
-    
     iabc[0] = -iabc[0];
     iabc[1] = -iabc[1];
     iabc[2] = -iabc[2];
