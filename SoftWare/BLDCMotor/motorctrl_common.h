@@ -27,6 +27,8 @@ typedef struct mc_currment
     float i_abc[3];
     float theta;
     float next_theta;
+    float id_tar;
+    float iq_tar;
     pid_cb_t d_pid;
     pid_cb_t q_pid;
 }mc_currment_t;
@@ -124,8 +126,6 @@ typedef struct curloop
 
 extern motordebug_t motordebug;
 extern mc_param_t mc_param;
-
-void mc_param_deinit(void);
 
 float _normalize_angle(float angle);
 duty_t _svpwm(float ualpha,float ubeta);

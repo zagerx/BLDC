@@ -39,8 +39,8 @@ void MX_SPI1_Init(void)
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
+  hspi1.Init.DataSize = SPI_DATASIZE_16BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
   hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
@@ -116,5 +116,11 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
+/*spi write/read data*/
+void spi_wr_data(uint8_t *pw,uint8_t *pr,uint16_t datalen)
+{
+  HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
+  HAL_SPI_TransmitReceive(&hspi1, (uint8_t *)pw,(uint8_t *)pr,datalen,1000);
+  HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
+}
 /* USER CODE END 1 */

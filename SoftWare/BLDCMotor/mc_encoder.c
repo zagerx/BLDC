@@ -16,12 +16,12 @@ void mc_encoder_read(mc_encoder_t *encoder)
     motordebug.ele_angle = encoder->ele_theta;
 	
 	/*更新速度*/
-	static unsigned short cnt = 0;
-	if (cnt++ < SPEED_UPDATE_COUNT)
+	static unsigned int cnt = 0;
+	if (cnt % SPEED_UPDATE_COUNT != 0)
 	{
+		cnt++;
 		return;
 	}
-	cnt = 0;
 	static float pre_theta = 0.0f;
     // 将mec_theta归一化到[0, 2π)区间  
     float normalized_mec_theta = fmodf(mec_theta, 2.0f * M_PI);  
