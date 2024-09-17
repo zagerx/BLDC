@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 #include "pid.h"
-
+#include "filter.h"
 #define PI               3.14159260f
 #define _2PI             6.2831852f
 #define sqrt3            1.73205f
@@ -20,6 +20,7 @@ typedef struct mc_speed
     pid_cb_t pid;
     float tar;
     float real;
+    lowfilter_t speedfilter;
 }mc_speed_t;
 
 typedef struct mc_currment
@@ -37,6 +38,7 @@ typedef struct mc_encoder
 {
     int32_t raw_data;//原始数据
     float ele_theta; //电角度
+    float pre_theta;
     float speed;     //机械转速
 }mc_encoder_t;
 

@@ -67,7 +67,8 @@ static void mc_param_init(void)
     /*初始化PID参数*/
     pid_init(&(mc_param.currment_handle.d_pid),temp.fbuf[0],temp.fbuf[1],1.0,D_MAX_VAL,D_MIN_VAL);
     pid_init(&(mc_param.currment_handle.q_pid),temp.fbuf[0],temp.fbuf[1],1.0,D_MAX_VAL,D_MIN_VAL);       
-    pid_init(&(mc_param.speed_handle.pid),0.01f,0.001f,1.0,D_MAX_VAL,D_MIN_VAL);
+    pid_init(&(mc_param.speed_handle.pid),0.01f,0.8f,1.0,D_MAX_VAL,D_MIN_VAL);
+    lowfilter_init(&(mc_param.speed_handle.speedfilter),15.0f);
     USER_DEBUG_NORMAL("D Kp%.04f Ki%.04f\n",temp.fbuf[0],temp.fbuf[1]);
     USER_DEBUG_NORMAL("Q Kp%.04f Ki%.04f\n",mc_param.currment_handle.q_pid.kp,mc_param.currment_handle.q_pid.ki);
 }

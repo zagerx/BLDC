@@ -1,5 +1,6 @@
 #include "mc_speedloop.h"
 #include "motorctrl_common.h"
+float real_filterspeed;
 
 float speed_loop(mc_speed_t *pthis)
 {

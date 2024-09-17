@@ -16,36 +16,34 @@ void mc_encoder_read(mc_encoder_t *encoder)
     motordebug.ele_angle = encoder->ele_theta;
 	
 	/*更新速度*/
-	static unsigned int cnt = 0;
-	if (cnt % SPEED_UPDATE_COUNT != 0)
-	{
-		cnt++;
-		return;
-	}
-	static float pre_theta = 0.0f;
+	// static float pre_theta = 0.0f;
     // 将mec_theta归一化到[0, 2π)区间  
     float normalized_mec_theta = fmodf(mec_theta, 2.0f * M_PI);  
     if (normalized_mec_theta < 0.0f) {  
         normalized_mec_theta += 2.0f * M_PI; // 处理负值  
-    }  
+    }
     // 计算角度变化  
-    float delt_theta = normalized_mec_theta - pre_theta;  
+    float delt_theta = normalized_mec_theta - encoder->pre_theta;  
     // 处理跨越周期边界的情况  
     if (delt_theta > M_PI) {  
         delt_theta -= 2.0f * M_PI; // 逆时针大跳转  
     } else if (delt_theta < -M_PI) {  
         delt_theta += 2.0f * M_PI; // 顺时针大跳转  
-    }  
+    }
     // 更新上一次的角度值  
-    pre_theta = normalized_mec_theta;  
+    encoder->pre_theta = normalized_mec_theta;  
     // 计算角速度（这里假设时间间隔为2ms，因此乘以500来得到每秒的角速度）  
-    float omega = delt_theta / SPEED_UPDATE_PERIOD; // 注意：这里的时间间隔是假设的，根据实际情况调整  
-  
+    float omega = delt_theta / (CURRMENT_PERIOD / 2.0f);//TODO /2部分 
+
     // 计算转速  
     float n_rap = 9.5492965f * omega;  
+
+	float filter_n_rap;
+    filter_n_rap = lowfilter_cale(&(mc_param.speed_handle.speedfilter),n_rap);
+
     // 更新转速  
-    encoder->speed = n_rap;
-	motordebug.speed_real = n_rap;
+    encoder->speed = filter_n_rap;
+	motordebug.speed_real = filter_n_rap;
 }
 
 float mc_read_virvalencoder(float ialpha,float ibeta)
