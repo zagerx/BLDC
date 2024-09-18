@@ -40,18 +40,18 @@ fsm_rt_t motor_posmode(fsm_cb_t *pthis)
             break;
         }
         motor_enable();
-        /*更新起始位置*/
-        // mc_tarpos_update(0.0f);
         pthis->chState = RUN;
         break;
     case RUN:
         if (motordebug.rec_cmd == M_SET_STOP)
         {
             pthis->chState = EXIT;
-        }else{
-            mc_posloop(&(mc_param.pos_handle));
+            break;
         }
-        break;    
+        mc_param.pos_handle.p_speed->real = mc_param.encoder_handle.speed;
+        mc_param.pos_handle.real = mc_param.encoder_handle.total_realmectheta;
+        mc_posloop(&(mc_param.pos_handle));
+        break;
     case EXIT:
         motor_disable();
         mc_param_deinit();
@@ -71,13 +71,17 @@ static void mc_param_init(void)
     /*从FLASH指定位置读取PID参数数据*/
     user_flash_read(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
     /*初始化PID参数*/
-    pid_init(&(mc_param.currment_handle.d_pid),temp.fbuf[0],temp.fbuf[1],1.0,D_MAX_VAL,D_MIN_VAL);
-    pid_init(&(mc_param.currment_handle.q_pid),temp.fbuf[0],temp.fbuf[1],1.0,D_MAX_VAL,D_MIN_VAL);       
+    pid_init(&(mc_param.currment_handle.d_pid),0.1f,0.01f,1.0,D_MAX_VAL,D_MIN_VAL);
+    pid_init(&(mc_param.currment_handle.q_pid),0.1f,0.01f,1.0,D_MAX_VAL,D_MIN_VAL);       
     pid_init(&(mc_param.speed_handle.pid),0.01f,0.08f,1.0,D_MAX_VAL,D_MIN_VAL);
-    lowfilter_init(&(mc_param.speed_handle.speedfilter),15.0f);
-    pid_init(&(mc_param.pos_handle.pi_contrl),0.6f,0.1f,1.0f,4000.0f,-4000.0f);
-    USER_DEBUG_NORMAL("D Kp%.04f Ki%.04f\n",temp.fbuf[0],temp.fbuf[1]);
-    USER_DEBUG_NORMAL("Q Kp%.04f Ki%.04f\n",mc_param.currment_handle.q_pid.kp,mc_param.currment_handle.q_pid.ki);
+    lowfilter_init(&(mc_param.encoder_handle.speedfilter),15.0f);
+
+
+    // pid_init(&(mc_param.pos_handle.pi_contrl),temp.fbuf[0],temp.fbuf[1],1.0f,4000.0f,-4000.0f);
+    pid_init(&(mc_param.pos_handle.pi_contrl),80.0f,0.004,1.0f,4000.0f,-4000.0f);
+    mc_param.pos_handle.p_speed = &(mc_param.speed_handle);//更新速度环指针
+
+    USER_DEBUG_NORMAL("Q Kp%.04f Ki%.04f\n",mc_param.pos_handle.pi_contrl.kp,mc_param.pos_handle.pi_contrl.ki);
 }
 static void mc_param_deinit(void)
 {

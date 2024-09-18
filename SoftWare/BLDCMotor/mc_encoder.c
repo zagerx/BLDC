@@ -43,7 +43,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
     float n_rap = 9.5492965f * omega;  
 
 	float filter_n_rap;
-    filter_n_rap = lowfilter_cale(&(mc_param.speed_handle.speedfilter),n_rap);
+    filter_n_rap = lowfilter_cale(&(encoder->speedfilter),n_rap);
 
     // 更新转速  
     encoder->speed = filter_n_rap;

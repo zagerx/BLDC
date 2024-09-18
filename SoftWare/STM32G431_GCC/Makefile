@@ -260,7 +260,8 @@ sjlinkgdbs:
 jlinkdown:
 	$(Q)echo "h" >> jlink.jlink
 	$(Q)echo "loadfile" $(BUILD_DIR)/$(TARGET).hex >> jlink.jlink
+	$(Q)echo "r" >> jlink.jlink             
+	$(Q)echo "q" >> jlink.jlink   
 	$(Q)$(JLINKEXE) -device $(CHIP) -Speed 4000 -IF SWD -CommanderScript jlink.jlink
-
 
 # *** EOF ***
