@@ -4,6 +4,7 @@
 #include "mc_encoder.h"
 #include "motor_speedmode.h"
 #include "motor_normalmode.h"
+#include "mc_posmode.h"
 #include "motorctrl_cfg.h"
 #include "motorctrl_common.h"
 
@@ -49,6 +50,9 @@ void motortctrl_process(void)
         }else if(motordebug.rec_cmd == M_SET_NormalM){
             TRAN_STATE(&pmotor_fsm,motor_normalmode);
             motordebug.rec_cmd = 0;
+        }else if(motordebug.rec_cmd == M_SET_PosM){
+            TRAN_STATE(&pmotor_fsm,motor_posmode);
+            motordebug.rec_cmd = 0;            
         }
         break;    
     default:

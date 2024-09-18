@@ -12,7 +12,7 @@
 #define M_GET_CtrlParaseInfo               (0x0108)
 #define M_SET_PIDParam               (0x0109)
 #define M_SET_PIDTarge               (0x010A)
-
+#define M_SET_PosM                   (0x010B)       
 #define S_CMD                        (0x02)
 #define S_HeartP                     (0x0200)
 #define S_SMInfo                     (0x0201)

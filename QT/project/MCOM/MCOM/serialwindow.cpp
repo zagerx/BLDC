@@ -130,6 +130,16 @@ void serialwindow::on_debug_bt_clicked()
     // connect(pmd, &motordebug::dataReady, this, &serialwindow::onDataReceivedFromB);
     // pmd->show();
 }
+void serialwindow::on_position_bt_clicked()
+{
+    MC_Frame datafram;
+    datafram.CMD = M_SET_PosM;
+    datafram.UnPack();
+    pMcProtocl->AddFrameToBuf(datafram);
+    ui->mc_startBt->setDisabled(false);
+    ui->mt_stopBt->setDisabled(false);
+}
+
 void serialwindow::on_enseriBt_clicked()
 {
     QPushButton *openbutton = ui->enseriBt;
@@ -376,4 +386,9 @@ void serialwindow::on_enseriBt_3_clicked()
 {
     line->clear();
 }
+
+
+
+
+
 

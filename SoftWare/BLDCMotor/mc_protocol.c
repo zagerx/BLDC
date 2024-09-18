@@ -30,15 +30,18 @@ static void _cmd_motorstart(cmdmap_t *pactor,unsigned char *pdata, unsigned shor
 static void _cmd_motorstop(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setMotorNormalM(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
+static void _cmd_setMotorModel(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 
 static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_getinfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static cmdmap_t commend_map[] = {
     {M_SET_SPEED,      _cmd_setparam,              },
+    {M_SET_POS,      _cmd_setparam,              },    
     {M_SET_START,      _cmd_motorstart,        },
     {M_SET_STOP,       _cmd_motorstop,         },
-    {M_SET_NormalM,    _cmd_setMotorNormalM,   },
-    {M_SET_SpeedM,     _cmd_setMotorNormalD,   },
+    {M_SET_NormalM,    _cmd_setMotorModel,   },
+    {M_SET_SpeedM,     _cmd_setMotorModel,   },
+    {M_SET_PosM,       _cmd_setMotorModel,   },
     {M_GET_MotorInfo,  test_func,              },
     {M_GET_CtrlParaseInfo,   _cmd_getinfo,       },
     {M_SET_PIDParam,   _cmd_setparam,       },
@@ -86,6 +89,12 @@ static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned
     motordebug.rec_cmd = pactor->cmd;
     USER_DEBUG_NORMAL("Set Motor enter Debug Model CMD\n");    
 }
+static void _cmd_setMotorModel(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
+{
+    motordebug.rec_cmd = pactor->cmd;
+}
+
+extern void mc_tarpos_update(float delte_dist);
 
 static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
@@ -118,6 +127,11 @@ static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short 
         float temp;
         convert_floats(pdata,datalen,&(temp));
         mc_param.speed_handle.tar = temp;
+    }else if(pactor->cmd == M_SET_POS){
+        float temp;
+        convert_floats(pdata,datalen,&(temp));
+        USER_DEBUG_NORMAL("pos = %.2f\n",temp);
+        mc_tarpos_update(temp);
     }
 }
 

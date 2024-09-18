@@ -15,6 +15,17 @@
 
 
 #pragma pack(push,4)
+typedef struct mc_pos
+{
+    pid_cb_t pi_contrl;
+    float tar;
+    float real;
+
+    float delte_dist;
+    float total_dist;
+}mc_pos_t;
+
+
 typedef struct mc_speed
 {
     pid_cb_t pid;
@@ -38,6 +49,8 @@ typedef struct mc_encoder
 {
     int32_t raw_data;//原始数据
     float ele_theta; //电角度
+    float mec_theta;
+    float total_realmectheta;
     float pre_theta;
     float speed;     //机械转速
 }mc_encoder_t;
@@ -45,6 +58,7 @@ typedef struct mc_encoder
 
 typedef struct _mc_param
 {
+    mc_pos_t pos_handle;
     mc_speed_t  speed_handle;
     mc_currment_t currment_handle;
     mc_encoder_t encoder_handle;

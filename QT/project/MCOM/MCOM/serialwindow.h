@@ -28,6 +28,7 @@ public:
     MCProtocol *pMcProtocl;
     QMap<QString, int> commandMap = {
                                      {"速度", M_SET_SPEED},
+                                     {"位置", M_SET_POS},
                                      {"启动", M_SET_START},
                                      {"停止", M_SET_STOP},
                                      {"控制参数信息",M_GET_CtrlParaseInfo},
@@ -51,6 +52,9 @@ private slots:
     void on_ClearRicevBt_clicked();
 
     void on_enseriBt_3_clicked();
+
+
+    void on_position_bt_clicked();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

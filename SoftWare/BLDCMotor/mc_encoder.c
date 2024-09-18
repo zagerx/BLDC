@@ -1,11 +1,12 @@
+#include "mc_encoder.h"
 #include "math.h"
 #include "stdbool.h"
 #include "stdint.h"
-#include "motorctrl_common.h"
 #include "mc_utils.h"
 #include "board.h"
 #include "sensor.h"
 //TODO
+static float test_realdist = 0.0f;
 void mc_encoder_read(mc_encoder_t *encoder)
 {
 	int32_t data = *((int32_t*)sensor_user_read(SENSOR_01));
@@ -13,6 +14,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
     float mec_theta = data * ENCODER_CPR - MEC_ANGLE_OFFSET;
     float ele_theta = mec_theta * MOTOR_PAIRS;
     encoder->ele_theta = wrap_pm_pi(ele_theta);
+	encoder->mec_theta = mec_theta;
     motordebug.ele_angle = encoder->ele_theta;
 	
 	/*更新速度*/
@@ -35,6 +37,8 @@ void mc_encoder_read(mc_encoder_t *encoder)
     // 计算角速度（这里假设时间间隔为2ms，因此乘以500来得到每秒的角速度）  
     float omega = delt_theta / (CURRMENT_PERIOD / 2.0f);//TODO /2部分 
 
+	//
+	encoder->total_realmectheta += delt_theta;
     // 计算转速  
     float n_rap = 9.5492965f * omega;  
 
