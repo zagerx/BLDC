@@ -181,3 +181,15 @@ void mc_protocol_send(unsigned short cmd,unsigned char* pdata,unsigned short dat
     insert_msg_list_tail(msg_list, msg);
 }
 
+void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen)
+{
+    frame_t frame;
+    frame.cmd = cmd;
+    frame.pdata = (unsigned char*)pdata;
+    frame.datalen = datalen;
+    unsigned char *p = 0;
+    p = _pack_proframe(&frame); 
+    uint16_t len = frame.datalen + sizeof(frame_t) - 4;
+    _bsp_protransmit(p,len);
+    heap_free(p);
+}

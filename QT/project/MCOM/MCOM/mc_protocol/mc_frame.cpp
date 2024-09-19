@@ -71,11 +71,12 @@ bool MC_Frame::Pack(const std::vector<unsigned char>& input) {
     CMD = (input[2] << 8) | input[3];
   
     // 读取数据长度  
-    uint16_t dataLength = (input[4] << 8) | input[5];  
+    uint16_t dataLength = (input[4] << 8) | input[5];
   
-    // 验证总长度（包括帧头、CMD、数据长度、数据、CRC和帧尾）  
-    if (input.size() != 10 + dataLength) {  
-        return false;  
+    // 验证总长度（包括帧头、CMD、数据长度、数据、CRC和帧尾）
+    if (input.size() != 10 + dataLength) {
+        qDebug()<<"Pack err";
+        // return false;
     }  
   
     // 读取数据  

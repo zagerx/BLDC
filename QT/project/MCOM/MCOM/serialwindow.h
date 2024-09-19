@@ -9,7 +9,7 @@
 #include "mc_protocol/commands.h"
 #include <functional>
 #include <QtCharts>
-
+#include "qcustomplot.h"
 namespace Ui
 {
     class serialwindow;
@@ -60,10 +60,11 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    void charts_init(void);
+    void WaveformGraphInit(void);
     void SendThread(void);
     void ReciveThread(void);
     void processdata(void);
+    void refreshWaveformDisplay(void);
     QChart *chart_1;
     QValueAxis *axis_x;
     QValueAxis *axis_y;
@@ -71,6 +72,9 @@ private:
     Ui::serialwindow *ui;
     QSerialPort *serial;
     QTimer *timer;
+    QCustomPlot *customPlot;
+    QQueue<float> WaveGraph_1_Queue;
+    QCPGraph *pGraph1;
 };
 
 

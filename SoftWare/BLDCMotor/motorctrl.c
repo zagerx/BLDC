@@ -19,6 +19,7 @@
 static fsm_cb_t pmotor_fsm;
 mc_param_t mc_param = {0};
 motordebug_t motordebug = {0};
+extern void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen);
 
 static void motorthread_init(void)
 {
@@ -59,14 +60,23 @@ void motortctrl_process(void)
         break;
     }
 
-    static unsigned short cnt = 0;
-    if (cnt++>200)
+    // static unsigned short cnt = 0;
+    // if (cnt++>200)
+    // {
+    //     cnt = 0;
+    //     mc_protocol_send(S_HeartP,NULL,0,0,0);
+    //     // float fspeed;
+    //     // fspeed = motordebug.speed_real;
+    //     // mc_protocol_send(S_MotorSpeed,(uint8_t *)(&fspeed),4,0,0);
+    // }
+
+    static uint8_t cnt1 = 0;
+    if (cnt1++>=2)
     {
-        cnt = 0;
-        mc_protocol_send(S_HeartP,NULL,0,0,0);
+        cnt1 = 0;
         float fspeed;
         fspeed = motordebug.speed_real;
-        mc_protocol_send(S_MotorSpeed,(uint8_t *)(&fspeed),4,0,0);
+        mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fspeed),4);
     }
 }
 

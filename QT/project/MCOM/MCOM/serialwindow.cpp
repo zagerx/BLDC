@@ -3,11 +3,12 @@
 #include <QtDebug>
 #include <QThread>
 #include <QTimer>
+#include <QByteArray>
+
 #include "mc_protocol/mc_protocol.h"
 #include "mc_protocol/mc_frame.h"
 #include "debugwindow.h"
 #include "comment.h"
-
 serialwindow *pserialwind;
 
 /*
@@ -26,7 +27,7 @@ serialwindow::serialwindow(QWidget *parent)
     lightLabel->setFixedSize(30, 30);    // 设置控件大小为 30x30（注意这里的修改）
     lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png"));       // 设置初始状态为灭灯（使用加载成功的pixmap）
     /*初始化图表*/
-    charts_init();
+    WaveformGraphInit();
     // 设置定时器的时间间隔为1ms
     timer->setInterval(1);
     // 将定时器的timeout()信号连接到槽函数timerTick()
@@ -51,27 +52,19 @@ serialwindow::~serialwindow()
 /*
 * 图表charts的初始化
 */
-void serialwindow::charts_init()
+void serialwindow::WaveformGraphInit()
 {
-    chart_1 = new QChart;
-    // chart_1->setTitle("data collo");
-    ui->graphicsView->setChart(chart_1);
-    //设置X轴
-    axis_x = new QValueAxis;
-    axis_x->setTitleText("时间");
-    axis_x->setRange(0,100);
-    chart_1->addAxis(axis_x,Qt::AlignBottom);
-    //设置Y轴
-    axis_y = new QValueAxis;
-    axis_y->setTitleText("value");
-    axis_y->setRange(-13,13);
-    chart_1->addAxis(axis_y,Qt::AlignLeft);
-    //增加数据
-    line = new QLineSeries;
-    line->setName("正弦函数");
-    chart_1->addSeries(line);
-    line->attachAxis(axis_x);
-    line->attachAxis(axis_y);
+    customPlot = ui->CustomPlot;
+
+    // 设置坐标轴标签名称
+    customPlot->xAxis->setLabel("x");
+    customPlot->yAxis->setLabel("y");
+
+    // 设置坐标轴显示范围，不设置时默认范围为 0~5
+    customPlot->xAxis->setRange(0, 1000);
+    customPlot->yAxis->setRange(-100, 100);
+    pGraph1 = customPlot->addGraph();
+    pGraph1->setPen(QPen(QColor(255, 0, 0)));
 }
 
 /*
@@ -172,7 +165,7 @@ void serialwindow::on_enseriBt_clicked()
                 if (serial->open(QIODevice::ReadWrite))
                 {
                     openbutton->setText("关闭串口");
-                    serial->setBaudRate(QSerialPort::Baud115200);
+                    serial->setBaudRate(2000000);
                     serial->setParity(QSerialPort::NoParity);
                     serial->setDataBits(QSerialPort::Data8);
                     serial->setStopBits(QSerialPort::OneStop);
@@ -248,6 +241,7 @@ void serialwindow::timerTick()
 {
     ReciveThread();
     SendThread();
+    refreshWaveformDisplay();
 }
 
 /*
@@ -281,6 +275,18 @@ void serialwindow::SerialPortInit()
 /*
 *   串口接收回调
 */
+void printHexData(const QByteArray &data) {
+    QString hexString;
+    for (char byte : data) {
+        // 注意：这里我们不需要将 byte 转换为 uchar，因为 char 在大多数平台上已经足够
+        // 但如果你想要确保无符号的十六进制表示，可以显式转换
+        QString hexByte = QByteArray(1, static_cast<uchar>(byte)).toHex().toUpper();
+        // 如果你想要每个字节之间有空格，可以这样添加
+        hexString.append(hexByte + " ");
+    }
+    // 去除字符串末尾的空格（可选）
+    qDebug() << hexString.trimmed() << data.size();
+}
 void serialwindow::onReadSerialData()
 {
     // 假设 serial 已经被正确初始化和打开
@@ -297,7 +303,6 @@ void serialwindow::onReadSerialData()
     {
         return;
     }
-
     // 直接比较前两个字节是否等于 0xA5A5
     if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)
     {
@@ -349,32 +354,44 @@ void serialwindow::_forch_cmdmap(unsigned short cmd, std::vector<unsigned char>&
         break;
     case S_MotorSpeed://TODO
         {
-            static qreal minY = 0, maxY = 0;
-            static qint64 x = 0;
-            qreal y;
-            x++;
-            axis_x->setRange(x-200, x + 200);
-
             float value;
             getFloatsFromBytes(input, &value);
-            y = value;
-
-            // 更新最小值和最大值（这里仍然每次更新，但你可以根据需要调整）
-            if (y < minY) minY = y;
-            if (y > maxY) maxY = y;
-
-            // 计算新的范围，并设置y轴
-            qreal rangeBuffer = qMax(1.0, qAbs(maxY - minY) * 0.1);
-            axis_y->setRange(minY - rangeBuffer, maxY + rangeBuffer);
-
-            line->append(x, y);
+            WaveGraph_1_Queue.enqueue(value);
         }
         break;
     default:
         break;
     }
 }
+void serialwindow::refreshWaveformDisplay()
+{
+    QVector<double> x1; // 时间轴，这里使用简单的递增索引
+    QVector<double> y1; // 波形数据，从floatQueue中读取
+    static int count = 0;
+  
+    // 清空x1和y1，准备填充新数据  
+    x1.clear();
+    y1.clear();
+  
+    // 从队列中读取数据
+    int queueSize = WaveGraph_1_Queue.size();
+    if((WaveGraph_1_Queue.isEmpty() || queueSize < 20))
+    {
+        return;
+    }
+    for (int i = 0; i < queueSize; ++i) {  
+        float value = WaveGraph_1_Queue.dequeue(); // 出队并获取值
+        y1.append(static_cast<double>(value)); // 将float转换为double并添加到y1  
+        x1.append(static_cast<double>(count++)); // 使用索引作为时间轴的值
+    }
+    // 设置图表数据  
+    // pGraph1->setData(x1, y1);
+    pGraph1->addData(x1,y1);
+    customPlot->rescaleAxes(true);
 
+    // 重绘图表  
+    customPlot->replot();
+}
 void serialwindow::on_ClearRicevBt_clicked()
 {
     QTextEdit *edit = ui->textEdit;
@@ -388,6 +405,37 @@ void serialwindow::on_enseriBt_3_clicked()
 }
 
 
+
+// void _forch_cmdmap()
+// {
+//     float value;
+//     getFloatsFromBytes(input, &value);//获取value值
+
+//     /*请补充下面的代码  将value值存储到一个队列或者其他容器 A*/
+// }
+
+// void refreshWaveformDisplay()
+// {
+//     QVector<double> x1; // 声明为 QVector<double>  
+//     QVector<double> y1; // 同样声明为 QVector<double>      
+//     /*从A中读取数据*/
+//     //x1 = time;
+//     //y1 = read_A()
+//     /*将其显示到图表上*/
+//     pGraph1->setData(x1, y1);//x1为时间轴 y1为从A读取到的数据
+//     // 重绘图表  
+//     customPlot->replot();    
+// }
+// void thread01(void)
+// {
+//     _forch_cmdmap();
+//     static uint8_t cnt = 0;
+//     if (cnt++>50)
+//     {
+//         refreshWaveformDisplay();
+//     }
+    
+// }
 
 
 
