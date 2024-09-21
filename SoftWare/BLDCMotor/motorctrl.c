@@ -60,23 +60,21 @@ void motortctrl_process(void)
         break;
     }
 
-    // static unsigned short cnt = 0;
-    // if (cnt++>200)
-    // {
-    //     cnt = 0;
-    //     mc_protocol_send(S_HeartP,NULL,0,0,0);
-    //     // float fspeed;
-    //     // fspeed = motordebug.speed_real;
-    //     // mc_protocol_send(S_MotorSpeed,(uint8_t *)(&fspeed),4,0,0);
-    // }
+    static unsigned short cnt = 0;
+    if (cnt++>=1000)
+    {
+        cnt = 0;
+        mc_protocol_send(S_HeartP,NULL,0,0,0);
+    }
 
     static uint8_t cnt1 = 0;
     if (cnt1++>=2)
     {
         cnt1 = 0;
-        float fspeed;
-        fspeed = motordebug.speed_real;
-        mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fspeed),4);
+        float fbuf[2];
+        fbuf[0] = motordebug.speed_real;
+        fbuf[1] = motordebug.ele_angle;
+        mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fbuf),8);
     }
 }
 

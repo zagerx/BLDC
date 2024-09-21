@@ -64,7 +64,12 @@ void serialwindow::WaveformGraphInit()
     customPlot->xAxis->setRange(0, 1000);
     customPlot->yAxis->setRange(-100, 100);
     pGraph1 = customPlot->addGraph();
-    pGraph1->setPen(QPen(QColor(255, 0, 0)));
+    pGraph2 = customPlot->addGraph();
+
+    pGraph1->setPen(QPen(Qt::blue));
+    pGraph2->setPen(QPen(Qt::red));
+    customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    customPlot->axisRect()->setRangeZoomFactor(1.2,1);
 }
 
 /*
@@ -115,13 +120,6 @@ void serialwindow::on_debug_bt_clicked()
     pMcProtocl->AddFrameToBuf(datafram);
     ui->mc_startBt->setDisabled(false);
     ui->mt_stopBt->setDisabled(false);    
-    // //显示Debug界面  TODO
-    // QString command = "motor_speedmode:\r\n";
-    // serial->write(command.toLatin1());
-    // motordebug *pmd = new motordebug;
-    // // /*connect*/(b, &B::dataReady, this, &A::onDataReceivedFromB); // 连接B界面的信号到A界面的槽
-    // connect(pmd, &motordebug::dataReady, this, &serialwindow::onDataReceivedFromB);
-    // pmd->show();
 }
 void serialwindow::on_position_bt_clicked()
 {
@@ -275,18 +273,6 @@ void serialwindow::SerialPortInit()
 /*
 *   串口接收回调
 */
-void printHexData(const QByteArray &data) {
-    QString hexString;
-    for (char byte : data) {
-        // 注意：这里我们不需要将 byte 转换为 uchar，因为 char 在大多数平台上已经足够
-        // 但如果你想要确保无符号的十六进制表示，可以显式转换
-        QString hexByte = QByteArray(1, static_cast<uchar>(byte)).toHex().toUpper();
-        // 如果你想要每个字节之间有空格，可以这样添加
-        hexString.append(hexByte + " ");
-    }
-    // 去除字符串末尾的空格（可选）
-    qDebug() << hexString.trimmed() << data.size();
-}
 void serialwindow::onReadSerialData()
 {
     // 假设 serial 已经被正确初始化和打开
@@ -311,23 +297,10 @@ void serialwindow::onReadSerialData()
         pMcProtocl->ReceiveData(vecData);
     }else{
         QString stringData = QString::fromUtf8(data.constData(), data.size());
-        QRegularExpression re("[\r\n]+$");
-        stringData.remove(re);//TODO
         // 将字符串显示到QTextEdit
         QTextEdit *edit = ui->textEdit;
         edit->append(stringData);
-        qDebug() << "Displaying text:" << stringData;
     }
-}
-
-void serialwindow::onDataReceivedFromB(const QString &data)
-{
-    // 在这里处理从B界面接收到的数据
-    qDebug() << "Received data from B:" << data;
-    // 由于B界面在此时可能已经被销毁，确保不要再访问b的指针
-    QString command;
-    command += data;
-    serial->write(command.toUtf8());
 }
 
 void serialwindow::led_blink(std::vector<unsigned char>& input)
@@ -354,9 +327,10 @@ void serialwindow::_forch_cmdmap(unsigned short cmd, std::vector<unsigned char>&
         break;
     case S_MotorSpeed://TODO
         {
-            float value;
-            getFloatsFromBytes(input, &value);
-            WaveGraph_1_Queue.enqueue(value);
+            float value[2];
+            getFloatsFromBytes(input, &value[0]);
+            WaveGraph_1_Queue.enqueue(value[0]);
+            WaveGraph_2_Queue.enqueue(value[1]);
         }
         break;
     default:
@@ -367,27 +341,33 @@ void serialwindow::refreshWaveformDisplay()
 {
     QVector<double> x1; // 时间轴，这里使用简单的递增索引
     QVector<double> y1; // 波形数据，从floatQueue中读取
+    QVector<double> y2; // 波形数据，从floatQueue中读取
     static int count = 0;
   
     // 清空x1和y1，准备填充新数据  
     x1.clear();
     y1.clear();
-  
+    y2.clear();
     // 从队列中读取数据
     int queueSize = WaveGraph_1_Queue.size();
     if((WaveGraph_1_Queue.isEmpty() || queueSize < 20))
     {
         return;
     }
+
     for (int i = 0; i < queueSize; ++i) {  
         float value = WaveGraph_1_Queue.dequeue(); // 出队并获取值
         y1.append(static_cast<double>(value)); // 将float转换为double并添加到y1  
         x1.append(static_cast<double>(count++)); // 使用索引作为时间轴的值
+        float value2 = WaveGraph_2_Queue.dequeue();
+        y2.append(static_cast<double>(value2));
     }
     // 设置图表数据  
-    // pGraph1->setData(x1, y1);
     pGraph1->addData(x1,y1);
-    customPlot->rescaleAxes(true);
+    pGraph2->addData(x1,y2);
+
+    customPlot->graph(0)->rescaleAxes();
+    customPlot->graph(1)->rescaleAxes(true);
 
     // 重绘图表  
     customPlot->replot();
@@ -401,42 +381,6 @@ void serialwindow::on_ClearRicevBt_clicked()
 
 void serialwindow::on_enseriBt_3_clicked()
 {
-    line->clear();
+    customPlot->graph(0)->data().data()->clear();
 }
-
-
-
-// void _forch_cmdmap()
-// {
-//     float value;
-//     getFloatsFromBytes(input, &value);//获取value值
-
-//     /*请补充下面的代码  将value值存储到一个队列或者其他容器 A*/
-// }
-
-// void refreshWaveformDisplay()
-// {
-//     QVector<double> x1; // 声明为 QVector<double>  
-//     QVector<double> y1; // 同样声明为 QVector<double>      
-//     /*从A中读取数据*/
-//     //x1 = time;
-//     //y1 = read_A()
-//     /*将其显示到图表上*/
-//     pGraph1->setData(x1, y1);//x1为时间轴 y1为从A读取到的数据
-//     // 重绘图表  
-//     customPlot->replot();    
-// }
-// void thread01(void)
-// {
-//     _forch_cmdmap();
-//     static uint8_t cnt = 0;
-//     if (cnt++>50)
-//     {
-//         refreshWaveformDisplay();
-//     }
-    
-// }
-
-
-
 

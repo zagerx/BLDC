@@ -46,7 +46,6 @@ private slots:
     void on_cmd_enBt_clicked();
 
     void onReadSerialData();
-    void onDataReceivedFromB(const QString &data); // 接收B界面传递的数据
     void timerTick(void);
 
     void on_ClearRicevBt_clicked();
@@ -63,18 +62,17 @@ private:
     void WaveformGraphInit(void);
     void SendThread(void);
     void ReciveThread(void);
-    void processdata(void);
     void refreshWaveformDisplay(void);
-    QChart *chart_1;
-    QValueAxis *axis_x;
-    QValueAxis *axis_y;
-    QLineSeries *line;
+
     Ui::serialwindow *ui;
     QSerialPort *serial;
     QTimer *timer;
+
     QCustomPlot *customPlot;
     QQueue<float> WaveGraph_1_Queue;
     QCPGraph *pGraph1;
+    QQueue<float> WaveGraph_2_Queue;
+    QCPGraph *pGraph2;
 };
 
 
