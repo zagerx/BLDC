@@ -5,11 +5,13 @@
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QLabel>
+#include <QVector>
+
 #include "mc_protocol/mc_protocol.h"
 #include "mc_protocol/commands.h"
 #include <functional>
-#include <QtCharts>
 #include "qcustomplot.h"
+
 namespace Ui
 {
     class serialwindow;
@@ -35,8 +37,11 @@ public:
                                      {"设置PID参数",M_SET_PIDParam},
                                      {"设置PID目标",M_SET_PIDTarge}
     };
-
     void _forch_cmdmap(unsigned short cmd, std::vector<unsigned char>& input);
+
+
+    QByteArray serial_recivbuf;
+
 private slots:
     void on_mc_startBt_clicked();
     void on_mt_stopBt_clicked();
@@ -63,7 +68,7 @@ private:
     void SendThread(void);
     void ReciveThread(void);
     void refreshWaveformDisplay(void);
-
+    uint8_t read_fromQByteArray(QByteArray &ret);
     Ui::serialwindow *ui;
     QSerialPort *serial;
     QTimer *timer;

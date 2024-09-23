@@ -4,7 +4,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QByteArray>
-
+#include <QVector>>
 #include "mc_protocol/mc_protocol.h"
 #include "mc_protocol/mc_frame.h"
 #include "debugwindow.h"
@@ -224,15 +224,99 @@ void serialwindow::SendThread()
     serial->write(byteArray);
 }
 
+uint8_t serialwindow::read_fromQByteArray(QByteArray &ret)
+{
+    unsigned char data;
+    enum
+    {
+        START,
+        FIRST,
+        SECOND,
+        READ,
+        IDLE,
+    };
+    unsigned char chState = START;
+    switch (chState)
+    {
+    case START:
+        chState = FIRST;
+    case FIRST:
+        data = serial_recivbuf.front();
+        serial_recivbuf.removeFirst();
+        if(data == 0xA5)
+        {
+            ret.append(data);
+            chState = SECOND;
+        }else{
+            break;
+        }
+    case SECOND:
+        data = serial_recivbuf.front();
+        serial_recivbuf.removeFirst();
+        if(data == 0xA5)
+        {
+            ret.append(data);
+            chState = READ;
+        }else{
+            break;
+        }
+    case READ:
+        do{
+            data = serial_recivbuf.front();
+            ret.append(data);
+            serial_recivbuf.removeFirst();
+            if(data == 0x5A)
+            {
+                data = serial_recivbuf.front();
+                ret.append(data);
+                serial_recivbuf.removeFirst();
+                if(data == 0x5A)
+                {
+                    return 0;//读取成功
+                }
+            }
+            if(serial_recivbuf.size()<=0)
+            {
+                return 1;//读取失败
+            }
+        }while(1);
+    default:
+        break;
+    }
+    return 1;
+}
+
+
 void serialwindow::ReciveThread()
 {
-    MC_Frame curframe;
-    if(pMcProtocl->RDFrameFromRecvBuf(&curframe) == false)
+    /**/
+    QByteArray temp;
+    if(serial_recivbuf.isEmpty())
     {
         return;
     }
-    //遍历整个协议地图
-    _forch_cmdmap(curframe.CMD,curframe.data);
+    if(read_fromQByteArray(temp))
+    {
+        return;
+    }
+    if(temp.size()<10){
+        return;
+    }
+
+    if (static_cast<unsigned char>(temp[0]) != (FRAME_HEAD >> 8) || static_cast<unsigned char>(temp[0]) != (FRAME_HEAD & 0xFF)) {
+        return;
+    }
+    MC_Frame frame;
+    frame.CMD = (temp[2] << 8) | temp[3];
+    uint16_t dataLength = (temp[4] << 8) | temp[5];
+    if (temp.size() != 10 + dataLength) {
+        return ;
+    }
+    frame.data.clear(); // 清空frame的data成员
+    for (size_t i = 0; i < dataLength; ++i) {
+        frame.data.push_back(temp[6 + i]);
+    }
+    _forch_cmdmap(frame.CMD,frame.data);
 }
 
 void serialwindow::timerTick()
@@ -289,12 +373,16 @@ void serialwindow::onReadSerialData()
     {
         return;
     }
+
     // 直接比较前两个字节是否等于 0xA5A5
     if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)
     {
-        // 帧头匹配，处理数据
-        std::vector<unsigned char> vecData(data.constBegin(), data.constEnd());
-        pMcProtocl->ReceiveData(vecData);
+        /*添加到缓冲区*/
+        if(serial_recivbuf.size()+data.size()>=4096)
+        {
+            return;
+        }
+        serial_recivbuf.append(data);
     }else{
         QString stringData = QString::fromUtf8(data.constData(), data.size());
         // 将字符串显示到QTextEdit
