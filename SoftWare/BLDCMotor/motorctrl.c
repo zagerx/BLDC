@@ -68,7 +68,7 @@ void motortctrl_process(void)
     }
 
     static uint8_t cnt1 = 0;
-    if (cnt1++>=2)
+    if (cnt1++>=1)
     {
         cnt1 = 0;
         float fbuf[2];

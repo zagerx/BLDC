@@ -53,8 +53,55 @@ serialwindow::~serialwindow()
 * 图表charts的初始化
 */
 void serialwindow::WaveformGraphInit()
-{
+{   
     customPlot = ui->CustomPlot;
+#if 1// 1：使用子图
+    //Generate data
+    QVector<double> x,ys,yc,y_cs;
+    for(double xi=-2*M_PI;xi<2*M_PI;xi+=0.1)
+    {
+        x.push_back(xi);
+        ys.push_back(sin(xi));
+        yc.push_back(cos(xi));
+        y_cs.push_back(sin(xi)+cos(xi));
+    }
+
+    //Create Rectangle Area and add to QCustomplot
+    QCPAxisRect * R00=new QCPAxisRect(customPlot);
+    QCPAxisRect * R10=new QCPAxisRect(customPlot);
+    customPlot->plotLayout()->clear();
+    customPlot->plotLayout()->addElement(0,0,R00);
+    customPlot->plotLayout()->addElement(1,0,R10);
+
+    //Draw graphs with data
+    pGraph2 = customPlot->addGraph(R00->axis(QCPAxis::atBottom),R00->axis(QCPAxis::atLeft));
+    pGraph1 = customPlot->addGraph(R10->axis(QCPAxis::atBottom),R10->axis(QCPAxis::atLeft));
+    pGraph1->setPen(QPen(Qt::blue));
+    pGraph2->setPen(QPen(Qt::red));
+    customPlot->graph(0)->setData(x,ys);
+    customPlot->graph(0)->rescaleAxes();
+    customPlot->graph(0)->setName("channl0");
+
+    customPlot->graph(1)->setData(x,yc);
+    customPlot->graph(1)->rescaleAxes();
+    customPlot->graph(1)->setName("channl1");
+
+    //Add Legends
+    QCPLegend *arLegend00=new QCPLegend;
+    R00->insetLayout()->addElement(arLegend00,Qt::AlignTop|Qt::AlignRight);
+    arLegend00->setLayer("legend");
+    arLegend00->addItem(new QCPPlottableLegendItem(arLegend00, customPlot->graph(0)));
+
+    QCPLegend *arLegend10=new QCPLegend;
+    R10->insetLayout()->addElement(arLegend10,Qt::AlignTop|Qt::AlignRight);
+    arLegend10->setLayer("legend");
+    arLegend10->addItem(new QCPPlottableLegendItem(arLegend10, customPlot->graph(1)));
+
+    customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    customPlot->axisRect()->setRangeZoomFactor(1.2,1);
+    return;
+#else
+
 
     // 设置坐标轴标签名称
     customPlot->xAxis->setLabel("x");
@@ -70,6 +117,9 @@ void serialwindow::WaveformGraphInit()
     pGraph2->setPen(QPen(Qt::red));
     customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     customPlot->axisRect()->setRangeZoomFactor(1.2,1);
+    return;
+#endif
+
 }
 
 /*
@@ -293,6 +343,7 @@ void serialwindow::ReciveThread()
     QByteArray temp;
     if(serial_recivbuf.isEmpty())
     {
+        qDebug()<<"recivbuf is empty";
         return;
     }
     if(read_fromQByteArray(temp))
@@ -380,6 +431,7 @@ void serialwindow::onReadSerialData()
         /*添加到缓冲区*/
         if(serial_recivbuf.size()+data.size()>=4096)
         {
+            qDebug()<<"recivbuf over";
             return;
         }
         serial_recivbuf.append(data);
