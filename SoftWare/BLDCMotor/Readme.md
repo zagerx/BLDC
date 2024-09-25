@@ -13,13 +13,6 @@
 一般情况，上面的函数放在`board.c/h`定义和声明
 
 ## 函数说明
-### motorctrl_process()函数
-- 正常模式(normalmodel.c)
-- 调试模式(debugmodel.c)
-### mc_hightfreq_task(float *iabc)函数
-- 电流环入口(8KHZ/10KHZ/20KHZ...)
-
-### mc_debugmode.c
 #### mc_test()函数说明
 
 ##### 原理:
@@ -74,8 +67,13 @@
 
     6.综上所述。当选择速度环周期为2ms，适用的电机转速尽可能不超过22500(ramp)
 
+## 电机协议
+### 串口波特率:`2000000bit/s=200KHZByte/s   10bit(1bit起始位+8bit数据位+1停止位)=1Byte`
+- 传输`1Byte`需要`5us`
+- 100us传输`20Byte` 1ms传输`200Byte` 2ms传输`400Byte`   100us(10kHz) 1ms(1KHz) 2ms(500Hz)
+- 电机转速3000rap/min，电流频率3000/60*p=350HZ
+- 当1KHz频率采样电流频率，完全够用
 
-    
 ## MotorCtrl模块调试
 ### 版本:`git reset --hard cdaedfd`
 ### `D轴电流`调试步骤:
