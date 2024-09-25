@@ -66,7 +66,25 @@
     - 若$t_1 = 2ms$,则对应的转速$n = \frac{60}{2\pi}*(\frac{3\pi}{2*0.002}) = 22500(ramp)$
 
     6.综上所述。当选择速度环周期为2ms，适用的电机转速尽可能不超过22500(ramp)
-
+## MCU模拟正弦波
+- 函数`void sin_task1(void)`
+```C
+/**
+ * 被调频率:f = 1000Hz T=0.001s 
+ */
+void sin_task1(void)
+{
+    float delt,y;
+    static float x;
+    y = sin(x);
+    x += delt; 
+}
+```
+- 计算过程
+    - 正弦波一个周期是:T_s
+    - $\frac{2\pi}{delt}*T = T_s$ 
+    
+- 
 ## 电机协议
 ### 串口波特率:`2000000bit/s=200KHZByte/s   10bit(1bit起始位+8bit数据位+1停止位)=1Byte`
 - 传输`1Byte`需要`5us`

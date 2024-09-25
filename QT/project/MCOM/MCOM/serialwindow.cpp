@@ -267,6 +267,7 @@ void serialwindow::ReciveThread()
     if (static_cast<unsigned char>(temp[0]) != (FRAME_HEAD >> 8) || static_cast<unsigned char>(temp[0]) != (FRAME_HEAD & 0xFF)) {
         return;
     }
+    qDebug()<<"processing"<<serial_recivbuf.size();
     MC_Frame frame;
     frame.CMD = (temp[2] << 8) | temp[3];
     uint16_t dataLength = (temp[4] << 8) | temp[5];
@@ -320,21 +321,23 @@ void serialwindow::onReadSerialData()
     }
 
     // 直接比较前两个字节是否等于 0xA5A5
-    if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)
+    // if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)
     {
         /*添加到缓冲区*/
-        if(serial_recivbuf.size()+data.size()>=4096)
+        if(serial_recivbuf.size()+data.size()>=4096000)
         {
             qDebug()<<"recivbuf over";
             return;
         }
         serial_recivbuf.append(data);
-    }else{
-        QString stringData = QString::fromUtf8(data.constData(), data.size());
-        // 将字符串显示到QTextEdit
-        QTextEdit *edit = ui->textEdit;
-        edit->append(stringData);
     }
+
+    // else{
+    //     QString stringData = QString::fromUtf8(data.constData(), data.size());
+    //     // 将字符串显示到QTextEdit
+    //     QTextEdit *edit = ui->textEdit;
+    //     edit->append(stringData);
+    // }
 }
 /******************************************************************************
  * @brief 命令处理

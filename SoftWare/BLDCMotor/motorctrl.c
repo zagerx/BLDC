@@ -68,12 +68,17 @@ void motortctrl_process(void)
     }
 
     static uint8_t cnt1 = 0;
-    if (cnt1++>=1)
+    // if (cnt1++>=1)
     {
         cnt1 = 0;
         float fbuf[2];
         fbuf[0] = motordebug.speed_real;
-        fbuf[1] = motordebug.ele_angle;
+        
+        static float x;
+        float y,delt;
+        y = sinf(x);
+        x += 0.460f;
+        fbuf[1] = y;
         mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fbuf),8);
     }
 }
@@ -102,6 +107,8 @@ void mc_hightfreq_task(float *iabc)
     mc_param.currment_handle.next_theta = next_theta;
     duty = currment_loop(&(mc_param.currment_handle));
     motor_set_pwm(duty._a,duty._b,duty._c);
+
+
 #endif
 }
 
