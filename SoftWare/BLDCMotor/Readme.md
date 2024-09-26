@@ -83,8 +83,8 @@ void sin_task1(void)
 - 计算过程
     - 正弦波一个周期是:T_s
     - $\frac{2\pi}{delt}*T = T_s$ 
-    
-- 
+    - $delt = \frac{2\pi T}{T_s}=2\pi T \omega$
+    - $\omega = \frac{delt}{2\pi T}$
 ## 电机协议
 ### 串口波特率:`2000000bit/s=200KHZByte/s   10bit(1bit起始位+8bit数据位+1停止位)=1Byte`
 - 传输`1Byte`需要`5us`

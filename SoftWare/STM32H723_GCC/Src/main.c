@@ -151,14 +151,17 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("H7 hello word\r\n");
+  
+  HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    uart2_process();
-    
+    // uart2_process();
+    HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
+    HAL_Delay(200);
     // HAL_Delay(1);
 
     /* USER CODE END WHILE */

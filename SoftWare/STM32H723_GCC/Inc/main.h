@@ -61,8 +61,8 @@ void Error_Handler(void);
 #define _ARR 13750
 #define LED_01_Pin GPIO_PIN_3
 #define LED_01_GPIO_Port GPIOE
-#define EBAKE_PWM_EN_Pin GPIO_PIN_7
-#define EBAKE_PWM_EN_GPIO_Port GPIOE
+#define EBAKE_PWM_EN_Pin GPIO_PIN_3
+#define EBAKE_PWM_EN_GPIO_Port GPIOB
 #define VCC3V3_OUT_EN_Pin GPIO_PIN_15
 #define VCC3V3_OUT_EN_GPIO_Port GPIOE
 #define MAIN_POWER_OFF_Pin GPIO_PIN_11
