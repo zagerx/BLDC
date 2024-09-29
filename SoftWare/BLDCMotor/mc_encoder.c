@@ -6,10 +6,9 @@
 #include "board.h"
 #include "sensor.h"
 //TODO
-static float test_realdist = 0.0f;
 void mc_encoder_read(mc_encoder_t *encoder)
 {
-	int32_t data = *((int32_t*)sensor_user_read(SENSOR_01));
+	uint32_t data = *((uint32_t*)sensor_user_read(SENSOR_01));
 	encoder->raw_data = data;
     float mec_theta = data * ENCODER_CPR - MEC_ANGLE_OFFSET;
     float ele_theta = mec_theta * MOTOR_PAIRS;

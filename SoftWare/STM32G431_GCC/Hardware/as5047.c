@@ -1,13 +1,12 @@
 #include "as5047.h"
 #include "spi.h"
-#include "gpio.h"
 /*
 *  hspi1.Init.DataSize = SPI_DATASIZE_16BIT;
 *  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
 *  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;   
 */
 static uint32_t g_rawdata;
-static uint16_t spi_rw_onebyte(uint16_t _txdata);
+static uint16_t as5047_read_data(uint16_t _txdata);
 static uint8_t ams_parity(uint16_t v);
 
 void as5047_init(void)
@@ -17,9 +16,9 @@ void as5047_init(void)
 void* as5047_readangle(void)
 {
 	uint16_t data;
-    data = spi_rw_onebyte(0xFFFF); 
-	g_rawdata = (uint32_t)data;
-	return (void*)&g_rawdata;
+    data = as5047_read_data(0xFFFF); 
+	g_rawdata = data;
+	return (void*)(&g_rawdata);
 }
 
 static uint8_t ams_parity(uint16_t v)
@@ -30,13 +29,10 @@ static uint8_t ams_parity(uint16_t v)
 	v ^= v >> 1;
 	return v & 1;
 }
-static uint16_t spi_rw_onebyte(uint16_t _txdata)
+static uint16_t as5047_read_data(uint16_t _txdata)
 {
     uint16_t pos,rawVal;
-
-    HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_RESET);  
-    HAL_SPI_TransmitReceive(&hspi1, (uint8_t *)&_txdata,(uint8_t *)&rawVal,1,1000);
-    HAL_GPIO_WritePin(MT68XX_CSN_GPIO_Port, MT68XX_CSN_Pin, GPIO_PIN_SET);
+    spi_wr_data((uint8_t *)&_txdata,(uint8_t *)&rawVal,1);
 	if(ams_parity(rawVal)) 
     {
         return 0xFFFF;

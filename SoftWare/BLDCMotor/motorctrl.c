@@ -60,27 +60,24 @@ void motortctrl_process(void)
         break;
     }
 
-    static unsigned short cnt = 0;
-    if (cnt++>=1000)
-    {
-        cnt = 0;
-        mc_protocol_send(S_HeartP,NULL,0,0,0);
-    }
-
-    static uint8_t cnt1 = 0;
-    // if (cnt1++>=1)
-    {
-        cnt1 = 0;
-        float fbuf[2];
-        fbuf[0] = motordebug.speed_real;
+    // static unsigned short cnt = 0;
+    // if (cnt++>=1000)
+    // {
+    //     cnt = 0;
+    //     mc_protocol_send(S_HeartP,NULL,0,0,0);
+    // }
+    // {
+    //     cnt1 = 0;
+    //     float fbuf[2];
+    //     fbuf[0] = motordebug.speed_real;
         
-        static float x;
-        float y,delt;
-        y = sinf(x);
-        x += 0.460f;
-        fbuf[1] = y;
-        mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fbuf),8);
-    }
+    //     static float x;
+    //     float y,delt;
+    //     y = sinf(x);
+    //     x += 0.460f;
+    //     fbuf[1] = y;
+    //     mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fbuf),8);
+    // }
 }
 
 void mc_hightfreq_task(float *iabc)

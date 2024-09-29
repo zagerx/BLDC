@@ -2,7 +2,7 @@
 #define __BOARD__H
 
 #define TOTAL_DISTANCE       (_2PI)//自开环距离
-#define TOTAL_TIME           (6.0f)//自开环时间
+#define TOTAL_TIME           (2.0f)//自开环时间
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)//自开环角速度
 
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期

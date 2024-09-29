@@ -31,10 +31,8 @@ static void mc_self_openlooptest(float *iabc)
     i_abc.a = iabc[0];
     i_abc.b = iabc[1];
     i_abc.c = iabc[2];
-
     mc_encoder_t encoder;
     mc_encoder_read(&(encoder));
-    motordebug.ele_angle = encoder.ele_theta;
     enum{
         PREPOSITIONING,
         RUNING,
