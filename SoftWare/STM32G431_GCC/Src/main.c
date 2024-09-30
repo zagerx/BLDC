@@ -26,7 +26,6 @@
 #include "debuglog.h"
 #include "board.h"
 #include "taskmodule.h"
-#include "mt6816.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

@@ -1,6 +1,7 @@
 #include "board.h"
 #include "initmodule.h"
 #include "debuglog.h"
+#include "perf_counter.h"
 /************************传感器*****************************/
 #include "sensor.h"
 #undef NULL
@@ -75,7 +76,7 @@ static void _convert_current(uint16_t* adc_buf,float *i_abc)
 }
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
+{    
     unsigned short adc_vale[3];
     float iabc[3]; 
     {
@@ -87,7 +88,9 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         iabc[0] = -iabc[0];
         iabc[1] = -iabc[1];
         iabc[2] = -iabc[2];
-        mc_hightfreq_task(iabc);
+        // __cycleof__("mc_hightfreq_task") {
+            mc_hightfreq_task(iabc);
+        // }            
     }
 }
 

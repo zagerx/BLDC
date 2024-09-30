@@ -282,7 +282,8 @@ extern "C" {
 #endif
 
 #ifndef __perf_counter_printf__
-#   define __perf_counter_printf__      printf
+#include "debuglog.h"
+#   define __perf_counter_printf__      USER_DEBUG_NORMAL//printf
 #endif
 
 #if __PLOOC_VA_NUM_ARGS() != 0

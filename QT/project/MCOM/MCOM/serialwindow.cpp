@@ -111,7 +111,6 @@ void serialwindow::WaveformGraphInit()
     customPlot->graph(1)->setData(x,yc);
     customPlot->graph(1)->rescaleAxes();
     customPlot->graph(1)->setName("channl1");
-
     //Add Legends
     QCPLegend *arLegend00=new QCPLegend;
     R00->insetLayout()->addElement(arLegend00,Qt::AlignTop|Qt::AlignRight);
@@ -253,7 +252,6 @@ void serialwindow::ReciveThread()
     QByteArray temp;
     if(serial_recivbuf.isEmpty())
     {
-        qDebug()<<"recivbuf is empty";
         return;
     }
     if(read_fromQByteArray(temp))
@@ -267,7 +265,7 @@ void serialwindow::ReciveThread()
     if (static_cast<unsigned char>(temp[0]) != (FRAME_HEAD >> 8) || static_cast<unsigned char>(temp[0]) != (FRAME_HEAD & 0xFF)) {
         return;
     }
-    qDebug()<<"processing"<<serial_recivbuf.size();
+    // qDebug()<<"processing"<<serial_recivbuf.size();
     MC_Frame frame;
     frame.CMD = (temp[2] << 8) | temp[3];
     uint16_t dataLength = (temp[4] << 8) | temp[5];
@@ -324,7 +322,7 @@ void serialwindow::onReadSerialData()
     // if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)
     {
         /*添加到缓冲区*/
-        if(serial_recivbuf.size()+data.size()>=4096000)
+        if(serial_recivbuf.size()+data.size()>=40960)
         {
             qDebug()<<"recivbuf over";
             return;
@@ -679,6 +677,7 @@ void serialwindow::led_blink(std::vector<unsigned char>& input)
     if (_state)
     {
         _state = 0;
+        qDebug()<<"green";
         lightLabel->setPixmap(QPixmap("../MCOM/images/GreenLED.png")); // 设置初始状态为灭灯
     }else{
         _state = 1;

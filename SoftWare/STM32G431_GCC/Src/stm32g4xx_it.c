@@ -60,6 +60,7 @@ extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 extern void USER_UART_IRQHandler(UART_HandleTypeDef *huart);
 #include "debuglog.h"
+#include "perf_counter.h"
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -189,7 +190,7 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+  user_code_insert_to_systick_handler();
   /* USER CODE END SysTick_IRQn 1 */
 }
 

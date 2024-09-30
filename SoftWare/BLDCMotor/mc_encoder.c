@@ -38,6 +38,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
 
 	//
 	encoder->total_realmectheta += delt_theta;
+	motordebug.pos_real = encoder->total_realmectheta;
     // 计算转速  
     float n_rap = 9.5492965f * omega;  
 

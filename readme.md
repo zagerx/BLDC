@@ -1,5 +1,11 @@
 # BLDC版本说明
-
+## v1.0.4
+- STM32G431工程
+    - 波特率调整至2000000
+    - QT工程增加CustomPlot模块
+        - 发送频率过快，处理线程无法及时处理。待解决
+        - 生成MCOM.exe文件`D:\WorkNote\BLDC\QT\project\MCOM\MCOM_V1.0.4`
+    - 优化一些公共模块
 ## v1.0.3
 - STM32G431工程
     - 增加位置模式

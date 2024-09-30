@@ -173,6 +173,8 @@ C_SOURCES += $(wildcard ../Protocol/*.c)
 
 C_INCLUDES += -I../Common/method 
 C_SOURCES += $(wildcard ../Common/method/pid.c)
+C_SOURCES += $(wildcard ../Common/method/filter.c)
+
 C_INCLUDES += -I../Common/flash
 C_SOURCES += $(wildcard ../Common/flash/*.c)
 

@@ -4,7 +4,7 @@
 #include "mc_encoder.h"
 #include "motor_speedmode.h"
 #include "motor_normalmode.h"
-#include "mc_posmode.h"
+#include "motor_posmode.h"
 #include "motorctrl_cfg.h"
 #include "motorctrl_common.h"
 
@@ -60,24 +60,25 @@ void motortctrl_process(void)
         break;
     }
 
-    // static unsigned short cnt = 0;
-    // if (cnt++>=1000)
-    // {
-    //     cnt = 0;
-    //     mc_protocol_send(S_HeartP,NULL,0,0,0);
-    // }
-    // {
-    //     cnt1 = 0;
-    //     float fbuf[2];
-    //     fbuf[0] = motordebug.speed_real;
-        
-    //     static float x;
-    //     float y,delt;
-    //     y = sinf(x);
-    //     x += 0.460f;
-    //     fbuf[1] = y;
-    //     mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fbuf),8);
-    // }
+    static unsigned short cnt = 0;
+    if (cnt++>=200)
+    {
+        cnt = 0;
+        mc_protocol_send(S_HeartP,NULL,0,0,0);
+    }
+    static unsigned short cnt1 = 0;
+    if(cnt1++>20)//不能过快发送，会干扰到心跳包，待优化
+    {
+        cnt1 = 0;
+        float fbuf[2];
+        fbuf[0] = motordebug.speed_real;
+        static float x;
+        float y,delt;
+        y = sinf(x);
+        x += 0.460f;
+        fbuf[1] = motordebug.pos_real;
+        mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fbuf),8);
+    }
 }
 
 void mc_hightfreq_task(float *iabc)

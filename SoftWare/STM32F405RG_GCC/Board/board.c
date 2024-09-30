@@ -7,7 +7,7 @@
 #include "motorctrl.h"
 #include "adc.h"
 #include "tim.h"
-
+#include "perf_counter.h"
 #undef NULL
 #define NULL 0
 

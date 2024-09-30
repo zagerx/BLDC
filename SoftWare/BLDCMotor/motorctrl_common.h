@@ -92,6 +92,9 @@ typedef struct
     float speed_targe;
     float speed_real;
 
+    float pos_targe;
+    float pos_real;
+
     float ele_angle;
     float self_ele_theta;
 
