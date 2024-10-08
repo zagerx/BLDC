@@ -1,6 +1,6 @@
 #include "mc_currmentloop.h"
 #include "math.h"
-
+#include "mc_smo.h"
 #define SQRT_3__2    0.86602540378f
 duty_t currment_loop(mc_currment_t *curloop_handle)
 {
@@ -55,6 +55,16 @@ duty_t currment_loop(mc_currment_t *curloop_handle)
 	v_dq.q = mod_q;	
 	temp_ab = _2r_2s(v_dq,next_theta);
 
+	/*Observer*/
+#if 1
+	smo_t *smo;
+	smo = &(curloop_handle->ti_smo);
+	smo->Ialpha = i_alphabeta.alpha;
+	smo->Ibeta= i_alphabeta.beta;
+	smo->Ealpha = temp_ab.alpha;
+	smo->Ebeta= temp_ab.beta;
+	smo_observer(smo);
+#endif	
 	/*Apply SVM*/ 
 	duty_t duty = {0};
 	duty = SVM(temp_ab.alpha,temp_ab.beta);

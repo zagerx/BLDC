@@ -8,7 +8,7 @@
 #include "board.h"
 #include "motorctrl_cfg.h"
 #include "debuglog.h"
-
+#include "mc_smo.h"
 static void mc_param_init(void);
 static void mc_param_deinit(void);
 
@@ -71,6 +71,11 @@ static void mc_param_init(void)
     lowfilter_init(&(mc_param.encoder_handle.speedfilter),15.0f);
     USER_DEBUG_NORMAL("D Kp%.04f Ki%.04f\n",temp.fbuf[0],temp.fbuf[1]);
     USER_DEBUG_NORMAL("Q Kp%.04f Ki%.04f\n",mc_param.currment_handle.q_pid.kp,mc_param.currment_handle.q_pid.ki);
+
+#if 1
+    /**/
+    smo_init(&(mc_param.currment_handle.ti_smo));
+#endif
 }
 static void mc_param_deinit(void)
 {

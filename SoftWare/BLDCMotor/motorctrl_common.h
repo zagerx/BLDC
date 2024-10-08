@@ -16,7 +16,30 @@
 
 #pragma pack(push,4)
 
+typedef struct {  
+    float  Valpha;    // Input: Stationary alfa-axis stator voltage 
+    float  Vbeta;    // Input: Stationary beta-axis stator voltage 
+    float  Ibeta;   // Input: Stationary beta-axis stator current 
+    float  Ialpha;   // Input: Stationary alfa-axis stator current 
 
+    float  Theta;     // Output: Compensated rotor angle 
+    float  Zalpha;      // Output: Stationary alfa-axis sliding control 
+    float  Zbeta;      // Output: Stationary beta-axis sliding control 
+
+    float  Ealpha;   // Variable: Stationary alfa-axis back EMF 
+    float  Ebeta;   // Variable: Stationary beta-axis back EMF 
+    float  EstIalpha;   // Variable: Estimated stationary alfaaxis stator current 
+    float  EstIbeta;    // Variable: Estimated stationary beta-axis statorcurrent 
+    float  IalphaError; // Variable: Stationary alfaaxis current error                 
+    float  IbetaError;  // Variable: Stationary betaaxis current error                 
+
+    float  E0;
+
+    float  Gsmopos;    // Parameter: Motor dependent control gain 
+    float  Fsmopos;    // Parameter: Motor dependent plant matrix 
+    float  Kslide;     // Parameter: Sliding control gain 
+    float  Kslf;       // Parameter: Sliding control filter gain 
+}smo_t; 
 typedef struct mc_speed
 {
     pid_cb_t pid;
@@ -43,6 +66,7 @@ typedef struct mc_currment
     float iq_tar;
     pid_cb_t d_pid;
     pid_cb_t q_pid;
+    smo_t ti_smo;
 }mc_currment_t;
 
 typedef struct mc_encoder
@@ -142,6 +166,15 @@ typedef struct curloop
     pid_cb_t d_pid;
     pid_cb_t q_pid;
 }curloop_t;
+
+
+// typedef struct smo
+// {
+//     alpbet_t i;
+//     alpbet_t u;
+// }smo_t;
+
+
 #pragma pack(pop)
 
 extern motordebug_t motordebug;

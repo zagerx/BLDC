@@ -5,7 +5,7 @@
 |帧头|命令|数据长度|数据0|...|数据n|CRC16|帧尾|
 |-|-|-|-|-|-|-|-|
 |0xA5A5|uint16_t|uint16_t|data1|...|datan|uint16_t|0x5A5A|
-## windeployqt 
+## windeployqt
 ## 版本发布
 - v1.0.0
   - 协议的接收/发送缓冲区完成(均采用队列形式)
