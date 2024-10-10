@@ -1,7 +1,7 @@
 #include "hardware_cfg.h"
 
 static sensor_t sg_sensor_ina226 = {
-        .pf_read = ina226_read_data,
+        .pf_read = ina226_read,
         .pf_write = NULL,
         .pf_init = ina226_init,
         .cycle = 50,

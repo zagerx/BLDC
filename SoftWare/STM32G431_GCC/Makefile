@@ -149,8 +149,10 @@ C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT
 C_INCLUDES += -I../Common/debuglog 
 # C_DEFS += -DDEBUG_MODE_UART
 
-C_SOURCES += $(wildcard ./Hardware/*.c)
-C_INCLUDES += -I./Hardware 
+# C_SOURCES += $(wildcard ./Hardware/*.c)
+# C_INCLUDES += -I./Hardware 
+C_SOURCES += $(wildcard ../Hardware/*.c)
+C_INCLUDES += -I../Hardware 
 C_SOURCES += $(wildcard ./Board/*.c)
 C_INCLUDES += -I./Board
 

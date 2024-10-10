@@ -27,7 +27,7 @@ static volatile uint8_t i2cx_RxBuf[2] = {0};
 static volatile uint8_t i2cx_TxBuf[2] = {0};
 #define I2C_TRANSMIT_MODE_POLL (0)
 #define I2C_TRANSMIT_MODE_IT   (1)
-#define I2C_TRANSMIT_MODE      I2C_TRANSMIT_MODE_IT
+#define I2C_TRANSMIT_MODE      I2C_TRANSMIT_MODE_POLL
 /* USER CODE END 0 */
 
 I2C_HandleTypeDef hi2c2;
@@ -158,25 +158,7 @@ void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
 
 void i2c2_init(void)
 {
-  // uint8_t pData[2];
-  // uint8_t buf[1];
-  // buf[0] = 0xFF;
-  // HAL_I2C_Mem_Read_IT(&hi2c2,0x0080,0xFF00,I2C_MEMADD_SIZE_16BIT,&i2cx_RxBuf[0],2);
-  // // HAL_Delay(1);
-  // // HAL_I2C_Mem_Read_IT(&hi2c2,0x0080,0x0000,I2C_MEMADD_SIZE_16BIT,&i2cx_RxBuf[0],2);
-  // // HAL_Delay(1);
-  // // HAL_I2C_Mem_Read_IT(&hi2c2,0x0080,0x0500,I2C_MEMADD_SIZE_16BIT,&i2cx_RxBuf[0],2);  
-  // // HAL_Delay(1);
-  // // HAL_I2C_Mem_Read_IT(&hi2c2,0x0080,0x0000,I2C_MEMADD_SIZE_16BIT,&i2cx_RxBuf[0],2);
-  // return;
-  // // USER_DEBUG_NORMAL("I2C2 CR1 0x%08x  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->CR1));
-  // // USER_DEBUG_NORMAL("I2C2 CR2 0x%08x  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->CR2));
-  // // USER_DEBUG_NORMAL("I2C2 ISR 0x%08x  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->ISR));
-  // // USER_DEBUG_NORMAL("I2C2 ICR 0x%08x  \r\n",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->ICR));
-  // USER_DEBUG_NORMAL("I2C2 CR1 0x%08x  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->CR1));  
-  // USER_DEBUG_NORMAL("I2C2 CR2 0x%08X  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->CR2));
-  // USER_DEBUG_NORMAL("I2C2 ISR 0x%08x  ",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->ISR));
-  // USER_DEBUG_NORMAL("I2C2 ICR 0x%08x  \r\n",READ_REG((I2C_HandleTypeDef *)(&hi2c2)->Instance->ICR));
+  MX_I2C2_Init();
 }
 
 void i2c2_read(uint16_t DevAddress, uint8_t register_addr, uint8_t *pData, uint16_t Size)
@@ -201,18 +183,5 @@ void i2c2_write(uint16_t DevAddress, uint8_t register_addr,uint8_t *pData, uint1
   SentTable[1] = (pData[0]);
   SentTable[2] = (pData[1]);
   HAL_I2C_Master_Transmit(&hi2c2, 0x80, SentTable, sizeof(SentTable), 0xFF);
-
-// #if (I2C_TRANSMIT_MODE == I2C_TRANSMIT_MODE_POLL)
-//   uint8_t SentTable[3];
-//   SentTable[0] = register_addr;
-//   SentTable[1] = (pData[0]);
-//   SentTable[2] = (pData[1]);
-//   HAL_I2C_Master_Transmit(&hi2c2, 0x80, SentTable, sizeof(SentTable), 0xFF);
-// #elif(I2C_TRANSMIT_MODE == I2C_TRANSMIT_MODE_IT)
-//   i2cx_TxBuf[0] = pData[0];
-//   i2cx_TxBuf[1] = pData[1];
-//   HAL_I2C_Mem_Write_IT(&hi2c2,DevAddress,(uint16_t)(register_addr<<8),I2C_MEMADD_SIZE_16BIT,i2cx_TxBuf,sizeof(i2cx_TxBuf));
-// #endif 
-
 }
 /* USER CODE END 1 */

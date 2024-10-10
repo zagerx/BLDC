@@ -148,17 +148,17 @@ endif
 
 
 
-MESSAGEQUEUE_ENABLE = 0
-ifeq ($(MESSAGEQUEUE_ENABLE),1) 
-C_SOURCES += $(wildcard ../Common/messagequeue/*.c)
-C_INCLUDES += -I../Common/messagequeue 
-endif
+# MESSAGEQUEUE_ENABLE = 0
+# ifeq ($(MESSAGEQUEUE_ENABLE),1) 
+# C_SOURCES += $(wildcard ../Common/messagequeue/*.c)
+# C_INCLUDES += -I../Common/messagequeue 
+# endif
 
-PERF_COUNTER_ENABLE = 0
-ifeq ($(PERF_COUNTER_ENABLE),1)
-C_INCLUDES += -I../Common/Perf_counter
-C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
-endif
+# PERF_COUNTER_ENABLE = 0
+# ifeq ($(PERF_COUNTER_ENABLE),1)
+# C_INCLUDES += -I../Common/Perf_counter
+# C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
+# endif
 
 SYSTEMMODULE_ENABLE = 0
 ifeq ($(SYSTEMMODULE_ENABLE),1)
@@ -168,12 +168,12 @@ C_DEFS += -DENABLE_SYSTEMMODULE
 
 endif
 
-ENABLE_SENSOR = 0
-ifeq ($(ENABLE_SENSOR),1)
-C_DEFS += -DENABLE_SENSORMODULE
-C_INCLUDES += -I../Sensor 
-C_SOURCES += $(wildcard ../Sensor/*.c)
-endif
+# ENABLE_SENSOR = 0
+# ifeq ($(ENABLE_SENSOR),1)
+# C_DEFS += -DENABLE_SENSORMODULE
+# C_INCLUDES += -I../Sensor 
+# C_SOURCES += $(wildcard ../Sensor/*.c)
+# endif
 
 # C_INCLUDES += -I../Common/Fsm 
 # C_SOURCES += $(wildcard ../Common/Fsm/*.c)
@@ -193,8 +193,8 @@ endif
 # C_INCLUDES += -I../BLDCMotor 
 # C_SOURCES += $(wildcard ../BLDCMotor/*.c)
 
-# C_SOURCES += $(wildcard ./Hardware/*.c)
-# C_INCLUDES += -I./Hardware 
+C_SOURCES += $(wildcard ../Hardware/ian226.c)
+C_INCLUDES += -I../Hardware 
 
 # C_SOURCES += $(wildcard ./Board/*.c)
 # C_INCLUDES += -I./Board
@@ -281,16 +281,11 @@ clean:
 #######################################
 -include $(wildcard $(BUILD_DIR)/*.d)
 
-down:
+jlinkdown:
 	$(Q)echo "h" >> jlink.jlink
 	$(Q)echo "loadfile" $(BUILD_DIR)/$(TARGET).hex >> jlink.jlink
-	$(Q)echo "r" >> jlink.jlink
-	$(Q)echo "qc" >> jlink.jlink
+	$(Q)echo "r" >> jlink.jlink             
+	$(Q)echo "q" >> jlink.jlink   
 	$(Q)$(JLINKEXE) -device $(CHIP) -Speed 4000 -IF SWD -CommanderScript jlink.jlink
 
-jlinkdown:
-	$(Q)echo "q" >> jlink.jlink
-	$(Q)echo "r" >> jlink.jlink
-	$(Q)echo "loadfile" $(BUILD_DIR)/$(TARGET).hex >> jlink.jlink
-	$(Q)$(JLINKEXE) -device $(CHIP) -Speed 4000 -IF SWD -CommanderScript jlink.jlink
 # *** EOF ***

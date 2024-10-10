@@ -29,7 +29,7 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s 			page 1
    1:./Hardware/hardware.c **** #include "hardware_cfg.h"
    2:./Hardware/hardware.c **** 
    3:./Hardware/hardware.c **** static sensor_t sg_sensor_ina226 = {
-   4:./Hardware/hardware.c ****         .pf_read = ina226_read_data,
+   4:./Hardware/hardware.c ****         .pf_read = ina226_read,
    5:./Hardware/hardware.c ****         .pf_write = NULL,
    6:./Hardware/hardware.c ****         .pf_init = ina226_init,
    7:./Hardware/hardware.c ****         .cycle = 1000,
@@ -101,7 +101,7 @@ ARM GAS  C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s 			page 1
   82 0000 E803     		.short	1000
   83 0002 00       		.byte	0
   84 0003 00       		.space	1
-  85 0004 00000000 		.word	ina226_read_data
+  85 0004 00000000 		.word	ina226_read
   86 0008 00000000 		.word	0
   87 000c 00000000 		.word	ina226_init
   88              		.text
@@ -124,5 +124,5 @@ C:\Users\57308\AppData\Local\Temp\ccPgXJQv.s:81     .data.sg_sensor_ina226:00000
 UNDEFINED SYMBOLS
 sensor_register
 sensor_process
-ina226_read_data
+ina226_read
 ina226_init

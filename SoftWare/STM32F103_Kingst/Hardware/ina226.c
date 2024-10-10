@@ -34,7 +34,7 @@ void ina226_init(void)
     sg_data.filterdata_buf = filterdata_buf;
     sg_data.buf_column = 3;
 }
-void* ina226_read_data(void)
+void* ina226_read(void)
 {
     static uint8_t id_buf[2] = {0xFF,0xFF};
     // ina226_read(IAN226_DEVICE_READADDR,IAN226_MANUFIDREGISTER_ADDR,id_buf,sizeof(id_buf));
