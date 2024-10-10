@@ -1,13 +1,18 @@
 #ifndef __I2C_DRVICE__H
 #define __I2C_DRVICE__H
 #include "stdint.h"
+#include "i2c_bus.h"
 typedef struct i2c_device
 {
-    char *i2c_bus_name;
-    uint8_t i2c_bus_id;
+    uint16_t device_addr;
+    uint8_t reg_addr;
+    uint8_t pdata;
+    uint16_t datalen;
+
     void (*init)(void);
     void (*read)(uint8_t,uint8_t);
-    void (*write)(uint8_t,uint8_t);    
+    void (*write)(uint8_t,uint8_t);  
+    i2c_bus_t *bus;
 }i2c_device_t;
 
 
