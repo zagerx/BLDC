@@ -1,10 +1,10 @@
 ## TI SMO
 - 参考文档
 ### alpha,beta坐标系下的数学模型
-<img src="./images/alpha_beta坐标系下电机模型.png" alt="alpha_beta坐标系下电机模型" width="480" >
+<img src="./images/alpha_beta坐标系下电机模型.png" alt="alpha_beta坐标系下电机模型" width="600" >
 
 ### 离散后的滑模公式
-<img src="./images/基于饱和函数的离散滑模观测器.png" alt="基于饱和函数的离散滑模观测器效果图" width="480" >
+<img src="./images/基于饱和函数的离散滑模观测器.png" alt="基于饱和函数的离散滑模观测器效果图" width="600" >
 
 ### 代码
 ```C

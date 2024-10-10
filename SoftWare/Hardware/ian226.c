@@ -3,6 +3,7 @@
 */
 #include "i2c.h"
 #include "debuglog.h"
+#include "i2c_device.h"
 #define IAN226_BASE_ADDR                 (0x80)
 #define IAN226_DEVICE_READADDR           (IAN226_BASE_ADDR)
 #define IAN226_DEVICE_WRITEADDR          ((IAN226_BASE_ADDR))|0X01
@@ -33,7 +34,6 @@ void ina226_init(void)
     uint16_t id,cfg_val;
     uint16_t cmd_cfg = IAN226_CFG_VAL;
     uint16_t cmd_calib = IAN226_CALIB_VAL;
-    i2c2_init();
     _ina226write(IAN226_CFGREGISTER_ADDR,&cmd_cfg);
     _ina226write(IAN226_CALIBREGISTER_ADDR,&cmd_calib);
 

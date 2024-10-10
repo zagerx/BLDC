@@ -4,11 +4,12 @@
 #include "mc_smo.h"
 #include "motorctrl_common.h"
 #include "math.h"
-#define Rs     0.06f
-#define Lq     0.0001f
+#include "mc_utils.h"
+#define Rs     0.14f
+#define Lq     25.0f
 #define CUR_Ts 0.0001f
-#define RATED_VOL 24.0f
-#define RATED_CUR 2.0f
+#define RATED_VOL 12.0f
+#define RATED_CUR 10.0f
 
 static float limit_value(float val, float up, float low);
 
@@ -34,19 +35,16 @@ void smo_observer(smo_t *smo)
     smo->Ebeta = smo->Ebeta + smo->Kslf * (smo->Zbeta - smo->Ebeta);
 
     /*	Rotor angle calculator -> Theta = atan(-Ealpha,Ebeta)	*/	
-    smo->Theta = atan2(-smo->Ealpha,  smo->Ebeta);
-
-    while(smo->Theta>2*M_PI) smo->Theta-=2*M_PI;
-    while(smo->Theta<0) smo->Theta+=2*M_PI;
-
+    float temp = atan2f(-smo->Ealpha,  smo->Ebeta);
+    smo->Theta = wrap_pm_pi(temp);
 }
 
 void smo_init(smo_t *smo)
 {
     smo->Fsmopos = exp((Rs/Lq)*CUR_Ts );
     smo->Gsmopos = (RATED_VOL/RATED_CUR )*(1/Rs) *(1-smo->Fsmopos);
-    smo->Kslf = 3000.0f/60.0f * 7.0f *6.28f * 5.0f * CUR_Ts;
-    smo->Kslide = 0.3f;
+    smo->Kslf = 58.0f;//1600.0f/60.0f * 7.0f *6.28f * 5.0f * CUR_Ts;
+    smo->Kslide = 0.02f;
     smo->E0 = 0.5f;
 
 }
