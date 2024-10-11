@@ -72,10 +72,6 @@ void motortctrl_process(void)
         cnt1 = 0;
         float fbuf[2];
         fbuf[0] = motordebug.speed_real;
-        static float x;
-        float y,delt;
-        y = sinf(x);
-        x += 0.460f;
         fbuf[1] = motordebug.pos_real;
         mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fbuf),8);
     }

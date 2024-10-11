@@ -182,6 +182,6 @@ void i2c2_write(uint16_t DevAddress, uint8_t register_addr,uint8_t *pData, uint1
   SentTable[0] = register_addr;
   SentTable[1] = (pData[0]);
   SentTable[2] = (pData[1]);
-  HAL_I2C_Master_Transmit(&hi2c2, 0x80, SentTable, sizeof(SentTable), 0xFF);
+  HAL_I2C_Master_Transmit(&hi2c2, DevAddress, SentTable, sizeof(SentTable), 0xFF);
 }
 /* USER CODE END 1 */

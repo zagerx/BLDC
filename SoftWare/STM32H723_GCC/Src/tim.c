@@ -295,71 +295,46 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
-static unsigned short max_val_01(unsigned short a,unsigned short b,unsigned short c)
-{
-	short max;
-	if(a>b)
-	{
-		max = a;
-	}else{
-		max = b;
-	}
-	if(c>max)
-	{
-		max = c;
-	}
-	return max;
-}
 
 void tim_set_pwm(float _a,float _b,float _c)
 {
-    float a,b,c;
-    a = (((float)_a)*_ARR);
-    b = (((float)_b)*_ARR);
-    c = (((float)_c)*_ARR);  
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,(uint16_t)a);
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,(uint16_t)b);
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,(uint16_t)c);
+  uint16_t a,b,c;
 
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,_ARR-300);	    	
+  a = (uint16_t)((_a)*(_ARR));
+  b = (uint16_t)((_b)*(_ARR));
+  c = (uint16_t)((_c)*(_ARR));
+  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,a);
+  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,b);
+  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,c);
+
+  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,30);
 }
-void tim_pwm_enable_noirq(void)
-{
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,(uint16_t)0);    
-    HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_1);
-    HAL_TIMEx_PWMN_Start(&htim8,TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_2);
-    HAL_TIMEx_PWMN_Start(&htim8,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_3);
-    HAL_TIMEx_PWMN_Start(&htim8,TIM_CHANNEL_3);     
-}
+#include "debuglog.h"
 void tim_pwm_enable(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,(uint16_t)0);
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,(uint16_t)0);     
+    HAL_TIM_Base_Start_IT(&htim8);
+
     HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_1);
     HAL_TIMEx_PWMN_Start(&htim8,TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_2);
     HAL_TIMEx_PWMN_Start(&htim8,TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Start(&htim8,TIM_CHANNEL_3); 
+  
+    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,30);
+    HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_4);
+
 }
 void tim_pwm_disable(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,(0));
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,(0));
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,(0));
-
     HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_1);
     HAL_TIMEx_PWMN_Stop(&htim8,TIM_CHANNEL_1);
     HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_2);
     HAL_TIMEx_PWMN_Stop(&htim8,TIM_CHANNEL_2);
     HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Stop(&htim8,TIM_CHANNEL_3); 
-    HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_4);
+
+    HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_4);      
 }
 
 void tim_tigger_adc(void)

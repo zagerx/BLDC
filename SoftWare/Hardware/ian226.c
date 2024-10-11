@@ -1,9 +1,8 @@
 /*
     INA226:电流/功率监视器
 */
-#include "i2c.h"
+#include "ina226.h"
 #include "debuglog.h"
-#include "i2c_device.h"
 #define IAN226_BASE_ADDR                 (0x80)
 #define IAN226_DEVICE_READADDR           (IAN226_BASE_ADDR)
 #define IAN226_DEVICE_WRITEADDR          ((IAN226_BASE_ADDR))|0X01
@@ -25,7 +24,15 @@
 #define IAN226_CURRENT_LSB               (0.001f)
 #define IAN226_POWER_LSB                 (0.025f)
 
-
+#if 1
+void dev_ina226_init(i2c_bus_t *bus)
+{
+    uint8_t buf[2] = {0};
+    bus->read(IAN226_BASE_ADDR, IAN226_DIEIDREGISTER_ADDR, buf, sizeof(buf));
+    USER_DEBUG_NORMAL("ID = 0x%x\n",(uint16_t)buf[0]<<8 | buf[1]);
+}
+#else
+#include "i2c.h"
 static void _ina226read(uint16_t MemAddress, uint16_t *pData);
 static void _ina226write( uint8_t MemAddress, uint16_t *cmd);
 
@@ -101,3 +108,4 @@ static void _ina226write( uint8_t MemAddress, uint16_t *cmd)
     buf[1] = (uint8_t)(*cmd);
     i2c2_write(IAN226_BASE_ADDR, MemAddress, buf, sizeof(buf));
 }
+#endif

@@ -144,14 +144,17 @@ int main(void)
   MX_TIM8_Init();
   MX_ADC2_Init();
   MX_ADC3_Init();
-  MX_I2C2_Init();
+  // MX_I2C2_Init();
   MX_ADC1_Init();
   MX_TIM4_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("H7 hello word\r\n");
-  ina226_init();
+
+  pro_devinit();
+  
+  while(1);
   HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
   /* USER CODE END 2 */
 
@@ -160,7 +163,6 @@ int main(void)
   while (1)
   {
     // uart2_process();
-    ina226_read();
     HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
     HAL_Delay(2000);
     // HAL_Delay(1);

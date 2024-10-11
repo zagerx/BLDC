@@ -193,8 +193,16 @@ endif
 # C_INCLUDES += -I../BLDCMotor 
 # C_SOURCES += $(wildcard ../BLDCMotor/*.c)
 
+C_SOURCES += $(wildcard ./Src/pro_device.c)
+
 C_SOURCES += $(wildcard ../Hardware/ian226.c)
+C_SOURCES += $(wildcard ../Hardware/at24c0x.c)
+C_SOURCES += $(wildcard ../Hardware/tca9539pwr.c)
 C_INCLUDES += -I../Hardware 
+
+C_SOURCES += $(wildcard ../I2cBus/*.c)
+C_INCLUDES += -I../I2cBus 
+
 
 # C_SOURCES += $(wildcard ./Board/*.c)
 # C_INCLUDES += -I./Board
