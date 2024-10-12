@@ -31,6 +31,17 @@ static sensor_t sg_sensor_vbus = {
         .cycle = 2,
         .status = EN_SENSOR_INIT
 };
+#if 0
+#include "spi_device.h"
+static spi_bus_t spi_bus1 = {
+    .init = spi_bus1_init,
+    .rw = spi_bus1_rw,    
+};
+static spi_device_t spi_dev_as5047={
+    .bus = &spi_bus1,
+    // .init = as5047_init;
+};
+#endif
 void user_board_init(void)
 {
     sensor_register(&sg_sensor_as5047,SENSOR_01);

@@ -157,6 +157,9 @@ C_INCLUDES += -I./Board
 C_INCLUDES += -I../Common/systemmodule
 C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
 
+C_INCLUDES += -I../SpiBus 
+C_SOURCES += $(wildcard ../SpiBus/*.c)
+
 C_DEFS += -DENABLE_SENSORMODULE
 C_INCLUDES += -I../Sensor 
 C_SOURCES += $(wildcard ../Sensor/*.c)
