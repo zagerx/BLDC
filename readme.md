@@ -1,36 +1,21 @@
-# BLDC版本说明
-## v1.0.4
-- STM32G431工程
-    - 波特率调整至2000000
-    - QT工程增加CustomPlot模块
-        - 发送频率过快，处理线程无法及时处理。待解决
-        - 生成MCOM.exe文件`D:\WorkNote\BLDC\QT\project\MCOM\MCOM_V1.0.4`
-    - 优化一些公共模块
-## v1.0.3
-- STM32G431工程
-    - 增加位置模式
-    - 对速度进行低通滤波
-    - 开环功能
-        - 支持自开环
-        - 支持编码器开环
-        - makefile中开启对应宏定义，使用MCOM助手，进入速度模式，启动电机
-## v1.0.2
-- 适配STM32G431工程
-- 适配STM32F405工程
-- 支持MT6816编码器
-- 支持AS5600编码器
-## v1.0.1
-- 适配STM32G431工程
-- 实现速度环，电流环闭环
+# 版本说明
 ## v1.0.0
-- STM32F405RG工程
-    - 实现速度，电流闭环
-    - 通过宏定义，开环/闭环切换
-    - MCOM助手配合调试PID参数
-    - 发送速度指令给MCOM，MCOM正确响应
-    - USER_DEBUG_NORMAL正常打印至MCOM
-- MCOM助手
-    - 状态指示灯闪烁
-    - 速度值的Charts绘制
-    - 启动/停止/目标速度/控制参数信息/PID参数设置/PID目标设置
-    
+- H7工程增加下功能
+    - debuglog模块
+    - I2cBus模块
+    - INA226 TCA9539
+# template_proj_branch说明
+- 该分支用作测试`芯片功能及板子外设`
+- 测试公共模块
+
+## 添加测试文件
+```
+C_SOURCES += $(wildcard ../Hardware/ian226.c)
+C_SOURCES += $(wildcard ../Hardware/at24c0x.c)
+C_SOURCES += $(wildcard ../Hardware/tca9539pwr.c)
+C_INCLUDES += -I../Hardware 
+
+C_SOURCES += $(wildcard ../I2cBus/*.c)
+C_INCLUDES += -I../I2cBus 
+```
+
