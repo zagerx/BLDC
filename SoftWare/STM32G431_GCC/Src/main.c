@@ -22,10 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
-#include "debuglog.h"
-#include "board.h"
-#include "taskmodule.h"
+#include "perf_counter.h"
+#include "test_dsp.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,24 +53,21 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static void hal_libinit(void)
+
+int main(void)
 {
   HAL_Init();
   SystemClock_Config();
-}
-int main(void)
-{
-  hal_libinit();
+  init_cycle_counter(true);
+  __cycleof__("delay_us") {
+    delay_us(1000);
+  }
+  test_dsp();
   MX_GPIO_Init();
-  MX_DMA_Init();
-  MX_TIM1_Init();
-  MX_SPI1_Init();
-  MX_USART1_UART_Init();
-  MX_ADC1_Init();
   while (1)
   {
-    do_taskcalls();
-    HAL_Delay(1);
+    HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
+    HAL_Delay(500);
   }
 }
 /* USER CODE END 0 */

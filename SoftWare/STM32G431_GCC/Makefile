@@ -22,7 +22,7 @@ TARGET = STM32G431
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Og
+OPT = -O3
 
 JLINKEXE := JLink.exe 
 JLINKGDBSERVER := JLinkGDBServer.exe
@@ -149,39 +149,47 @@ C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT
 C_INCLUDES += -I../Common/debuglog 
 # C_DEFS += -DDEBUG_MODE_UART
 
-C_SOURCES += $(wildcard ../Hardware/as5047.c)
-C_INCLUDES += -I../Hardware 
-C_SOURCES += $(wildcard ./Board/*.c)
-C_INCLUDES += -I./Board
+# C_SOURCES += $(wildcard ../Hardware/as5047.c)
+# C_INCLUDES += -I../Hardware 
+# C_SOURCES += $(wildcard ./Board/*.c)
+# C_INCLUDES += -I./Board
 
-C_INCLUDES += -I../Common/systemmodule
-C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
+# C_INCLUDES += -I../Common/systemmodule
+# C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
 
-C_INCLUDES += -I../SpiBus 
-C_SOURCES += $(wildcard ../SpiBus/*.c)
+# C_INCLUDES += -I../SpiBus 
+# C_SOURCES += $(wildcard ../SpiBus/*.c)
 
-C_DEFS += -DENABLE_SENSORMODULE
-C_INCLUDES += -I../Sensor 
-C_SOURCES += $(wildcard ../Sensor/*.c)
+# C_DEFS += -DENABLE_SENSORMODULE
+# C_INCLUDES += -I../Sensor 
+# C_SOURCES += $(wildcard ../Sensor/*.c)
 
-C_INCLUDES += -I../Common/data_structures
-C_SOURCES += $(wildcard ../Common/data_structures/heap.c)
-C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
-C_INCLUDES += -I../Protocol
-C_SOURCES += $(wildcard ../Protocol/*.c)
+# C_INCLUDES += -I../Common/data_structures
+# C_SOURCES += $(wildcard ../Common/data_structures/heap.c)
+# C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
+# C_INCLUDES += -I../Protocol
+# C_SOURCES += $(wildcard ../Protocol/*.c)
 
-C_INCLUDES += -I../Common/method 
-C_SOURCES += $(wildcard ../Common/method/pid.c)
-C_SOURCES += $(wildcard ../Common/method/filter.c)
-C_INCLUDES += -I../Common/flash
-C_SOURCES += $(wildcard ../Common/flash/*.c)
+# C_INCLUDES += -I../Common/method 
+# C_SOURCES += $(wildcard ../Common/method/pid.c)
+# C_SOURCES += $(wildcard ../Common/method/filter.c)
+# C_INCLUDES += -I../Common/flash
+# C_SOURCES += $(wildcard ../Common/flash/*.c)
 
 
-C_INCLUDES += -I../Common/Fsm 
-C_INCLUDES += -I../BLDCMotor 
-C_SOURCES += $(wildcard ../BLDCMotor/*.c)
+# C_INCLUDES += -I../Common/Fsm 
+# C_INCLUDES += -I../BLDCMotor 
+# C_SOURCES += $(wildcard ../BLDCMotor/*.c)
 # C_DEFS += -DMOTOR_OPENLOOP 
 # C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
+
+
+C_INCLUDES += -IDrivers/CMSIS/DSP/Include
+C_SOURCES += $(wildcard Drivers/CMSIS/DSP/Source/FastMathFunctions/FastMathFunctions.c)
+C_SOURCES += $(wildcard Drivers/CMSIS/DSP/Source/CommonTables/arm_common_tables.c)
+C_INCLUDES += -ITest/DSP_TEST
+C_SOURCES += $(wildcard Test/DSP_TEST/*.c)
+
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

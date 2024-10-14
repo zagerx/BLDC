@@ -193,23 +193,4 @@ int _write(int file, char *data, int len)
     return (status == HAL_OK ? len : 0);
 }
 
-#include "protocol.h"
-
-extern void protocol_getdata_tofifo(unsigned char *data,unsigned short len);
-void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
-{
-    if(USART1 == huart1.Instance)                                   //�ж��Ƿ��Ǵ���1�����˴�Ӧд(huart->Instance == USART1)
-    {
-        if(RESET != __HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))   //�ж��Ƿ��ǿ����ж�
-        {
-            __HAL_UART_CLEAR_IDLEFLAG(&huart1);                     //��������жϱ�־�������һֱ���Ͻ����жϣ�
-            HAL_UART_DMAStop(&huart1);//ͣ
-            unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);   //������յ������ݳ���?
-            protocol_getdata_tofifo(sg_uartreceive_buff,data_length);
-            memset(sg_uartreceive_buff,0,data_length);                                            //������ջ�����?
-            data_length = 0;
-            HAL_UART_Receive_DMA(&huart1, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));                    //������ʼDMA���� ÿ��255�ֽ�����                    
-        }
-    }
-}
 /* USER CODE END 1 */
