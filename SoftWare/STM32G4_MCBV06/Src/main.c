@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dma.h"
 #include "usart.h"
 #include "spi.h"
 #include "tim.h"
@@ -27,7 +28,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "debuglog.h"
-#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,56 +59,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/*--------------系统线程-------------------*/
-#define SYSRUNNING_PERCI            (1)
-#define DELAY_1MS                   (1)/SYSRUNNING_PERCI
-#define DELAY_2MS                   (2)/SYSRUNNING_PERCI
-#define DELAY_5MS                   (5)/SYSRUNNING_PERCI
-#define DELAY_20MS                  (20)/SYSRUNNING_PERCI
-#define DELAY_500MS                 (500)/SYSRUNNING_PERCI
-#define DELAY_1000MS                (1000)/SYSRUNNING_PERCI
-#define DELAY_5000MS                (5000)/SYSRUNNING_PERCI
-
-enum{
-    SYS_IDLE,
-    SYS_NORMLE,
-};
-typedef struct
-{
-    /* data */
-    unsigned int time_cnt;
-    unsigned char state;
-}sys_run_t;
-static sys_run_t sg_SYSRuning = {0,SYS_IDLE};
-void sysrunning_process(void)
-{
-    /*----------1ms计时-----------*/
-
-    sg_SYSRuning.time_cnt++;
-    switch (sg_SYSRuning.state)
-    {
-        case SYS_IDLE:
-            if(!(sg_SYSRuning.time_cnt % (DELAY_5000MS))){
-                sg_SYSRuning.time_cnt = 0;
-                break;
-            }
-            if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
-                break;
-            }
-            if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
-            {
-                // HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);       
-                    printf("xxxxxAPP Runing\r\n");
-         
-            }
-            if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
-                HAL_GPIO_TogglePin(SF_DOG_GPIO_Port,SF_DOG_Pin);
-                break;
-            }
-        default:
-            break;
-    }
-}
 
 /* USER CODE END 0 */
 
@@ -140,6 +90,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SPI3_Init();
   MX_TIM1_Init();
   MX_ADC4_Init();
@@ -147,17 +98,16 @@ int main(void)
   MX_ADC2_Init();
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  // USER_DEBUG_NORMAL("MCB_V06 start runing\r\n");
   HAL_Delay(800);
-  printf("lpuart :hello world\n");
+  USER_DEBUG_NORMAL("Hello world\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    sysrunning_process();
-    HAL_Delay(1);
+    HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);
+    HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
