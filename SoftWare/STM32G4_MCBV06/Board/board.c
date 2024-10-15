@@ -1,56 +1,96 @@
 #include "board.h"
+#include "initmodule.h"
+#include "debuglog.h"
 /************************传感器*****************************/
-#if 0
 #include "sensor.h"
-// #include "as5047.h"
 #undef NULL
 #define NULL 0
 
-static sensor_t sg_sensor_as5047 = {
-        .pf_read = as5047_readangle,
+#include "hallencoder.h"
+static sensor_t sg_sensor_hallencoder = {
+        .pf_read = hallencoder_readangle,
         .pf_write = NULL,
-        .pf_init = as5047_init,
+        .pf_init = hallencoder_init,
         .cycle = 0,
         .status = EN_SENSOR_INIT
 };
+
+#if 0
+#include "spi_device.h"
+static spi_bus_t spi_bus1 = {
+    .init = spi_bus1_init,
+    .rw = spi_bus1_rw,    
+};
+static spi_device_t spi_dev_as5047={
+    .bus = &spi_bus1,
+    // .init = as5047_init;
+};
 #endif
-
-/*--------------Actuator--------------------*/
-#include "actuator.h"
-#include "gpio.h"
-#include "debuglog.h"
-int led_actutor(actuator_t *pthis)
+void user_board_init(void)
 {
-    pthis->cnt++;
-    switch (pthis->state)
-    {
-    case ACT_IDLE :
-        if (pthis->cnt > 20)
-        {
-            pthis->cnt = 0;
-            HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);
-        }
-        break;
-    case ACT_START:
-        break;
-
-    default:
-        break;
-    }
-    return 0;
+    sensor_register(&sg_sensor_hallencoder,SENSOR_01);
 }
-
-static actuator_t sg_led_actor = {
-    .state = ACT_IDLE,
-    .pFunc = led_actutor};
-
-void board_init(void)
-{
-    actuator_mapinit();
-    actuator_resgiter((actuator_t*)&sg_led_actor,EVENT_01,0);
-}
-
 void board_deinit(void)
 {
 
 }
+
+#include "usart.h"
+#include "string.h"
+void _bsp_protransmit(unsigned char* pdata,unsigned short len)
+{
+    static unsigned char sg_uartsend_buf[125];
+    memcpy(sg_uartsend_buf,pdata,len);
+    HAL_UART_Transmit_DMA(&hlpuart1,sg_uartsend_buf,len);
+}
+
+#include "tim.h"
+void motor_enable(void)
+{
+    tim_pwm_enable();
+    tim_tigger_adc();
+    adc_start();
+}
+void motor_disable(void)
+{
+    tim_pwm_disable();
+    adc_stop();
+}
+void motor_set_pwm(float _a,float _b,float _c)
+{
+    tim_set_pwm(_a ,_b,_c);
+}
+
+#include "motorctrl.h"
+#include "adc.h"
+static void _convert_current(uint16_t* adc_buf,float *i_abc)
+{
+    i_abc[0]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[0] - (1 << 11)) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE); 
+    i_abc[1]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[1] - (1 << 11)) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE);          //shunt_conductance_ = 1/0.001采样电阻;
+    i_abc[2]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[2] - (1 << 11)) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE);
+}
+
+void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
+{    
+    unsigned short adc_vale[3];
+    float iabc[3]; 
+    {
+        adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_1);
+        adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_2);
+        adc_vale[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc4,ADC_INJECTED_RANK_3);
+        _convert_current((uint16_t*)adc_vale,iabc);
+
+        iabc[0] = -iabc[0];
+        iabc[1] = -iabc[1];
+        iabc[2] = -iabc[2];
+        // __cycleof__("mc_hightfreq_task") {
+            mc_hightfreq_task(iabc);
+        // }            
+    }
+}
+
+void user_softresetsystem(void)
+{
+	HAL_NVIC_SystemReset();
+}
+board_init(user_board_init)

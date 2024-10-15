@@ -68,6 +68,7 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -95,7 +96,6 @@ int main(void)
   MX_TIM1_Init();
   MX_ADC4_Init();
   MX_TIM4_Init();
-  MX_ADC2_Init();
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_Delay(800);
@@ -106,8 +106,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);
-    HAL_Delay(1000);
+    do_taskcalls();
+    HAL_GPIO_TogglePin(SF_DOG_GPIO_Port,SF_DOG_Pin);
+    HAL_Delay(1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

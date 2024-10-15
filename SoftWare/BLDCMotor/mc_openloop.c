@@ -61,13 +61,13 @@ static void mc_self_openlooptest(float *iabc)
         theta = TOTAL_OMEGA * CURRMENT_PERIOD * cnt;
 
         _3s_2s(i_abc,&i_ab);
-        _2s_2r(i_ab,theta*7.0f,&i_dq);
+        _2s_2r(i_ab,theta*MOTOR_PAIRS,&i_dq);
         motordebug.ia_real = i_abc.a;
         motordebug.ib_real = i_abc.b;
         motordebug.ic_real = i_abc.c;
         motordebug.id_real = i_dq.d;
         motordebug.iq_real = i_dq.q;
-        next_theta = TOTAL_OMEGA * CURRMENT_PERIOD * (cnt+1) * 7.0f;
+        next_theta = TOTAL_OMEGA * CURRMENT_PERIOD * (cnt+1) * MOTOR_PAIRS;
         temp_ab = _2r_2s(idq,next_theta);
         duty = SVM(temp_ab.alpha,temp_ab.beta);
         motor_set_pwm(duty._a,duty._b,duty._c);

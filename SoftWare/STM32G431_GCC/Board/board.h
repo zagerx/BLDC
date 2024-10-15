@@ -13,6 +13,9 @@
 #define ENCODER_CPR          (0.00038349f)//2PI/16384 16384为AS5047旋转一圈的计数值
 #define MOTOR_PAIRS          (7.0f)//电机极对数
 
+#define AMPLIFICATION_FACTOR (5.7f)  // 假设放大倍数为10  
+#define SAMPLING_RESISTANCE  (0.025)  // 假设采样电阻为100欧姆
+
 #define CIRCLE_MAX_VAL       (24.0f)
 #define D_MAX_VAL            (12.0f)
 #define D_MIN_VAL            -D_MAX_VAL

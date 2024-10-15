@@ -20,6 +20,10 @@ typedef struct bsp_flash
   #define PID_PARSE_SIZE  (48)
 #endif
 
+#ifdef STM32G473xx
+  #define PID_PARSE_ADDR  ((uint32_t)0x0800F000)
+  #define PID_PARSE_SIZE  (48)
+#endif
 
 void user_flash_test(void);
 void user_flash_earse(uint32_t addr,uint16_t datalen);

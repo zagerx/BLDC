@@ -1,4 +1,4 @@
-#include "tim.h"
+// #include "tim.h"
 #include "debuglog.h"
 #include "main.h"
 
@@ -53,9 +53,9 @@ void hallsection_update(unsigned char u,unsigned char v,unsigned char w)
     // tim_encode_writecnt(4095);
     if (test_dir)
     {
-        tim_encode_writecnt(4395);
+        // tim_encode_writecnt(4395);
     }else{
-        tim_encode_writecnt(3980);
+        // tim_encode_writecnt(3980);
     }
     
 #endif
@@ -64,8 +64,7 @@ void hallsection_update(unsigned char u,unsigned char v,unsigned char w)
 void hallencoder_init(void)
 {
     gpio_setencoder_power();
-    tim_encode_start();
-    tim_encode_writecnt(4095);
+    // tim_encode_writecnt(4095);
     sg_hcdata.covdata_buf = &sg_covangle;
     sg_hcdata.raw_buf = &sg_rawangle;
 }
@@ -96,21 +95,21 @@ void* hallencoder_readangle(void)
     // // test_rawangle = sg_rawangle;
     // sg_covangle = (int32_t)(test_rawangle * (1<<22));
 
-    static short pre_cnt = 0;
-    short cur_cnt = tim_encode_readcnt();
-    short delt_cnt = cur_cnt - pre_cnt;
-    pre_cnt = cur_cnt;test_cnt = cur_cnt;
-    static float  pre_theta = 0.0f;
-    float cur_theta = pre_theta + -1*delt_cnt*ENCODER_STEP;
-    pre_theta = cur_theta;
-    test_rawangle = cur_theta;
-    if (delt_cnt > 0)
-    {
-        test_dir = 1;
-    }else{
-        test_dir = 0;
-    }
-    sg_covangle = (int32_t)(test_rawangle * (1<<22));
+    // static short pre_cnt = 0;
+    // // short cur_cnt = tim_encode_readcnt();
+    // short delt_cnt = cur_cnt - pre_cnt;
+    // pre_cnt = cur_cnt;test_cnt = cur_cnt;
+    // static float  pre_theta = 0.0f;
+    // float cur_theta = pre_theta + -1*delt_cnt*ENCODER_STEP;
+    // pre_theta = cur_theta;
+    // test_rawangle = cur_theta;
+    // if (delt_cnt > 0)
+    // {
+    //     test_dir = 1;
+    // }else{
+    //     test_dir = 0;
+    // }
+    // sg_covangle = (int32_t)(test_rawangle * (1<<22));
     return (void *)(&sg_hcdata);
 #endif
 

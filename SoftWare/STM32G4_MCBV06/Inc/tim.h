@@ -52,10 +52,10 @@ void tim_pwm_disable(void);
 void tim_pwm_enable_noirq(void);
 void tim_tigger_adc(void);
 
-void tim_encode_start(void);
-short tim_encode_readcnt(void);
-void tim_encode_writecnt(unsigned short cnt);
-void tim_encode_stop(void);
+// void tim_encode_start(void);
+// short tim_encode_readcnt(void);
+// void tim_encode_writecnt(unsigned short cnt);
+// void tim_encode_stop(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
