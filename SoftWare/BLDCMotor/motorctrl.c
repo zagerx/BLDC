@@ -61,13 +61,13 @@ void motortctrl_process(void)
     }
 
     static unsigned short cnt = 0;
-    if (cnt++>=200)
+    if (cnt++>100)
     {
         cnt = 0;
         mc_protocol_send(S_HeartP,NULL,0,0,0);
     }
     static unsigned short cnt1 = 0;
-    if(cnt1++>20)//不能过快发送，会干扰到心跳包，待优化
+    if(cnt1++>1)//不能过快发送，会干扰到心跳包，待优化
     {
         cnt1 = 0;
         float fbuf[2];

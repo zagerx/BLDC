@@ -250,33 +250,35 @@ void serialwindow::ReciveThread()
 {
     /**/
     QByteArray temp;
-    if(serial_recivbuf.isEmpty())
+    if(serial_recivbuf.size()>=32)
     {
-        return;
-    }
-    if(read_fromQByteArray(temp))
-    {
-        return;
-    }
-    if(temp.size()<10){
-        return;
-    }
+        for(unsigned short i = 0;i<32;i++)
+        {
+            if(read_fromQByteArray(temp))
+            {
+                continue;
+            }
+            if(temp.size()<10){
+                continue;
+            }
 
-    if (static_cast<unsigned char>(temp[0]) != (FRAME_HEAD >> 8) || static_cast<unsigned char>(temp[0]) != (FRAME_HEAD & 0xFF)) {
-        return;
+            if (static_cast<unsigned char>(temp[0]) != (FRAME_HEAD >> 8) || static_cast<unsigned char>(temp[0]) != (FRAME_HEAD & 0xFF)) {
+                continue;
+            }
+            MC_Frame frame;
+            frame.CMD = (temp[2] << 8) | temp[3];
+            uint16_t dataLength = (temp[4] << 8) | temp[5];
+            if (temp.size() != 10 + dataLength) {
+                continue ;
+            }
+            frame.data.clear(); // 清空frame的data成员
+            for (size_t i = 0; i < dataLength; ++i) {
+                frame.data.push_back(temp[6 + i]);
+            }
+            _forch_cmdmap(frame.CMD,frame.data);
+        }
     }
-    // qDebug()<<"processing"<<serial_recivbuf.size();
-    MC_Frame frame;
-    frame.CMD = (temp[2] << 8) | temp[3];
-    uint16_t dataLength = (temp[4] << 8) | temp[5];
-    if (temp.size() != 10 + dataLength) {
-        return ;
-    }
-    frame.data.clear(); // 清空frame的data成员
-    for (size_t i = 0; i < dataLength; ++i) {
-        frame.data.push_back(temp[6 + i]);
-    }
-    _forch_cmdmap(frame.CMD,frame.data);
+    return;
 }
 /******************************************************************************
  * @brief 1ms定时器回调
@@ -317,6 +319,7 @@ void serialwindow::onReadSerialData()
     {
         return;
     }
+    // qDebug()<<"processing"<<serial_recivbuf.size();
 
     // 直接比较前两个字节是否等于 0xA5A5
     // if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)
@@ -352,6 +355,7 @@ void serialwindow::_forch_cmdmap(unsigned short cmd, std::vector<unsigned char>&
     switch (cmd)
     {
     case S_HeartP:
+        qDebug()<<"Heart pack";
         led_blink(input);
         break;
     case S_MotorSpeed://TODO
@@ -580,7 +584,18 @@ void serialwindow::on_enseriBt_clicked()
                 if (serial->open(QIODevice::ReadWrite))
                 {
                     openbutton->setText("关闭串口");
-                    serial->setBaudRate(2000000);
+                    bool ok;
+                    QString baudRateStr = ui->comboBox->currentText();
+                    int baudRate = baudRateStr.toInt(&ok);
+
+                    // 检查转换是否成功
+                    if (ok) {
+                        // 转换成功，设置波特率
+                        serial->setBaudRate(baudRate);
+                        // qDebug() << "Baud rate set to:" << baudRate;
+                    }else{
+                        serial->setBaudRate(115200);
+                    }
                     serial->setParity(QSerialPort::NoParity);
                     serial->setDataBits(QSerialPort::Data8);
                     serial->setStopBits(QSerialPort::OneStop);
@@ -677,7 +692,6 @@ void serialwindow::led_blink(std::vector<unsigned char>& input)
     if (_state)
     {
         _state = 0;
-        qDebug()<<"green";
         lightLabel->setPixmap(QPixmap("../MCOM/images/GreenLED.png")); // 设置初始状态为灭灯
     }else{
         _state = 1;

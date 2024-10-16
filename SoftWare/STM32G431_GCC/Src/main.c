@@ -69,6 +69,7 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   MX_ADC1_Init();
+  USER_DEBUG_NORMAL("Init finish\n");
   while (1)
   {
     do_taskcalls();
