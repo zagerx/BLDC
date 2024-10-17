@@ -123,3 +123,70 @@ static unsigned char read_hallsection(unsigned char u,unsigned char v,unsigned c
     return section;
 }
 
+
+/*====================================================================================*/
+uint8_t hall_get_sectionnumb(void)
+{
+    uint8_t  u,v,w;
+
+    //u = HAL_GPIO_ReadPin();
+    //v = HAL_GPIO_ReadPin();
+    //w = HAL_GPIO_ReadPin();
+    return (u | (v<<1) | (w<<1));
+}
+
+/*6-4-5-1-3-2*/
+uint8_t last_section = 0;
+uint8_t hall_dir = 0xFF;
+float hall_baseAngle = 0.0f;
+float hall_baseBuff[7] = {0.0f,3.6652f,5.7595f ,4.7123f,1.5707f,2.6179,-0.32f};
+
+/*
+*   被HALL中断调用
+*/
+float hall_get_baseAngle(uint8_t section)
+{
+    switch (last_section)
+    {
+    case 6:
+        if (section == 4)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 4;
+        }else if (section == 2)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 2;
+        }else{
+            //err
+        }
+        
+        break;
+
+    case 4:
+        
+        break;
+    case 5:
+        
+        break;
+    case 1:
+        
+        break;
+    case 3:
+        
+        break;
+    case 2:
+        
+        break;
+    case 0:
+        
+        break;
+
+    default:
+        break;
+    }
+}
+
+

@@ -21,7 +21,8 @@ unsigned char TEST_Fuc(void)
 {
     duty_t duty = {0};
     dq_t idq = {0.0f,0.04f};
-    idq.q = TOTAL_Te;    
+    idq.d = -TOTAL_Te;    
+    idq.q = 0.00f;    
     alpbet_t temp_ab = {0};
     static float theta = 0.0f;
     motordebug.self_ele_theta = theta;
