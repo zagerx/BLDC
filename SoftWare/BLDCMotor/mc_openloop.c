@@ -23,6 +23,7 @@ static void mc_self_openlooptest(float *iabc)
     static unsigned short cnt = 0;
     float next_theta,theta;
     dq_t idq = {0.0f,0.04f};
+    idq.q = TOTAL_Te;
     alpbet_t temp_ab = {0};
     duty_t duty = {0};
     alpbet_t i_ab;
