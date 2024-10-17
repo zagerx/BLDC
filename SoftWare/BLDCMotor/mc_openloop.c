@@ -17,6 +17,25 @@ void mc_test(float *iabc)
 #endif
 }
 
+unsigned char TEST_Fuc(void)
+{
+    duty_t duty = {0};
+    dq_t idq = {0.0f,0.04f};
+    idq.q = TOTAL_Te;    
+    alpbet_t temp_ab = {0};
+    static float theta = 0.0f;
+    motordebug.self_ele_theta = theta;
+    temp_ab = _2r_2s(idq,theta);
+    duty = SVM(temp_ab.alpha,temp_ab.beta);
+    motor_set_pwm(duty._a,duty._b,duty._c);   
+    theta += STEP_THETA;
+    if (theta >= _2PI * MOTOR_PAIRS)
+    {
+        theta = 0.0f;
+        return 1;
+    }
+    return 0;
+}
 
 static void mc_self_openlooptest(float *iabc)
 {
@@ -59,25 +78,31 @@ static void mc_self_openlooptest(float *iabc)
 
     case RUNING:
 
-        theta = TOTAL_OMEGA * CURRMENT_PERIOD * cnt;
+        // theta = TOTAL_OMEGA * CURRMENT_PERIOD * cnt;
 
-        _3s_2s(i_abc,&i_ab);
-        _2s_2r(i_ab,theta*MOTOR_PAIRS,&i_dq);
-        motordebug.ia_real = i_abc.a;
-        motordebug.ib_real = i_abc.b;
-        motordebug.ic_real = i_abc.c;
-        motordebug.id_real = i_dq.d;
-        motordebug.iq_real = i_dq.q;
-        next_theta = TOTAL_OMEGA * CURRMENT_PERIOD * (cnt+1) * MOTOR_PAIRS;
-        temp_ab = _2r_2s(idq,next_theta);
-        duty = SVM(temp_ab.alpha,temp_ab.beta);
-        motor_set_pwm(duty._a,duty._b,duty._c);
-        cnt++;
-        if (theta > _2PI)
+        // _3s_2s(i_abc,&i_ab);
+        // _2s_2r(i_ab,theta*MOTOR_PAIRS,&i_dq);
+        // motordebug.ia_real = i_abc.a;
+        // motordebug.ib_real = i_abc.b;
+        // motordebug.ic_real = i_abc.c;
+        // motordebug.id_real = i_dq.d;
+        // motordebug.iq_real = i_dq.q;
+        // next_theta = TOTAL_OMEGA * CURRMENT_PERIOD * (cnt+1) * MOTOR_PAIRS;
+        // temp_ab = _2r_2s(idq,next_theta);
+        // duty = SVM(temp_ab.alpha,temp_ab.beta);
+        // motor_set_pwm(duty._a,duty._b,duty._c);
+        // cnt++;
+        // if (theta > _2PI)
+        // {
+        //     state = STOP;
+        //     break;
+        // }
+        if (TEST_Fuc())
         {
             state = STOP;
             break;
         }
+        
         break;
 
     case STOP:

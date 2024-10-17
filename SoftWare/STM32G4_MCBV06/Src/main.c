@@ -108,6 +108,7 @@ int main(void)
   {
     do_taskcalls();
     HAL_GPIO_TogglePin(SF_DOG_GPIO_Port,SF_DOG_Pin);
+    HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);
     HAL_Delay(1);
     /* USER CODE END WHILE */
 
