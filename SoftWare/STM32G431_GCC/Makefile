@@ -180,7 +180,7 @@ C_SOURCES += $(wildcard ../Common/flash/*.c)
 C_INCLUDES += -I../Common/Fsm 
 C_INCLUDES += -I../BLDCMotor 
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-C_DEFS += -DMOTOR_OPENLOOP 
+# C_DEFS += -DMOTOR_OPENLOOP 
 # C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
 
 # compile gcc flags

@@ -324,13 +324,21 @@ void serialwindow::onReadSerialData()
     // 直接比较前两个字节是否等于 0xA5A5
     // if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)
     {
-        /*添加到缓冲区*/
-        if(serial_recivbuf.size()+data.size()>=40960)
+        if(static_cast<unsigned char>(data[3] == 0x04))
         {
-            qDebug()<<"recivbuf over";
-            return;
+            /*添加到缓冲区*/
+            if(serial_recivbuf.size()+data.size()>=40960)
+            {
+                qDebug()<<"recivbuf over";
+                return;
+            }
+            serial_recivbuf.append(data);
+        }else{
+            static unsigned int cout = 0;
+            qDebug()<<"hear"<<cout++;
+            std::vector<unsigned char> data;
+            led_blink(data);
         }
-        serial_recivbuf.append(data);
     }
 
     // else{
@@ -355,7 +363,6 @@ void serialwindow::_forch_cmdmap(unsigned short cmd, std::vector<unsigned char>&
     switch (cmd)
     {
     case S_HeartP:
-        qDebug()<<"Heart pack";
         led_blink(input);
         break;
     case S_MotorSpeed://TODO
