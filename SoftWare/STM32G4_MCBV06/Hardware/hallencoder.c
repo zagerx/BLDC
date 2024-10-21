@@ -1,7 +1,6 @@
 // #include "tim.h"
 #include "debuglog.h"
 #include "main.h"
-
 #define HALLSECTION_UPDATE_TI_MODE    (0)
 #define HALLSECTION_UPDATE_POLL_MODE  (1)
 #define HALLSECTION_UPDATE_MODE       (HALLSECTION_UPDATE_TI_MODE)
@@ -63,6 +62,7 @@ void hallsection_update(unsigned char u,unsigned char v,unsigned char w)
 
 void hallencoder_init(void)
 {
+    USER_DEBUG_NORMAL("hall init\n");
     gpio_setencoder_power();
     // tim_encode_writecnt(4095);
     sg_hcdata.covdata_buf = &sg_covangle;
@@ -128,11 +128,10 @@ static unsigned char read_hallsection(unsigned char u,unsigned char v,unsigned c
 uint8_t hall_get_sectionnumb(void)
 {
     uint8_t  u,v,w;
-
-    //u = HAL_GPIO_ReadPin();
-    //v = HAL_GPIO_ReadPin();
-    //w = HAL_GPIO_ReadPin();
-    return (u | (v<<1) | (w<<1));
+    u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
+    v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
+    w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
+    return (u | (v<<1) | (w<<2));
 }
 
 /*6-4-5-1-3-2*/
@@ -140,12 +139,14 @@ uint8_t last_section = 0;
 uint8_t hall_dir = 0xFF;
 float hall_baseAngle = 0.0f;
 float hall_baseBuff[7] = {0.0f,3.6652f,5.7595f ,4.7123f,1.5707f,2.6179,-0.32f};
-
+uint8_t hall_section;
 /*
 *   被HALL中断调用
 */
 float hall_get_baseAngle(uint8_t section)
 {
+    section = hall_get_sectionnumb();
+    hall_section = section;
     switch (last_section)
     {
     case 6:
@@ -166,27 +167,88 @@ float hall_get_baseAngle(uint8_t section)
         break;
 
     case 4:
-        
+        if (section == 5)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 5;
+        }else if (section == 6)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 6;
+        }else{
+            //err
+        }        
         break;
     case 5:
-        
+        if (section == 1)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 5;
+        }else if (section == 4)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 4;
+        }else{
+            //err
+        }        
         break;
     case 1:
-        
+        if (section == 3)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 3;
+        }else if (section == 5)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 5;
+        }else{
+            //err
+        }        
         break;
     case 3:
-        
+        if (section == 2)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 2;
+        }else if (section == 1)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 1;
+        }else{
+            //err
+        }        
         break;
     case 2:
-        
+        if (section == 6)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 6;
+        }else if (section == 3)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 3;
+        }else{
+            //err
+        }        
         break;
     case 0:
-        
+        last_section = section;
         break;
 
     default:
         break;
     }
+    return 0;
 }
 
 

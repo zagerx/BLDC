@@ -9,10 +9,102 @@ float hall_update(hall_sensor_t *hall)
 
     switch (last_section)
     {
-    case /* constant-expression */:
-        /* code */
+    case 6:
+        if (section == 4)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 4;
+        }else if (section == 2)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 2;
+        }else{
+            //err
+        }
+        
         break;
-    
+
+    case 4:
+        if (section == 5)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 5;
+        }else if (section == 6)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 6;
+        }else{
+            //err
+        }        
+        break;
+    case 5:
+        if (section == 1)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 5;
+        }else if (section == 4)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 4;
+        }else{
+            //err
+        }        
+        break;
+    case 1:
+        if (section == 3)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 3;
+        }else if (section == 5)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 5;
+        }else{
+            //err
+        }        
+        break;
+    case 3:
+        if (section == 2)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 2;
+        }else if (section == 1)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 1;
+        }else{
+            //err
+        }        
+        break;
+    case 2:
+        if (section == 6)
+        {
+            hall_dir = 0;//方向为正
+            hall_baseAngle = hall_baseBuff[section];
+            last_section = 6;
+        }else if (section == 3)
+        {
+            hall_baseAngle = hall_baseBuff[section];
+            hall_dir = 1;
+            last_section = 3;
+        }else{
+            //err
+        }        
+        break;
+    case 0:
+        last_section = section;
+        break;
+
     default:
         break;
     }
