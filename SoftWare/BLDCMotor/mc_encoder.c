@@ -3,10 +3,30 @@
 #include "stdbool.h"
 #include "stdint.h"
 #include "mc_utils.h"
-#include "board.h"
-#include "sensor.h"
+
+
+#ifndef ENCODER_TYPE_HALL    
+	#include "board.h"
+	#include "sensor.h"
+#else
+	#include "hall_sensor.h"
+#endif
+
+
+static void Absolute_encoder(mc_encoder_t *encoder);
+static void* hall_encoder(mc_encoder_t *mc_encoder);
+
 //TODO
 void mc_encoder_read(mc_encoder_t *encoder)
+{
+#ifndef ENCODER_TYPE_HALL    
+	Absolute_encoder(encoder);
+#else
+	hall_encoder();
+#endif
+}
+
+static void Absolute_encoder(mc_encoder_t *encoder)
 {
 	uint32_t data = *((uint32_t*)sensor_user_read(SENSOR_01));
 	encoder->raw_data = data;
@@ -17,7 +37,6 @@ void mc_encoder_read(mc_encoder_t *encoder)
     motordebug.ele_angle = encoder->ele_theta;
 	
 	/*更新速度*/
-	// static float pre_theta = 0.0f;
     // 将mec_theta归一化到[0, 2π)区间  
     float normalized_mec_theta = fmodf(mec_theta, 2.0f * M_PI);  
     if (normalized_mec_theta < 0.0f) {  
@@ -49,6 +68,15 @@ void mc_encoder_read(mc_encoder_t *encoder)
     encoder->speed = filter_n_rap;
 	motordebug.speed_real = filter_n_rap;
 }
+
+
+static void* hall_encoder(mc_encoder_t *mc_encoder)
+{
+#ifdef 	ENCODER_TYPE_HALL
+	hall_cale(&(mc_encoder->hallsensor));
+#endif	
+}
+
 
 float mc_read_virvalencoder(float ialpha,float ibeta)
 {

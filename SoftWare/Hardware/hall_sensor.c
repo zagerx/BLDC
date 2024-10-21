@@ -2,24 +2,23 @@
 
 float hall_update(hall_sensor_t *hall)
 {
-    uint8_t last_section = hall->last_section;
     uint8_t cur_section = hall->getsection();
     uint32_t cur_tick = hall->gettick();
     uint32_t delt_tick = hall->last_tick - cur_tick;
 
-    switch (last_section)
+    switch (hall->last_section)
     {
     case 6:
         if (section == 4)
         {
-            hall_dir = 0;//方向为正
-            hall_baseAngle = hall_baseBuff[section];
-            last_section = 4;
+            hall->dir = 0;//方向为正
+            hall->base_angle = hall_baseBuff[section];
+            hall->last_section = 4;
         }else if (section == 2)
         {
-            hall_baseAngle = hall_baseBuff[section];
-            hall_dir = 1;
-            last_section = 2;
+            hall->base_angle = hall_baseBuff[section];
+            hall->dir = 1;
+            hall->last_section = 2;
         }else{
             //err
         }
@@ -29,14 +28,14 @@ float hall_update(hall_sensor_t *hall)
     case 4:
         if (section == 5)
         {
-            hall_dir = 0;//方向为正
-            hall_baseAngle = hall_baseBuff[section];
-            last_section = 5;
+            hall->dir = 0;//方向为正
+            hall->base_angle = hall_baseBuff[section];
+            hall->last_section = 5;
         }else if (section == 6)
         {
-            hall_baseAngle = hall_baseBuff[section];
-            hall_dir = 1;
-            last_section = 6;
+            hall->base_angle = hall_baseBuff[section];
+            hall->dir = 1;
+            hall->last_section = 6;
         }else{
             //err
         }        
@@ -44,14 +43,14 @@ float hall_update(hall_sensor_t *hall)
     case 5:
         if (section == 1)
         {
-            hall_dir = 0;//方向为正
-            hall_baseAngle = hall_baseBuff[section];
-            last_section = 5;
+            hall->dir = 0;//方向为正
+            hall->base_angle = hall_baseBuff[section];
+            hall->last_section = 5;
         }else if (section == 4)
         {
-            hall_baseAngle = hall_baseBuff[section];
-            hall_dir = 1;
-            last_section = 4;
+            hall->base_angle = hall_baseBuff[section];
+            hall->dir = 1;
+            hall->last_section = 4;
         }else{
             //err
         }        
@@ -59,14 +58,14 @@ float hall_update(hall_sensor_t *hall)
     case 1:
         if (section == 3)
         {
-            hall_dir = 0;//方向为正
-            hall_baseAngle = hall_baseBuff[section];
-            last_section = 3;
+            hall->dir = 0;//方向为正
+            hall->base_angle = hall_baseBuff[section];
+            hall->last_section = 3;
         }else if (section == 5)
         {
-            hall_baseAngle = hall_baseBuff[section];
-            hall_dir = 1;
-            last_section = 5;
+            hall->base_angle = hall_baseBuff[section];
+            hall->dir = 1;
+            hall->last_section = 5;
         }else{
             //err
         }        
@@ -74,14 +73,14 @@ float hall_update(hall_sensor_t *hall)
     case 3:
         if (section == 2)
         {
-            hall_dir = 0;//方向为正
-            hall_baseAngle = hall_baseBuff[section];
-            last_section = 2;
+            hall->dir = 0;//方向为正
+            hall->base_angle = hall_baseBuff[section];
+            hall->last_section = 2;
         }else if (section == 1)
         {
-            hall_baseAngle = hall_baseBuff[section];
-            hall_dir = 1;
-            last_section = 1;
+            hall->base_angle = hall_baseBuff[section];
+            hall->dir = 1;
+            hall->last_section = 1;
         }else{
             //err
         }        
@@ -89,20 +88,20 @@ float hall_update(hall_sensor_t *hall)
     case 2:
         if (section == 6)
         {
-            hall_dir = 0;//方向为正
-            hall_baseAngle = hall_baseBuff[section];
-            last_section = 6;
+            hall->dir = 0;//方向为正
+            hall->base_angle = hall_baseBuff[section];
+            hall->last_section = 6;
         }else if (section == 3)
         {
-            hall_baseAngle = hall_baseBuff[section];
-            hall_dir = 1;
-            last_section = 3;
+            hall->base_angle = hall_baseBuff[section];
+            hall->dir = 1;
+            hall->last_section = 3;
         }else{
             //err
         }        
         break;
     case 0:
-        last_section = section;
+        hall->last_section = section;
         break;
 
     default:
@@ -124,4 +123,14 @@ float hall_cale(hall_sensor_t *hall)
 {
     hall->angle += hall->speed*CURLOOP_PER;
 }
+
+void hall_init(hall_sensor_t *hall,void *pf1,void *pf2)
+{
+    hall->getsection = pf1;
+    hall->gettick = pf2;
+
+    hall->angle = 0.0f;
+    hall->base_angle = 0.0f
+}
+
 
