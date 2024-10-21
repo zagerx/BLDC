@@ -31,7 +31,9 @@ serialwindow *pserialwind;
  * @copyright Copyright (c) 2024
   ---------------------------------------------------------------------------*/
 serialwindow::serialwindow(QWidget *parent)
-    : QWidget(parent), ui(new Ui::serialwindow), timer(new QTimer(this))
+    : QWidget(parent), ui(new Ui::serialwindow),
+     timer(new QTimer(this)),
+     m_ProcessThread(new ProcessThread(this))
 {
     ui->setupUi(this);
     SerialPortInit();
@@ -50,6 +52,11 @@ serialwindow::serialwindow(QWidget *parent)
     connect(timer, &QTimer::timeout, this, &serialwindow::timerTick);
     // 启动定时器
     timer->start();
+
+
+    connect(m_ProcessThread, &ProcessThread::ProcessData, this, &serialwindow::ReciveThread);
+    // 启动线程
+    m_ProcessThread->start();      
 }
 /******************************************************************************
  * @brief Destroy the serialwindow::serialwindow object
@@ -248,9 +255,9 @@ uint8_t serialwindow::read_fromQByteArray(QByteArray &ret)
   ---------------------------------------------------------------------------*/
 void serialwindow::ReciveThread()
 {
-    /**/
+    qDebug()<<"ReciveThread"<<serial_recivbuf.size();
     QByteArray temp;
-    if(serial_recivbuf.size()>=32)
+    // if(/*serial_recivbuf*/.size()>=32)
     {
         for(unsigned short i = 0;i<32;i++)
         {
@@ -280,6 +287,7 @@ void serialwindow::ReciveThread()
     }
     return;
 }
+
 /******************************************************************************
  * @brief 1ms定时器回调
  * 
@@ -305,6 +313,7 @@ void serialwindow::timerTick()
   ---------------------------------------------------------------------------*/
 void serialwindow::onReadSerialData()
 {
+    QMutexLocker locker(&m_dataMutex); 
     // 假设 serial 已经被正确初始化和打开
     if (serial == NULL)
     {
@@ -324,21 +333,22 @@ void serialwindow::onReadSerialData()
     // 直接比较前两个字节是否等于 0xA5A5
     // if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)
     {
-        if(static_cast<unsigned char>(data[3] == 0x04))
+        // if(static_cast<unsigned char>(data[3] == 0x04))
         {
             /*添加到缓冲区*/
+            qDebug()<<serial_recivbuf.size();
             if(serial_recivbuf.size()+data.size()>=40960)
             {
                 qDebug()<<"recivbuf over";
                 return;
             }
             serial_recivbuf.append(data);
-        }else{
-            static unsigned int cout = 0;
-            qDebug()<<"hear"<<cout++;
-            std::vector<unsigned char> data;
-            led_blink(data);
         }
+        // else{
+        //     static unsigned int cout = 0;
+        //     std::vector<unsigned char> data;
+        //     led_blink(data);
+        // }
     }
 
     // else{

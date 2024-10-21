@@ -18,8 +18,8 @@ SOURCES += \
     ./mc_protocol/mc_protocol.cpp \
     serialwindow.cpp \
     comment.cpp \
-    qcustomplot.cpp
-
+    qcustomplot.cpp \
+    processthread.cpp
 HEADERS += \
     commands.h \
     debugwindow.h \
@@ -29,7 +29,8 @@ HEADERS += \
     ./mc_protocol/mc_frame.h \
     ./mc_protocol/mc_protocol.h \
     ./mc_protocol/commands.h \
-    qcustomplot.h
+    qcustomplot.h \
+    processthread.h
 
 FORMS += \
     debugwindow.ui \

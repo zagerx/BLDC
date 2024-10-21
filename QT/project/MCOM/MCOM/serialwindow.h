@@ -11,6 +11,10 @@
 #include "mc_protocol/commands.h"
 #include <functional>
 #include "qcustomplot.h"
+#include <QMutexLocker>
+#include <QThread.h>
+
+#include "processthread.h"
 
 namespace Ui
 {
@@ -48,7 +52,6 @@ public:
     void _forch_cmdmap(unsigned short cmd, std::vector<unsigned char>& input);
     void WaveformGraphInit(void);
     void SendThread(void);
-    void ReciveThread(void);
     void refreshWaveformDisplay(void);
     uint8_t read_fromQByteArray(QByteArray &ret);
 
@@ -67,13 +70,15 @@ private slots:
     void onReadSerialData();
     void timerTick(void);
 
+    void ReciveThread(void);
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::serialwindow *ui;
-    serialwindow *worker; 
-    QThread *workerThread;
+    ProcessThread *m_ProcessThread;  
+    QMutex m_dataMutex;     
 };
 
 
