@@ -8,7 +8,7 @@ typedef struct hall_sensor
 {
     /* data */
     uint8_t last_section;
-    uint8_t dir;
+    int8_t dir;
     float base_angle;
     float hall_baseBuff[7];
     uint8_t (*getsection)(void);

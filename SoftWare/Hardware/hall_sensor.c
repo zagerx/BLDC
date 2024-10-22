@@ -4,6 +4,19 @@
 
 uint8_t test_cursect = 0;
 float test_speed,test_angle,last_last_angle;
+
+
+static void hall_update_dir(hall_sensor_t *hall,int8_t dir,uint8_t cur_sect)
+{
+    hall->dir = dir;
+    hall->base_angle = hall->hall_baseBuff[cur_sect];
+    /*计算上个扇区速度*/ 
+    // delt_tick = 1000.0f;
+    test_speed = -0.01f;//(hall->hall_baseBuff[cur_section] - last_last_angle)/delt_tick;
+    test_angle = hall->hall_baseBuff[cur_sect];
+
+    hall->last_section = cur_sect;
+}
 float hall_update(hall_sensor_t *hall)
 {
 
@@ -17,16 +30,12 @@ float hall_update(hall_sensor_t *hall)
     case 6:
         if (cur_section == 4)
         {
-            hall->dir = 0;//方向为正
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->last_section = 4;
+            hall_update_dir(hall,1,cur_section); 
         }else if (cur_section == 2)
         {
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->dir = 1;
-            hall->last_section = 2;
+            hall_update_dir(hall,-1,cur_section);
         }else{
-            return;
+            return 0.0f;
         }
         
         break;
@@ -34,76 +43,57 @@ float hall_update(hall_sensor_t *hall)
     case 4:
         if (cur_section == 5)
         {
-            hall->dir = 0;//方向为正
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->last_section = 5;
+            hall_update_dir(hall,1,cur_section); 
         }else if (cur_section == 6)
         {
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->dir = 1;
-            hall->last_section = 6;
+            hall_update_dir(hall,-1,cur_section);
         }else{
-            return;
+            return 0.0f;
         }        
         break;
     case 5:
         if (cur_section == 1)
         {
-            hall->dir = 0;//方向为正
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->last_section = 5;
+            hall_update_dir(hall,1,cur_section);
         }else if (cur_section == 4)
         {
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->dir = 1;
-            hall->last_section = 4;
+            hall_update_dir(hall,-1,cur_section);
         }else{
-            return;
+            return 0.0f;
         }        
         break;
     case 1:
         if (cur_section == 3)
         {
-            hall->dir = 0;//方向为正
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->last_section = 3;
+            hall_update_dir(hall,1,cur_section); 
         }else if (cur_section == 5)
         {
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->dir = 1;
-            hall->last_section = 5;
+            hall_update_dir(hall,-1,cur_section);
         }else{
-            return;
+            return 0.0f;
         }        
         break;
     case 3:
         if (cur_section == 2)
         {
-            hall->dir = 0;//方向为正
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->last_section = 2;
+            hall_update_dir(hall,1,cur_section); 
         }else if (cur_section == 1)
         {
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->dir = 1;
-            hall->last_section = 1;
+            hall_update_dir(hall,-1,cur_section);
         }else{
-            return;
+            return 0.0f;
         }        
         break;
     case 2:
         if (cur_section == 6)
         {
-            hall->dir = 0;//方向为正
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->last_section = 6;
+            hall_update_dir(hall,1,cur_section); 
+
         }else if (cur_section == 3)
         {
-            hall->base_angle = hall->hall_baseBuff[cur_section];
-            hall->dir = 1;
-            hall->last_section = 3;
+            hall_update_dir(hall,-1,cur_section);
         }else{
-            return;
+            return 0.0f;
         }        
         break;
     case 0:
@@ -114,10 +104,7 @@ float hall_update(hall_sensor_t *hall)
         break;
     }
 
-    /*计算上个扇区速度*/ 
-    delt_tick = 1000.0f;
-    test_speed = -0.01f;//(hall->hall_baseBuff[cur_section] - last_last_angle)/delt_tick;
-    test_angle = hall->hall_baseBuff[cur_section];
+
 }
 
 /*
