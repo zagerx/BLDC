@@ -21,6 +21,12 @@ mc_param_t mc_param = {0};
 motordebug_t motordebug = {0};
 extern void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen);
 
+#ifndef ENCODER_TYPE_HALL    
+#else
+void mc_hallencoder_init(void);
+#endif
+
+
 static void motorthread_init(void)
 {
     pmotor_fsm.fsm = (fsm_t *)motor_normalmode;
@@ -106,5 +112,10 @@ void mc_hightfreq_task(float *iabc)
 
 #endif
 }
+
+
+
+
+
 
 board_task(motortctrl_process)

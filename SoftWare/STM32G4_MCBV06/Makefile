@@ -125,6 +125,7 @@ C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32G473xx
 
+C_DEFS += -DENCODER_TYPE_HALL
 
 # AS includes
 AS_INCLUDES = 
@@ -152,8 +153,8 @@ C_INCLUDES += -I../Common/data_structures
 C_SOURCES += $(wildcard ../Common/data_structures/heap.c)
 C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
 
-C_SOURCES += $(wildcard Hardware/hallencoder.c)
-C_INCLUDES += -I./Hardware 
+C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
+C_INCLUDES += -I../Hardware 
 C_SOURCES += $(wildcard ./Board/Board.c)
 C_INCLUDES += -I./Board
 C_DEFS += -DENABLE_SENSORMODULE

@@ -25,6 +25,12 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     #if  !(defined(MOTOR_OPENLOOP) || defined(MOTOR_OPENLOOP_ENCODER))
         mc_param_init();
     #endif
+
+#ifndef ENCODER_TYPE_HALL    
+#else
+     mc_hallencoder_init();
+#endif
+
         motordebug.id_targe = 0.0f;
         motordebug.iq_targe = 0.0f;
         motordebug.speed_targe = 0.0f;
@@ -61,6 +67,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
 
 static void mc_param_init(void)
 {
+
     flash_t temp;
     /*从FLASH指定位置读取PID参数数据*/
     user_flash_read(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
@@ -71,11 +78,14 @@ static void mc_param_init(void)
     lowfilter_init(&(mc_param.encoder_handle.speedfilter),15.0f);
     USER_DEBUG_NORMAL("D Kp%.04f Ki%.04f\n",temp.fbuf[0],temp.fbuf[1]);
     USER_DEBUG_NORMAL("Q Kp%.04f Ki%.04f\n",mc_param.currment_handle.q_pid.kp,mc_param.currment_handle.q_pid.ki);
-
 #if 1
     /**/
     smo_init(&(mc_param.currment_handle.ti_smo));
 #endif
+
+
+
+
 }
 static void mc_param_deinit(void)
 {

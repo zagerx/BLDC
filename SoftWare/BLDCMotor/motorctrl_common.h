@@ -79,14 +79,14 @@ typedef struct mc_currment
 
 typedef struct mc_encoder
 {
-#ifndef ENCODER_TYPE_HALL    
     int32_t raw_data;//原始数据
     float ele_theta; //电角度
     float mec_theta;
     float total_realmectheta;
     float pre_theta;
     float speed;     //机械转速
-    lowfilter_t speedfilter;
+    lowfilter_t speedfilter;    
+#ifndef ENCODER_TYPE_HALL    
 #else
     hall_sensor_t hallsensor;
 #endif    

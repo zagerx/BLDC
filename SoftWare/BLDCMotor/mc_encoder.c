@@ -8,24 +8,7 @@
 #ifndef ENCODER_TYPE_HALL    
 	#include "board.h"
 	#include "sensor.h"
-#else
-	#include "hall_sensor.h"
-#endif
-
-
 static void Absolute_encoder(mc_encoder_t *encoder);
-static void* hall_encoder(mc_encoder_t *mc_encoder);
-
-//TODO
-void mc_encoder_read(mc_encoder_t *encoder)
-{
-#ifndef ENCODER_TYPE_HALL    
-	Absolute_encoder(encoder);
-#else
-	hall_encoder();
-#endif
-}
-
 static void Absolute_encoder(mc_encoder_t *encoder)
 {
 	uint32_t data = *((uint32_t*)sensor_user_read(SENSOR_01));
@@ -69,13 +52,33 @@ static void Absolute_encoder(mc_encoder_t *encoder)
 	motordebug.speed_real = filter_n_rap;
 }
 
-
+#else
+	#include "hall_sensor.h"
+static void* hall_encoder(mc_encoder_t *mc_encoder);
 static void* hall_encoder(mc_encoder_t *mc_encoder)
 {
 #ifdef 	ENCODER_TYPE_HALL
+	hall_update(&(mc_encoder->hallsensor));
 	hall_cale(&(mc_encoder->hallsensor));
 #endif	
 }
+#endif
+
+
+
+//TODO
+void mc_encoder_read(mc_encoder_t *encoder)
+{
+#ifndef ENCODER_TYPE_HALL    
+	Absolute_encoder(encoder);
+#else
+	hall_encoder(encoder);
+#endif
+}
+
+
+
+
 
 
 float mc_read_virvalencoder(float ialpha,float ibeta)

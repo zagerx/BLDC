@@ -6,29 +6,16 @@
 #undef NULL
 #define NULL 0
 
-#include "hallencoder.h"
-static sensor_t sg_sensor_hallencoder = {
-        .pf_read = hallencoder_readangle,
-        .pf_write = NULL,
-        .pf_init = hallencoder_init,
-        .cycle = 0,
-        .status = EN_SENSOR_INIT
-};
 
-#if 0
-#include "spi_device.h"
-static spi_bus_t spi_bus1 = {
-    .init = spi_bus1_init,
-    .rw = spi_bus1_rw,    
-};
-static spi_device_t spi_dev_as5047={
-    .bus = &spi_bus1,
-    // .init = as5047_init;
-};
+#ifndef ENCODER_TYPE_HALL    
+#error "ENCODER_TYPE_HALL is not defined! Compilation stopped."
+#else
+
 #endif
+
 void user_board_init(void)
 {
-    sensor_register(&sg_sensor_hallencoder,SENSOR_01);
+    // sensor_register(&sg_sensor_hallencoder,SENSOR_01);
 }
 void board_deinit(void)
 {
