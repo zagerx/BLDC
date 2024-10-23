@@ -13,6 +13,7 @@ static void _recivethread(void);
 
 extern void protocol_init(void)
 {
+    USER_DEBUG_NORMAL("protocol_init\n");
     /*接收缓冲器初始化*/
     bytefifo_init(&pro_recivefifo, pro_recivefifo_buf, sizeof(pro_recivefifo_buf));
 }
