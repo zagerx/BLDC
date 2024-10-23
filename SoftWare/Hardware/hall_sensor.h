@@ -9,7 +9,7 @@ typedef struct hall_sensor
     /* data */
     uint8_t last_section;
     int8_t dir;
-    float base_angle;
+    uint32_t count;
     float hall_baseBuff[7];
     uint8_t (*getsection)(void);
     uint32_t (*gettick)(void);

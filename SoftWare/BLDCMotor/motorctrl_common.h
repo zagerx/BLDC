@@ -79,17 +79,21 @@ typedef struct mc_currment
 
 typedef struct mc_encoder
 {
-    int32_t raw_data;//原始数据
+    /*输出*/
+    float speed;     //机械转速
     float ele_theta; //电角度
+    
+    lowfilter_t speedfilter;
+
+    /*输入*/
+#ifndef ENCODER_TYPE_HALL    
+    int32_t raw_data;
     float mec_theta;
     float total_realmectheta;
     float pre_theta;
-    float speed;     //机械转速
-    lowfilter_t speedfilter;    
-#ifndef ENCODER_TYPE_HALL    
 #else
     hall_sensor_t hallsensor;
-#endif    
+#endif
 }mc_encoder_t;
 
 

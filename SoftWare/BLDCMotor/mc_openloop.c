@@ -108,7 +108,7 @@ static void mc_self_openlooptest(float *iabc)
 
     case STOP:
         cnt = 0;
-        state = PREPOSITIONING;
+        state = RUNING;
         break;
     default:
         break;
@@ -122,14 +122,14 @@ static void mc_encoderopenlooptest(float *iabc)
 {
     float theta = 0.0f;
     float next_theta = 0.0f;
-    dq_t idq = {0.0f,-0.04f};
+    dq_t idq = {0.0f,-0.1f};
     alpbet_t temp_ab = {0};
     duty_t duty = {0};
     alpbet_t i_ab;
     dq_t i_dq;    
     float speed = 0.0f;
     mc_encoder_t encoder;
-    mc_encoder_read(&(encoder));
+    mc_encoder_read(&(mc_param.encoder_handle));
     speed = encoder.speed;
     theta = encoder.ele_theta;
     motordebug.ele_angle = theta;

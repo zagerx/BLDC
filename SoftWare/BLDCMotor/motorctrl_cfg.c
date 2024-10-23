@@ -29,7 +29,7 @@ static uint8_t hall_get_sectionnumb(void)
   u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
   v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
   w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
-  return u | (v<<1) | (w<<2);
+  return u | (w<<1) | (v<<2);
 }
 static uint32_t hall_gettick()
 {

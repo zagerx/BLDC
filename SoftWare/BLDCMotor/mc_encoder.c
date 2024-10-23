@@ -60,6 +60,8 @@ static void* hall_encoder(mc_encoder_t *mc_encoder)
 #ifdef 	ENCODER_TYPE_HALL
 	hall_update(&(mc_encoder->hallsensor));
 	hall_cale(&(mc_encoder->hallsensor));
+	mc_encoder->ele_theta = mc_encoder->hallsensor.angle;
+	mc_encoder->speed = mc_encoder->hallsensor.speed;
 #endif	
 }
 #endif
