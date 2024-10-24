@@ -1,5 +1,5 @@
 # 配置步骤
-## makefile配置
+## 1、makefile配置
 -   Jlink
 ```
 JLINKEXE := JLink.exe 
@@ -25,7 +25,7 @@ CFLAGS += -Werror=implicit-function-declaration
 CFLAGS += -Werror=array-bounds -Werror=incompatible-pointer-types
 ```
 
-## 添加debuglog模块
+## 2、添加debuglog模块
 - 使能Uart打印
 ```
 C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
@@ -45,7 +45,7 @@ int _write(int file, char *data, int len)
 }
 ```
 
-## 添加系统模块
+## 3、添加系统模块
 ```
 C_INCLUDES += -I../Common/systemmodule
 C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
@@ -89,7 +89,7 @@ C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
     HAL_Delay(1);
 ```
 
-## 添加协议模块
+## 4、添加协议模块
 ```
 
 C_INCLUDES += -I../Common/data_structures
@@ -99,6 +99,65 @@ C_INCLUDES += -I../Protocol
 C_SOURCES += $(wildcard ../Protocol/*.c)
 
 ```
-- 新建board文件夹及board.c/.h
+- 在`uart.c`文件中添加如下代码段
+```C
+#include "string.h"
+static uint8_t sg_uartreceive_buff[125];
 
+#include "protocol.h"
+void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
+{
+    if(USART3 == huart->Instance)                                   
+    {
+        if(RESET != __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE))   
+        {
+            __HAL_UART_CLEAR_IDLEFLAG(huart);                     
+            HAL_UART_DMAStop(huart);
+            unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart3_rx);
+            protocol_getdata_tofifo(sg_uartreceive_buff,data_length);
+            memset(sg_uartreceive_buff,0,data_length);
+            data_length = 0;
+            HAL_UART_Receive_DMA(huart, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));                   
+        }
+    }
+}
+```
+- 在串口中断回调中添加如下代码段:
+```
+USER_UART_IRQHandler(&huart3);
+```
+- 打开MCOM软件，发送速度指令
+- 打开RTT View软件
+
+## 5、添加motorctrol模块
+
+motorctrol模块依赖:
+- pid模块
+- board.c/.h(配置项)
+  - 根据电机编码器选择对应的模块
+    - 霍尔编码器
+      - 添加hall_sensor模块，并添加宏定义
+      ```
+      C_DEFS += -DENCODER_TYPE_HALL
+      C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
+      C_INCLUDES += -I../Hardware 
+      ```
+      - 添加HALL_SENSOR对应的引脚
+      
+    - 绝对值编码器
+      根据需要添加对应的模块
+
+
+```
+
+C_INCLUDES += -I../Common/method 
+C_SOURCES += $(wildcard ../Common/method/pid.c)
+C_SOURCES += $(wildcard ../Common/method/filter.c)
+
+C_INCLUDES += -I../Common/Fsm 
+C_INCLUDES += -I../BLDCMotor 
+C_SOURCES += $(wildcard ../BLDCMotor/*.c)
+# C_DEFS += -DMOTOR_OPENLOOP 
+# C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
+```
 

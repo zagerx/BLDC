@@ -4,8 +4,8 @@
 #define TOTAL_DISTANCE       (6.2831852f)//自开环距离
 #define TOTAL_TIME           (4.0f)//自开环时间
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)//自开环角速度
-#define TOTAL_Te             (0.06f)
-#define STEP_THETA           (0.0002f)
+#define OPENLOOP_DEBUG_TOTAL_Te             (0.06f)
+#define OPENLOOP_DEBUG_STEP_THETA           (0.0002f)
 
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期
 #define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期

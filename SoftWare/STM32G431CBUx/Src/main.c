@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -57,6 +58,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+extern void _bsp_protransmit(unsigned char* pdata,unsigned short len);
 
 /* USER CODE END 0 */
 
@@ -91,6 +93,7 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART3_UART_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("G431CBUx Hello Word\n");
   /* USER CODE END 2 */
@@ -100,7 +103,7 @@ int main(void)
   while (1)
   {
     do_taskcalls();
-    HAL_Delay(1);
+    HAL_Delay(2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

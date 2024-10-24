@@ -12,11 +12,6 @@
 // }
 
 
-#include "usart.h"
-#include "string.h"
-
-
-
 void user_board_init(void)
 {
 }

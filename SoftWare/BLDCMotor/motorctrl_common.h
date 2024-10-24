@@ -82,6 +82,7 @@ typedef struct mc_encoder
     /*输出*/
     float speed;     //机械转速
     float ele_theta; //电角度
+    float total_realmectheta;
     
     lowfilter_t speedfilter;
 
@@ -89,7 +90,6 @@ typedef struct mc_encoder
 #ifndef ENCODER_TYPE_HALL    
     int32_t raw_data;
     float mec_theta;
-    float total_realmectheta;
     float pre_theta;
 #else
     hall_sensor_t hallsensor;

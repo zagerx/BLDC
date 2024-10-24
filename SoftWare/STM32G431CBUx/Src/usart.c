@@ -22,8 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "string.h"
-#include "debuglog.h"
- uint8_t sg_uartreceive_buff[125];
+static uint8_t sg_uartreceive_buff[125];
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart3;
@@ -194,27 +193,27 @@ int _write(int file, char *data, int len)
 
 
 #include "protocol.h"
-// uint8_t sg_uartreceive_buff[125];
-// extern UART_HandleTypeDef huart3;
-// extern DMA_HandleTypeDef hdma_usart3_rx;
-// extern DMA_HandleTypeDef hdma_usart3_tx;
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
-    USER_DEBUG_NORMAL("USER_UART_IRQHandler\n");
-    if(USART3 == huart3.Instance)                                   
+    if(USART3 == huart->Instance)                                   
     {
-        if(RESET != __HAL_UART_GET_FLAG(&huart3, UART_FLAG_IDLE))   
+        if(RESET != __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE))   
         {
-            __HAL_UART_CLEAR_IDLEFLAG(&huart3);                     
-            HAL_UART_DMAStop(&huart3);
+            __HAL_UART_CLEAR_IDLEFLAG(huart);                     
+            HAL_UART_DMAStop(huart);
             unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart3_rx);
             protocol_getdata_tofifo(sg_uartreceive_buff,data_length);
             memset(sg_uartreceive_buff,0,data_length);
             data_length = 0;
-            HAL_UART_Receive_DMA(&huart3, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));                   
+            HAL_UART_Receive_DMA(huart, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));                   
         }
     }
 }
-
+void _bsp_protransmit(unsigned char* pdata,unsigned short len)
+{
+    static unsigned char sg_uartsend_buf[125];
+    memcpy(sg_uartsend_buf,pdata,len);
+    HAL_UART_Transmit_DMA(&huart3,sg_uartsend_buf,len);
+}
 
 /* USER CODE END 1 */
