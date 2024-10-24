@@ -19,7 +19,7 @@ msg_list_t* msg_list = 0;
 static fsm_rt_t msg_send(msg_node_t *msg);
 __attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 {
-    
+    USER_DEBUG_NORMAL("please write _bsp_protransmit(protocol_transmit.c)\n");    
 }
 void msglist_process(void)
 {

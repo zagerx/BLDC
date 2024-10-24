@@ -126,7 +126,9 @@ float hall_cale(hall_sensor_t *hall)
 void hall_init(hall_sensor_t *hall,void *pf1,void *pf2)
 {
     USER_DEBUG_NORMAL("hall_init\n");
+#ifdef STM32G473xx
     gpio_setencoder_power(); 
+#endif 
     hall->getsection = pf1;
     hall->gettick = pf2;
 

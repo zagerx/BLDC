@@ -9,19 +9,23 @@
 #include "motorctrl_common.h"
 
 #include "board.h"
-#include "sensor.h"
 #include "fsm.h"
 #include "taskmodule.h"
 #include "initmodule.h"
 #include "debuglog.h"
 #include "string.h"
 
+
+
+
 static fsm_cb_t pmotor_fsm;
 mc_param_t mc_param = {0};
 motordebug_t motordebug = {0};
 extern void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen);
 
-#ifndef ENCODER_TYPE_HALL    
+#ifndef ENCODER_TYPE_HALL
+#include "sensor.h"
+
 #else
 void mc_hallencoder_init(void);
 #endif
