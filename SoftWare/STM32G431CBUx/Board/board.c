@@ -20,9 +20,11 @@ void Board_init(void)
     opamp_start();
 }
 uint32_t Test_Vaule;
+#include "voft.h"
 void baord_process(void)
 {
-    USER_DEBUG_NORMAL("%d\n",adc_getval());
+    float a;
+    a = adc_getval()*(3.3f/4096);
 }
 
 board_task(baord_process)

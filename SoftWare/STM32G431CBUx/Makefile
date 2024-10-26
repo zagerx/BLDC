@@ -169,6 +169,8 @@ C_DEFS += -DENCODER_TYPE_HALL
 C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
 C_INCLUDES += -I../Hardware 
 
+
+C_DEFS += -DVOTF_SOFTWARE
 C_INCLUDES += -I../Common/Fsm 
 C_INCLUDES += -I../BLDCMotor 
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
@@ -252,6 +254,9 @@ clean:
 -include $(wildcard $(BUILD_DIR)/*.d)
 
 # *** EOF ***
+stlinkdown:
+	openocd -f stlink.cfg -f stm32g4x.cfg -c "init" -c "reset halt" -c \
+	"flash write_image erase $(BUILD_DIR)/$(TARGET).hex" -c reset -c shutdown
 
 jlinkdown:
 	$(Q)echo "h" >> jlink.jlink

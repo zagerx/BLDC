@@ -69,7 +69,7 @@ void motortctrl_process(void)
     default:
         break;
     }
-
+#ifndef VOTF_SOFTWARE
     static unsigned flag = 0;
     if (flag)
     {
@@ -86,6 +86,7 @@ void motortctrl_process(void)
         fbuf[1] = motordebug.pos_real;
         mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fbuf),8);        
     }
+#endif
 }
 
 void mc_hightfreq_task(float *iabc)

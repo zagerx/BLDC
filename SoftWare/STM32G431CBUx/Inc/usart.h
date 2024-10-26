@@ -41,6 +41,7 @@ extern UART_HandleTypeDef huart3;
 void MX_USART3_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+void _bsp_protransmit(unsigned char* pdata,unsigned short len);
 
 /* USER CODE END Prototypes */
 

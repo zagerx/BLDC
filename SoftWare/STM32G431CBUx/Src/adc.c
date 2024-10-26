@@ -369,7 +369,7 @@ uint32_t adc_getval(void)
   HAL_ADCEx_InjectedStart_IT(&hadc2);   
   return HAL_ADC_GetValue(&hadc1);
 }
-
+#include "voft.h"
 void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
   float iabc[3];
@@ -377,12 +377,12 @@ void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
   {
     iabc[0] = (hadc->Instance->JDR1 - 0x7EF)*0.02197f;
     iabc[1] = (hadc->Instance->JDR2 - 0x7F5)*0.02197f;
+    votf_sendf(iabc,2);
   }
   if (hadc->Instance == ADC2)
   {
     iabc[2] = (hadc->Instance->JDR1 - 0x7E8)*0.02197f;
   }
-  USER_DEBUG_NORMAL("%f %f %f\n",iabc[0],iabc[1],iabc[2]);
   
 }
 
