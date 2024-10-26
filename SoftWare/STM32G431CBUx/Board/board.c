@@ -13,9 +13,11 @@
 // }
 
 #include "adc.h"
-void board_deinit(void)
+#include "opamp.h"
+void Board_init(void)
 {
-
+    adc_start();
+    opamp_start();
 }
 uint32_t Test_Vaule;
 void baord_process(void)

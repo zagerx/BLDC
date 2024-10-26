@@ -18,4 +18,9 @@
 #define CIRCLE_OUT_MIN      (-12.0f)
 #define SPEED_OUT_MAX       (12.0f) //速度环输出最大值
 #define SPEED_OUT_MIN       (-12.0f)
+
+
+
+void Board_init(void);
+
 #endif

@@ -20,6 +20,7 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "opamp.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -28,6 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include "debuglog.h"
 #include "taskmodule.h"
+#include "board.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,9 +98,15 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM4_Init();
   MX_ADC1_Init();
+  MX_ADC2_Init();
+  MX_OPAMP1_Init();
+  MX_OPAMP2_Init();
+  MX_OPAMP3_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("G431CBUx Hello Word\n");
+  Board_init();
   /* USER CODE END 2 */
+
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
