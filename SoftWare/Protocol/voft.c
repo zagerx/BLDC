@@ -3,6 +3,7 @@
 #include "string.h"
 void votf_sendf(float *pdata,uint16_t datalen)
 {
+#ifdef VOTF_SOFTWARE  
   uint8_t buf[64];
   uint8_t bytelen;
   bytelen = datalen*4;
@@ -12,6 +13,7 @@ void votf_sendf(float *pdata,uint16_t datalen)
   buf[bytelen+2] = 0x80;
   buf[bytelen+3] = 0x7f;
   _bsp_protransmit(buf,4+bytelen);
+#endif  
 }
 
 

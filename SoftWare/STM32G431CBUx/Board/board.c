@@ -19,8 +19,26 @@ void Board_init(void)
     adc_start();
     opamp_start();
 }
-uint32_t Test_Vaule;
 #include "voft.h"
+
+#include "tim.h"
+void motor_enable(void)
+{
+    tim_pwm_enable();
+    tim_tigger_adc();
+    adc_start();
+}
+void motor_disable(void)
+{
+    tim_pwm_disable();
+    adc_stop();
+}
+void motor_set_pwm(float _a,float _b,float _c)
+{
+    tim_set_pwm(_a ,_b,_c);
+}
+
+
 void baord_process(void)
 {
     float a;

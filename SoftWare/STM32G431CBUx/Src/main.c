@@ -102,18 +102,18 @@ int main(void)
   MX_OPAMP1_Init();
   MX_OPAMP2_Init();
   MX_OPAMP3_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   USER_DEBUG_NORMAL("G431CBUx Hello Word\n");
   Board_init();
   /* USER CODE END 2 */
-
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
     do_taskcalls();
-    HAL_Delay(2);
+    HAL_Delay(1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

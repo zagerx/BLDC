@@ -1,9 +1,9 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
-#define OPENLOOP_DEBUG_TOTAL_Te              (0.008f)
-#define OPENLOOP_DEBUG_STEP_THETA            (0.0002f)
-#define MOTOR_PAIRS                          (14.0f)//电机极对数
+#define OPENLOOP_DEBUG_TOTAL_Te              (0.06f)
+#define OPENLOOP_DEBUG_STEP_THETA            (0.001f)
+#define MOTOR_PAIRS                          (2.0f)//电机极对数
 #define CURRMENT_PERIOD                      (0.0001f)//电流环周期
 
 

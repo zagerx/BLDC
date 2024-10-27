@@ -17,14 +17,26 @@ void mc_test(float *iabc)
 #endif
 }
 
-unsigned char TEST_Fuc(void)
+unsigned char TEST_Fuc(float *iabc)
 {
     duty_t duty = {0};
+    alpbet_t temp_ab = {0};
+    alpbet_t i_ab;
+    dq_t i_dq;
+
+    static float theta = 0.0f;
     dq_t idq = {0.0f,0.04f};
     idq.d = -OPENLOOP_DEBUG_TOTAL_Te;    
-    idq.q = 0.00f;    
-    alpbet_t temp_ab = {0};
-    static float theta = 0.0f;
+    idq.q = 0.00f;
+    abc_t i_abc = {0};
+    i_abc.a = iabc[0];    i_abc.b = iabc[1];    i_abc.c = iabc[2];
+    _3s_2s(i_abc,&i_ab);
+    _2s_2r(i_ab,theta,&i_dq);
+    motordebug.ia_real = i_abc.a;
+    motordebug.ib_real = i_abc.b;
+    motordebug.ic_real = i_abc.c;
+    motordebug.id_real = i_dq.d;
+    motordebug.iq_real = i_dq.q;
     motordebug.self_ele_theta = theta;
     temp_ab = _2r_2s(idq,theta);
     duty = SVM(temp_ab.alpha,temp_ab.beta);
@@ -48,10 +60,7 @@ static void mc_self_openlooptest(float *iabc)
     duty_t duty = {0};
     alpbet_t i_ab;
     dq_t i_dq;
-    abc_t i_abc = {0};
-    i_abc.a = iabc[0];
-    i_abc.b = iabc[1];
-    i_abc.c = iabc[2];
+
     // mc_encoder_t encoder;
     mc_encoder_read(&(mc_param.encoder_handle));
     enum{
@@ -98,7 +107,7 @@ static void mc_self_openlooptest(float *iabc)
         //     state = STOP;
         //     break;
         // }
-        if (TEST_Fuc())
+        if (TEST_Fuc(iabc))
         {
             state = STOP;
             break;

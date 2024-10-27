@@ -46,6 +46,7 @@ void MX_ADC2_Init(void);
 /* USER CODE BEGIN Prototypes */
 void adc_start(void);
 uint32_t adc_getval(void);
+void adc_stop(void);
 
 /* USER CODE END Prototypes */
 

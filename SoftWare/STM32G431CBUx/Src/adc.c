@@ -99,8 +99,8 @@ void MX_ADC1_Init(void)
   sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
   sConfigInjected.AutoInjectedConv = DISABLE;
   sConfigInjected.QueueInjectedContext = DISABLE;
-  sConfigInjected.ExternalTrigInjecConv = ADC_INJECTED_SOFTWARE_START;
-  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_NONE;
+  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_T1_CC4;
+  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
   sConfigInjected.InjecOversamplingMode = DISABLE;
   if (HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected) != HAL_OK)
   {
@@ -183,8 +183,8 @@ void MX_ADC2_Init(void)
   sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
   sConfigInjected.AutoInjectedConv = DISABLE;
   sConfigInjected.QueueInjectedContext = DISABLE;
-  sConfigInjected.ExternalTrigInjecConv = ADC_INJECTED_SOFTWARE_START;
-  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_NONE;
+  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_T1_CC4;
+  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
   sConfigInjected.InjecOversamplingMode = DISABLE;
   if (HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected) != HAL_OK)
   {
@@ -369,7 +369,14 @@ uint32_t adc_getval(void)
   HAL_ADCEx_InjectedStart_IT(&hadc2);   
   return HAL_ADC_GetValue(&hadc1);
 }
+void adc_stop(void)
+{
+    HAL_ADCEx_InjectedStop(&hadc1);
+    HAL_ADCEx_InjectedStop(&hadc2);
+
+}
 #include "voft.h"
+#include "motorctrl.h"
 void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
   float iabc[3];
@@ -377,11 +384,13 @@ void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
   {
     iabc[0] = (hadc->Instance->JDR1 - 0x7EF)*0.02197f;
     iabc[1] = (hadc->Instance->JDR2 - 0x7F5)*0.02197f;
-    votf_sendf(iabc,2);
+    iabc[2] = ((&hadc2)->Instance->JDR1 - 0x7E8)*0.02197f;
+    mc_hightfreq_task(iabc);
+    // votf_sendf(iabc,3);
   }
   if (hadc->Instance == ADC2)
   {
-    iabc[2] = (hadc->Instance->JDR1 - 0x7E8)*0.02197f;
+    // iabc[2] = (hadc->Instance->JDR1 - 0x7E8)*0.02197f;
   }
   
 }
