@@ -2,22 +2,26 @@
 #include "debuglog.h"
 #include "gpio.h"
 
-uint8_t test_cursect = 0;
-float test_speed,test_angle,last_last_angle;
-
+#ifdef MOTOR_OPENLOOP 
+#include "motorctrl_common.h"
+extern motordebug_t motordebug;
+#endif // DEBUG
 
 static void hall_update_dir(hall_sensor_t *hall,int8_t dir,uint8_t cur_sect)
 {
+#ifdef MOTOR_OPENLOOP 
+    // USER_DEBUG_NORMAL("hall base angle %f \n",motordebug.self_ele_theta);
+    volatile static float test_temp[7];
+    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]),motordebug.self_ele_theta);
+#endif 
     hall->dir = dir;
     /*计算扇区速度*/
     float delt_ = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
     if (delt_ < 0.0f)
     {
-        delt_ += 6.2831852f;//hall->hall_baseBuff[cur_sect] + 6.2831852f - hall->hall_baseBuff[hall->last_section];
+        delt_ += 6.2831852f;
     }
-    // delt_ = fabsf(delt_);
     hall->speed =hall->dir * delt_ / (0.0001*hall->count);
-
     hall->angle = hall->hall_baseBuff[cur_sect];//更新扇区基准角度
     hall->last_section = cur_sect;
     hall->count = 0;
@@ -29,7 +33,6 @@ float hall_update(hall_sensor_t *hall)
     uint8_t cur_section = hall->getsection();
     test_cur_base = cur_section;
     uint32_t cur_tick = hall->gettick();
-    test_cursect = cur_section;
     uint32_t delt_tick = hall->last_tick - cur_tick;
     switch (hall->last_section)
     {
@@ -126,9 +129,6 @@ float hall_cale(hall_sensor_t *hall)
 void hall_init(hall_sensor_t *hall,void *pf1,void *pf2)
 {
     USER_DEBUG_NORMAL("hall_init\n");
-#ifdef STM32G473xx
-    gpio_setencoder_power(); 
-#endif 
     hall->getsection = pf1;
     hall->gettick = pf2;
 
@@ -142,6 +142,16 @@ void hall_init(hall_sensor_t *hall,void *pf1,void *pf2)
         hall->hall_baseBuff[3] = 3.97523f;
         hall->hall_baseBuff[2] = 5.2240f;
     }
+
+#ifdef MOTOR_OPENLOOP
+for (uint8_t i = 0; i < 7; i++)
+{
+    lowfilter_init(&(hall->lfilter[i]),5.0F);
+}
+ 
+
+#endif // DEBUG
+
 }
 
 

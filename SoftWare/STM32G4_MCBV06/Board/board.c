@@ -34,6 +34,7 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 #include "tim.h"
 void motor_enable(void)
 {
+    gpio_setencoder_power(); 
     tim_pwm_enable();
     tim_tigger_adc();
     adc_start();

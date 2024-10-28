@@ -2,6 +2,7 @@
 #define __HALL_SENSOR__H
 
 #include "stdint.h"
+#include "filter.h"
 #pragma pack(push,4)
 
 typedef struct hall_sensor
@@ -16,6 +17,9 @@ typedef struct hall_sensor
     uint32_t last_tick;
     float speed;
     float angle;
+#ifdef MOTOR_OPENLOOP 
+    lowfilter_t lfilter[7];
+#endif // DEBUG    
 }hall_sensor_t;
 #pragma pack(pop)
 

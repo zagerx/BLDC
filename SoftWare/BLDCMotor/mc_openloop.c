@@ -26,7 +26,7 @@ unsigned char TEST_Fuc(float *iabc)
 
     static float theta = 0.0f;
     dq_t idq = {0.0f,0.04f};
-    idq.d = -OPENLOOP_DEBUG_TOTAL_Te;    
+    idq.d = OPENLOOP_DEBUG_TOTAL_Te;    
     idq.q = 0.00f;
     abc_t i_abc = {0};
     i_abc.a = iabc[0];    i_abc.b = iabc[1];    i_abc.c = iabc[2];
@@ -42,7 +42,7 @@ unsigned char TEST_Fuc(float *iabc)
     duty = SVM(temp_ab.alpha,temp_ab.beta);
     motor_set_pwm(duty._a,duty._b,duty._c);   
     theta += OPENLOOP_DEBUG_STEP_THETA;
-    if (theta >= _2PI * MOTOR_PAIRS)
+    if (theta > _2PI || theta < -_2PI)
     {
         theta = 0.0f;
         return 1;
@@ -78,7 +78,7 @@ static void mc_self_openlooptest(float *iabc)
         temp_ab = _2r_2s(idq,next_theta);
         duty = SVM(temp_ab.alpha,temp_ab.beta);
         motor_set_pwm(duty._a,duty._b,duty._c);
-        if (cnt++ > 8000)
+        if (cnt++ > 16000)
         {
             cnt = 0;
             state = RUNING;
