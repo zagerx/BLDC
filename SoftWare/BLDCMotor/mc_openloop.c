@@ -119,19 +119,15 @@ static void mc_self_openlooptest(float *iabc)
 static void mc_encoderopenlooptest(float *iabc)
 {
     float theta = 0.0f;
-    float next_theta = 0.0f;
-    dq_t idq = {0.0f, -0.1f};
-    alpbet_t temp_ab = {0};
-    duty_t duty = {0};
-    alpbet_t i_ab;
+    abc_t i_abc;
     dq_t i_dq;
-    float speed = 0.0f;
-    mc_encoder_t encoder;
+
+    duty_t duty;
+    alpbet_t i_ab;
+    dq_t idq;
+    alpbet_t temp_ab;
     mc_encoder_read(&(mc_param.encoder_handle));
-    speed = encoder.speed;
-    theta = encoder.ele_theta;
-    motordebug.ele_angle = theta;
-    abc_t i_abc = {0};
+    theta = mc_param.encoder_handle.ele_theta;
     i_abc.a = iabc[0];
     i_abc.b = iabc[1];
     i_abc.c = iabc[2];
@@ -142,9 +138,12 @@ static void mc_encoderopenlooptest(float *iabc)
     motordebug.ic_real = i_abc.c;
     motordebug.id_real = i_dq.d;
     motordebug.iq_real = i_dq.q;
-    next_theta = theta + (1.5f * speed * CURRMENT_PERIOD); // TODO
-    temp_ab = _2r_2s(idq, next_theta);
 
+    idq.d = 0.0f;idq.q = OPENLOOP_DEBUG_TOTAL_Te;
+    temp_ab = _2r_2s(idq, theta);
     duty = SVM(temp_ab.alpha, temp_ab.beta);
     motor_set_pwm(duty._a, duty._b, duty._c);
 }
+
+
+

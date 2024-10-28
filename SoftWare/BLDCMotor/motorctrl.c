@@ -7,7 +7,7 @@
 #include "motor_posmode.h"
 #include "motorctrl_cfg.h"
 #include "motorctrl_common.h"
-
+#include "mc_openloop.h"
 #include "board.h"
 #include "fsm.h"
 #include "taskmodule.h"

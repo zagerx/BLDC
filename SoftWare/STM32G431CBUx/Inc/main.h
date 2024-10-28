@@ -64,12 +64,12 @@ void Error_Handler(void);
 #define LED02_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
-#define HALL_U1_Pin GPIO_PIN_14
-#define HALL_U1_GPIO_Port GPIOC
-#define HALL_V1_Pin GPIO_PIN_14
-#define HALL_V1_GPIO_Port GPIOE
-#define HALL_W1_Pin GPIO_PIN_15
-#define HALL_W1_GPIO_Port GPIOE
+#define HALL_U1_Pin GPIO_PIN_8
+#define HALL_U1_GPIO_Port GPIOB
+#define HALL_V1_Pin GPIO_PIN_7
+#define HALL_V1_GPIO_Port GPIOB
+#define HALL_W1_Pin GPIO_PIN_6
+#define HALL_W1_GPIO_Port GPIOB
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
