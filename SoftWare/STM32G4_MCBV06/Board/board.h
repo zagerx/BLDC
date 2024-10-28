@@ -1,10 +1,34 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
+
+#ifndef ENCODER_TYPE_HALL    
+
+
+#else
+//D轴强拖
+#define SCETION_6_BASEANGLE   (2.952f)
+#define SCETION_4_BASEANGLE   (3.868f)
+#define SCETION_5_BASEANGLE   (5.059f)
+#define SCETION_1_BASEANGLE   (6.131f)
+#define SCETION_3_BASEANGLE   (0.716f)
+#define SCETION_2_BASEANGLE   (1.918f)
+
+//Q轴强拖
+// #define SCETION_6_BASEANGLE   (1.390f)
+// #define SCETION_4_BASEANGLE   (2.334f)
+// #define SCETION_5_BASEANGLE   (3.446f)
+// #define SCETION_1_BASEANGLE   (4.527f)
+// #define SCETION_3_BASEANGLE   (5.418f)
+// #define SCETION_2_BASEANGLE   (0.331f)
+#endif
+
+
+
 #define TOTAL_DISTANCE       (6.2831852f)//自开环距离
 #define TOTAL_TIME           (4.0f)//自开环时间
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)//自开环角速度
-#define OPENLOOP_DEBUG_TOTAL_Te             (0.06f)
+#define OPENLOOP_DEBUG_TOTAL_Te             (0.08f)
 #define OPENLOOP_DEBUG_STEP_THETA           (0.0002f)
 
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期

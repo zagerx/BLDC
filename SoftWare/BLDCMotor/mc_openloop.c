@@ -4,11 +4,13 @@
 #include "mc_encoder.h"
 #include "board.h"
 #include "motorctrl_cfg.h"
+
+#define VF_MODE_D 
+
 static void mc_self_openlooptest(float *iabc);
 static void mc_encoderopenlooptest(float *iabc);
 
-
-void mc_test(float *iabc)
+void mc_openloop(float *iabc)
 {
 #ifndef MOTOR_OPENLOOP_ENCODER
     mc_self_openlooptest(iabc);
@@ -17,30 +19,44 @@ void mc_test(float *iabc)
 #endif
 }
 
-unsigned char TEST_Fuc(float *iabc)
+unsigned char mc_self_openloop_VF(float *iabc)
 {
     duty_t duty = {0};
-    alpbet_t temp_ab = {0};
     alpbet_t i_ab;
     dq_t i_dq;
-
-    static float theta = 0.0f;
-    dq_t idq = {0.0f,0.04f};
-    idq.d = OPENLOOP_DEBUG_TOTAL_Te;    
-    idq.q = 0.00f;
     abc_t i_abc = {0};
-    i_abc.a = iabc[0];    i_abc.b = iabc[1];    i_abc.c = iabc[2];
-    _3s_2s(i_abc,&i_ab);
-    _2s_2r(i_ab,theta,&i_dq);
+    static float theta = 0.0f;
+
+    /*读取编码器角度值*/
+    mc_encoder_read(&(mc_param.encoder_handle)); 
+    /*反PARK CLARK变换*/
+    i_abc.a = iabc[0];
+    i_abc.b = iabc[1];
+    i_abc.c = iabc[2];
+    _3s_2s(i_abc, &i_ab);
+    _2s_2r(i_ab, theta, &i_dq);
+    /*更新电流值，方便观察*/
     motordebug.ia_real = i_abc.a;
     motordebug.ib_real = i_abc.b;
     motordebug.ic_real = i_abc.c;
     motordebug.id_real = i_dq.d;
     motordebug.iq_real = i_dq.q;
     motordebug.self_ele_theta = theta;
-    temp_ab = _2r_2s(idq,theta);
-    duty = SVM(temp_ab.alpha,temp_ab.beta);
-    motor_set_pwm(duty._a,duty._b,duty._c);   
+    /*强制拖动电机转动*/
+#ifdef VF_MODE_D
+    i_dq.d = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
+    i_dq.q = 0.00f;
+#else
+    i_dq.d = 0.0f; // D轴强拖。注意:应和预定位阶段保持一致
+    i_dq.q = OPENLOOP_DEBUG_TOTAL_Te;    
+#endif // DEBUG    
+
+    /*park变换*/
+    i_ab = _2r_2s(i_dq, theta);
+    /*SVPWM*/
+    duty = SVM(i_ab.alpha, i_ab.beta);
+    motor_set_pwm(duty._a, duty._b, duty._c);
+
     theta += OPENLOOP_DEBUG_STEP_THETA;
     if (theta > _2PI || theta < -_2PI)
     {
@@ -52,18 +68,8 @@ unsigned char TEST_Fuc(float *iabc)
 
 static void mc_self_openlooptest(float *iabc)
 {
-    static unsigned short cnt = 0;
-    float next_theta,theta;
-    dq_t idq = {0.0f,0.04f};
-    idq.q = OPENLOOP_DEBUG_TOTAL_Te;
-    alpbet_t temp_ab = {0};
-    duty_t duty = {0};
-    alpbet_t i_ab;
-    dq_t i_dq;
-
-    // mc_encoder_t encoder;
-    mc_encoder_read(&(mc_param.encoder_handle));
-    enum{
+    enum
+    {
         PREPOSITIONING,
         RUNING,
         STOP
@@ -71,13 +77,25 @@ static void mc_self_openlooptest(float *iabc)
     static unsigned short state = PREPOSITIONING;
     switch (state)
     {
-
     case PREPOSITIONING:
     {
-        next_theta = 0.0f;
-        temp_ab = _2r_2s(idq,next_theta);
-        duty = SVM(temp_ab.alpha,temp_ab.beta);
-        motor_set_pwm(duty._a,duty._b,duty._c);
+        float theta;
+        alpbet_t iab;
+        duty_t duty;
+        dq_t i_dq;
+#ifdef VF_MODE_D
+    i_dq.d = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
+    i_dq.q = 0.00f;
+#else
+    i_dq.d = 0.0f; 
+    i_dq.q = OPENLOOP_DEBUG_TOTAL_Te; // Q轴强拖。注意:应和预定位阶段保持一致
+#endif
+        theta = 0.0f;
+        iab = _2r_2s(i_dq, theta);
+        duty = SVM(iab.alpha, iab.beta);
+        motor_set_pwm(duty._a, duty._b, duty._c);
+        // 延时等待一段时间
+        static unsigned short cnt = 0;
         if (cnt++ > 16000)
         {
             cnt = 0;
@@ -87,36 +105,10 @@ static void mc_self_openlooptest(float *iabc)
     break;
 
     case RUNING:
-
-        // theta = TOTAL_OMEGA * CURRMENT_PERIOD * cnt;
-
-        // _3s_2s(i_abc,&i_ab);
-        // _2s_2r(i_ab,theta*MOTOR_PAIRS,&i_dq);
-        // motordebug.ia_real = i_abc.a;
-        // motordebug.ib_real = i_abc.b;
-        // motordebug.ic_real = i_abc.c;
-        // motordebug.id_real = i_dq.d;
-        // motordebug.iq_real = i_dq.q;
-        // next_theta = TOTAL_OMEGA * CURRMENT_PERIOD * (cnt+1) * MOTOR_PAIRS;
-        // temp_ab = _2r_2s(idq,next_theta);
-        // duty = SVM(temp_ab.alpha,temp_ab.beta);
-        // motor_set_pwm(duty._a,duty._b,duty._c);
-        // cnt++;
-        // if (theta > _2PI)
-        // {
-        //     state = STOP;
-        //     break;
-        // }
-        if (TEST_Fuc(iabc))
-        {
-            state = STOP;
-            break;
-        }
-        
+        mc_self_openloop_VF(iabc);
         break;
 
     case STOP:
-        cnt = 0;
         state = RUNING;
         break;
     default:
@@ -124,18 +116,15 @@ static void mc_self_openlooptest(float *iabc)
     }
 }
 
-
-
-
 static void mc_encoderopenlooptest(float *iabc)
 {
     float theta = 0.0f;
     float next_theta = 0.0f;
-    dq_t idq = {0.0f,-0.1f};
+    dq_t idq = {0.0f, -0.1f};
     alpbet_t temp_ab = {0};
     duty_t duty = {0};
     alpbet_t i_ab;
-    dq_t i_dq;    
+    dq_t i_dq;
     float speed = 0.0f;
     mc_encoder_t encoder;
     mc_encoder_read(&(mc_param.encoder_handle));
@@ -146,17 +135,16 @@ static void mc_encoderopenlooptest(float *iabc)
     i_abc.a = iabc[0];
     i_abc.b = iabc[1];
     i_abc.c = iabc[2];
-    _3s_2s(i_abc,&i_ab);
-    _2s_2r(i_ab,theta,&i_dq);
+    _3s_2s(i_abc, &i_ab);
+    _2s_2r(i_ab, theta, &i_dq);
     motordebug.ia_real = i_abc.a;
     motordebug.ib_real = i_abc.b;
     motordebug.ic_real = i_abc.c;
     motordebug.id_real = i_dq.d;
     motordebug.iq_real = i_dq.q;
-    next_theta = theta + (1.5f * speed * CURRMENT_PERIOD);//TODO
-    temp_ab = _2r_2s(idq,next_theta);    
+    next_theta = theta + (1.5f * speed * CURRMENT_PERIOD); // TODO
+    temp_ab = _2r_2s(idq, next_theta);
 
-    duty = SVM(temp_ab.alpha,temp_ab.beta);
-    motor_set_pwm(duty._a,duty._b,duty._c);
+    duty = SVM(temp_ab.alpha, temp_ab.beta);
+    motor_set_pwm(duty._a, duty._b, duty._c);
 }
-

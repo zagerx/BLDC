@@ -1,7 +1,7 @@
 #include "hall_sensor.h"
 #include "debuglog.h"
 #include "gpio.h"
-
+#include "board.h"
 #ifdef MOTOR_OPENLOOP 
 #include "motorctrl_common.h"
 extern motordebug_t motordebug;
@@ -10,9 +10,9 @@ extern motordebug_t motordebug;
 static void hall_update_dir(hall_sensor_t *hall,int8_t dir,uint8_t cur_sect)
 {
 #ifdef MOTOR_OPENLOOP 
-    // USER_DEBUG_NORMAL("hall base angle %f \n",motordebug.self_ele_theta);
     volatile static float test_temp[7];
     test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]),motordebug.self_ele_theta);
+    USER_DEBUG_NORMAL("%d----->%f\n",cur_sect,test_temp[cur_sect]);
 #endif 
     hall->dir = dir;
     /*计算扇区速度*/
@@ -124,6 +124,10 @@ freq = 10kh
 float hall_cale(hall_sensor_t *hall)
 {
     hall->angle += hall->speed*CURLOOP_PER;
+    if (hall->angle > 6.2831852f)
+    {
+        hall->angle -= 6.2831852f;
+    }
 }
 
 void hall_init(hall_sensor_t *hall,void *pf1,void *pf2)
@@ -135,12 +139,12 @@ void hall_init(hall_sensor_t *hall,void *pf1,void *pf2)
     hall->angle = 0.0f;
     hall->hall_baseBuff[0] = 0.0000f;
     {
-        hall->hall_baseBuff[6] = 0.3050f;
-        hall->hall_baseBuff[4] = 1.2544f;
-        hall->hall_baseBuff[5] = 2.06332f;
-        hall->hall_baseBuff[1] = 3.1735f;
-        hall->hall_baseBuff[3] = 3.97523f;
-        hall->hall_baseBuff[2] = 5.2240f;
+        hall->hall_baseBuff[6] = SCETION_6_BASEANGLE;
+        hall->hall_baseBuff[4] = SCETION_4_BASEANGLE;
+        hall->hall_baseBuff[5] = SCETION_5_BASEANGLE;
+        hall->hall_baseBuff[1] = SCETION_1_BASEANGLE;
+        hall->hall_baseBuff[3] = SCETION_3_BASEANGLE;
+        hall->hall_baseBuff[2] = SCETION_2_BASEANGLE;    
     }
 
 #ifdef MOTOR_OPENLOOP
