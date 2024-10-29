@@ -2,27 +2,44 @@
 #include "debuglog.h"
 #include "gpio.h"
 #include "board.h"
-#ifdef MOTOR_OPENLOOP 
+#ifdef MOTOR_OPENLOOP
 #include "motorctrl_common.h"
 extern motordebug_t motordebug;
 #endif // DEBUG
 
-static void hall_update_dir(hall_sensor_t *hall,int8_t dir,uint8_t cur_sect)
+volatile float test_cur, test_last;
+static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_sect)
 {
-#ifdef MOTOR_OPENLOOP 
+    float delt_,speed;
+#ifdef MOTOR_OPENLOOP
     volatile static float test_temp[7];
-    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]),motordebug.self_ele_theta);
-    USER_DEBUG_NORMAL("%d----->%f\n",cur_sect,test_temp[cur_sect]);
-#endif 
+    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), motordebug.self_ele_theta);
+    USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
+#endif
     hall->dir = dir;
+    delt_ = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
+
     /*计算扇区速度*/
-    float delt_ = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
-    if (delt_ < 0.0f)
+    if (dir > 0)
     {
-        delt_ += 6.2831852f;
+        if (delt_ < 0.0f)
+        {
+            delt_ += 6.2831852f;
+        }
+        speed = hall->dir * (delt_ / (0.0001f * hall->count));
+        hall->speed = lowfilter_cale(&(hall->speedfilter),speed);
+        hall->angle = hall->hall_baseBuff[cur_sect];
     }
-    hall->speed =hall->dir * delt_ / (0.0001*hall->count);
-    hall->angle = hall->hall_baseBuff[cur_sect];//更新扇区基准角度
+    else
+    {
+        if (delt_ > 0.0f)
+        {
+            delt_ -= 6.2831852f;
+        }
+        speed = hall->dir * (-1.0*delt_ / (0.0001f * hall->count));
+        hall->speed = lowfilter_cale(&(hall->speedfilter),speed);        
+        hall->angle = hall->hall_baseBuff[hall->last_section];
+    }
     hall->last_section = cur_sect;
     hall->count = 0;
 }
@@ -39,71 +56,88 @@ float hall_update(hall_sensor_t *hall)
     case 6:
         if (cur_section == 4)
         {
-            hall_update_dir(hall,1,cur_section); 
-        }else if (cur_section == 2)
+            hall_update_baseangle(hall, 1, cur_section);
+        }
+        else if (cur_section == 2)
         {
-            hall_update_dir(hall,-1,cur_section);
-        }else{
+            hall_update_baseangle(hall, -1, cur_section);
+        }
+        else
+        {
             return 0.0f;
         }
-        
+
         break;
 
     case 4:
         if (cur_section == 5)
         {
-            hall_update_dir(hall,1,cur_section); 
-        }else if (cur_section == 6)
+            hall_update_baseangle(hall, 1, cur_section);
+        }
+        else if (cur_section == 6)
         {
-            hall_update_dir(hall,-1,cur_section);
-        }else{
+            hall_update_baseangle(hall, -1, cur_section);
+        }
+        else
+        {
             return 0.0f;
-        }        
+        }
         break;
     case 5:
         if (cur_section == 1)
         {
-            hall_update_dir(hall,1,cur_section);
-        }else if (cur_section == 4)
+            hall_update_baseangle(hall, 1, cur_section);
+        }
+        else if (cur_section == 4)
         {
-            hall_update_dir(hall,-1,cur_section);
-        }else{
+            hall_update_baseangle(hall, -1, cur_section);
+        }
+        else
+        {
             return 0.0f;
-        }        
+        }
         break;
     case 1:
         if (cur_section == 3)
         {
-            hall_update_dir(hall,1,cur_section); 
-        }else if (cur_section == 5)
+            hall_update_baseangle(hall, 1, cur_section);
+        }
+        else if (cur_section == 5)
         {
-            hall_update_dir(hall,-1,cur_section);
-        }else{
+            hall_update_baseangle(hall, -1, cur_section);
+        }
+        else
+        {
             return 0.0f;
-        }        
+        }
         break;
     case 3:
         if (cur_section == 2)
         {
-            hall_update_dir(hall,1,cur_section); 
-        }else if (cur_section == 1)
+            hall_update_baseangle(hall, 1, cur_section);
+        }
+        else if (cur_section == 1)
         {
-            hall_update_dir(hall,-1,cur_section);
-        }else{
+            hall_update_baseangle(hall, -1, cur_section);
+        }
+        else
+        {
             return 0.0f;
-        }        
+        }
         break;
     case 2:
         if (cur_section == 6)
         {
-            hall_update_dir(hall,1,cur_section); 
-
-        }else if (cur_section == 3)
+            hall_update_baseangle(hall, 1, cur_section);
+        }
+        else if (cur_section == 3)
         {
-            hall_update_dir(hall,-1,cur_section);
-        }else{
+            hall_update_baseangle(hall, -1, cur_section);
+        }
+        else
+        {
             return 0.0f;
-        }        
+        }
         break;
     case 0:
         hall->last_section = cur_section;
@@ -111,8 +145,6 @@ float hall_update(hall_sensor_t *hall)
     default:
         break;
     }
-
-
 }
 
 /*
@@ -120,17 +152,21 @@ angle = speed*t
 
 freq = 10kh
 */
-#define CURLOOP_PER   0.0001f
+#define CURLOOP_PER 0.0001f
 float hall_cale(hall_sensor_t *hall)
 {
-    hall->angle += hall->speed*CURLOOP_PER;
+    hall->angle += hall->speed * CURLOOP_PER;
     if (hall->angle > 6.2831852f)
     {
         hall->angle -= 6.2831852f;
     }
+    if (hall->angle < 0.0f)
+    {
+        hall->angle += 6.2831852f;
+    }
 }
 
-void hall_init(hall_sensor_t *hall,void *pf1,void *pf2)
+void hall_init(hall_sensor_t *hall, void *pf1, void *pf2)
 {
     USER_DEBUG_NORMAL("hall_init\n");
     hall->getsection = pf1;
@@ -144,18 +180,14 @@ void hall_init(hall_sensor_t *hall,void *pf1,void *pf2)
         hall->hall_baseBuff[5] = SCETION_5_BASEANGLE;
         hall->hall_baseBuff[1] = SCETION_1_BASEANGLE;
         hall->hall_baseBuff[3] = SCETION_3_BASEANGLE;
-        hall->hall_baseBuff[2] = SCETION_2_BASEANGLE;    
+        hall->hall_baseBuff[2] = SCETION_2_BASEANGLE;
     }
 
 #ifdef MOTOR_OPENLOOP
-for (uint8_t i = 0; i < 7; i++)
-{
-    lowfilter_init(&(hall->lfilter[i]),5.0F);
-}
- 
-
+    for (uint8_t i = 0; i < 7; i++)
+    {
+        lowfilter_init(&(hall->lfilter[i]), 5.0F);
+    }
 #endif // DEBUG
-
+    lowfilter_init(&(hall->speedfilter), 5.0F);
 }
-
-

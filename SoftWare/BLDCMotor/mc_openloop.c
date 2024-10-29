@@ -58,11 +58,17 @@ unsigned char mc_self_openloop_VF(float *iabc)
     motor_set_pwm(duty._a, duty._b, duty._c);
 
     theta += OPENLOOP_DEBUG_STEP_THETA;
-    if (theta > _2PI || theta < -_2PI)
+    if (theta > _2PI)
     {
         theta = 0.0f;
         return 1;
     }
+    if (theta < 0.0f)
+    {
+        theta = _2PI;
+        return 1;
+    }
+    
     return 0;
 }
 
