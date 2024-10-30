@@ -387,9 +387,9 @@ void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     TEST_A_ADC = hadc->Instance->JDR1;
     TEST_B_ADC = hadc->Instance->JDR2;
     TEST_C_ADC = (&hadc2)->Instance->JDR1;
-    iabc[0] = -((int16_t)(hadc->Instance->JDR1 - 2030))*0.02197f;
-    iabc[1] = ((int16_t)(hadc->Instance->JDR2 - 2048))*0.02197f;
-    iabc[2] = ((int16_t)((&hadc2)->Instance->JDR1 - 2048))*0.02197f;
+    iabc[0] = -((int16_t)(hadc->Instance->JDR1 - 2030-12))*0.02197f;
+    iabc[1] = ((int16_t)(hadc->Instance->JDR2 - 2048+8))*0.02197f;
+    iabc[2] = ((int16_t)((&hadc2)->Instance->JDR1 - 2048 + 12))*0.02197f;
     mc_hightfreq_task(iabc);
     // votf_sendf(iabc,3);
   }

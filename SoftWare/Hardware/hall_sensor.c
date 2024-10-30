@@ -21,11 +21,12 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
     USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
 #endif
     hall->dir = dir;
-    delt_ = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
 
     /*计算扇区速度*/
     if (dir > 0)
     {
+        delt_ = -(hall->hall_baseBuff[hall->last_section] - hall->hall_baseBuff[cur_sect]);
+
         if (delt_ < 0.0f)
         {
             delt_ += 6.2831852f;
@@ -36,6 +37,8 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
     }
     else
     {
+        delt_ = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
+
         if (delt_ > 0.0f)
         {
             delt_ -= 6.2831852f;
@@ -68,77 +71,54 @@ float hall_update(hall_sensor_t *hall)
         break;
 
     case 4:
-        if (cur_section == 5)
-        {
+        if (cur_section == 5){
             hall_update_baseangle(hall, 1, cur_section);
-        }
-        else if (cur_section == 6)
-        {
+        }else if (cur_section == 6){
             hall_update_baseangle(hall, -1, cur_section);
-        }
-        else
-        {
+        }else{
             return 0.0f;
         }
         break;
     case 5:
-        if (cur_section == 1)
-        {
+        if (cur_section == 1){
             hall_update_baseangle(hall, 1, cur_section);
-        }
-        else if (cur_section == 4)
+        }else if (cur_section == 4)
         {
             hall_update_baseangle(hall, -1, cur_section);
-        }
-        else
-        {
+        }else{
             return 0.0f;
         }
         break;
     case 1:
-        if (cur_section == 3)
-        {
+        if (cur_section == 3){
             hall_update_baseangle(hall, 1, cur_section);
-        }
-        else if (cur_section == 5)
-        {
+        }else if (cur_section == 5){
             hall_update_baseangle(hall, -1, cur_section);
-        }
-        else
-        {
+        }else{
             return 0.0f;
         }
         break;
     case 3:
-        if (cur_section == 2)
-        {
+        if (cur_section == 2){
             hall_update_baseangle(hall, 1, cur_section);
-        }
-        else if (cur_section == 1)
-        {
+        }else if (cur_section == 1){
             hall_update_baseangle(hall, -1, cur_section);
-        }
-        else
-        {
+        }else{
             return 0.0f;
         }
         break;
     case 2:
-        if (cur_section == 6)
-        {
+        if (cur_section == 6){
             hall_update_baseangle(hall, 1, cur_section);
-        }
-        else if (cur_section == 3)
-        {
+        }else if (cur_section == 3){
             hall_update_baseangle(hall, -1, cur_section);
-        }
-        else
-        {
+        }else{
             return 0.0f;
         }
         break;
     case 0:
         hall->last_section = cur_section;
+        hall->angle = hall->hall_baseBuff[cur_section];
         break;
     default:
         break;
@@ -170,6 +150,7 @@ void hall_init(hall_sensor_t *hall, void *pf1, void *pf2)
     hall->gettick = pf2;
 
     hall->angle = 0.0f;
+    hall->last_section = 0;
     hall->hall_baseBuff[0] = 0.0000f;
     {
         hall->hall_baseBuff[6] = SCETION_6_BASEANGLE;

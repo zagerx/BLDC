@@ -132,23 +132,49 @@ static void mc_encoderopenlooptest(float *iabc)
     alpbet_t i_ab;
     dq_t idq;
     alpbet_t temp_ab;
-    mc_encoder_read(&(mc_param.encoder_handle));
-    theta = mc_param.encoder_handle.ele_theta;
-    i_abc.a = iabc[0];
-    i_abc.b = iabc[1];
-    i_abc.c = iabc[2];
-    _3s_2s(i_abc, &i_ab);
-    _2s_2r(i_ab, theta, &i_dq);
-    motordebug.ia_real = i_abc.a;
-    motordebug.ib_real = i_abc.b;
-    motordebug.ic_real = i_abc.c;
-    motordebug.id_real = i_dq.d;
-    motordebug.iq_real = i_dq.q;
 
-    idq.d = 0.0f;idq.q = OPENLOOP_DEBUG_TOTAL_Te;
-    temp_ab = _2r_2s(idq, theta);
-    duty = SVM(temp_ab.alpha, temp_ab.beta);
-    motor_set_pwm(duty._a, duty._b, duty._c);
+    enum{
+        IDLE=0,
+        RUN
+    };
+    static uint16_t state = RUN;
+    switch (state)
+    {
+    case IDLE:
+        duty = SVM(0.08f, 0);
+        motor_set_pwm(duty._a, duty._b, duty._c);
+        mc_encoder_read(&(mc_param.encoder_handle));
+        static uint32_t cnt = 0;
+        if (cnt++>8000)
+        {
+            cnt = 0;
+            state = RUN;
+        }
+        break;
+    case RUN:
+        mc_encoder_read(&(mc_param.encoder_handle));
+        theta = mc_param.encoder_handle.ele_theta;
+        i_abc.a = iabc[0];
+        i_abc.b = iabc[1];
+        i_abc.c = iabc[2];
+        _3s_2s(i_abc, &i_ab);
+        _2s_2r(i_ab, theta, &i_dq);
+        motordebug.ia_real = i_abc.a;
+        motordebug.ib_real = i_abc.b;
+        motordebug.ic_real = i_abc.c;
+        motordebug.id_real = i_dq.d;
+        motordebug.iq_real = i_dq.q;
+
+        idq.d = 0.0f;idq.q =  OPENLOOP_DEBUG_TOTAL_Te;//mc_param.speed_handle.tar;//
+        temp_ab = _2r_2s(idq, theta);
+        duty = SVM(temp_ab.alpha, temp_ab.beta);
+        motor_set_pwm(duty._a, duty._b, duty._c);
+        break;
+    default:
+        break;
+    }
+
+
 }
 
 
