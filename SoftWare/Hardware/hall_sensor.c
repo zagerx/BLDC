@@ -2,12 +2,16 @@
 #include "debuglog.h"
 #include "gpio.h"
 #include "board.h"
+
+
+#define CURLOOP_PER (0.0001f)
+
+
 #ifdef MOTOR_OPENLOOP
 #include "motorctrl_common.h"
 extern motordebug_t motordebug;
 #endif // DEBUG
 
-volatile float test_cur, test_last;
 static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_sect)
 {
     float delt_,speed;
@@ -26,7 +30,7 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
         {
             delt_ += 6.2831852f;
         }
-        speed = hall->dir * (delt_ / (0.0001f * hall->count));
+        speed = hall->dir * (delt_ / (CURLOOP_PER * hall->count));
         hall->speed = lowfilter_cale(&(hall->speedfilter),speed);
         hall->angle = hall->hall_baseBuff[cur_sect];
     }
@@ -36,19 +40,18 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
         {
             delt_ -= 6.2831852f;
         }
-        speed = hall->dir * (-1.0*delt_ / (0.0001f * hall->count));
+        speed = hall->dir * (-1.0*delt_ / (CURLOOP_PER * hall->count));
         hall->speed = lowfilter_cale(&(hall->speedfilter),speed);        
         hall->angle = hall->hall_baseBuff[hall->last_section];
     }
     hall->last_section = cur_sect;
     hall->count = 0;
 }
-volatile uint8_t test_cur_base = 0;
+
 float hall_update(hall_sensor_t *hall)
 {
     hall->count++;
     uint8_t cur_section = hall->getsection();
-    test_cur_base = cur_section;
     uint32_t cur_tick = hall->gettick();
     uint32_t delt_tick = hall->last_tick - cur_tick;
     switch (hall->last_section)
@@ -57,16 +60,11 @@ float hall_update(hall_sensor_t *hall)
         if (cur_section == 4)
         {
             hall_update_baseangle(hall, 1, cur_section);
-        }
-        else if (cur_section == 2)
-        {
+        }else if (cur_section == 2){
             hall_update_baseangle(hall, -1, cur_section);
-        }
-        else
-        {
+        }else{
             return 0.0f;
         }
-
         break;
 
     case 4:
@@ -152,7 +150,6 @@ angle = speed*t
 
 freq = 10kh
 */
-#define CURLOOP_PER 0.0001f
 float hall_cale(hall_sensor_t *hall)
 {
     hall->angle += hall->speed * CURLOOP_PER;
