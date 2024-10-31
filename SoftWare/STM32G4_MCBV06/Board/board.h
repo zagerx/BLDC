@@ -7,12 +7,12 @@
 
 #else
 //D轴强拖
-#define SCETION_6_BASEANGLE   (2.952f)
-#define SCETION_4_BASEANGLE   (3.868f)
-#define SCETION_5_BASEANGLE   (5.059f)
-#define SCETION_1_BASEANGLE   (6.131f)
-#define SCETION_3_BASEANGLE   (0.716f)
-#define SCETION_2_BASEANGLE   (1.918f)
+#define SCETION_6_BASEANGLE   (3.477f)
+#define SCETION_4_BASEANGLE   (4.636f)
+#define SCETION_5_BASEANGLE   (5.735f)
+#define SCETION_1_BASEANGLE   (0.309f)
+#define SCETION_3_BASEANGLE   (1.485f)
+#define SCETION_2_BASEANGLE   (2.585f)
 
 //Q轴强拖
 // #define SCETION_6_BASEANGLE   (1.390f)
