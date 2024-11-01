@@ -7,12 +7,12 @@
 
 #else
 //D轴强拖
-#define SCETION_6_BASEANGLE   (3.477f)
-#define SCETION_4_BASEANGLE   (4.636f)
-#define SCETION_5_BASEANGLE   (5.735f)
-#define SCETION_1_BASEANGLE   (0.309f)
-#define SCETION_3_BASEANGLE   (1.485f)
-#define SCETION_2_BASEANGLE   (2.585f)
+#define SCETION_6_BASEANGLE   (4.924f)
+#define SCETION_4_BASEANGLE   (5.936f)
+#define SCETION_5_BASEANGLE   (0.573f)
+#define SCETION_1_BASEANGLE   (1.767f)
+#define SCETION_3_BASEANGLE   (2.764f)
+#define SCETION_2_BASEANGLE   (3.713f)
 
 //Q轴强拖
 // #define SCETION_6_BASEANGLE   (1.390f)
@@ -28,7 +28,7 @@
 #define TOTAL_DISTANCE       (6.2831852f)//自开环距离
 #define TOTAL_TIME           (4.0f)//自开环时间
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)//自开环角速度
-#define OPENLOOP_DEBUG_TOTAL_Te             (0.2f)
+#define OPENLOOP_DEBUG_TOTAL_Te             (-0.2f)
 #define OPENLOOP_DEBUG_STEP_THETA           (0.0002f)
 
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期
