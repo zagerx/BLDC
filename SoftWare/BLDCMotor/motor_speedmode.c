@@ -26,8 +26,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         mc_param_init();
     #endif
 
-#ifndef ENCODER_TYPE_HALL    
-#else
+#if (ENCODER_TYPE == ENCODER_TYPE_HALL)
      mc_hallencoder_init();
 #endif
 

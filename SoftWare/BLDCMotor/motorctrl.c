@@ -23,11 +23,11 @@ mc_param_t mc_param = {0};
 motordebug_t motordebug = {0};
 extern void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen);
 
-#ifndef ENCODER_TYPE_HALL
-#include "sensor.h"
 
-#else
-void mc_hallencoder_init(void);
+#if (ENCODER_TYPE == ENCODER_TYPE_ABS)
+    #include "sensor.h"
+#else if(ENCODER_TYPE == ENCODER_TYPE_HALL)
+    void mc_hallencoder_init(void);
 #endif
 
 
@@ -113,8 +113,6 @@ void mc_hightfreq_task(float *iabc)
     mc_param.currment_handle.next_theta = next_theta;
     duty = currment_loop(&(mc_param.currment_handle));
     motor_set_pwm(duty._a,duty._b,duty._c);
-
-
 #endif
 }
 

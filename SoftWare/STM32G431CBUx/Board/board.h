@@ -6,27 +6,27 @@
 #define MOTOR_PAIRS                          (2.0f)//电机极对数
 #define CURRMENT_PERIOD                      (0.0001f)//电流环周期
 
-#ifndef ENCODER_TYPE_HALL    
+
+#define ENCODER_TYPE_SENSORLESS              (0)
+#define ENCODER_TYPE_ABS                     (1)
+#define ENCODER_TYPE_HALL                    (2)
+#define ENCODER_TYPE                         ENCODER_TYPE_HALL
 
 
-#else
-//D轴强拖
-#define SCETION_6_BASEANGLE   (3.4891f)
-#define SCETION_4_BASEANGLE   (4.5670f)
-#define SCETION_5_BASEANGLE   (5.581f)
-#define SCETION_1_BASEANGLE   (0.312f)
-#define SCETION_3_BASEANGLE   (1.428f)
-#define SCETION_2_BASEANGLE   (2.424f)
+#if (ENCODER_TYPE == ENCODER_TYPE_ABS)
 
-//Q轴强拖
-// #define SCETION_6_BASEANGLE   (1.390f)
-// #define SCETION_4_BASEANGLE   (2.334f)
-// #define SCETION_5_BASEANGLE   (3.446f)
-// #define SCETION_1_BASEANGLE   (4.527f)
-// #define SCETION_3_BASEANGLE   (5.418f)
-// #define SCETION_2_BASEANGLE   (0.331f)
+#else if (ENCODER_TYPE == ENCODER_TYPE_HALL)
+    #define HALL_UPDATE_PERIOD   (0.0001f)
+    #define HALL_POSITIVE_OFFSET (-0.78f)
+    #define HALL_NEGATIVE_OFFSET (-1.28f)
+    //D轴强拖
+    #define SCETION_6_BASEANGLE   (3.4891f)
+    #define SCETION_4_BASEANGLE   (4.5670f)
+    #define SCETION_5_BASEANGLE   (5.581f)
+    #define SCETION_1_BASEANGLE   (0.312f)
+    #define SCETION_3_BASEANGLE   (1.428f)
+    #define SCETION_2_BASEANGLE   (2.424f)
 #endif
-
 
 #define CIRCLE_MAX_VAL       (24.0f)
 #define D_MAX_VAL            (12.0f)

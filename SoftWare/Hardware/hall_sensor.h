@@ -18,6 +18,7 @@ typedef struct hall_sensor
     float speed;
     float angle;
 #ifdef MOTOR_OPENLOOP 
+    float self_angle;
     lowfilter_t lfilter[7];
 #endif // DEBUG  
     lowfilter_t speedfilter;
