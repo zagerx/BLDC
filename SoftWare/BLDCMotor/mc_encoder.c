@@ -53,7 +53,7 @@ static void Absolute_encoder(mc_encoder_t *encoder)
 }
 
 #else
-	#include "hall_sensor.h"
+#include "hall_sensor.h"
 static void* hall_encoder(mc_encoder_t *mc_encoder);
 static void* hall_encoder(mc_encoder_t *mc_encoder)
 {

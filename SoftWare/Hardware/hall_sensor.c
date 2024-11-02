@@ -11,7 +11,7 @@
 #include "motorctrl_common.h"
 extern motordebug_t motordebug;
 #endif // DEBUG
-
+static float test_curbase = 0.0f;
 static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_sect)
 {
     float delt_,speed;
@@ -21,7 +21,6 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
     USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
 #endif
     hall->dir = dir;
-
     /*计算扇区速度*/
     if (dir > 0)
     {
@@ -50,11 +49,13 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
     hall->last_section = cur_sect;
     hall->count = 0;
 }
-
+ uint8_t test_cursection;
 float hall_update(hall_sensor_t *hall)
 {
     hall->count++;
     uint8_t cur_section = hall->getsection();
+    test_cursection = cur_section;
+    test_curbase = hall->hall_baseBuff[cur_section];
     uint32_t cur_tick = hall->gettick();
     uint32_t delt_tick = hall->last_tick - cur_tick;
     switch (hall->last_section)
