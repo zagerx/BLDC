@@ -32,7 +32,7 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
         }
         speed = hall->dir * (delt_ / (CURLOOP_PER * hall->count));
         hall->speed = lowfilter_cale(&(hall->speedfilter),speed);
-        hall->angle = hall->hall_baseBuff[cur_sect];
+        hall->angle = hall->hall_baseBuff[cur_sect] - 0.78f;
     }
     else
     {
@@ -44,7 +44,7 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
         }
         speed = hall->dir * (-1.0*delt_ / (CURLOOP_PER * hall->count));
         hall->speed = lowfilter_cale(&(hall->speedfilter),speed);        
-        hall->angle = hall->hall_baseBuff[hall->last_section];
+        hall->angle = hall->hall_baseBuff[hall->last_section] - 1.28f;
     }
     hall->last_section = cur_sect;
     hall->count = 0;

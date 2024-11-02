@@ -1,7 +1,7 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
-#define OPENLOOP_DEBUG_TOTAL_Te              (0.04f)
+#define OPENLOOP_DEBUG_TOTAL_Te              (0.3f)
 #define OPENLOOP_DEBUG_STEP_THETA            (0.001f)
 #define MOTOR_PAIRS                          (2.0f)//电机极对数
 #define CURRMENT_PERIOD                      (0.0001f)//电流环周期
@@ -11,12 +11,12 @@
 
 #else
 //D轴强拖
-#define SCETION_6_BASEANGLE   (3.0891f)
-#define SCETION_4_BASEANGLE   (4.1670f)
-#define SCETION_5_BASEANGLE   (5.191f)
-#define SCETION_1_BASEANGLE   (6.227f)
-#define SCETION_3_BASEANGLE   (1.024f)
-#define SCETION_2_BASEANGLE   (2.050f)
+#define SCETION_6_BASEANGLE   (3.4891f)
+#define SCETION_4_BASEANGLE   (4.5670f)
+#define SCETION_5_BASEANGLE   (5.581f)
+#define SCETION_1_BASEANGLE   (0.312f)
+#define SCETION_3_BASEANGLE   (1.428f)
+#define SCETION_2_BASEANGLE   (2.424f)
 
 //Q轴强拖
 // #define SCETION_6_BASEANGLE   (1.390f)
