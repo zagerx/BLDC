@@ -39,6 +39,8 @@ __attribute__((weak)) void user_softresetsystem(void)
     }
     void mc_hallencoder_init(void)
     {
-        hall_init(&(mc_param.encoder_handle.hallsensor),hall_get_sectionnumb,hall_gettick);    
+        hall_init(&(mc_param.encoder_handle.sensor),hall_get_sectionnumb,hall_gettick);
+        mc_param.encoder_handle.update = hall_update;
+        mc_param.encoder_handle.cacle = hall_cale;
     }
 #endif

@@ -55,7 +55,7 @@ duty_t currment_loop(mc_currment_t *curloop_handle)
 	v_dq.q = mod_q;	
 	temp_ab = _2r_2s(v_dq,next_theta);
 
-#if 1
+#if 0
 	/*Observer*/
 	smo_t *smo;
 	smo = &(curloop_handle->ti_smo);

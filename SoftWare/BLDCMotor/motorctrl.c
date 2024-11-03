@@ -15,21 +15,14 @@
 #include "debuglog.h"
 #include "string.h"
 
-
-
-
 static fsm_cb_t pmotor_fsm;
 mc_param_t mc_param = {0};
 motordebug_t motordebug = {0};
 extern void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen);
 
-
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
     #include "sensor.h"
-#else if(ENCODER_TYPE == ENCODER_TYPE_HALL)
-    void mc_hallencoder_init(void);
 #endif
-
 
 static void motorthread_init(void)
 {
@@ -50,10 +43,12 @@ void motortctrl_process(void)
     {
     case MOTOR_INIT:
         motorthread_init();
+        USER_DEBUG_NORMAL("MotorThread is Ready\n");
         state = MOTOR_RUNING;
         break;
     case MOTOR_RUNING:
-        DISPATCH_FSM(&pmotor_fsm);
+        DISPATCH_FSM(&pmotor_fsm);//模式切换
+
         if (motordebug.rec_cmd == M_SET_SpeedM)
         {
             motordebug.rec_cmd = 0;//TODO

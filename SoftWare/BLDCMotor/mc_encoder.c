@@ -51,17 +51,7 @@
 		motordebug.speed_real = filter_n_rap;
 	}
 #else if(ENCODER_TYPE == ENCODER_TYPE_HALL)
-	#include "hall_sensor.h"
-	static void* hall_encoder(mc_encoder_t *mc_encoder);
-	static void* hall_encoder(mc_encoder_t *mc_encoder)
-	{
-	#ifdef 	ENCODER_TYPE_HALL
-		hall_update(&(mc_encoder->hallsensor));
-		hall_cale(&(mc_encoder->hallsensor));
-		mc_encoder->ele_theta = mc_encoder->hallsensor.angle;
-		mc_encoder->speed = mc_encoder->hallsensor.speed;
-	#endif	
-	}
+
 #endif
 
 //TODO
@@ -71,9 +61,12 @@ void mc_encoder_read(mc_encoder_t *encoder)
 	Absolute_encoder(encoder);
 #else if(ENCODER_TYPE == ENCODER_TYPE_HALL)
 	#ifdef MOTOR_OPENLOOP
-		encoder->hallsensor.self_angle = motordebug.self_ele_theta;
+		encoder->sensor.self_angle = motordebug.self_ele_theta;
 	#endif
-	hall_encoder(encoder);
+		encoder->update(&(encoder->sensor));
+		encoder->cacle(&(encoder->sensor));
+		encoder->ele_theta = encoder->sensor.angle;
+		encoder->speed = encoder->sensor.speed;
 #endif
 }
 

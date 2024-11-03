@@ -77,7 +77,8 @@ typedef struct mc_currment
     smo_t ti_smo;
 }mc_currment_t;
 
-typedef struct mc_encoder
+typedef struct mc_encoder mc_encoder_t;
+struct mc_encoder
 {
     /*输出*/
     float speed;     //机械转速
@@ -92,9 +93,12 @@ typedef struct mc_encoder
     float mec_theta;
     float pre_theta;
 #else
-    hall_sensor_t hallsensor;
+    hall_sensor_t sensor;
 #endif
-}mc_encoder_t;
+    /*方法*/
+    void (*update)(void*);
+    void (*cacle)(void*);  
+};
 
 
 typedef struct _mc_param

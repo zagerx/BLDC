@@ -1,6 +1,13 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
+
+#define ENCODER_TYPE_SENSORLESS              (0)
+#define ENCODER_TYPE_ABS                     (1)
+#define ENCODER_TYPE_HALL                    (2)
+#define ENCODER_TYPE                         ENCODER_TYPE_ABS
+
+
 #define TOTAL_DISTANCE       (_2PI)//自开环距离
 #define TOTAL_TIME           (2.0f)//自开环时间
 #define TOTAL_OMEGA          (TOTAL_DISTANCE/TOTAL_TIME)//自开环角速度

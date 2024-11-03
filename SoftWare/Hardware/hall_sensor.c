@@ -49,8 +49,10 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
 
 
 
-float hall_update(hall_sensor_t *hall)
+void hall_update(void *pthis)
 {
+    hall_sensor_t *hall;
+    hall = (hall_sensor_t *)pthis;
     hall->count++;
     uint8_t cur_section = hall->getsection();
     uint32_t cur_tick = hall->gettick();
@@ -64,7 +66,6 @@ float hall_update(hall_sensor_t *hall)
         }else if (cur_section == 2){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
 
@@ -74,7 +75,6 @@ float hall_update(hall_sensor_t *hall)
         }else if (cur_section == 6){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
     case 5:
@@ -84,7 +84,6 @@ float hall_update(hall_sensor_t *hall)
         {
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
     case 1:
@@ -93,7 +92,6 @@ float hall_update(hall_sensor_t *hall)
         }else if (cur_section == 5){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
     case 3:
@@ -102,7 +100,6 @@ float hall_update(hall_sensor_t *hall)
         }else if (cur_section == 1){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
     case 2:
@@ -111,7 +108,6 @@ float hall_update(hall_sensor_t *hall)
         }else if (cur_section == 3){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
     case 0:
@@ -128,8 +124,10 @@ angle = speed*t
 
 freq = 10kh
 */
-float hall_cale(hall_sensor_t *hall)
+void hall_cale(void *pthis)
 {
+    hall_sensor_t *hall;
+    hall = (hall_sensor_t *)pthis;
     hall->angle += hall->speed * HALL_UPDATE_PERIOD;
     if (hall->angle > 6.2831852f)
     {
