@@ -24,6 +24,7 @@ struct fsm_cb{
     unsigned short cycle;
     unsigned char chState;
     unsigned int count;
+    void* pdata;
     fsm_t *fsm;
 };
 

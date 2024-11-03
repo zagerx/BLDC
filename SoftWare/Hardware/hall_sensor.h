@@ -18,14 +18,15 @@ typedef struct hall_sensor
     float speed;
     float angle;
 #ifdef MOTOR_OPENLOOP 
+    float self_angle;
     lowfilter_t lfilter[7];
 #endif // DEBUG  
     lowfilter_t speedfilter;
 }hall_sensor_t;
 #pragma pack(pop)
 
-float hall_update(hall_sensor_t *hall);
-float hall_cale(hall_sensor_t *hall);
-void hall_init(hall_sensor_t *hall,void *pf1,void *pf2);
+void hall_update(void *pthis);
+void hall_cale(void  *pthis);
+void hall_init(void *this);
 
 #endif

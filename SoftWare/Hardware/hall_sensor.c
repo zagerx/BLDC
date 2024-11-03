@@ -1,27 +1,23 @@
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
 #include "hall_sensor.h"
 #include "debuglog.h"
-#include "gpio.h"
 #include "board.h"
-
-
-#define CURLOOP_PER (0.0001f)
-
-
-#ifdef MOTOR_OPENLOOP
-#include "motorctrl_common.h"
-extern motordebug_t motordebug;
-#endif // DEBUG
 
 static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_sect)
 {
     float delt_,speed;
 #ifdef MOTOR_OPENLOOP
     volatile static float test_temp[7];
-    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), motordebug.self_ele_theta);
+    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle);
     USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
 #endif
     hall->dir = dir;
-
     /*计算扇区速度*/
     if (dir > 0)
     {
@@ -31,9 +27,9 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
         {
             delt_ += 6.2831852f;
         }
-        speed = hall->dir * (delt_ / (CURLOOP_PER * hall->count));
+        speed = hall->dir * (delt_ / (HALL_UPDATE_PERIOD * hall->count));
         hall->speed = lowfilter_cale(&(hall->speedfilter),speed);
-        hall->angle = hall->hall_baseBuff[cur_sect];
+        hall->angle = hall->hall_baseBuff[cur_sect] + HALL_POSITIVE_OFFSET;
     }
     else
     {
@@ -43,16 +39,20 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
         {
             delt_ -= 6.2831852f;
         }
-        speed = hall->dir * (-1.0*delt_ / (CURLOOP_PER * hall->count));
+        speed = hall->dir * (-1.0*delt_ / (HALL_UPDATE_PERIOD * hall->count));
         hall->speed = lowfilter_cale(&(hall->speedfilter),speed);        
-        hall->angle = hall->hall_baseBuff[hall->last_section];
+        hall->angle = hall->hall_baseBuff[hall->last_section] + HALL_NEGATIVE_OFFSET;
     }
     hall->last_section = cur_sect;
     hall->count = 0;
 }
 
-float hall_update(hall_sensor_t *hall)
+
+
+void hall_update(void *pthis)
 {
+    hall_sensor_t *hall;
+    hall = (hall_sensor_t *)pthis;
     hall->count++;
     uint8_t cur_section = hall->getsection();
     uint32_t cur_tick = hall->gettick();
@@ -66,7 +66,6 @@ float hall_update(hall_sensor_t *hall)
         }else if (cur_section == 2){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
 
@@ -76,7 +75,6 @@ float hall_update(hall_sensor_t *hall)
         }else if (cur_section == 6){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
     case 5:
@@ -86,7 +84,6 @@ float hall_update(hall_sensor_t *hall)
         {
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
     case 1:
@@ -95,7 +92,6 @@ float hall_update(hall_sensor_t *hall)
         }else if (cur_section == 5){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
     case 3:
@@ -104,7 +100,6 @@ float hall_update(hall_sensor_t *hall)
         }else if (cur_section == 1){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
     case 2:
@@ -113,7 +108,6 @@ float hall_update(hall_sensor_t *hall)
         }else if (cur_section == 3){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
-            return 0.0f;
         }
         break;
     case 0:
@@ -130,9 +124,11 @@ angle = speed*t
 
 freq = 10kh
 */
-float hall_cale(hall_sensor_t *hall)
+void hall_cale(void *pthis)
 {
-    hall->angle += hall->speed * CURLOOP_PER;
+    hall_sensor_t *hall;
+    hall = (hall_sensor_t *)pthis;
+    hall->angle += hall->speed * HALL_UPDATE_PERIOD;
     if (hall->angle > 6.2831852f)
     {
         hall->angle -= 6.2831852f;
@@ -143,14 +139,35 @@ float hall_cale(hall_sensor_t *hall)
     }
 }
 
-void hall_init(hall_sensor_t *hall, void *pf1, void *pf2)
-{
-    USER_DEBUG_NORMAL("hall_init\n");
-    hall->getsection = pf1;
-    hall->gettick = pf2;
 
+
+
+
+/*--------------------硬件相关---------------------------------*/
+#include "gpio.h"
+static uint8_t hall_get_sectionnumb(void)
+{
+    uint8_t u,v,w;
+    u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
+    v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
+    w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
+    return u | (w<<1) | (v<<2);
+}
+static uint32_t hall_gettick()
+{
+    return 0;
+}
+
+void hall_init(void *this)
+{
+    hall_sensor_t *hall;
+    hall = this;
+    USER_DEBUG_NORMAL("hall_init\n");
+    hall->getsection = hall_get_sectionnumb;
+    hall->gettick = hall_gettick;
     hall->angle = 0.0f;
     hall->last_section = 0;
+
     hall->hall_baseBuff[0] = 0.0000f;
     {
         hall->hall_baseBuff[6] = SCETION_6_BASEANGLE;

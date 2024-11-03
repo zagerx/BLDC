@@ -165,7 +165,6 @@ C_SOURCES += $(wildcard ../Common/method/filter.c)
 C_INCLUDES += -I../Common/flash
 C_SOURCES += $(wildcard ../Common/flash/*.c)
 
-C_DEFS += -DENCODER_TYPE_HALL
 C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
 C_INCLUDES += -I../Hardware 
 

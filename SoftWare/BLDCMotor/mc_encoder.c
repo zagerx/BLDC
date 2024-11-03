@@ -3,81 +3,74 @@
 #include "stdbool.h"
 #include "stdint.h"
 #include "mc_utils.h"
-
-
-#ifndef ENCODER_TYPE_HALL    
+#include "board.h"//TODO
+#if (ENCODER_TYPE == ENCODER_TYPE_ABS)
 	#include "board.h"
 	#include "sensor.h"
-static void Absolute_encoder(mc_encoder_t *encoder);
-static void Absolute_encoder(mc_encoder_t *encoder)
-{
-	uint32_t data = *((uint32_t*)sensor_user_read(SENSOR_01));
-	encoder->raw_data = data;
-    float mec_theta = data * ENCODER_CPR - MEC_ANGLE_OFFSET;
-    float ele_theta = mec_theta * MOTOR_PAIRS;
-    encoder->ele_theta = wrap_pm_pi(ele_theta);
-	encoder->mec_theta = mec_theta;
-    motordebug.ele_angle = encoder->ele_theta;
-	
-	/*更新速度*/
-    // 将mec_theta归一化到[0, 2π)区间  
-    float normalized_mec_theta = fmodf(mec_theta, 2.0f * M_PI);  
-    if (normalized_mec_theta < 0.0f) {  
-        normalized_mec_theta += 2.0f * M_PI; // 处理负值  
-    }
-    // 计算角度变化  
-    float delt_theta = normalized_mec_theta - encoder->pre_theta;  
-    // 处理跨越周期边界的情况  
-    if (delt_theta > M_PI) {  
-        delt_theta -= 2.0f * M_PI; // 逆时针大跳转  
-    } else if (delt_theta < -M_PI) {  
-        delt_theta += 2.0f * M_PI; // 顺时针大跳转  
-    }
-    // 更新上一次的角度值  
-    encoder->pre_theta = normalized_mec_theta;  
-    // 计算角速度（这里假设时间间隔为2ms，因此乘以500来得到每秒的角速度）  
-    float omega = delt_theta / (CURRMENT_PERIOD / 2.0f);//TODO /2部分 
+	static void Absolute_encoder(mc_encoder_t *encoder);
+	static void Absolute_encoder(mc_encoder_t *encoder)
+	{
+		uint32_t data = *((uint32_t*)sensor_user_read(SENSOR_01));
+		encoder->raw_data = data;
+		float mec_theta = data * ENCODER_CPR - MEC_ANGLE_OFFSET;
+		float ele_theta = mec_theta * MOTOR_PAIRS;
+		encoder->ele_theta = wrap_pm_pi(ele_theta);
+		encoder->mec_theta = mec_theta;
+		motordebug.ele_angle = encoder->ele_theta;
+		
+		/*更新速度*/
+		// 将mec_theta归一化到[0, 2π)区间  
+		float normalized_mec_theta = fmodf(mec_theta, 2.0f * M_PI);  
+		if (normalized_mec_theta < 0.0f) {  
+			normalized_mec_theta += 2.0f * M_PI; // 处理负值  
+		}
+		// 计算角度变化  
+		float delt_theta = normalized_mec_theta - encoder->pre_theta;  
+		// 处理跨越周期边界的情况  
+		if (delt_theta > M_PI) {  
+			delt_theta -= 2.0f * M_PI; // 逆时针大跳转  
+		} else if (delt_theta < -M_PI) {  
+			delt_theta += 2.0f * M_PI; // 顺时针大跳转  
+		}
+		// 更新上一次的角度值  
+		encoder->pre_theta = normalized_mec_theta;  
+		// 计算角速度（这里假设时间间隔为2ms，因此乘以500来得到每秒的角速度）  
+		float omega = delt_theta / (CURRMENT_PERIOD / 2.0f);//TODO /2部分 
 
-	//
-	encoder->total_realmectheta += delt_theta;
-	motordebug.pos_real = encoder->total_realmectheta;
-    // 计算转速  
-    float n_rap = 9.5492965f * omega;  
+		//
+		encoder->total_realmectheta += delt_theta;
+		motordebug.pos_real = encoder->total_realmectheta;
+		// 计算转速  
+		float n_rap = 9.5492965f * omega;  
 
-	float filter_n_rap;
-    filter_n_rap = lowfilter_cale(&(encoder->speedfilter),n_rap);
+		float filter_n_rap;
+		filter_n_rap = lowfilter_cale(&(encoder->speedfilter),n_rap);
 
-    // 更新转速  
-    encoder->speed = filter_n_rap;
-	motordebug.speed_real = filter_n_rap;
-}
-
-#else
-	#include "hall_sensor.h"
-static void* hall_encoder(mc_encoder_t *mc_encoder);
-static void* hall_encoder(mc_encoder_t *mc_encoder)
-{
-#ifdef 	ENCODER_TYPE_HALL
-	hall_update(&(mc_encoder->hallsensor));
-	hall_cale(&(mc_encoder->hallsensor));
-	mc_encoder->ele_theta = mc_encoder->hallsensor.angle;
-	mc_encoder->speed = mc_encoder->hallsensor.speed;
-#endif	
-}
+		// 更新转速  
+		encoder->speed = filter_n_rap;
+		motordebug.speed_real = filter_n_rap;
+	}
 #endif
-
-
 
 //TODO
 void mc_encoder_read(mc_encoder_t *encoder)
 {
-#ifndef ENCODER_TYPE_HALL    
+#if (ENCODER_TYPE == ENCODER_TYPE_ABS)
 	Absolute_encoder(encoder);
-#else
-	hall_encoder(encoder);
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+	#ifdef MOTOR_OPENLOOP
+		encoder->sensor.self_angle = motordebug.self_ele_theta;
+	#endif
+		encoder->update(&(encoder->sensor));
+		encoder->cacle(&(encoder->sensor));
+		encoder->ele_theta = encoder->sensor.angle;
+		encoder->speed = encoder->sensor.speed;
 #endif
 }
-
+void mc_encoder_init(mc_encoder_t *encoder)
+{
+	encoder->init(&(encoder->sensor));
+}
 
 
 

@@ -15,7 +15,6 @@
 
 void user_board_init(void)
 {
-    // sensor_register(&sg_sensor_hallencoder,SENSOR_01);
 }
 void board_deinit(void)
 {
@@ -76,6 +75,21 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         // }            
     }
 }
+
+#include "hall_sensor.h"
+#include "motorctrl_common.h"
+extern mc_param_t mc_param;
+void mc_hallencoder_init(void)
+{
+    mc_param.encoder_handle.init = hall_init;
+    mc_param.encoder_handle.update = hall_update;
+    mc_param.encoder_handle.cacle = hall_cale;
+}
+
+
+
+
+
 
 void user_softresetsystem(void)
 {

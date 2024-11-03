@@ -7,10 +7,11 @@
 #include "pid.h"
 #include "filter.h"
 
-#ifndef ENCODER_TYPE_HALL    
-#else
-    #include "hall_sensor.h"    
-#endif 
+#include "board.h"
+#if (ENCODER_TYPE == ENCODER_TYPE_ABS)
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+    #include "hall_sensor.h"
+#endif
 
 #define PI               3.14159260f
 #define _2PI             6.2831852f
@@ -77,7 +78,8 @@ typedef struct mc_currment
     smo_t ti_smo;
 }mc_currment_t;
 
-typedef struct mc_encoder
+typedef struct mc_encoder mc_encoder_t;
+struct mc_encoder
 {
     /*输出*/
     float speed;     //机械转速
@@ -87,14 +89,18 @@ typedef struct mc_encoder
     lowfilter_t speedfilter;
 
     /*输入*/
-#ifndef ENCODER_TYPE_HALL    
+#if (ENCODER_TYPE == ENCODER_TYPE_ABS)
     int32_t raw_data;
     float mec_theta;
     float pre_theta;
-#else
-    hall_sensor_t hallsensor;
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+    hall_sensor_t sensor;
 #endif
-}mc_encoder_t;
+    /*方法*/
+    void (*init)(void*);
+    void (*update)(void*);
+    void (*cacle)(void*);  
+};
 
 
 typedef struct _mc_param
