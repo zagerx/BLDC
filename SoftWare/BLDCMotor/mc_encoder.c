@@ -50,8 +50,6 @@
 		encoder->speed = filter_n_rap;
 		motordebug.speed_real = filter_n_rap;
 	}
-#else if(ENCODER_TYPE == ENCODER_TYPE_HALL)
-
 #endif
 
 //TODO
@@ -59,7 +57,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
 {
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
 	Absolute_encoder(encoder);
-#else if(ENCODER_TYPE == ENCODER_TYPE_HALL)
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
 	#ifdef MOTOR_OPENLOOP
 		encoder->sensor.self_angle = motordebug.self_ele_theta;
 	#endif

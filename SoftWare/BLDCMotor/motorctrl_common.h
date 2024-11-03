@@ -7,10 +7,11 @@
 #include "pid.h"
 #include "filter.h"
 
-#ifndef ENCODER_TYPE_HALL    
-#else
-    #include "hall_sensor.h"    
-#endif 
+#include "board.h"
+#if (ENCODER_TYPE == ENCODER_TYPE_ABS)
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+    #include "hall_sensor.h"
+#endif
 
 #define PI               3.14159260f
 #define _2PI             6.2831852f
@@ -88,11 +89,11 @@ struct mc_encoder
     lowfilter_t speedfilter;
 
     /*输入*/
-#ifndef ENCODER_TYPE_HALL    
+#if (ENCODER_TYPE == ENCODER_TYPE_ABS)
     int32_t raw_data;
     float mec_theta;
     float pre_theta;
-#else
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
     hall_sensor_t sensor;
 #endif
     /*方法*/
