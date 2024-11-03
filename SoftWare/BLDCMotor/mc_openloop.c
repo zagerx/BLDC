@@ -55,7 +55,7 @@ unsigned char mc_self_openloop_VF(float *iabc)
     i_ab = _2r_2s(i_dq, theta);
     /*SVPWM*/
     duty = SVM(i_ab.alpha, i_ab.beta);
-    motor_set_pwm(duty._a, duty._b, duty._c);
+    mc_param.setpwm(duty._a, duty._b, duty._c);
 
     theta += OPENLOOP_DEBUG_STEP_THETA;
     if (theta > _2PI)
@@ -99,7 +99,7 @@ static void mc_self_openlooptest(float *iabc)
         theta = 0.0f;
         iab = _2r_2s(i_dq, theta);
         duty = SVM(iab.alpha, iab.beta);
-        motor_set_pwm(duty._a, duty._b, duty._c);
+        mc_param.setpwm(duty._a, duty._b, duty._c);
         // 延时等待一段时间
         static unsigned short cnt = 0;
         if (cnt++ > 16000)
@@ -142,7 +142,7 @@ static void mc_encoderopenlooptest(float *iabc)
     {
     case IDLE:
         duty = SVM(0.08f, 0);
-        motor_set_pwm(duty._a, duty._b, duty._c);
+        mc_param.setpwm(duty._a, duty._b, duty._c);
         mc_encoder_read(&(mc_param.encoder_handle));
         static uint32_t cnt = 0;
         if (cnt++>8000)
@@ -168,7 +168,7 @@ static void mc_encoderopenlooptest(float *iabc)
         idq.d = 0.0f;idq.q =  OPENLOOP_DEBUG_TOTAL_Te;//mc_param.speed_handle.tar;//
         temp_ab = _2r_2s(idq, theta);
         duty = SVM(temp_ab.alpha, temp_ab.beta);
-        motor_set_pwm(duty._a, duty._b, duty._c);
+        mc_param.setpwm(duty._a, duty._b, duty._c);
         break;
     default:
         break;

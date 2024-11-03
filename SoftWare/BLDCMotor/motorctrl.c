@@ -107,7 +107,7 @@ void mc_hightfreq_task(float *iabc)
     mc_param.currment_handle.theta = theta;
     mc_param.currment_handle.next_theta = next_theta;
     duty = currment_loop(&(mc_param.currment_handle));
-    motor_set_pwm(duty._a,duty._b,duty._c);
+    mc_param.setpwm(duty._a,duty._b,duty._c);
 #endif
 }
 

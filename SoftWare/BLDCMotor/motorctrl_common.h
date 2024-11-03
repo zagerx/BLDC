@@ -109,6 +109,12 @@ typedef struct _mc_param
     mc_speed_t  speed_handle;
     mc_currment_t currment_handle;
     mc_encoder_t encoder_handle;
+
+    void (*enable)(void);
+    void (*disable)(void);
+    void (*setpwm)(float,float,float);
+    void (*reset_system)(void);
+    void (*bsptransmit)(uint8_t*,uint16_t);
 }mc_param_t;
 
 typedef struct _motor
@@ -119,8 +125,7 @@ typedef struct _motor
     float pairs;
     float torqueconst;
 
-    void (*enable)(void);
-    void (*disable)(void);
+
 }mt_t;
 
 typedef struct

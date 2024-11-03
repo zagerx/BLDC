@@ -29,7 +29,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         #endif
 
         #if (ENCODER_TYPE == ENCODER_TYPE_HALL)
-            mc_hallencoder_init();
+            mc_MotorModule_init();
             mc_encoder_init(&(mc_param.encoder_handle));
         #endif
 
@@ -42,7 +42,8 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         {
             break;
         }
-        motor_enable();
+        // motor_enable();
+        mc_param.enable();
         pthis->chState = RUN;
         break;
     case RUN:
@@ -57,7 +58,8 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         break;    
     case EXIT:
         USER_DEBUG_NORMAL("exit speed mode\n");
-        motor_disable();
+        // motor_disable();
+        mc_param.disable();
         mc_param_deinit();
         pthis->chState = ENTER;
         break;

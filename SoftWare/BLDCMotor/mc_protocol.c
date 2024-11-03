@@ -116,7 +116,7 @@ static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short 
         temp.fbuf[3] = fbuf[3];
         user_flash_write(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
         /*复位系统 TODO*/
-        user_softresetsystem();
+        mc_param.reset_system();
     }else if(pactor->cmd == M_SET_PIDTarge){
         float temp;
         convert_floats(pdata,datalen,&(temp));   
@@ -180,6 +180,7 @@ void mc_protocol_send(unsigned short cmd,unsigned char* pdata,unsigned short dat
     msg->datalen = frame.datalen + sizeof(frame_t) - 4;
     insert_msg_list_tail(msg_list, msg);
 }
+extern void _bsp_protransmit(unsigned char* pdata,unsigned short len);
 
 void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen)
 {
@@ -191,5 +192,6 @@ void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short 
     p = _pack_proframe(&frame); 
     uint16_t len = frame.datalen + sizeof(frame_t) - 4;
     _bsp_protransmit(p,len);
+    // mc_param.bsptransmit(p,len);//TODO
     heap_free(p);
 }

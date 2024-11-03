@@ -39,7 +39,7 @@ fsm_rt_t motor_posmode(fsm_cb_t *pthis)
         {
             break;
         }
-        motor_enable();
+        mc_param.enable();
         pthis->chState = RUN;
         break;
     case RUN:
@@ -53,7 +53,7 @@ fsm_rt_t motor_posmode(fsm_cb_t *pthis)
         mc_posloop(&(mc_param.pos_handle));
         break;
     case EXIT:
-        motor_disable();
+        mc_param.disable();
         mc_param_deinit();
         pthis->chState = ENTER;    
         USER_DEBUG_NORMAL("motor exit position model\n");

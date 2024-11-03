@@ -210,16 +210,5 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
     }
 }
 #include "debuglog.h"
-void _bsp_protransmit(unsigned char* pdata,unsigned short len)
-{
-    static unsigned char sg_uartsend_buf[125];
-    memcpy(sg_uartsend_buf,pdata,len);
-    HAL_UART_Transmit_DMA(&huart3,sg_uartsend_buf,len);
-    // USER_DEBUG_NORMAL("pdata ");
-    // for (uint16_t i = 0; i < len; i++)
-    // {
-    //   USER_DEBUG_NORMAL("0x%2x  ",pdata[i]);
-    // }
-    // USER_DEBUG_NORMAL("\n");
-}
+
 /* USER CODE END 1 */

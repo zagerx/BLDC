@@ -14,31 +14,53 @@ void Board_init(void)
 #include "voft.h"
 
 #include "tim.h"
-void motor_enable(void)
+static void motor_enable(void)
 {
     tim_pwm_enable();
     tim_tigger_adc();
     adc_start();
 }
-void motor_disable(void)
+static void motor_disable(void)
 {
     tim_pwm_disable();
     adc_stop();
 }
-void motor_set_pwm(float _a,float _b,float _c)
+static void motor_set_pwm(float _a,float _b,float _c)
 {
     tim_set_pwm(_a ,_b,_c);
 }
+
+
+static void user_softresetsystem(void)
+{
+	HAL_NVIC_SystemReset();
+}
+
+#include "usart.h"
+#include "string.h"
+void _bsp_protransmit(unsigned char* pdata,unsigned short len)
+{
+    static unsigned char sg_uartsend_buf[125];
+    memcpy(sg_uartsend_buf,pdata,len);
+    HAL_UART_Transmit_DMA(&huart3,sg_uartsend_buf,len);
+}
+
 
 #include "hall_sensor.h"
 #include "motorctrl_common.h"
 extern mc_param_t mc_param;
 
-void mc_hallencoder_init(void)
+void mc_MotorModule_init(void)
 {
     mc_param.encoder_handle.init = hall_init;
     mc_param.encoder_handle.update = hall_update;
     mc_param.encoder_handle.cacle = hall_cale;
+
+    mc_param.enable = motor_enable;
+    mc_param.disable = motor_disable;
+    mc_param.setpwm = motor_set_pwm;
+    mc_param.reset_system = user_softresetsystem;
+    // mc_param.bsptransmit = _bsp_protransmit;//TODO
 }
 
 
