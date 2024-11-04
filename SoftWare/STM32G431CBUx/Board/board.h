@@ -2,7 +2,7 @@
 #define __BOARD__H
 
 #define OPENLOOP_DEBUG_TOTAL_Te              (0.3f)
-#define OPENLOOP_DEBUG_STEP_THETA            (0.001f)
+#define OPENLOOP_DEBUG_STEP_THETA            (-0.001f)
 #define MOTOR_PAIRS                          (2.0f)//电机极对数
 #define CURRMENT_PERIOD                      (0.0001f)//电流环周期
 
@@ -19,6 +19,9 @@
     #define HALL_UPDATE_PERIOD   (0.0001f)
     #define HALL_POSITIVE_OFFSET (-0.78f)
     #define HALL_NEGATIVE_OFFSET (-1.28f)
+    #define PLL_KP 4.0f
+    #define PLL_KI 0.1f
+    #define OMEGTOTHETA 0.002f     
     //D轴强拖
     #define SCETION_6_BASEANGLE   (3.4891f)
     #define SCETION_4_BASEANGLE   (4.5670f)
@@ -38,8 +41,6 @@
 #define CIRCLE_OUT_MIN      (-12.0f)
 #define SPEED_OUT_MAX       (12.0f) //速度环输出最大值
 #define SPEED_OUT_MIN       (-12.0f)
-
-
 
 void Board_init(void);
 

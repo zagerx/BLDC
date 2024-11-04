@@ -8,7 +8,7 @@
 
 
 #ifndef ENCODER_TYPE_HALL    
-#error "ENCODER_TYPE_HALL is not defined! Compilation stopped."
+    #error "ENCODER_TYPE_HALL is not defined! Compilation stopped."
 #else
 
 #endif

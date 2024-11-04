@@ -12,6 +12,9 @@
     #define HALL_UPDATE_PERIOD   (0.0001f)
     #define HALL_POSITIVE_OFFSET (-0.336f)
     #define HALL_NEGATIVE_OFFSET (+0.112f)
+    #define PLL_KP 2.0f
+    #define PLL_KI 0.01f
+    #define OMEGTOTHETA 0.0002f     
     //D轴强拖 0.04f
     // #define SCETION_6_BASEANGLE   (4.924f)
     // #define SCETION_4_BASEANGLE   (5.936f)

@@ -1,10 +1,3 @@
-/**
- * 
- * 
- * 
- * 
- * 
- */
 #include "hall_sensor.h"
 #include "debuglog.h"
 #include "board.h"
@@ -13,9 +6,9 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
 {
     float delt_,realcacle_speed;
 #ifdef MOTOR_OPENLOOP
-    volatile static float test_temp[7];
-    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle);
-    USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
+    // volatile static float test_temp[7];
+    // test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle);
+    // USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
 #endif
     hall->dir = dir;
     /*计算扇区速度*/
@@ -119,14 +112,6 @@ void hall_update(void *pthis)
     }
 }
 
-/*
-realcacle_angle = realcacle_speed*t
-
-freq = 10kh
-*/
-#define PLL_KP 2.0f
-#define PLL_KI 0.01f
-#define OMEGTOTHETA 0.0002f 
 #include "math.h"
 void hall_cale(void *pthis)
 {
@@ -141,7 +126,6 @@ void hall_cale(void *pthis)
     {
         hall->realcacle_angle += 6.2831852f;
     }
-    /* */
     static float delt_theta;
     delt_theta = sinf(hall->realcacle_angle)*cosf(hall->hat_angle) - cosf(hall->realcacle_angle)*sinf(hall->hat_angle);
     hall->pll_sum += delt_theta;
@@ -156,20 +140,8 @@ void hall_cale(void *pthis)
     {
         hall->hat_angle += 6.2831852f;
     }
-    
-    unsigned char conut;
-    if(omega>2.0f)
-    {
-        if (conut++>200)
-        {
-            hall->hat_angle = hall->hat_angle;
-        }else{
-            hall->angle = hall->realcacle_angle;
-        }
-    }else{
-        conut = 0;
-        hall->angle = hall->realcacle_angle;
-    }
+    // hall->angle = hall->realcacle_angle;    
+    hall->angle = hall->hat_angle;
 }
 
 
