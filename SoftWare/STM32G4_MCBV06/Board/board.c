@@ -20,7 +20,10 @@ void board_deinit(void)
 {
 
 }
-
+void user_softresetsystem(void)
+{
+	HAL_NVIC_SystemReset();
+}
 #include "usart.h"
 #include "string.h"
 void _bsp_protransmit(unsigned char* pdata,unsigned short len)
@@ -97,8 +100,5 @@ void mc_MotorModule_init(void)
 
 
 
-void user_softresetsystem(void)
-{
-	HAL_NVIC_SystemReset();
-}
+
 board_init(user_board_init)
