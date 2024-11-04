@@ -8,10 +8,10 @@
 #include "hall_sensor.h"
 #include "debuglog.h"
 #include "board.h"
-
+#include "stdint.h"
 static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_sect)
 {
-    float delt_,speed;
+    float delt_,realcacle_speed;
 #ifdef MOTOR_OPENLOOP
     volatile static float test_temp[7];
     test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle);
@@ -27,9 +27,9 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
         {
             delt_ += 6.2831852f;
         }
-        speed = hall->dir * (delt_ / (HALL_UPDATE_PERIOD * hall->count));
-        hall->speed = lowfilter_cale(&(hall->speedfilter),speed);
-        hall->angle = hall->hall_baseBuff[cur_sect] + HALL_POSITIVE_OFFSET;
+        realcacle_speed = hall->dir * (delt_ / (HALL_UPDATE_PERIOD * hall->count));
+        hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter),realcacle_speed);
+        hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + HALL_POSITIVE_OFFSET;
     }
     else
     {
@@ -39,9 +39,9 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
         {
             delt_ -= 6.2831852f;
         }
-        speed = hall->dir * (-1.0*delt_ / (HALL_UPDATE_PERIOD * hall->count));
-        hall->speed = lowfilter_cale(&(hall->speedfilter),speed);        
-        hall->angle = hall->hall_baseBuff[hall->last_section] + HALL_NEGATIVE_OFFSET;
+        realcacle_speed = hall->dir * (-1.0*delt_ / (HALL_UPDATE_PERIOD * hall->count));
+        hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter),realcacle_speed);        
+        hall->realcacle_angle = hall->hall_baseBuff[hall->last_section] + HALL_NEGATIVE_OFFSET;
     }
     hall->last_section = cur_sect;
     hall->count = 0;
@@ -112,7 +112,7 @@ void hall_update(void *pthis)
         break;
     case 0:
         hall->last_section = cur_section;
-        hall->angle = hall->hall_baseBuff[cur_section];
+        hall->realcacle_angle = hall->hall_baseBuff[cur_section];
         break;
     default:
         break;
@@ -120,22 +120,55 @@ void hall_update(void *pthis)
 }
 
 /*
-angle = speed*t
+realcacle_angle = realcacle_speed*t
 
 freq = 10kh
 */
+#define PLL_KP 2.0f
+#define PLL_KI 0.01f
+#define OMEGTOTHETA 0.0002f 
+#include "math.h"
 void hall_cale(void *pthis)
 {
     hall_sensor_t *hall;
     hall = (hall_sensor_t *)pthis;
-    hall->angle += hall->speed * HALL_UPDATE_PERIOD;
-    if (hall->angle > 6.2831852f)
+    hall->realcacle_angle += hall->realcacle_speed * HALL_UPDATE_PERIOD;
+    if (hall->realcacle_angle > 6.2831852f)
     {
-        hall->angle -= 6.2831852f;
+        hall->realcacle_angle -= 6.2831852f;
     }
-    if (hall->angle < 0.0f)
+    if (hall->realcacle_angle < 0.0f)
     {
-        hall->angle += 6.2831852f;
+        hall->realcacle_angle += 6.2831852f;
+    }
+    /* */
+    static float delt_theta;
+    delt_theta = sinf(hall->realcacle_angle)*cosf(hall->hat_angle) - cosf(hall->realcacle_angle)*sinf(hall->hat_angle);
+    hall->pll_sum += delt_theta;
+    static float omega;
+    omega =  PLL_KP*delt_theta + PLL_KI*hall->pll_sum;
+    hall->hat_angle += (omega*OMEGTOTHETA);
+    if (hall->hat_angle > 6.2831852f)
+    {
+        hall->hat_angle -= 6.2831852f;
+    }
+    if (hall->hat_angle < 0.0f)
+    {
+        hall->hat_angle += 6.2831852f;
+    }
+    
+    unsigned char conut;
+    if(omega>2.0f)
+    {
+        if (conut++>200)
+        {
+            hall->hat_angle = hall->hat_angle;
+        }else{
+            hall->angle = hall->realcacle_angle;
+        }
+    }else{
+        conut = 0;
+        hall->angle = hall->realcacle_angle;
     }
 }
 
@@ -165,7 +198,7 @@ void hall_init(void *this)
     USER_DEBUG_NORMAL("hall_init\n");
     hall->getsection = hall_get_sectionnumb;
     hall->gettick = hall_gettick;
-    hall->angle = 0.0f;
+    hall->realcacle_angle = 0.0f;
     hall->last_section = 0;
 
     hall->hall_baseBuff[0] = 0.0000f;

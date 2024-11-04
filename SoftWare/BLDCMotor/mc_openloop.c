@@ -165,7 +165,7 @@ static void mc_encoderopenlooptest(float *iabc)
         motordebug.id_real = i_dq.d;
         motordebug.iq_real = i_dq.q;
 
-        idq.d = 0.0f;idq.q =  OPENLOOP_DEBUG_TOTAL_Te;//mc_param.speed_handle.tar;//
+        idq.d = 0.0f;idq.q =  mc_param.speed_handle.tar;//OPENLOOP_DEBUG_TOTAL_Te;//
         temp_ab = _2r_2s(idq, theta);
         duty = SVM(temp_ab.alpha, temp_ab.beta);
         mc_param.setpwm(duty._a, duty._b, duty._c);
