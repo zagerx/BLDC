@@ -10,8 +10,8 @@
 #ifndef ENCODER_TYPE_HALL    
 #else/*------------霍尔传感器部分-------------------*/
     #define HALL_UPDATE_PERIOD   (0.0001f)
-    #define HALL_POSITIVE_OFFSET (-0.336f)
-    #define HALL_NEGATIVE_OFFSET (+0.112f)
+    #define HALL_POSITIVE_OFFSET (-0.3f)
+    #define HALL_NEGATIVE_OFFSET (-0.2f)
     //D轴强拖 0.04f
     // #define SCETION_6_BASEANGLE   (4.924f)
     // #define SCETION_4_BASEANGLE   (5.936f)
@@ -49,8 +49,8 @@
 
 /*------电控 软件相关------*/
 //开环部分
-#define OPENLOOP_DEBUG_TOTAL_Te             (0.2f)
-#define OPENLOOP_DEBUG_STEP_THETA           (-0.001f)
+#define OPENLOOP_DEBUG_TOTAL_Te             (0.04f)
+#define OPENLOOP_DEBUG_STEP_THETA           (-0.0004f)
 //闭环部分
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期
 #define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期

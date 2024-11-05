@@ -157,19 +157,7 @@ void hall_cale(void *pthis)
         hall->hat_angle += 6.2831852f;
     }
     
-    unsigned char conut;
-    if(omega>2.0f)
-    {
-        if (conut++>200)
-        {
-            hall->hat_angle = hall->hat_angle;
-        }else{
-            hall->angle = hall->realcacle_angle;
-        }
-    }else{
-        conut = 0;
-        hall->angle = hall->realcacle_angle;
-    }
+    hall->angle = hall->hat_angle;
 }
 
 
