@@ -29,5 +29,5 @@ void ProcessThread::stop()
 
 void ProcessThread::ProcessData()  
 {
-    qDebug()<<"ProcessData";
+    // qDebug()<<"ProcessData";
 }

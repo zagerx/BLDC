@@ -36,16 +36,13 @@ serialwindow::serialwindow(QWidget *parent)
      m_ProcessThread(new ProcessThread(this))
 {
     ui->setupUi(this);
-    SerialPortInit();
-    ui->mc_startBt->setDisabled(true);
-    ui->mt_stopBt->setDisabled(true);
+    this->resize(1200,800);
 
-    QLabel *lightLabel = ui->LED_Label;
-    lightLabel->setScaledContents(true); // 根据控件大小缩放图片
-    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 30x30（注意这里的修改）
-    lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png"));       // 设置初始状态为灭灯（使用加载成功的pixmap）
-    /*初始化图表*/
-    WaveformGraphInit();
+    ButtonInit();
+
+    SerialPortInit();
+
+
     // 设置定时器的时间间隔为1ms
     timer->setInterval(1);
     // 将定时器的timeout()信号连接到槽函数timerTick()
@@ -255,7 +252,7 @@ uint8_t serialwindow::read_fromQByteArray(QByteArray &ret)
   ---------------------------------------------------------------------------*/
 void serialwindow::ReciveThread()
 {
-    qDebug()<<"ReciveThread"<<serial_recivbuf.size();
+    // qDebug()<<"ReciveThread"<<serial_recivbuf.size();
     QByteArray temp;
     // if(/*serial_recivbuf*/.size()>=32)
     {
@@ -336,7 +333,7 @@ void serialwindow::onReadSerialData()
         // if(static_cast<unsigned char>(data[3] == 0x04))
         {
             /*添加到缓冲区*/
-            qDebug()<<serial_recivbuf.size();
+            // qDebug()<<serial_recivbuf.size();
             if(serial_recivbuf.size()+data.size()>=40960)
             {
                 qDebug()<<"recivbuf over";
@@ -448,7 +445,7 @@ void serialwindow::SerialPortInit()
         curPort->setPort(info);
         if (curPort->open(QIODevice::ReadWrite))
         {
-            ui->portBox->addItem(info.portName());
+            ui->ComxBox->addItem(info.portName());
             curPort->close();
             qDebug() << "串口打开成功";
         }
@@ -481,218 +478,6 @@ void serialwindow::closeEvent(QCloseEvent *event)
 }
 
 /******************************************************************************
- * @brief '启动键'事件回调
- * 
- * @version 0.1
- * @author zager
- * @date 2024-09-25
- * @copyright Copyright (c) 2024
-  ---------------------------------------------------------------------------*/
-void serialwindow::on_mc_startBt_clicked()
-{
-    MC_Frame datafram;
-    datafram.CMD = M_SET_START;
-    datafram.UnPack();
-    pMcProtocl->AddFrameToBuf(datafram);
-}
-/******************************************************************************
- * @brief '停止键'
- * 
- * @version 0.1
- * @author zager
- * @date 2024-09-25
- * @copyright Copyright (c) 2024
-  ---------------------------------------------------------------------------*/
-void serialwindow::on_mt_stopBt_clicked()
-{
-    MC_Frame datafram;
-    datafram.CMD = M_SET_STOP;
-    datafram.UnPack();
-    pMcProtocl->AddFrameToBuf(datafram);
-}
-/******************************************************************************
- * @brief '正常模式按键'
- * 
- * @version 0.1
- * @author zager
- * @date 2024-09-25
- * @copyright Copyright (c) 2024
-  ---------------------------------------------------------------------------*/
-void serialwindow::on_normal_bt_clicked()
-{
-    MC_Frame datafram;
-    datafram.CMD = M_SET_NormalM;
-    datafram.UnPack();
-    pMcProtocl->AddFrameToBuf(datafram);
-    ui->mc_startBt->setDisabled(false);
-    ui->mt_stopBt->setDisabled(false);
-}
-/******************************************************************************
- * @brief '速度模式按键'
- * 
- * @version 0.1
- * @author zager
- * @date 2024-09-25
- * @copyright Copyright (c) 2024
-  ---------------------------------------------------------------------------*/
-void serialwindow::on_debug_bt_clicked()
-{
-    MC_Frame datafram;
-    datafram.CMD = M_SET_SpeedM;
-    datafram.UnPack();
-    pMcProtocl->AddFrameToBuf(datafram);
-    ui->mc_startBt->setDisabled(false);
-    ui->mt_stopBt->setDisabled(false);    
-}
-/******************************************************************************
- * @brief '位置模式按键'
- * 
- * @version 0.1
- * @author zager
- * @date 2024-09-25
- * @copyright Copyright (c) 2024
-  ---------------------------------------------------------------------------*/
-void serialwindow::on_position_bt_clicked()
-{
-    MC_Frame datafram;
-    datafram.CMD = M_SET_PosM;
-    datafram.UnPack();
-    pMcProtocl->AddFrameToBuf(datafram);
-    ui->mc_startBt->setDisabled(false);
-    ui->mt_stopBt->setDisabled(false);
-}
-/******************************************************************************
- * @brief '打开串口按键'
- * 
- * @version 0.1
- * @author zager
- * @date 2024-09-25
- * @copyright Copyright (c) 2024
-  ---------------------------------------------------------------------------*/
-void serialwindow::on_enseriBt_clicked()
-{
-    QPushButton *openbutton = ui->enseriBt;
-    QComboBox *portBt = ui->portBox;
-    QString pstr = portBt->currentText();
-
-    if (openbutton->text() == "关闭串口")
-    {
-        if (serial && serial->isOpen())
-        {
-            serial->close();
-        }
-        openbutton->setText("打开串口");
-        return;
-    }
-
-    // 查找并尝试打开串口
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
-    {
-        if (pstr == info.portName())
-        {
-            if (!serial || !serial->isOpen())
-            {
-                if (!serial)
-                {
-                    qDebug() << "mallocc";
-                    serial = new QSerialPort; // 创建新对象
-                }
-                serial->setPort(info);
-                if (serial->open(QIODevice::ReadWrite))
-                {
-                    openbutton->setText("关闭串口");
-                    bool ok;
-                    QString baudRateStr = ui->comboBox->currentText();
-                    int baudRate = baudRateStr.toInt(&ok);
-
-                    // 检查转换是否成功
-                    if (ok) {
-                        // 转换成功，设置波特率
-                        serial->setBaudRate(baudRate);
-                        // qDebug() << "Baud rate set to:" << baudRate;
-                    }else{
-                        serial->setBaudRate(115200);
-                    }
-                    serial->setParity(QSerialPort::NoParity);
-                    serial->setDataBits(QSerialPort::Data8);
-                    serial->setStopBits(QSerialPort::OneStop);
-                    return;
-                }
-            }
-            // 如果串口已打开但不是当前选中的端口，则关闭它
-            else
-            {
-                serial->close();
-            }
-        }
-    }
-
-    // 如果没有找到匹配的串口或打开失败，重置按钮文本
-    openbutton->setText("打开串口");
-
-    // 如果之前创建了新的 serial 对象但没有成功打开串口，则删除它
-    if (serial && !serial->isOpen())
-    {
-        delete serial;
-        serial = nullptr;
-    }
-}
-/******************************************************************************
- * @brief '命令确认按键'
- * 
- * @version 0.1
- * @author zager
- * @date 2024-09-25
- * @copyright Copyright (c) 2024
-  ---------------------------------------------------------------------------*/
-void serialwindow::on_cmd_enBt_clicked()
-{
-    MC_Frame datafram;
-
-    QString currentText = ui->cmd_portBox->currentText();
-    if (commandMap.contains(currentText)) {
-        datafram.CMD = commandMap.value(currentText);
-    } else {
-        qDebug() << "未知命令：" << currentText;
-        return;
-    }
-
-    currentText = ui->data_lineEdit->text();
-    qDebug()<<currentText;
-    datafram.data = stringToUCharVectorOptimized(currentText);// 调用函数，将QString中的浮点数转换为unsigned char向量;
-    datafram.UnPack();
-    datafram.PrintFrame();
-    pMcProtocl->AddFrameToBuf(datafram);    
-}
-
-/******************************************************************************
- * @brief '清除缓冲区按键'
- * 
- * @version 0.1
- * @author zager
- * @date 2024-09-25
- * @copyright Copyright (c) 2024
-  ---------------------------------------------------------------------------*/
-void serialwindow::on_ClearRicevBt_clicked()
-{
-    QTextEdit *edit = ui->textEdit;
-    edit->clear();
-}
-
-/******************************************************************************
- * @brief '清除图表按键'
- * 
- * @version 0.1
- * @author zager
- * @date 2024-09-25
- * @copyright Copyright (c) 2024
-  ---------------------------------------------------------------------------*/
-void serialwindow::on_enseriBt_3_clicked()
-{
-    customPlot->graph(0)->data().data()->clear();
-}
-
-/******************************************************************************
  * @brief 状态灯闪烁
  * 
  * @param input 
@@ -715,3 +500,157 @@ void serialwindow::led_blink(std::vector<unsigned char>& input)
         lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png")); // 设置初始状态为灭灯
     }
 }
+
+void serialwindow::onBTSlotFunc(void)
+{
+    QPushButton *clickedButton;
+    clickedButton = qobject_cast<QPushButton*>(sender());
+    if(clickedButton == ui->SpeedModeBT)
+    {
+        MC_Frame datafram;
+        datafram.CMD = M_SET_SpeedM;
+        datafram.UnPack();
+        pMcProtocl->AddFrameToBuf(datafram);
+        ui->MotorStartBT->setDisabled(false);
+        ui->MotorStopBT->setDisabled(false);
+    }else if(clickedButton == ui->MotorStartBT){//电机启动按键
+        MC_Frame datafram;
+        datafram.CMD = M_SET_START;
+        datafram.UnPack();
+        pMcProtocl->AddFrameToBuf(datafram);
+    }else if(clickedButton == ui->CMDEnterBT){  //命令确认按键
+        MC_Frame datafram;
+        QString currentText = ui->CMDBox->currentText();
+        if (commandMap.contains(currentText)) {
+            datafram.CMD = commandMap.value(currentText);
+        } else {
+            qDebug() << "未知命令：" << currentText;
+            return;
+        }
+        currentText = ui->DataBufEdit->text();
+        qDebug()<<currentText;
+        datafram.data = stringToUCharVectorOptimized(currentText);// 调用函数，将QString中的浮点数转换为unsigned char向量;
+        datafram.UnPack();
+        datafram.PrintFrame();
+        pMcProtocl->AddFrameToBuf(datafram);
+    }else if(clickedButton == ui->MotorStopBT){ //电机停止按键
+        MC_Frame datafram;
+        datafram.CMD = M_SET_STOP;
+        datafram.UnPack();
+        pMcProtocl->AddFrameToBuf(datafram);
+    }else if(clickedButton == ui->ClearChartBT){//清除图标按键
+        customPlot->graph(0)->data().data()->clear();
+    }else if(clickedButton == ui->NormalModeBT){//正常模式按键
+        MC_Frame datafram;
+        datafram.CMD = M_SET_NormalM;
+        datafram.UnPack();
+        pMcProtocl->AddFrameToBuf(datafram);
+        ui->MotorStartBT->setDisabled(false);
+        ui->MotorStopBT->setDisabled(false);
+    }else if(clickedButton == ui->PositionModeBT){//位置模式按键
+        MC_Frame datafram;
+        datafram.CMD = M_SET_PosM;
+        datafram.UnPack();
+        pMcProtocl->AddFrameToBuf(datafram);
+        ui->MotorStartBT->setDisabled(false);
+        ui->MotorStopBT->setDisabled(false);
+    }else if(clickedButton == ui->ClearRicivBufBt){//清除接收区缓存按键
+        QTextEdit *edit = ui->RiceveEdit;
+        edit->clear();
+    }else if(clickedButton == ui->OpenSerilBT){//打开串口按键
+        OpenSerial();
+    }
+}
+
+void serialwindow::ButtonInit(void)
+{
+    ui->MotorStartBT->setDisabled(true);
+    ui->MotorStopBT->setDisabled(true);
+    QObject::connect(ui->SpeedModeBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    QObject::connect(ui->MotorStartBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    QObject::connect(ui->CMDEnterBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    QObject::connect(ui->MotorStopBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    QObject::connect(ui->ClearChartBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    QObject::connect(ui->NormalModeBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    QObject::connect(ui->PositionModeBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    QObject::connect(ui->ClearRicivBufBt,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    QObject::connect(ui->OpenSerilBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+
+    /*心跳灯初始化*/
+    QLabel *lightLabel = ui->LED_Label;
+    lightLabel->setScaledContents(true); // 根据控件大小缩放图片
+    lightLabel->setFixedSize(30, 30);    // 设置控件大小为 30x30（注意这里的修改）
+    lightLabel->setPixmap(QPixmap("../MCOM/images/GrapLED.png"));       // 设置初始状态为灭灯（使用加载成功的pixmap）
+
+   /* 图表初始化 */
+    WaveformGraphInit();
+}
+void serialwindow::OpenSerial(void)
+{
+        QPushButton *openbutton = ui->OpenSerilBT;
+        QComboBox *portBt = ui->ComxBox;
+        QString pstr = portBt->currentText();
+
+        if (openbutton->text() == "关闭串口")
+        {
+            if (serial && serial->isOpen())
+            {
+                serial->close();
+            }
+            openbutton->setText("打开串口");
+            return;
+        }
+
+        // 查找并尝试打开串口
+        foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
+        {
+            if (pstr == info.portName())
+            {
+                if (!serial || !serial->isOpen())
+                {
+                    if (!serial)
+                    {
+                        // qDebug() << "mallocc";
+                        serial = new QSerialPort; // 创建新对象
+                    }
+                    serial->setPort(info);
+                    if (serial->open(QIODevice::ReadWrite))
+                    {
+                        openbutton->setText("关闭串口");
+                        bool ok;
+                        QString baudRateStr = ui->BaoudBox->currentText();
+                        int baudRate = baudRateStr.toInt(&ok);
+
+                        // 检查转换是否成功
+                        if (ok) {
+                            // 转换成功，设置波特率
+                            serial->setBaudRate(baudRate);
+                            // qDebug() << "Baud rate set to:" << baudRate;
+                        }else{
+                            serial->setBaudRate(115200);
+                        }
+                        serial->setParity(QSerialPort::NoParity);
+                        serial->setDataBits(QSerialPort::Data8);
+                        serial->setStopBits(QSerialPort::OneStop);
+                        return;
+                    }
+                }
+                // 如果串口已打开但不是当前选中的端口，则关闭它
+                else
+                {
+                    serial->close();
+                }
+            }
+        }
+
+        // 如果没有找到匹配的串口或打开失败，重置按钮文本
+        openbutton->setText("打开串口");
+
+        // 如果之前创建了新的 serial 对象但没有成功打开串口，则删除它
+        if (serial && !serial->isOpen())
+        {
+            delete serial;
+            serial = nullptr;
+        }
+}
+

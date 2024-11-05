@@ -16,7 +16,7 @@ public:
     void ProcessData();
 signals:  
     void newDataReceived();
-private:  
+private:
     volatile bool m_running;  
     QMutex m_mutex;  
 };

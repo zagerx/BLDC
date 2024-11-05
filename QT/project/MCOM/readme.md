@@ -2,10 +2,12 @@
 ## C++基础知识
 
 ```C++
+
 namespace Ui
 {
     class serialwindow;
 }
+
 class serialwindow : public QWidget
 {
     Q_OBJECT
@@ -25,11 +27,14 @@ protected:
 private:
     Ui::serialwindow *ui;
 };
+
 ```
 
 
 
 ## UI界面
+## 任务线程
+## 数据类型
 ## 数据获取
 ## 数据发送
 ## 数据粘包

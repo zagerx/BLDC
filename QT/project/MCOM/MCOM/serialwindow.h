@@ -56,29 +56,18 @@ public:
     uint8_t read_fromQByteArray(QByteArray &ret);
 
 private slots:
-    void on_mc_startBt_clicked();
-    void on_mt_stopBt_clicked();
-    void on_debug_bt_clicked();
-    void on_enseriBt_clicked();
-    void on_normal_bt_clicked();
-    void on_cmd_enBt_clicked();
-    void on_ClearRicevBt_clicked();
-    void on_enseriBt_3_clicked();
-    void on_position_bt_clicked();
-
-
+    void onBTSlotFunc();
     void onReadSerialData();
     void timerTick(void);
-
     void ReciveThread(void);
-
 protected:
     void closeEvent(QCloseEvent *event) override;
-
 private:
+    void ButtonInit(void);
+    void OpenSerial(void);
     Ui::serialwindow *ui;
-    ProcessThread *m_ProcessThread;  
-    QMutex m_dataMutex;     
+    ProcessThread *m_ProcessThread;
+    QMutex m_dataMutex;
 };
 
 
