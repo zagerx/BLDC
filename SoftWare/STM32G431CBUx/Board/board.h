@@ -16,20 +16,28 @@
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
 
 #elif (ENCODER_TYPE == ENCODER_TYPE_HALL)
-    #define HALL_UPDATE_PERIOD   (0.0001f)
-    #define HALL_POSITIVE_OFFSET (-0.78f)
-    #define HALL_NEGATIVE_OFFSET (-1.28f)
-    #define PLL_KP 4.0f
-    #define PLL_KI 0.1f
-    #define OMEGTOTHETA 0.002f     
+    #define HALL_UPDATE_PERIOD              (0.0001f)
+    #define HALL_POSITIVE_OFFSET            (-0.78f)
+    #define HALL_NEGATIVE_OFFSET            (-1.28f)
+    #define PLL_KP                          (1800.50f)
+    #define PLL_KI                          (0.01f)
+    #define OMEGTOTHETA                     (0.0001f)     
     //D轴强拖
-    #define SCETION_6_BASEANGLE   (3.4891f)
-    #define SCETION_4_BASEANGLE   (4.5670f)
-    #define SCETION_5_BASEANGLE   (5.581f)
-    #define SCETION_1_BASEANGLE   (0.312f)
-    #define SCETION_3_BASEANGLE   (1.428f)
-    #define SCETION_2_BASEANGLE   (2.424f)
+    #define SCETION_6_BASEANGLE            (3.4891f)
+    #define SCETION_4_BASEANGLE            (4.5670f)
+    #define SCETION_5_BASEANGLE            (5.581f)
+    #define SCETION_1_BASEANGLE            (0.312f)
+    #define SCETION_3_BASEANGLE            (1.428f)
+    #define SCETION_2_BASEANGLE            (2.424f)
 #endif
+
+
+#define CURRMENTLOOP_KP             (0.01f)         
+#define CURRMENTLOOP_KI             (0.0001f)
+#define SPEEDLOOP_KP                (0.1f)
+#define SPEEDLOOP_KI                (0.1f)
+#define POSLOOP_KP                  (0.1f)
+#define POSLOOP_KI                  (0.1f)
 
 #define CIRCLE_MAX_VAL       (24.0f)
 #define D_MAX_VAL            (12.0f)

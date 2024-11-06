@@ -42,14 +42,12 @@ serialwindow::serialwindow(QWidget *parent)
 
     SerialPortInit();
 
-
     // 设置定时器的时间间隔为1ms
     timer->setInterval(1);
     // 将定时器的timeout()信号连接到槽函数timerTick()
     connect(timer, &QTimer::timeout, this, &serialwindow::timerTick);
     // 启动定时器
     timer->start();
-
 
     connect(m_ProcessThread, &ProcessThread::ProcessData, this, &serialwindow::ReciveThread);
     // 启动线程
@@ -96,38 +94,34 @@ void serialwindow::WaveformGraphInit()
         y_cs.push_back(sin(xi)+cos(xi));
     }
 
-    //Create Rectangle Area and add to QCustomplot
-    QCPAxisRect * R00=new QCPAxisRect(customPlot);
-    QCPAxisRect * R10=new QCPAxisRect(customPlot);
     customPlot->plotLayout()->clear();
-    customPlot->plotLayout()->addElement(0,0,R00);
-    customPlot->plotLayout()->addElement(1,0,R10);
-
-    //Draw graphs with data
+    QCPAxisRect * R00=new QCPAxisRect(customPlot);//Create Rectangle Area and add to QCustomplot
+    customPlot->plotLayout()->addElement(0,0,R00);//添加矩形区域
     pGraph2 = customPlot->addGraph(R00->axis(QCPAxis::atBottom),R00->axis(QCPAxis::atLeft));
-    pGraph1 = customPlot->addGraph(R10->axis(QCPAxis::atBottom),R10->axis(QCPAxis::atLeft));
-    pGraph1->setPen(QPen(Qt::blue));
     pGraph2->setPen(QPen(Qt::red));
-    customPlot->graph(0)->setData(x,ys);
-    customPlot->graph(0)->rescaleAxes();
-    customPlot->graph(0)->setName("channl0");
-
-    customPlot->graph(1)->setData(x,yc);
-    customPlot->graph(1)->rescaleAxes();
-    customPlot->graph(1)->setName("channl1");
-    //Add Legends
-    QCPLegend *arLegend00=new QCPLegend;
-    R00->insetLayout()->addElement(arLegend00,Qt::AlignTop|Qt::AlignRight);
+    customPlot->graph(0)->setData(x,ys);//填充数据
+    customPlot->graph(0)->rescaleAxes();//自动缩放
+    customPlot->graph(0)->setName("channl0");//设置名字
+    QCPLegend *arLegend00=new QCPLegend;//添加图例
+    R00->insetLayout()->addElement(arLegend00,Qt::AlignTop|Qt::AlignLeft);
     arLegend00->setLayer("legend");
     arLegend00->addItem(new QCPPlottableLegendItem(arLegend00, customPlot->graph(0)));
 
+    QCPAxisRect * R10=new QCPAxisRect(customPlot);
+    customPlot->plotLayout()->addElement(1,0,R10);
+    pGraph1 = customPlot->addGraph(R10->axis(QCPAxis::atBottom),R10->axis(QCPAxis::atLeft));
+    pGraph1->setPen(QPen(Qt::blue));
+    customPlot->graph(1)->setData(x,yc);
+    customPlot->graph(1)->rescaleAxes();
+    customPlot->graph(1)->setName("channl1");
     QCPLegend *arLegend10=new QCPLegend;
-    R10->insetLayout()->addElement(arLegend10,Qt::AlignTop|Qt::AlignRight);
+    R10->insetLayout()->addElement(arLegend10,Qt::AlignTop|Qt::AlignLeft);
     arLegend10->setLayer("legend");
     arLegend10->addItem(new QCPPlottableLegendItem(arLegend10, customPlot->graph(1)));
 
     customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    customPlot->axisRect()->setRangeZoomFactor(1.2,1);
+    R00->setRangeZoomFactor(1.2,1);
+    R10->setRangeZoomFactor(1.2,1);
     return;
 #else
 
@@ -540,6 +534,7 @@ void serialwindow::onBTSlotFunc(void)
         pMcProtocl->AddFrameToBuf(datafram);
     }else if(clickedButton == ui->ClearChartBT){//清除图标按键
         customPlot->graph(0)->data().data()->clear();
+        customPlot->graph(1)->data().data()->clear();
     }else if(clickedButton == ui->NormalModeBT){//正常模式按键
         MC_Frame datafram;
         datafram.CMD = M_SET_NormalM;
