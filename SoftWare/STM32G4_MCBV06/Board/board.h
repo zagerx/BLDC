@@ -12,9 +12,9 @@
     #define HALL_UPDATE_PERIOD   (0.0001f)
     #define HALL_POSITIVE_OFFSET (-0.3f)
     #define HALL_NEGATIVE_OFFSET (-0.2f)
-    #define PLL_KP 2.0f
-    #define PLL_KI 0.01f
-    #define OMEGTOTHETA 0.0002f         
+    #define PLL_KP 80.0f
+    #define PLL_KI 0.02f
+    #define OMEGTOTHETA 0.0001f         
     //D轴强拖 0.04f
     // #define SCETION_6_BASEANGLE   (4.924f)
     // #define SCETION_4_BASEANGLE   (5.936f)
@@ -60,8 +60,8 @@
 #define SPEED_UPDATE_COUNT   (20)       //0.002/CURRMENT_PERIOD
 
 //电控 硬件相关
-#define AMPLIFICATION_FACTOR (5.7f)  // 假设放大倍数为10  
-#define SAMPLING_RESISTANCE  (0.025)  // 假设采样电阻为100欧姆
+#define AMPLIFICATION_FACTOR (5.36f)  // 假设放大倍数为10  
+#define SAMPLING_RESISTANCE  (0.005)  // 假设采样电阻为100欧姆
 #define CIRCLE_MAX_VAL       (24.0f)
 #define D_MAX_VAL            (12.0f)
 #define D_MIN_VAL            -D_MAX_VAL

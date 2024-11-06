@@ -162,17 +162,20 @@ static uint32_t hall_gettick()
 {
     return 0;
 }
-
+#include "string.h"
 void hall_init(void *this)
 {
     hall_sensor_t *hall;
     hall = this;
     USER_DEBUG_NORMAL("hall_init\n");
+    memset(this,0,sizeof(hall_sensor_t));    
     hall->getsection = hall_get_sectionnumb;
     hall->gettick = hall_gettick;
     hall->realcacle_angle = 0.0f;
+    hall->realcacle_speed = 0.0f;
     hall->last_section = 0;
-
+    hall->count = 0.0f;
+    hall->speed = 0.0f;
     hall->hall_baseBuff[0] = 0.0000f;
     {
         hall->hall_baseBuff[6] = SCETION_6_BASEANGLE;
