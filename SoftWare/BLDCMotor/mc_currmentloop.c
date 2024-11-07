@@ -30,12 +30,12 @@ duty_t currment_loop(mc_currment_t *curloop_handle)
 	motordebug.ic_real = i_abc.c;
 	motordebug.id_real = i_dq.d;
 	motordebug.iq_real = i_dq.q;
-	// motordebug.id_targe = id_targe;
-	// motordebug.iq_targe = iq_targe;
+	motordebug.id_targe = id_targe;
+	motordebug.iq_targe = iq_targe;
 	/*PID Control*/
-	float Vd = pid_contrl(d_axis_pid,0.0f,i_dq.d);
-	float Vq = pid_contrl(q_axis_pid,motordebug.iq_targe,i_dq.q);
-
+	float Vd,Vq; 
+	Vd = pid_contrl(d_axis_pid,id_targe,i_dq.d);
+	// Vq = pid_contrl(q_axis_pid,iq_targe,i_dq.q);
 	/*Limiting Vector Circle*/
 	float mod_to_V = (2.0f / 3.0f) * 24.0f;
 	float V_to_mod = 1.0f / mod_to_V;

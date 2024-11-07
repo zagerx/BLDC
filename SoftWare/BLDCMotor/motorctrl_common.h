@@ -110,6 +110,7 @@ typedef struct _mc_param
     mc_currment_t currment_handle;
     mc_encoder_t encoder_handle;
 
+    uint16_t curmode;
     void (*enable)(void);
     void (*disable)(void);
     void (*setpwm)(float,float,float);
@@ -155,7 +156,7 @@ typedef struct
     float pid_kc;
     float pid_tar;
     float pid_out;
-    unsigned short rec_cmd;
+    // unsigned short rec_cmd;
 }motordebug_t;
 
 typedef struct _duty
@@ -205,7 +206,7 @@ typedef struct curloop
 #pragma pack(pop)
 
 extern motordebug_t motordebug;
-extern mc_param_t mc_param;
+extern mc_param_t motor1;
 
 float _normalize_angle(float angle);
 duty_t _svpwm(float ualpha,float ubeta);

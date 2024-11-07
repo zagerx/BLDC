@@ -71,27 +71,27 @@ static void test_func(cmdmap_t *pactor,unsigned char *pdata, unsigned short data
 static void _cmd_motorstart(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
     USER_DEBUG_NORMAL("Motor Start CMD\n");
-    motordebug.rec_cmd = pactor->cmd;
+    motor1.curmode = pactor->cmd;
 }
 
 static void _cmd_motorstop(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
     USER_DEBUG_NORMAL("Motor Stop CMD\n");
-    motordebug.rec_cmd = pactor->cmd;
+    motor1.curmode = pactor->cmd;
 }
 static void _cmd_setMotorNormalM(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
-    motordebug.rec_cmd = pactor->cmd;
+    motor1.curmode = pactor->cmd;
     USER_DEBUG_NORMAL("Set Motor enter Normal Model CMD\n");
 }
 static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
-    motordebug.rec_cmd = pactor->cmd;
+    motor1.curmode = pactor->cmd;
     USER_DEBUG_NORMAL("Set Motor enter Debug Model CMD\n");    
 }
 static void _cmd_setMotorModel(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
-    motordebug.rec_cmd = pactor->cmd;
+    motor1.curmode = pactor->cmd;
 }
 
 extern void mc_tarpos_update(float delte_dist);
@@ -116,18 +116,18 @@ static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short 
         temp.fbuf[3] = fbuf[3];
         user_flash_write(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
         /*复位系统 TODO*/
-        mc_param.reset_system();
+        motor1.reset_system();
     }else if(pactor->cmd == M_SET_PIDTarge){
         float temp;
         convert_floats(pdata,datalen,&(temp));   
-        // mc_param.currment_handle.id_tar = temp;
-        // mc_param.currment_handle.iq_tar = 0.0f;
-        motordebug.iq_targe = temp;
-        USER_DEBUG_NORMAL("PID Targe update = %.02f\n",motordebug.iq_targe);
+        motor1.currment_handle.id_tar = temp;
+        motor1.currment_handle.iq_tar = 0.0f;
+        // motordebug.iq_targe = temp;
+        USER_DEBUG_NORMAL("PID Targe update = %.02f\n",temp);
     }else if(pactor->cmd == M_SET_SPEED){
         float temp;
         convert_floats(pdata,datalen,&(temp));
-        mc_param.speed_handle.tar = temp;
+        motor1.speed_handle.tar = temp;
     }else if(pactor->cmd == M_SET_POS){
         float temp;
         convert_floats(pdata,datalen,&(temp));
@@ -154,9 +154,9 @@ static void convert_floats(unsigned char *pdata, unsigned short datalen, float *
 } 
 static void _cmd_getinfo(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
-    USER_DEBUG_NORMAL("D Axise PID:Kp=%.4f Ki=%.4f\n",mc_param.currment_handle.d_pid.kp,mc_param.currment_handle.d_pid.ki);
-    USER_DEBUG_NORMAL("Q Axise PID:Kp=%.4f Ki=%.4f\n",mc_param.currment_handle.q_pid.kp,mc_param.currment_handle.q_pid.ki);
-    USER_DEBUG_NORMAL("Speed   PID:Kp=%.4f Ki=%.4f\n",mc_param.speed_handle.pid.kp,mc_param.speed_handle.pid.ki);
+    USER_DEBUG_NORMAL("D Axise PID:Kp=%.4f Ki=%.4f\n",motor1.currment_handle.d_pid.kp,motor1.currment_handle.d_pid.ki);
+    USER_DEBUG_NORMAL("Q Axise PID:Kp=%.4f Ki=%.4f\n",motor1.currment_handle.q_pid.kp,motor1.currment_handle.q_pid.ki);
+    USER_DEBUG_NORMAL("Speed   PID:Kp=%.4f Ki=%.4f\n",motor1.speed_handle.pid.kp,motor1.speed_handle.pid.ki);
 }
 
 void mc_protocol_send(unsigned short cmd,unsigned char* pdata,unsigned short datalen,\
@@ -193,6 +193,6 @@ void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short 
     p = _pack_proframe(&frame); 
     uint16_t len = frame.datalen + sizeof(frame_t) - 4;
     _bsp_protransmit(p,len);
-    // mc_param.bsptransmit(p,len);//TODO
+    // motor1.bsptransmit(p,len);//TODO
     heap_free(p);
 }

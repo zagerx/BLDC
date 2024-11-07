@@ -323,31 +323,26 @@ void serialwindow::onReadSerialData()
 
     // 直接比较前两个字节是否等于 0xA5A5
     // if (static_cast<unsigned char>(data[0]) == 0xA5 && static_cast<unsigned char>(data[1]) == 0xA5)
-    {
-        // if(static_cast<unsigned char>(data[3] == 0x04))
-        {
-            /*添加到缓冲区*/
-            // qDebug()<<serial_recivbuf.size();
-            if(serial_recivbuf.size()+data.size()>=40960)
-            {
-                qDebug()<<"recivbuf over";
-                return;
-            }
-            serial_recivbuf.append(data);
-        }
-        // else{
-        //     static unsigned int cout = 0;
-        //     std::vector<unsigned char> data;
-        //     led_blink(data);
-        // }
-    }
+    // {
+    //     {
 
-    // else{
-    //     QString stringData = QString::fromUtf8(data.constData(), data.size());
-    //     // 将字符串显示到QTextEdit
-    //     QTextEdit *edit = ui->textEdit;
-    //     edit->append(stringData);
+    //         if(serial_recivbuf.size()+data.size()>=40960)
+    //         {
+    //             qDebug()<<"recivbuf over";
+    //             return;
+    //         }
+    //         serial_recivbuf.append(data);
+    //     }
+
     // }
+    // else
+    {
+        QString stringData = QString::fromUtf8(data.constData(), data.size());
+        // 将字符串显示到QTextEdit
+        QTextEdit *edit = ui->RiceveEdit;
+        // edit->append(stringData);
+        edit->insertPlainText(stringData);
+    }
 }
 /******************************************************************************
  * @brief 命令处理
@@ -554,6 +549,28 @@ void serialwindow::onBTSlotFunc(void)
         edit->clear();
     }else if(clickedButton == ui->OpenSerilBT){//打开串口按键
         OpenSerial();
+    }else if(clickedButton == ui->CMDEnterBT_2){
+        MC_Frame datafram;
+        QString currentText;
+        currentText = ui->LenEdit_2->text();
+        currentText += ',';
+        currentText += ui->LenEdit_3->text();
+        qDebug()<<currentText;
+        datafram.CMD = M_SET_PIDParam;
+        datafram.data = stringToUCharVectorOptimized(currentText);// 调用函数，将QString中的浮点数转换为unsigned char向量;
+        datafram.UnPack();
+        datafram.PrintFrame();
+        pMcProtocl->AddFrameToBuf(datafram);
+    }else if(clickedButton == ui->CMDEnterBT_3){
+        MC_Frame datafram;
+        QString currentText;
+        currentText = ui->LenEdit_4->text();
+        qDebug()<<currentText;
+        datafram.CMD = M_SET_PIDTarge;
+        datafram.data = stringToUCharVectorOptimized(currentText);// 调用函数，将QString中的浮点数转换为unsigned char向量;
+        datafram.UnPack();
+        datafram.PrintFrame();
+        pMcProtocl->AddFrameToBuf(datafram);
     }
 }
 
@@ -570,6 +587,8 @@ void serialwindow::ButtonInit(void)
     QObject::connect(ui->PositionModeBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
     QObject::connect(ui->ClearRicivBufBt,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
     QObject::connect(ui->OpenSerilBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    QObject::connect(ui->CMDEnterBT_2,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    QObject::connect(ui->CMDEnterBT_3,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
 
     /*心跳灯初始化*/
     QLabel *lightLabel = ui->LED_Label;

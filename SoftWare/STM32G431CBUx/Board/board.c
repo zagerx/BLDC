@@ -48,19 +48,18 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 
 #include "hall_sensor.h"
 #include "motorctrl_common.h"
-extern mc_param_t mc_param;
 
-void mc_MotorModule_init(void)
+void motot_func_register(mc_param_t *motor)
 {
-    mc_param.encoder_handle.init = hall_init;
-    mc_param.encoder_handle.update = hall_update;
-    mc_param.encoder_handle.cacle = hall_cale;
+    motor->encoder_handle.init = hall_init;
+    motor->encoder_handle.update = hall_update;
+    motor->encoder_handle.cacle = hall_cale;
 
-    mc_param.enable = motor_enable;
-    mc_param.disable = motor_disable;
-    mc_param.setpwm = motor_set_pwm;
-    mc_param.reset_system = user_softresetsystem;
-    // mc_param.bsptransmit = _bsp_protransmit;//TODO
+    motor->enable = motor_enable;
+    motor->disable = motor_disable;
+    motor->setpwm = motor_set_pwm;
+    motor->reset_system = user_softresetsystem;
+    // motor->bsptransmit = _bsp_protransmit;//TODO
 }
 
 

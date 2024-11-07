@@ -15,7 +15,7 @@ void mc_posloop(mc_pos_t *pthis)
     float real_speed;
     speed = pthis->p_speed;
     real_speed = speed->real;
-    mc_param.currment_handle.iq_tar = pid_contrl(&(speed->pid),tar_speed,real_speed);
-    mc_param.currment_handle.id_tar = 0;
+    motor1.currment_handle.iq_tar = pid_contrl(&(speed->pid),tar_speed,real_speed);
+    motor1.currment_handle.id_tar = 0;
 }
 

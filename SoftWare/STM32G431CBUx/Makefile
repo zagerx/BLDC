@@ -146,7 +146,7 @@ C_SOURCES += $(wildcard ../Common/debuglog/*.c)
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
 C_INCLUDES += -I../Common/debuglog 
-# C_DEFS += -DDEBUG_MODE_UART
+C_DEFS += -DDEBUG_MODE_UART
 
 C_INCLUDES += -I../Common/systemmodule
 C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
@@ -173,8 +173,8 @@ C_INCLUDES += -I../Hardware
 C_INCLUDES += -I../Common/Fsm 
 C_INCLUDES += -I../BLDCMotor 
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-# C_DEFS += -DMOTOR_OPENLOOP 
-# C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
+C_DEFS += -DMOTOR_OPENLOOP 
+C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
 
 
 
