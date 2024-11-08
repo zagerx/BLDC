@@ -36,11 +36,8 @@
 #endif
 */
 
-
-
 static fsm_cb_t MotorFsm;
-mc_param_t motor1 = {0};
-motordebug_t motordebug = {0};
+motor_t motor1 = {0};
 extern void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen);
 
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
@@ -73,10 +70,13 @@ void motortctrl_process(void)
     }
 }
 
-void mc_hightfreq_task(float *iabc)
+void mc_hightfreq_task(float *iabc,motor_t *motor)
 {
+    motor->currment_handle.i_abc[0] = iabc[0];
+    motor->currment_handle.i_abc[1] = iabc[1];
+    motor->currment_handle.i_abc[2] = iabc[2];
 #ifdef MOTOR_OPENLOOP
-    mc_openloop(iabc);
+    mc_openloop(iabc,motor);
 #else
     duty_t duty = {0};
     /*获取角度 速度*/
@@ -84,19 +84,19 @@ void mc_hightfreq_task(float *iabc)
     float next_theta = 0.0f;
     float speed = 0.0f;
 
-    mc_encoder_read(&(motor1.encoder_handle));
-    theta = motor1.encoder_handle.ele_theta;
-    speed = motor1.encoder_handle.speed;
+    mc_encoder_read(&(motor->encoder_handle));
+    theta = motor->encoder_handle.ele_theta;
+    speed = motor->encoder_handle.speed;
 
     next_theta = theta + 1.5f * CURRMENT_PERIOD * speed;
     
-    motor1.currment_handle.i_abc[0] = iabc[0];
-    motor1.currment_handle.i_abc[1] = iabc[1];
-    motor1.currment_handle.i_abc[2] = iabc[2];
-    motor1.currment_handle.theta = theta;
-    motor1.currment_handle.next_theta = next_theta;
-    duty = currment_loop(&(motor1.currment_handle));
-    motor1.setpwm(duty._a,duty._b,duty._c);
+    motor->currment_handle.i_abc[0] = iabc[0];
+    motor->currment_handle.i_abc[1] = iabc[1];
+    motor->currment_handle.i_abc[2] = iabc[2];
+    motor->currment_handle.theta = theta;
+    motor->currment_handle.next_theta = next_theta;
+    duty = currment_loop(&(motor->currment_handle));
+    motor->setpwm(duty._a,duty._b,duty._c);
 #endif
 }
 

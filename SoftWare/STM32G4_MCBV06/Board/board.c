@@ -52,6 +52,9 @@ static void motor_set_pwm(float _a,float _b,float _c)
 }
 
 #include "motorctrl.h"
+#include "hall_sensor.h"
+#include "motorctrl_common.h"
+extern motor_t motor1;
 #include "adc.h"
 static void _convert_current(uint16_t* adc_buf,float *i_abc)
 {
@@ -74,15 +77,12 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         iabc[1] = -iabc[1];
         iabc[2] = -iabc[2];
         // __cycleof__("mc_hightfreq_task") {
-            mc_hightfreq_task(iabc);
+            mc_hightfreq_task(iabc,&motor1);
         // }            
     }
 }
 
-#include "hall_sensor.h"
-#include "motorctrl_common.h"
-extern mc_param_t motor1;
-void motot_func_register(mc_param_t *motor)
+void motor_func_register(motor_t *motor)
 {
     motor->encoder_handle.init = hall_init;
     motor->encoder_handle.update = hall_update;

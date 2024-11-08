@@ -103,7 +103,7 @@ struct mc_encoder
 };
 
 
-typedef struct _mc_param
+typedef struct _motor
 {
     mc_pos_t pos_handle;
     mc_speed_t  speed_handle;
@@ -116,18 +116,7 @@ typedef struct _mc_param
     void (*setpwm)(float,float,float);
     void (*reset_system)(void);
     void (*bsptransmit)(uint8_t*,uint16_t);
-}mc_param_t;
-
-typedef struct _motor
-{
-
-    mc_param_t ctrlparam;
-
-    float pairs;
-    float torqueconst;
-
-
-}mt_t;
+}motor_t;
 
 typedef struct
 {
@@ -205,8 +194,6 @@ typedef struct curloop
 
 #pragma pack(pop)
 
-extern motordebug_t motordebug;
-extern mc_param_t motor1;
 
 float _normalize_angle(float angle);
 duty_t _svpwm(float ualpha,float ubeta);

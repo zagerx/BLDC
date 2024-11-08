@@ -5,21 +5,20 @@
 #include "board.h"
 #include "motorctrl_cfg.h"
 
-#define VF_MODE_D 
 
-static void mc_self_openlooptest(float *iabc);
-static void mc_encoderopenlooptest(float *iabc);
+static void mc_self_openlooptest(float *iabc,motor_t* motor);
+static void mc_encoderopenlooptest(float *iabc,motor_t* motor);
 
-void mc_openloop(float *iabc)
+void mc_openloop(float *iabc,motor_t* motor)
 {
 #ifndef MOTOR_OPENLOOP_ENCODER
-    mc_self_openlooptest(iabc);
+    mc_self_openlooptest(iabc,motor);
 #else
-    mc_encoderopenlooptest(iabc);
+    mc_encoderopenlooptest(iabc,motor);
 #endif
 }
 
-unsigned char mc_self_openloop_VF(float *iabc)
+unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
 {
     duty_t duty = {0};
     alpbet_t i_ab;
@@ -28,34 +27,23 @@ unsigned char mc_self_openloop_VF(float *iabc)
     static float theta = 0.0f;
 
     /*读取编码器角度值*/
-    mc_encoder_read(&(motor1.encoder_handle)); 
+    mc_encoder_read(&(motor->encoder_handle)); 
     /*反PARK CLARK变换*/
     i_abc.a = iabc[0];
     i_abc.b = iabc[1];
     i_abc.c = iabc[2];
     _3s_2s(i_abc, &i_ab);
     _2s_2r(i_ab, theta, &i_dq);
-    /*更新电流值，方便观察*/
-    motordebug.ia_real = i_abc.a;
-    motordebug.ib_real = i_abc.b;
-    motordebug.ic_real = i_abc.c;
-    motordebug.id_real = i_dq.d;
-    motordebug.iq_real = i_dq.q;
-    motordebug.self_ele_theta = theta;
+
     /*强制拖动电机转动*/
-#ifdef VF_MODE_D
     i_dq.d = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
-    i_dq.q = 0.00f;
-#else
-    i_dq.d = 0.0f; // D轴强拖。注意:应和预定位阶段保持一致
-    i_dq.q = OPENLOOP_DEBUG_TOTAL_Te;    
-#endif // DEBUG    
+    i_dq.q = 0.00f; 
 
     /*park变换*/
     i_ab = _2r_2s(i_dq, theta);
     /*SVPWM*/
     duty = SVM(i_ab.alpha, i_ab.beta);
-    motor1.setpwm(duty._a, duty._b, duty._c);
+    motor->setpwm(duty._a, duty._b, duty._c);
 
     theta += OPENLOOP_DEBUG_STEP_THETA;
     if (theta > _2PI)
@@ -72,7 +60,7 @@ unsigned char mc_self_openloop_VF(float *iabc)
     return 0;
 }
 
-static void mc_self_openlooptest(float *iabc)
+static void mc_self_openlooptest(float *iabc,motor_t* motor)
 {
     enum
     {
@@ -89,17 +77,12 @@ static void mc_self_openlooptest(float *iabc)
         alpbet_t iab;
         duty_t duty;
         dq_t i_dq;
-#ifdef VF_MODE_D
-    i_dq.d = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
-    i_dq.q = 0.00f;
-#else
-    i_dq.d = 0.0f; 
-    i_dq.q = OPENLOOP_DEBUG_TOTAL_Te; // Q轴强拖。注意:应和预定位阶段保持一致
-#endif
+        i_dq.d = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
+        i_dq.q = 0.00f;
         theta = 0.0f;
         iab = _2r_2s(i_dq, theta);
         duty = SVM(iab.alpha, iab.beta);
-        motor1.setpwm(duty._a, duty._b, duty._c);
+        motor->setpwm(duty._a, duty._b, duty._c);
         // 延时等待一段时间
         static unsigned short cnt = 0;
         if (cnt++ > 16000)
@@ -111,7 +94,7 @@ static void mc_self_openlooptest(float *iabc)
     break;
 
     case RUNING:
-        mc_self_openloop_VF(iabc);
+        mc_self_openloop_VF(iabc,motor);
         break;
 
     case STOP:
@@ -122,7 +105,7 @@ static void mc_self_openlooptest(float *iabc)
     }
 }
 
-static void mc_encoderopenlooptest(float *iabc)
+static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
 {
     float theta = 0.0f;
     abc_t i_abc;
@@ -142,8 +125,8 @@ static void mc_encoderopenlooptest(float *iabc)
     {
     case IDLE:
         duty = SVM(0.08f, 0);
-        motor1.setpwm(duty._a, duty._b, duty._c);
-        mc_encoder_read(&(motor1.encoder_handle));
+        motor->setpwm(duty._a, duty._b, duty._c);
+        mc_encoder_read(&(motor->encoder_handle));
         static uint32_t cnt = 0;
         if (cnt++>8000)
         {
@@ -152,29 +135,22 @@ static void mc_encoderopenlooptest(float *iabc)
         }
         break;
     case RUN:
-        mc_encoder_read(&(motor1.encoder_handle));
-        theta = motor1.encoder_handle.ele_theta;
+        mc_encoder_read(&(motor->encoder_handle));
+        theta = motor->encoder_handle.ele_theta;
         i_abc.a = iabc[0];
         i_abc.b = iabc[1];
         i_abc.c = iabc[2];
         _3s_2s(i_abc, &i_ab);
         _2s_2r(i_ab, theta, &i_dq);
-        motordebug.ia_real = i_abc.a;
-        motordebug.ib_real = i_abc.b;
-        motordebug.ic_real = i_abc.c;
-        motordebug.id_real = i_dq.d;
-        motordebug.iq_real = i_dq.q;
 
-        idq.d = 0.0f;idq.q =  motor1.speed_handle.tar;//OPENLOOP_DEBUG_TOTAL_Te;//
+        idq.d = 0.0f;idq.q =  motor->speed_handle.tar;//OPENLOOP_DEBUG_TOTAL_Te;//
         temp_ab = _2r_2s(idq, theta);
         duty = SVM(temp_ab.alpha, temp_ab.beta);
-        motor1.setpwm(duty._a, duty._b, duty._c);
+        motor->setpwm(duty._a, duty._b, duty._c);
         break;
     default:
         break;
     }
-
-
 }
 
 

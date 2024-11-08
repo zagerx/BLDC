@@ -25,13 +25,6 @@ duty_t currment_loop(mc_currment_t *curloop_handle)
 	_3s_2s(i_abc,&i_alphabeta);
 	_2s_2r(i_alphabeta,theta,&i_dq);
 
-	motordebug.ia_real = i_abc.a;
-	motordebug.ib_real = i_abc.b;
-	motordebug.ic_real = i_abc.c;
-	motordebug.id_real = i_dq.d;
-	motordebug.iq_real = i_dq.q;
-	motordebug.id_targe = id_targe;
-	motordebug.iq_targe = iq_targe;
 	/*PID Control*/
 	float Vd,Vq; 
 	Vd = pid_contrl(d_axis_pid,id_targe,i_dq.d);

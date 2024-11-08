@@ -578,17 +578,18 @@ void serialwindow::ButtonInit(void)
 {
     ui->MotorStartBT->setDisabled(true);
     ui->MotorStopBT->setDisabled(true);
-    QObject::connect(ui->SpeedModeBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
-    QObject::connect(ui->MotorStartBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
-    QObject::connect(ui->CMDEnterBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
-    QObject::connect(ui->MotorStopBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
-    QObject::connect(ui->ClearChartBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
-    QObject::connect(ui->NormalModeBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
-    QObject::connect(ui->PositionModeBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
-    QObject::connect(ui->ClearRicivBufBt,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
-    QObject::connect(ui->OpenSerilBT,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
-    QObject::connect(ui->CMDEnterBT_2,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
-    QObject::connect(ui->CMDEnterBT_3,SIGNAL(clicked()),this,SLOT(onBTSlotFunc()));
+    
+    QObject::connect(ui->SpeedModeBT,    SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->MotorStartBT,   SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->CMDEnterBT,     SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->MotorStopBT,    SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->ClearChartBT,   SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->NormalModeBT,   SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->PositionModeBT, SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->ClearRicivBufBt,SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->OpenSerilBT,    SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->CMDEnterBT_2,   SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->CMDEnterBT_3,   SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
 
     /*心跳灯初始化*/
     QLabel *lightLabel = ui->LED_Label;

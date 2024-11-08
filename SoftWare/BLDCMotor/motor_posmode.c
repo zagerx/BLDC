@@ -10,6 +10,7 @@
 #include "motorctrl_cfg.h"
 #include "debuglog.h"
 
+extern motor_t motor1;
 
 
 static void mc_param_init(void);
@@ -24,8 +25,8 @@ void mc_tarpos_update(float delte_dist)
 
 fsm_rt_t motor_posmode(fsm_cb_t *pthis)
 {
-    mc_param_t *motor;
-    motor = (mc_param_t*)pthis->pdata;    
+    motor_t *motor;
+    motor = (motor_t*)pthis->pdata;    
     enum{
         READY = USER,
         RUN,
@@ -87,7 +88,7 @@ static void mc_param_init(void)
 static void mc_param_deinit(void)
 {
     memset(&motor1,0,sizeof(motor1));
-    memset(&motordebug,0,sizeof(motordebug));
+    // memset(&motordebug,0,sizeof(motordebug));
 }
 
 

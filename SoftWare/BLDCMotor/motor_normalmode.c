@@ -4,8 +4,8 @@
 #include "mc_protocol.h"
 fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
 {
-    mc_param_t *motor;
-    motor = (mc_param_t*)pthis->pdata;
+    motor_t *motor;
+    motor = (motor_t*)pthis->pdata;
     switch (pthis->chState)
     {
     case ENTER:

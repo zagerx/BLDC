@@ -375,31 +375,5 @@ void adc_stop(void)
     HAL_ADCEx_InjectedStop(&hadc2);
 
 }
-#include "voft.h"
-#include "motorctrl.h"
-void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-  // static uint32_t TEST_A_ADC,TEST_B_ADC,TEST_C_ADC;
-  static float iabc[3];
-  
-
-  if (hadc->Instance == ADC1)
-  {
-    // TEST_A_ADC = hadc->Instance->JDR1;
-    // TEST_B_ADC = hadc->Instance->JDR2;
-    // TEST_C_ADC = (&hadc2)->Instance->JDR1;
-    iabc[0] = -((int16_t)(hadc->Instance->JDR1 - 2030-12))*0.02197f;
-    iabc[1] = ((int16_t)(hadc->Instance->JDR2 - 2048+8))*0.02197f;
-    // iabc[0] = -iabc[1]-iabc[2];
-    mc_hightfreq_task(iabc);
-    // votf_sendf(iabc,3);
-  }
-  if (hadc->Instance == ADC2)
-  {
-    iabc[2] = ((int16_t)((&hadc2)->Instance->JDR1 - 2048 + 12))*0.02197f;
-
-  }
-  
-}
 
 /* USER CODE END 1 */

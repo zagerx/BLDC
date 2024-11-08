@@ -13,7 +13,7 @@
 #include "flash.h"
 #include "motorctrl_cfg.h"
 extern msg_list_t* msg_list;
-
+extern motor_t motor1;
 typedef struct _cmdmap cmdmap_t;
 struct _cmdmap
 {

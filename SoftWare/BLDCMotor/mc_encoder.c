@@ -10,13 +10,12 @@
 	static void Absolute_encoder(mc_encoder_t *encoder);
 	static void Absolute_encoder(mc_encoder_t *encoder)
 	{
-		uint32_t data = *((uint32_t*)sensor_user_read(SENSOR_01));
+		// uint32_t data = *((uint32_t*)sensor_user_read(SENSOR_01));
 		encoder->raw_data = data;
 		float mec_theta = data * ENCODER_CPR - MEC_ANGLE_OFFSET;
 		float ele_theta = mec_theta * MOTOR_PAIRS;
 		encoder->ele_theta = wrap_pm_pi(ele_theta);
 		encoder->mec_theta = mec_theta;
-		motordebug.ele_angle = encoder->ele_theta;
 		
 		/*更新速度*/
 		// 将mec_theta归一化到[0, 2π)区间  
@@ -48,7 +47,6 @@
 
 		// 更新转速  
 		encoder->speed = filter_n_rap;
-		motordebug.speed_real = filter_n_rap;
 	}
 #endif
 
@@ -59,7 +57,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
 	Absolute_encoder(encoder);
 #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
 	#ifdef MOTOR_OPENLOOP
-		encoder->sensor.self_angle = motordebug.self_ele_theta;
+		// encoder->sensor.self_angle = motordebug.self_ele_theta;
 	#endif
 		encoder->update(&(encoder->sensor));
 		encoder->cacle(&(encoder->sensor));

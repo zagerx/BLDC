@@ -6,6 +6,6 @@
 // __attribute__((weak)) void motor_setpwm(float _a,float _b,float _c);
 // __attribute__((weak)) void _bsp_protransmit(unsigned char* pdata,unsigned short len);
 // __attribute__((weak)) void user_softresetsystem(void);
-__attribute__((weak)) void motot_func_register(mc_param_t *motor);
+__attribute__((weak)) void motor_func_register(motor_t *motor);
 
 #endif

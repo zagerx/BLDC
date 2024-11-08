@@ -1,8 +1,8 @@
 #include "motorctrl_cfg.h"
 #include "debuglog.h"
 
-__attribute__((weak)) void motot_func_register(mc_param_t *motor)
+__attribute__((weak)) void motor_func_register(motor_t *motor)
 {
-    USER_DEBUG_NORMAL("please write motot_func_register(motorctrl_cfg.c)\n");    
+    USER_DEBUG_NORMAL("please write motor_func_register(motorctrl_cfg.c)\n");    
 }
 

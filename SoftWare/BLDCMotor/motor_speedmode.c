@@ -10,7 +10,7 @@
 #include "debuglog.h"
 #include "mc_smo.h"
 
-static void motor_init(mc_param_t *motor);
+static void motor_init(motor_t *motor);
 static void mc_param_deinit(void);
 
 fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
@@ -20,16 +20,13 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         CALIBRATE,
         RUN,
     };
-    mc_param_t *motor;
-    motor = (mc_param_t*)pthis->pdata;    
+    motor_t *motor;
+    motor = (motor_t*)pthis->pdata;    
     switch (pthis->chState)
     {
     case ENTER:
         USER_DEBUG_NORMAL("entry speed mode\n");
         motor_init(motor);
-        motordebug.id_targe = 0.0f;
-        motordebug.iq_targe = 0.0f;
-        motordebug.speed_targe = 0.0f;
         pthis->chState = READY;
     case READY:
         if (motor->curmode != M_SET_START)
@@ -84,9 +81,9 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     return 0;
 }
 
-static void motor_init(mc_param_t *motor)
+static void motor_init(motor_t *motor)
 {
-    motot_func_register(motor);
+    motor_func_register(motor);
     mc_encoder_init(&(motor->encoder_handle));
 
     /*从FLASH指定位置读取PID参数数据*/
@@ -106,7 +103,6 @@ static void motor_init(mc_param_t *motor)
 
 static void mc_param_deinit(void)
 {
-    memset(&motor1,0,sizeof(motor1));
-    memset(&motordebug,0,sizeof(motordebug));
+    // memset(&motor1,0,sizeof(motor1));
 }
 

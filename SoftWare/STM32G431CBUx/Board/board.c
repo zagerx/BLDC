@@ -48,8 +48,26 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 
 #include "hall_sensor.h"
 #include "motorctrl_common.h"
+#include "voft.h"
+#include "motorctrl.h"
+extern motor_t motor1;
+void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+  static float iabc[3];
+  if (hadc->Instance == ADC1)
+  {
+    iabc[0] = -((int16_t)(hadc->Instance->JDR1 - 2030-12))*0.02197f;
+    iabc[1] = ((int16_t)(hadc->Instance->JDR2 - 2048+8))*0.02197f;
+    mc_hightfreq_task(iabc,&motor1);
+    // votf_sendf(iabc,3);
+  }
+  if (hadc->Instance == ADC2)
+  {
+    iabc[2] = ((int16_t)((&hadc2)->Instance->JDR1 - 2048 + 12))*0.02197f;
+  }
+}
 
-void motot_func_register(mc_param_t *motor)
+void motor_func_register(motor_t *motor)
 {
     motor->encoder_handle.init = hall_init;
     motor->encoder_handle.update = hall_update;
