@@ -142,7 +142,7 @@ C_SOURCES += $(wildcard ../Common/debuglog/*.c)
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
 C_INCLUDES += -I../Common/debuglog 
-# C_DEFS += -DDEBUG_MODE_UART
+C_DEFS += -DDEBUG_MODE_UART
 
 C_INCLUDES += -I../Common/systemmodule
 C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
@@ -171,8 +171,8 @@ C_SOURCES += $(wildcard ../Common/flash/*.c)
 C_INCLUDES += -I../Common/Fsm 
 C_INCLUDES += -I../BLDCMotor 
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-C_DEFS += -DMOTOR_OPENLOOP 
-C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
+# C_DEFS += -DMOTOR_OPENLOOP 
+# C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
 
 
 
@@ -200,6 +200,7 @@ LDSCRIPT = STM32G473VETx_FLASH.ld
 LIBS = -lc -lm -lnosys 
 LIBDIR = 
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+LDFLAGS += -lrdimon -u _printf_float
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
