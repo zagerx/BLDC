@@ -120,9 +120,7 @@ static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short 
     }else if(pactor->cmd == M_SET_PIDTarge){
         float temp;
         convert_floats(pdata,datalen,&(temp));   
-        motor1.currment_handle.id_tar = temp;
-        motor1.currment_handle.iq_tar = 0.0f;
-        // motordebug.iq_targe = temp;
+        motor1.currment_handle.pid_debug_target = temp;
         USER_DEBUG_NORMAL("PID Targe update = %.02f\n",temp);
     }else if(pactor->cmd == M_SET_SPEED){
         float temp;

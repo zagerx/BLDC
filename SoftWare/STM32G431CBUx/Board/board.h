@@ -32,10 +32,10 @@
 #endif
 
 
-#define CURRMENTLOOP_KP             (0.01f)         
-#define CURRMENTLOOP_KI             (0.0001f)
-#define SPEEDLOOP_KP                (0.1f)
-#define SPEEDLOOP_KI                (0.1f)
+#define CURRMENTLOOP_KP             (5.0f)         
+#define CURRMENTLOOP_KI             (0.01f)
+#define SPEEDLOOP_KP                (5.0f)
+#define SPEEDLOOP_KI                (0.01f)
 #define POSLOOP_KP                  (0.1f)
 #define POSLOOP_KI                  (0.1f)
 

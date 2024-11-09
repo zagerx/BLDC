@@ -126,10 +126,10 @@ void hall_cale(void *pthis)
     {
         hall->realcacle_angle += 6.2831852f;
     }
-    static float delt_theta;
+    float delt_theta;
     delt_theta = sinf(hall->realcacle_angle)*cosf(hall->hat_angle) - cosf(hall->realcacle_angle)*sinf(hall->hat_angle);
     hall->pll_sum += delt_theta;
-    static float omega;
+    float omega;
     omega =  PLL_KP*delt_theta + PLL_KI*hall->pll_sum;
     hall->hat_angle += (omega*OMEGTOTHETA);
     if (hall->hat_angle > 6.2831852f)
@@ -142,6 +142,8 @@ void hall_cale(void *pthis)
     }
     // hall->angle = hall->realcacle_angle;    
     hall->angle = hall->hat_angle;
+    hall->hat_speed = omega;
+    hall->speed = hall->realcacle_speed;
 }
 
 

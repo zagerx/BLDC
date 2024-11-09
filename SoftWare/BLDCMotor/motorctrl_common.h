@@ -69,6 +69,9 @@ typedef struct mc_pos
 typedef struct mc_currment
 {
     float i_abc[3];
+    float i_debugq;
+    float i_debugd;
+    float pid_debug_target;
     float theta;
     float next_theta;
     float id_tar;

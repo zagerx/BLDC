@@ -8,8 +8,8 @@
 #include "opamp.h"
 void Board_init(void)
 {
-    adc_start();
-    opamp_start();
+    // adc_start();
+    // opamp_start();
 }
 #include "voft.h"
 
@@ -19,6 +19,8 @@ static void motor_enable(void)
     tim_pwm_enable();
     tim_tigger_adc();
     adc_start();
+    opamp_start();
+
 }
 static void motor_disable(void)
 {
@@ -51,19 +53,20 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 #include "voft.h"
 #include "motorctrl.h"
 extern motor_t motor1;
+
 void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
   static float iabc[3];
   if (hadc->Instance == ADC1)
   {
-    iabc[0] = -((int16_t)(hadc->Instance->JDR1 - 2030-12))*0.02197f;
-    iabc[1] = ((int16_t)(hadc->Instance->JDR2 - 2048+8))*0.02197f;
+    iabc[0] = -((int16_t)(hadc->Instance->JDR1) -1970)*0.02197f;
+    iabc[2] = -((int16_t)(hadc->Instance->JDR2) - 1980)*0.02197f;
     mc_hightfreq_task(iabc,&motor1);
     // votf_sendf(iabc,3);
   }
   if (hadc->Instance == ADC2)
   {
-    iabc[2] = ((int16_t)((&hadc2)->Instance->JDR1 - 2048 + 12))*0.02197f;
+    iabc[1] = -((int16_t)((&hadc2)->Instance->JDR1 - 2040))*0.02197f;
   }
 }
 
@@ -86,7 +89,7 @@ void motor_func_register(motor_t *motor)
 void baord_process(void)
 {
     float a;
-    a = adc_getval()*(3.3f/4096);
+    // a = adc_getval()*(3.3f/4096);
 }
 
 board_task(baord_process)

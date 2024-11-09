@@ -113,7 +113,7 @@ static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
 
     duty_t duty;
     alpbet_t i_ab;
-    dq_t idq;
+    dq_t udq;
     alpbet_t temp_ab;
 
     enum{
@@ -137,14 +137,13 @@ static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
     case RUN:
         mc_encoder_read(&(motor->encoder_handle));
         theta = motor->encoder_handle.ele_theta;
-        i_abc.a = iabc[0];
-        i_abc.b = iabc[1];
-        i_abc.c = iabc[2];
+        i_abc.a = iabc[0];i_abc.b = iabc[1];i_abc.c = iabc[2];
         _3s_2s(i_abc, &i_ab);
         _2s_2r(i_ab, theta, &i_dq);
-
-        idq.d = 0.0f;idq.q =  motor->speed_handle.tar;//OPENLOOP_DEBUG_TOTAL_Te;//
-        temp_ab = _2r_2s(idq, theta);
+        motor->currment_handle.i_debugd = i_dq.d;
+        motor->currment_handle.i_debugq = i_dq.q;
+        udq.d = 0.0f;udq.q =  motor->speed_handle.tar;//OPENLOOP_DEBUG_TOTAL_Te;//
+        temp_ab = _2r_2s(udq, theta);
         duty = SVM(temp_ab.alpha, temp_ab.beta);
         motor->setpwm(duty._a, duty._b, duty._c);
         break;

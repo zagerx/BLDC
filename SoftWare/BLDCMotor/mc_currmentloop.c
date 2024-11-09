@@ -25,10 +25,13 @@ duty_t currment_loop(mc_currment_t *curloop_handle)
 	_3s_2s(i_abc,&i_alphabeta);
 	_2s_2r(i_alphabeta,theta,&i_dq);
 
+	/*方便观察*/
+	curloop_handle->i_debugd = i_dq.d;
+	curloop_handle->i_debugq = i_dq.q;
 	/*PID Control*/
 	float Vd,Vq; 
 	Vd = pid_contrl(d_axis_pid,id_targe,i_dq.d);
-	// Vq = pid_contrl(q_axis_pid,iq_targe,i_dq.q);
+	Vq = pid_contrl(q_axis_pid,iq_targe,i_dq.q);
 	/*Limiting Vector Circle*/
 	float mod_to_V = (2.0f / 3.0f) * 24.0f;
 	float V_to_mod = 1.0f / mod_to_V;
