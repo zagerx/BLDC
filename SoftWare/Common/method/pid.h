@@ -8,6 +8,7 @@ typedef struct pid_contrlblock
     float kc;
     float u_i;
     float satErr;
+    float out_debug;
     float out_max;
     float out_min;
 }pid_cb_t;

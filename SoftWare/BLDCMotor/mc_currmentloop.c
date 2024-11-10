@@ -32,23 +32,36 @@ duty_t currment_loop(mc_currment_t *curloop_handle)
 	float Vd,Vq; 
 	Vd = pid_contrl(d_axis_pid,id_targe,i_dq.d);
 	Vq = pid_contrl(q_axis_pid,iq_targe,i_dq.q);
+
 	/*Limiting Vector Circle*/
-	float mod_to_V = (2.0f / 3.0f) * 24.0f;
-	float V_to_mod = 1.0f / mod_to_V;
-	float mod_d = V_to_mod * Vd;
-	float mod_q = V_to_mod * Vq;
-	float mod_scalefactor = 0.80f * SQRT_3__2 * 1.0f / sqrtf(mod_d * mod_d + mod_q * mod_q);
-	if (mod_scalefactor < 1.0f)
-	{
-		mod_d *= mod_scalefactor;
-		mod_q *= mod_scalefactor;
-	}
+	#if 1
+		float mod_to_V = (2.0f / 3.0f) * 24.0f;
+		float V_to_mod = 1.0f / mod_to_V;
+		float mod_d = V_to_mod * Vd;
+		float mod_q = V_to_mod * Vq;
+		float mod_scalefactor = 0.80f * SQRT_3__2 * 1.0f / sqrtf(mod_d * mod_d + mod_q * mod_q);
+		if (mod_scalefactor < 1.0f)
+		{
+			mod_d *= mod_scalefactor;
+			mod_q *= mod_scalefactor;
+		}
+	#else
+		float k;
+		k = 0.8f*0.5773502f*sqrtf(24.0f/(Vd*Vd+Vq*Vq));
+		if (k < 1.0f)
+		{
+			Vd *= k;
+			Vq *= k;
+		}
+	#endif
 
 	/*Inverse Park Transform*/
 	alpbet_t temp_ab = {0};
 	dq_t v_dq;
-	v_dq.d = mod_d;
-	v_dq.q = mod_q;	
+	v_dq.d = Vd;
+	v_dq.q = Vq;	
+	curloop_handle->u_debugd = Vq;
+	curloop_handle->u_debugq = Vq;
 	temp_ab = _2r_2s(v_dq,next_theta);
 
 #if 0

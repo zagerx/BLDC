@@ -65,8 +65,8 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
             pthis->chState = EXIT;
         }else{
             #ifdef MOTOR_CURMENLOOP_DEBUG
-                motor->currment_handle.id_tar = 0.0f;
-                motor->currment_handle.iq_tar = motor->currment_handle.pid_debug_target;
+                motor->currment_handle.id_tar = motor->currment_handle.pid_debug_target;
+                motor->currment_handle.iq_tar = 0.0f;
             #elif MOTOR_CURMENLOOP_TEST 
                 motor->currment_handle.id_tar = 0.0f;
                 motor->currment_handle.iq_tar = motor->currment_handle.pid_debug_target;

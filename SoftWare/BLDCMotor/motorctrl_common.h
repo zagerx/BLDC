@@ -71,6 +71,8 @@ typedef struct mc_currment
     float i_abc[3];
     float i_debugq;
     float i_debugd;
+    volatile float u_debugd;
+    volatile float u_debugq;
     float pid_debug_target;
     float theta;
     float next_theta;

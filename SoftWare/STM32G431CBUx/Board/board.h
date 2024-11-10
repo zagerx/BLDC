@@ -32,8 +32,8 @@
 #endif
 
 
-#define CURRMENTLOOP_KP             (5.0f)         
-#define CURRMENTLOOP_KI             (0.01f)
+#define CURRMENTLOOP_KP             (0.08f)         
+#define CURRMENTLOOP_KI             (0.001f)
 #define SPEEDLOOP_KP                (5.0f)
 #define SPEEDLOOP_KI                (0.01f)
 #define POSLOOP_KP                  (0.1f)
@@ -45,8 +45,8 @@
 #define Q_MAX_VAL            D_MAX_VAL
 #define Q_MIN_VAL            -Q_MAX_VAL
 
-#define CIRCLE_OUT_MAX      (12.0f) //电流环输出最大值
-#define CIRCLE_OUT_MIN      (-12.0f)
+#define CIRCLE_OUT_MAX      (24.0f) //电流环输出最大值
+#define CIRCLE_OUT_MIN      (-24.0f)
 #define SPEED_OUT_MAX       (12.0f) //速度环输出最大值
 #define SPEED_OUT_MIN       (-12.0f)
 
