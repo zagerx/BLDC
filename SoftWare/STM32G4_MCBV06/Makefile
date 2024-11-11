@@ -156,9 +156,9 @@ C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
 C_INCLUDES += -I../Hardware 
 C_SOURCES += $(wildcard ./Board/Board.c)
 C_INCLUDES += -I./Board
-C_DEFS += -DENABLE_SENSORMODULE
-C_INCLUDES += -I../Sensor 
-C_SOURCES += $(wildcard ../Sensor/*.c)
+# C_DEFS += -DENABLE_SENSORMODULE
+# C_INCLUDES += -I../Sensor 
+# C_SOURCES += $(wildcard ../Sensor/*.c)
 
 C_INCLUDES += -I../Protocol
 C_SOURCES += $(wildcard ../Protocol/*.c)
@@ -171,9 +171,11 @@ C_SOURCES += $(wildcard ../Common/flash/*.c)
 C_INCLUDES += -I../Common/Fsm 
 C_INCLUDES += -I../BLDCMotor 
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-C_DEFS += -DMOTOR_OPENLOOP 
-C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
-
+# C_DEFS += -DMOTOR_OPENLOOP 
+# C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
+C_DEFS += -DMOTOR_CURMENLOOP_DEBUG 
+# C_DEFS += -DMOTOR_CURMENLOOP_TEST
+# C_DEFS += -DMOTOR_SPEEDLOOP_DEBUG
 
 
 # compile gcc flags

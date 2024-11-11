@@ -3,7 +3,7 @@
 #include "motorctrl_common.h"
 #include "string.h"
 #include "mc_encoder.h"
-#include "flash.h"
+// #include "flash.h"
 #include "mc_speedloop.h"
 #include "board.h"
 #include "motorctrl_cfg.h"
@@ -96,8 +96,8 @@ static void motor_init(motor_t *motor)
     mc_encoder_init(&(motor->encoder_handle));
 #ifdef MOTOR_CURMENLOOP_DEBUG
     /*从FLASH指定位置读取PID参数数据*/
-    flash_t temp;
-    user_flash_read(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
+    motor_Romparam_t temp;
+    motor->read(&temp,sizeof(motor_Romparam_t));
     /*初始化PID参数*/
     pid_init(&(motor->currment_handle.d_pid),temp.fbuf[0],temp.fbuf[1],1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
     pid_init(&(motor->currment_handle.q_pid),temp.fbuf[0],temp.fbuf[1],1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
@@ -109,8 +109,8 @@ static void motor_init(motor_t *motor)
     pid_init(&(motor->currment_handle.d_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
     pid_init(&(motor->currment_handle.q_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);  
 
-    flash_t temp;
-    user_flash_read(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);   
+    motor_Romparam_t temp;
+    motor->read((uint8_t *)&temp,sizeof(motor_Romparam_t));   
     pid_init(&(motor->speed_handle.pid),temp.fbuf[0],temp.fbuf[1],1.0,SPEED_OUT_MAX,SPEED_OUT_MIN);    
     lowfilter_init(&(motor->encoder_handle.speedfilter),15.0f);        
     USER_DEBUG_NORMAL("Currment  :   Kp:%.4f Ki:%.4f\n",motor->currment_handle.q_pid.kp,motor->currment_handle.q_pid.ki);  

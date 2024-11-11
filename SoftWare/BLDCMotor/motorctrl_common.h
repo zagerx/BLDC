@@ -19,7 +19,13 @@
 #define sqrt3_2          0.866025f
 #define PI_2             (1.570796f)
 
-
+#pragma pack(push,1)
+typedef struct _motor_romparam
+{
+  char name[32];
+  float fbuf[4];
+}motor_Romparam_t;
+#pragma pack(pop)
 
 
 
@@ -115,12 +121,15 @@ typedef struct _motor
     mc_currment_t currment_handle;
     mc_encoder_t encoder_handle;
 
-    uint16_t curmode;
-    void (*enable)(void);
-    void (*disable)(void);
-    void (*setpwm)(float,float,float);
-    void (*reset_system)(void);
-    void (*bsptransmit)(uint8_t*,uint16_t);
+    int16_t curmode;
+    int16_t curMotorstate;
+    void  (*enable)(void);
+    void  (*disable)(void);
+    void  (*setpwm)(float,float,float);
+    void  (*reset_system)(void);
+    void  (*bsptransmit)(uint8_t*,uint16_t);
+    void  (*read)(void*, uint16_t);
+    void  (*write)(void*, uint16_t);
 }motor_t;
 
 typedef struct

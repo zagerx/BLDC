@@ -10,7 +10,7 @@
 #include "debuglog.h"
 #include "protocol.h"
 #include "math.h"
-#include "flash.h"
+// #include "flash.h"
 #include "motorctrl_cfg.h"
 extern msg_list_t* msg_list;
 extern motor_t motor1;
@@ -100,13 +100,9 @@ static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short 
 {
     if(pactor->cmd == M_SET_PIDParam)
     {
-        /*写入FLASH指定位置 TODO*/
-        user_flash_earse(PID_PARSE_ADDR,PID_PARSE_SIZE);
-
-        // flash_t temp;
         float fbuf[4];
         convert_floats(pdata,datalen,fbuf);
-        flash_t temp = {
+        motor_Romparam_t temp = {
             .name = "hello world,dev1_flash",
             .fbuf = {-1.28f,2.78f,1.0f,0.0f},
         };
@@ -114,7 +110,7 @@ static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short 
         temp.fbuf[1] = fbuf[1];
         temp.fbuf[2] = fbuf[2];
         temp.fbuf[3] = fbuf[3];
-        user_flash_write(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
+        motor1.write((uint8_t *)&temp,48);
         /*复位系统 TODO*/
         motor1.reset_system();
     }else if(pactor->cmd == M_SET_PIDTarge){

@@ -2,16 +2,6 @@
 #include "initmodule.h"
 #include "debuglog.h"
 /************************传感器*****************************/
-#include "sensor.h"
-#undef NULL
-#define NULL 0
-
-
-#ifndef ENCODER_TYPE_HALL    
-    #error "ENCODER_TYPE_HALL is not defined! Compilation stopped."
-#else
-
-#endif
 
 void user_board_init(void)
 {
@@ -20,10 +10,7 @@ void board_deinit(void)
 {
 
 }
-void user_softresetsystem(void)
-{
-	HAL_NVIC_SystemReset();
-}
+
 #include "usart.h"
 #include "string.h"
 void _bsp_protransmit(unsigned char* pdata,unsigned short len)
@@ -32,6 +19,12 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
     memcpy(sg_uartsend_buf,pdata,len);
     HAL_UART_Transmit_DMA(&hlpuart1,sg_uartsend_buf,len);
 }
+
+void user_softresetsystem(void)
+{
+	HAL_NVIC_SystemReset();
+}
+
 
 #include "tim.h"
 static void motor_enable(void)
@@ -50,6 +43,8 @@ static void motor_set_pwm(float _a,float _b,float _c)
 {
     tim_set_pwm(_a ,_b,_c);
 }
+
+
 
 #include "motorctrl.h"
 #include "hall_sensor.h"
@@ -82,6 +77,16 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     }
 }
 
+#include "flash.h"
+void motor_write(void *pdata,uint16_t datalen)
+{
+    user_flash_earse(PID_PARSE_ADDR,datalen);
+    user_flash_write(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
+}
+void motor_read(void *pdata,uint16_t datalen)
+{
+    user_flash_read(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
+}
 void motor_func_register(motor_t *motor)
 {
     motor->encoder_handle.init = hall_init;
@@ -93,12 +98,7 @@ void motor_func_register(motor_t *motor)
     motor->setpwm = motor_set_pwm;
     motor->reset_system = user_softresetsystem;
     // motor->bsptransmit = _bsp_protransmit;//TODO
+    motor->write = motor_write;
+    motor->read = motor_read;
 }
 
-
-
-
-
-
-
-board_init(user_board_init)

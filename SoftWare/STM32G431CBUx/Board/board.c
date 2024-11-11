@@ -37,7 +37,16 @@ static void user_softresetsystem(void)
 {
 	HAL_NVIC_SystemReset();
 }
-
+#include "flash.h"
+void motor_write(void *pdata,uint16_t datalen)
+{
+    user_flash_earse(PID_PARSE_ADDR,datalen);
+    user_flash_write(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
+}
+void motor_read(void *pdata,uint16_t datalen)
+{
+    user_flash_read(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
+}
 #include "usart.h"
 #include "string.h"
 void _bsp_protransmit(unsigned char* pdata,unsigned short len)
@@ -81,6 +90,8 @@ void motor_func_register(motor_t *motor)
     motor->setpwm = motor_set_pwm;
     motor->reset_system = user_softresetsystem;
     // motor->bsptransmit = _bsp_protransmit;//TODO
+    motor->write = motor_write;
+    motor->read = motor_read;    
 }
 
 
