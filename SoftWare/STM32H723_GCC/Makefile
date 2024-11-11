@@ -158,20 +158,14 @@ C_DEFS += -DDEBUG_MODE_UART
 # C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
 # endif
 
-SYSTEMMODULE_ENABLE = 0
-ifeq ($(SYSTEMMODULE_ENABLE),1)
 C_INCLUDES += -I../Common/systemmodule 
 C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
 C_DEFS += -DENABLE_SYSTEMMODULE
 
-endif
-
-# ENABLE_SENSOR = 0
-# ifeq ($(ENABLE_SENSOR),1)
-# C_DEFS += -DENABLE_SENSORMODULE
-# C_INCLUDES += -I../Sensor 
-# C_SOURCES += $(wildcard ../Sensor/*.c)
-# endif
+C_INCLUDES += -I../Common/data_structures
+C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
+C_INCLUDES += -I../Protocol
+C_SOURCES += $(wildcard ../ProtocolV2/*.c)
 
 # C_INCLUDES += -I../Common/Fsm 
 # C_SOURCES += $(wildcard ../Common/Fsm/*.c)

@@ -21,6 +21,7 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+static uint8_t sg_uartreceive_buff[125];
 
 /* USER CODE END 0 */
 
@@ -68,7 +69,8 @@ void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
-
+   __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+    HAL_UART_Receive_DMA(&huart1, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));  
   /* USER CODE END USART1_Init 2 */
 
 }
@@ -191,4 +193,27 @@ int _write(int file, char *data, int len)
     HAL_StatusTypeDef status = HAL_UART_Transmit(&huart1, (uint8_t*)data, len, 1000);
     return (status == HAL_OK ? len : 0);
 }
+
+__attribute__((weak)) void uart_readdata_callback(uint8_t* pdata,uint16_t len)
+{
+  USER_DEBUG_NORMAL("Please Witer uart_readdata_callback Function usart.c\n");
+}
+
+void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
+{
+    if(USART1 == huart1.Instance)
+    {
+        if(RESET != __HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))
+        {
+            __HAL_UART_CLEAR_IDLEFLAG(&huart1);
+            HAL_UART_DMAStop(&huart1);
+            unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
+            uart_readdata_callback(sg_uartreceive_buff,data_length);
+            memset(sg_uartreceive_buff,0,data_length);
+            data_length = 0;
+            HAL_UART_Receive_DMA(&huart1, (uint8_t*)sg_uartreceive_buff, sizeof(sg_uartreceive_buff));
+        }
+    }
+}
+
 /* USER CODE END 1 */

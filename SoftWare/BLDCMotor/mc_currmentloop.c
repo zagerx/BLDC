@@ -34,7 +34,7 @@ duty_t currment_loop(mc_currment_t *curloop_handle)
 	Vq = pid_contrl(q_axis_pid,iq_targe,i_dq.q);
 
 	/*Limiting Vector Circle*/
-	#if 1
+	#if 0
 		float mod_to_V = (2.0f / 3.0f) * 24.0f;
 		float V_to_mod = 1.0f / mod_to_V;
 		float mod_d = V_to_mod * Vd;
