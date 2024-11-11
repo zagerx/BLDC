@@ -58,6 +58,7 @@
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 extern I2C_HandleTypeDef hi2c2;
+extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 // #include "_common.h"
 // extern void user_i2cirq_cb(I2C_HandleTypeDef *hi2c);
@@ -240,6 +241,20 @@ void I2C2_ER_IRQHandler(void)
   /* USER CODE BEGIN I2C2_ER_IRQn 1 */
 
   /* USER CODE END I2C2_ER_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART1 global interrupt.
+  */
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
