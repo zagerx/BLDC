@@ -1,6 +1,6 @@
 #ifndef __HALL_SENSOR__H
 #define __HALL_SENSOR__H
-
+#include "board.h"
 #include "stdint.h"
 #include "filter.h"
 #pragma pack(push,4)
@@ -14,16 +14,20 @@ typedef struct hall_sensor
     float hall_baseBuff[7];
     uint8_t (*getsection)(void);
     uint32_t (*gettick)(void);
-    uint32_t (*get_abzcount)(void);
-    void     (*set_abzcount)(uint32_t);
+
     uint32_t last_tick;
     float speed;
     float angle;
     float realcacle_angle;
     float realcacle_speed;
-
-    uint32_t cur_abzcout;
     float self_angle;
+
+#if (ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ)
+    uint32_t (*get_abzcount)(void);
+    void     (*set_abzcount)(uint32_t);
+    uint32_t cur_abzcout;
+    uint32_t last_abzcout;
+#endif // (0)
 
 /*PLL*/
     float hat_angle;

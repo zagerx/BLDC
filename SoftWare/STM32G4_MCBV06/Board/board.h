@@ -4,18 +4,24 @@
 /*--------------------电控软件---------------------*/
 //开环部分
 #define OPENLOOP_DEBUG_TOTAL_Te             (0.04f)
-#define OPENLOOP_DEBUG_STEP_THETA           (-0.0004f)
+#define OPENLOOP_DEBUG_STEP_THETA           (0.0004f)
 //闭环部分
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期
 #define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期
-
+#define CURRMENTLOOP_KP             (0.08f)         
+#define CURRMENTLOOP_KI             (0.001f)
+#define SPEEDLOOP_KP                (0.18f)
+#define SPEEDLOOP_KI                (0.008f)
+#define POSLOOP_KP                  (0.1f)
+#define POSLOOP_KI                  (0.1f)
 /*-----------------编码器类型选择-------------------*/
 #define ENCODER_TYPE_SENSORLESS              (0)
 #define ENCODER_TYPE_ABS                     (1)
 #define ENCODER_TYPE_HALL                    (2)
-#define ENCODER_TYPE                         ENCODER_TYPE_HALL
-#ifndef ENCODER_TYPE_HALL
-#else//霍尔传感器部分
+#define ENCODER_TYPE_HALL_ABZ                (3)
+#define ENCODER_TYPE                         ENCODER_TYPE_HALL_ABZ
+
+#if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
     #define HALL_UPDATE_PERIOD   (0.0001f)
     #define HALL_POSITIVE_OFFSET (-0.3f)
     #define HALL_NEGATIVE_OFFSET (-0.2f)

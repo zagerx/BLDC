@@ -9,7 +9,7 @@
 
 #include "board.h"
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
-#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL || ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ)
     #include "hall_sensor.h"
 #endif
 
@@ -104,7 +104,7 @@ struct mc_encoder
     int32_t raw_data;
     float mec_theta;
     float pre_theta;
-#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL || ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ)
     hall_sensor_t sensor;
 #endif
     /*方法*/

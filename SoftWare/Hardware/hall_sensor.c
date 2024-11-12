@@ -115,10 +115,35 @@ void hall_update(void *pthis)
 #include "math.h"
 void hall_cale(void *pthis)
 {
+    int32_t  delt_cnt;
+    uint32_t cur_cnt;
     hall_sensor_t *hall;
     hall = (hall_sensor_t *)pthis;
-    hall->cur_abzcout = hall->get_abzcount();
-    hall->realcacle_angle += hall->realcacle_speed * HALL_UPDATE_PERIOD;
+
+    #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))
+        if (hall->dir == 1)
+        {
+            cur_cnt = hall->get_abzcount();
+            delt_cnt = cur_cnt - hall->last_abzcout;        
+            if (delt_cnt<0)
+            {
+                delt_cnt += 4096;
+            }
+            hall->realcacle_angle += delt_cnt*(0.001533f*14.0f);
+        }else if(hall->dir == -1)
+        {
+            cur_cnt = hall->get_abzcount();
+            delt_cnt = hall->last_abzcout - cur_cnt;        
+            if (delt_cnt<0)
+            {
+                delt_cnt += 4096;
+            }
+            hall->realcacle_angle -= delt_cnt*(0.001533f*14.0f);    
+        }
+        hall->last_abzcout = cur_cnt;
+    #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+        hall->realcacle_angle += hall->realcacle_speed * HALL_UPDATE_PERIOD;
+    #endif
     if (hall->realcacle_angle > 6.2831852f)
     {
         hall->realcacle_angle -= 6.2831852f;
@@ -175,8 +200,12 @@ void hall_init(void *this)
     memset(this,0,sizeof(hall_sensor_t));    
     hall->getsection = hall_get_sectionnumb;
     hall->gettick = hall_gettick;
-    hall->get_abzcount = tim_abzencoder_getcount;
-    hall->set_abzcount = tim_abzencoder_setcount;
+    
+    #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
+        hall->get_abzcount = tim_abzencoder_getcount;
+        hall->set_abzcount = tim_abzencoder_setcount;    
+    #endif
+
     hall->realcacle_angle = 0.0f;
     hall->realcacle_speed = 0.0f;
     hall->last_section = 0;

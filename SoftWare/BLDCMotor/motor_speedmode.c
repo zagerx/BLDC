@@ -101,7 +101,7 @@ static void motor_init(motor_t *motor)
     /*初始化PID参数*/
     pid_init(&(motor->currment_handle.d_pid),temp.fbuf[0],temp.fbuf[1],1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
     pid_init(&(motor->currment_handle.q_pid),temp.fbuf[0],temp.fbuf[1],1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
-    USER_DEBUG_NORMAL("Q Kp%.04f Ki%.04f\n",motor->currment_handle.q_pid.kp,motor->currment_handle.q_pid.ki);  
+    USER_DEBUG_NORMAL("D_Axis Kp:%.04f Ki:%.04f\n",motor->currment_handle.d_pid.kp,motor->currment_handle.d_pid.ki);  
 #elif MOTOR_CURMENLOOP_TEST
     pid_init(&(motor->currment_handle.d_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
     pid_init(&(motor->currment_handle.q_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);   

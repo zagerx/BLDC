@@ -140,7 +140,7 @@ void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 0;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 8191;
+  htim4.Init.Period = 4095;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_CLOCKPLUSDIRECTION_X1;
@@ -358,7 +358,7 @@ void tim_abzencoder_enable(void)
 uint32_t tim_abzencoder_getcount(void)
 {
   uint32_t cnt;
-  cnt = __HAL_TIM_GET_COUNTER(&htim4);
+  cnt = 4096 - __HAL_TIM_GET_COUNTER(&htim4);
   return cnt;
 }
 void tim_abzencoder_setcount(uint32_t cnt)
