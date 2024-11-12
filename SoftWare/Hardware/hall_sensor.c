@@ -117,6 +117,7 @@ void hall_cale(void *pthis)
 {
     hall_sensor_t *hall;
     hall = (hall_sensor_t *)pthis;
+    hall->cur_abzcout = hall->get_abzcount();
     hall->realcacle_angle += hall->realcacle_speed * HALL_UPDATE_PERIOD;
     if (hall->realcacle_angle > 6.2831852f)
     {
@@ -152,6 +153,7 @@ void hall_cale(void *pthis)
 
 /*--------------------硬件相关---------------------------------*/
 #include "gpio.h"
+#include "tim.h"
 static uint8_t hall_get_sectionnumb(void)
 {
     uint8_t u,v,w;
@@ -173,6 +175,8 @@ void hall_init(void *this)
     memset(this,0,sizeof(hall_sensor_t));    
     hall->getsection = hall_get_sectionnumb;
     hall->gettick = hall_gettick;
+    hall->get_abzcount = tim_abzencoder_getcount;
+    hall->set_abzcount = tim_abzencoder_setcount;
     hall->realcacle_angle = 0.0f;
     hall->realcacle_speed = 0.0f;
     hall->last_section = 0;

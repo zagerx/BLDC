@@ -14,18 +14,23 @@ typedef struct hall_sensor
     float hall_baseBuff[7];
     uint8_t (*getsection)(void);
     uint32_t (*gettick)(void);
+    uint32_t (*get_abzcount)(void);
+    void     (*set_abzcount)(uint32_t);
     uint32_t last_tick;
     float speed;
     float angle;
     float realcacle_angle;
     float realcacle_speed;
+
+    uint32_t cur_abzcout;
+    float self_angle;
+
 /*PLL*/
     float hat_angle;
     float hat_speed;
     float pll_sum;
 /*OUTPUT*/    
 #ifdef MOTOR_OPENLOOP 
-    float self_angle;
     lowfilter_t lfilter[7];
 #endif // DEBUG  
     lowfilter_t speedfilter;

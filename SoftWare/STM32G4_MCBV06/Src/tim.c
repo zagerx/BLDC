@@ -350,4 +350,25 @@ void tim_tigger_adc(void)
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
 
+void tim_abzencoder_enable(void)
+{
+  HAL_TIM_Base_Start(&htim4);
+}
+
+uint32_t tim_abzencoder_getcount(void)
+{
+  uint32_t cnt;
+  cnt = __HAL_TIM_GET_COUNTER(&htim4);
+  return cnt;
+}
+void tim_abzencoder_setcount(uint32_t cnt)
+{
+  __HAL_TIM_SET_COUNTER(&htim4,cnt);
+}
+void tim_abzencoder_disable(void)
+{
+  HAL_TIM_Base_Stop(&htim4);
+}
+
+
 /* USER CODE END 1 */

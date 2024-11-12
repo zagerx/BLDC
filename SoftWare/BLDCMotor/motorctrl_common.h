@@ -96,7 +96,7 @@ struct mc_encoder
     float speed;     //机械转速
     float ele_theta; //电角度
     float total_realmectheta;
-    
+    float self_theta;//调试使用
     lowfilter_t speedfilter;
 
     /*输入*/

@@ -57,7 +57,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
 	Absolute_encoder(encoder);
 #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
 	#ifdef MOTOR_OPENLOOP
-		// encoder->sensor.self_angle = motordebug.self_ele_theta;
+		encoder->sensor.self_angle = encoder->self_theta;
 	#endif
 		encoder->update(&(encoder->sensor));
 		encoder->cacle(&(encoder->sensor));

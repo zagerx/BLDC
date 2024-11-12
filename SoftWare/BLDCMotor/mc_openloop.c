@@ -27,6 +27,7 @@ unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
     static float theta = 0.0f;
 
     /*读取编码器角度值*/
+    motor->encoder_handle.self_theta = theta;
     mc_encoder_read(&(motor->encoder_handle)); 
     /*反PARK CLARK变换*/
     i_abc.a = iabc[0];

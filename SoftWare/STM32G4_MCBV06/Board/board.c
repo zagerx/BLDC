@@ -29,13 +29,15 @@ void user_softresetsystem(void)
 #include "tim.h"
 static void motor_enable(void)
 {
-    gpio_setencoder_power(); 
+    gpio_setencoder_power();
+    tim_abzencoder_enable();
     tim_pwm_enable();
     tim_tigger_adc();
     adc_start();
 }
 static void motor_disable(void)
 {
+    tim_abzencoder_disable();
     tim_pwm_disable();
     adc_stop();
 }
