@@ -109,7 +109,7 @@ struct mc_encoder
 #endif
     /*方法*/
     void (*init)(void*);
-    void (*update)(void*);
+    uint8_t (*update)(void*);
     void (*cacle)(void*);  
 };
 

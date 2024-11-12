@@ -38,10 +38,11 @@ typedef struct hall_sensor
     lowfilter_t lfilter[7];
 #endif // DEBUG  
     lowfilter_t speedfilter;
+    lowfilter_t pll_speedfilter;
 }hall_sensor_t;
 #pragma pack(pop)
 
-void hall_update(void *pthis);
+uint8_t hall_update(void *pthis);
 void hall_cale(void  *pthis);
 void hall_init(void *this);
 

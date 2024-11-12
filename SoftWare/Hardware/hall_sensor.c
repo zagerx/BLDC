@@ -42,7 +42,7 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
 
 
 
-void hall_update(void *pthis)
+uint8_t hall_update(void *pthis)
 {
     hall_sensor_t *hall;
     hall = (hall_sensor_t *)pthis;
@@ -110,6 +110,7 @@ void hall_update(void *pthis)
     default:
         break;
     }
+    return 0;
 }
 
 #include "math.h"
@@ -168,6 +169,7 @@ void hall_cale(void *pthis)
     }
     // hall->angle = hall->realcacle_angle;    
     hall->angle = hall->hat_angle;
+    omega = lowfilter_cale(&(hall->pll_speedfilter),omega);
     hall->hat_speed = omega;
     hall->speed = hall->realcacle_speed;
 }
@@ -208,7 +210,8 @@ void hall_init(void *this)
 
     hall->realcacle_angle = 0.0f;
     hall->realcacle_speed = 0.0f;
-    hall->last_section = 0;
+    // hall->last_section = 0;
+    hall->last_section = hall->getsection();
     hall->count = 0.0f;
     hall->speed = 0.0f;
     hall->hall_baseBuff[0] = 0.0000f;
@@ -227,5 +230,6 @@ void hall_init(void *this)
         lowfilter_init(&(hall->lfilter[i]), 5.0F);
     }
 #endif // DEBUG
-    lowfilter_init(&(hall->speedfilter), 5.0F);
+    lowfilter_init(&(hall->speedfilter), 30.0F);
+    lowfilter_init(&(hall->pll_speedfilter),95.0f);
 }
