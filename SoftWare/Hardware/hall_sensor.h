@@ -8,6 +8,7 @@
 typedef struct hall_sensor
 {
     /* data */
+    uint8_t hall_runflag;
     uint8_t last_section;
     int8_t dir;
     uint32_t count;

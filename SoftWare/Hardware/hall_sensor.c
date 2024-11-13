@@ -208,10 +208,11 @@ void hall_init(void *this)
         hall->set_abzcount = tim_abzencoder_setcount;    
     #endif
 
-    hall->realcacle_angle = 0.0f;
-    hall->realcacle_speed = 0.0f;
     // hall->last_section = 0;
     hall->last_section = hall->getsection();
+    hall->realcacle_angle = hall->hall_baseBuff[hall->last_section];
+    // hall->realcacle_angle = 0.0f;
+    hall->realcacle_speed = 0.0f;
     hall->count = 0.0f;
     hall->speed = 0.0f;
     hall->hall_baseBuff[0] = 0.0000f;

@@ -59,6 +59,8 @@ void motortctrl_process(void)
     {
     case 0:
         MotorFsm_Init();
+        motor_func_register((motor_t*)&motor1);
+
         USER_DEBUG_NORMAL("MotorThread is Ready\n");
         state = 1;
         break;
@@ -87,7 +89,7 @@ void mc_hightfreq_task(float *iabc,motor_t *motor)
     mc_encoder_read(&(motor->encoder_handle));
     theta = motor->encoder_handle.ele_theta;
     speed = motor->encoder_handle.speed;
-    next_theta = theta + 1.5f * CURRMENT_PERIOD * speed;
+    next_theta = theta;// + 1.5f * CURRMENT_PERIOD * speed;
 
     #ifdef MOTOR_CURMENLOOP_DEBUG
         theta = 0.0f;

@@ -59,10 +59,13 @@ void mc_encoder_read(mc_encoder_t *encoder)
 	#ifdef MOTOR_OPENLOOP
 		encoder->sensor.self_angle = encoder->self_theta;
 	#endif
-		encoder->update(&(encoder->sensor));
-		encoder->cacle(&(encoder->sensor));
-		encoder->ele_theta = encoder->sensor.angle;
-		encoder->speed = encoder->sensor.speed;
+		if (encoder->sensor.hall_runflag)
+		{
+			encoder->update(&(encoder->sensor));
+			encoder->cacle(&(encoder->sensor));
+			encoder->ele_theta = encoder->sensor.angle;
+			encoder->speed = encoder->sensor.speed;
+		}
 #endif
 }
 void mc_encoder_init(mc_encoder_t *encoder)

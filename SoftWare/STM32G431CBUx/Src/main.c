@@ -113,6 +113,14 @@ int main(void)
   while (1)
   {
     do_taskcalls();
+    static uint8_t cout;
+    if (cout++>200)
+    {
+      /* code */
+      cout = 0;
+      HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);
+    }
+    
     HAL_Delay(1);
     /* USER CODE END WHILE */
 

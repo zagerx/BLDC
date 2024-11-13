@@ -10,8 +10,8 @@
 #include "debuglog.h"
 #include "mc_smo.h"
 
-static void motor_init(motor_t *motor);
-static void motor_deinit(motor_t *motor);
+static void motor_paraminit(motor_t *motor);
+static void motor_paramdeinit(motor_t *motor);
 
 fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
 {
@@ -26,7 +26,6 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     {
     case ENTER:
         USER_DEBUG_NORMAL("entry speed mode\n");
-        motor_init(motor);
         pthis->chState = READY;
     case READY:
         if (motor->curmode != M_SET_START)
@@ -35,10 +34,11 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         }
         motor->enable();
         #ifdef MOTOR_OPENLOOP
-            pthis->chState = RUN;
+            pthis->chState = CALIBRATE;
         #else
             pthis->chState = CALIBRATE;
         #endif
+        break;
     case CALIBRATE:
         {
             static unsigned short cnt;
@@ -70,18 +70,35 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
             #elif MOTOR_CURMENLOOP_TEST 
                 motor->currment_handle.id_tar = 0.0f;
                 motor->currment_handle.iq_tar = motor->currment_handle.pid_debug_target;
+            #elif MOTOR_OPENLOOP
+                motor->currment_handle.id_tar = 0.0f;
+                motor->currment_handle.iq_tar = motor->currment_handle.pid_debug_target;
+                if (motor->currment_handle.iq_tar!=0.0f)
+                {
+                    if (motor->encoder_handle.sensor.hall_runflag == 0)
+                    {
+                        motor_paraminit(motor);
+                    }
+                    motor->encoder_handle.sensor.hall_runflag = 1;
+                }else{
+                    motor->encoder_handle.sensor.hall_runflag = 0;
+                }                
             #else
                 motor->speed_handle.tar = motor->currment_handle.pid_debug_target;
                 motor->speed_handle.real = motor->encoder_handle.speed;
                 motor->currment_handle.iq_tar = speed_loop(&(motor->speed_handle));
                 motor->currment_handle.id_tar = 0.0f;
             #endif
+
+
+            
+
         }
         break;    
     case EXIT:
         USER_DEBUG_NORMAL("exit speed mode\n");
         motor->disable();
-        motor_deinit(motor);
+        motor_paramdeinit(motor);
         pthis->chState = ENTER;
         break;
     default:
@@ -90,9 +107,8 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     return 0;
 }
 
-static void motor_init(motor_t *motor)
+static void motor_paraminit(motor_t *motor)
 {
-    motor_func_register(motor);
     mc_encoder_init(&(motor->encoder_handle));
 #ifdef MOTOR_CURMENLOOP_DEBUG
     /*从FLASH指定位置读取PID参数数据*/
@@ -120,8 +136,9 @@ static void motor_init(motor_t *motor)
 
 
 
-static void motor_deinit(motor_t *motor)
+static void motor_paramdeinit(motor_t *motor)
 {
     memset(motor,0,sizeof(motor_t));
+    motor_func_register(motor);
 }
 
