@@ -51,10 +51,10 @@ void tim_pwm_disable(void);
 void tim_pwm_enable(void);
 void tim_set_pwm(float _a,float _b,float _c);
 
-void tim_encode_start(void);
-short tim_encode_readcnt(void);
-void tim_encode_writecnt(unsigned short cnt);
-void tim_encode_stop(void);
+void tim_abzencoder_enable(void);          
+uint32_t tim_abzencoder_getcount(void);    
+void tim_abzencoder_setcount(uint32_t cnt);
+void tim_abzencoder_disable(void);  
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -145,59 +145,35 @@ C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT
 C_INCLUDES += -I../Common/debuglog 
 C_DEFS += -DDEBUG_MODE_UART
 
-
-# MESSAGEQUEUE_ENABLE = 0
-# ifeq ($(MESSAGEQUEUE_ENABLE),1) 
-# C_SOURCES += $(wildcard ../Common/messagequeue/*.c)
-# C_INCLUDES += -I../Common/messagequeue 
-# endif
-
-# PERF_COUNTER_ENABLE = 0
-# ifeq ($(PERF_COUNTER_ENABLE),1)
-# C_INCLUDES += -I../Common/Perf_counter
-# C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
-# endif
-
-C_INCLUDES += -I../Common/systemmodule 
+C_INCLUDES += -I../Common/systemmodule
 C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
-C_DEFS += -DENABLE_SYSTEMMODULE
+
 
 C_INCLUDES += -I../Common/data_structures
+C_SOURCES += $(wildcard ../Common/data_structures/heap.c)
 C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
-C_INCLUDES += -I../Protocol
-C_SOURCES += $(wildcard ../ProtocolV2/*.c)
 
-# C_INCLUDES += -I../Common/Fsm 
-# C_SOURCES += $(wildcard ../Common/Fsm/*.c)
-
-# C_INCLUDES += -I../Common/method 
-# C_SOURCES += $(wildcard ../Common/method/*.c)
-
-# C_INCLUDES += -I../Common/_assert 
-# C_SOURCES += $(wildcard ../Common/_assert/*.c)
-
-# C_INCLUDES += -I../Common/data_structures
-# C_SOURCES += $(wildcard ../Common/data_structures/*.c)
-
-# C_INCLUDES += -I../Common
-# C_SOURCES += $(wildcard ../Common/*.c)
-
-# C_INCLUDES += -I../BLDCMotor 
-# C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-
-C_SOURCES += $(wildcard ./Src/pro_device.c)
-
-C_SOURCES += $(wildcard ../Hardware/ian226.c)
-C_SOURCES += $(wildcard ../Hardware/at24c0x.c)
-C_SOURCES += $(wildcard ../Hardware/tca9539pwr.c)
+C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
 C_INCLUDES += -I../Hardware 
+C_SOURCES += $(wildcard ./Board/Board.c)
+C_INCLUDES += -I./Board
 
-C_SOURCES += $(wildcard ../I2cBus/*.c)
-C_INCLUDES += -I../I2cBus 
+C_INCLUDES += -I../Protocol
+C_SOURCES += $(wildcard ../Protocol/*.c)
 
-
-# C_SOURCES += $(wildcard ./Board/*.c)
-# C_INCLUDES += -I./Board
+C_INCLUDES += -I../Common/method 
+C_SOURCES += $(wildcard ../Common/method/pid.c)
+C_SOURCES += $(wildcard ../Common/method/filter.c)
+C_INCLUDES += -I../Common/flash
+C_SOURCES += $(wildcard ../Common/flash/*.c)
+C_INCLUDES += -I../Common/Fsm 
+C_INCLUDES += -I../BLDCMotor 
+C_SOURCES += $(wildcard ../BLDCMotor/*.c)
+C_DEFS += -DMOTOR_OPENLOOP 
+# C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
+# C_DEFS += -DMOTOR_CURMENLOOP_DEBUG 
+# C_DEFS += -DMOTOR_CURMENLOOP_TEST
+# C_DEFS += -DMOTOR_SPEEDLOOP_DEBUG
 
 CMBACKTRACE_ENABLE = 0
 ifeq ($(CMBACKTRACE_ENABLE),1) 

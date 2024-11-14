@@ -1,70 +1,57 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
-#define BOARD_STM32H723
+/*--------------------电控软件---------------------*/
+//开环部分
+#define OPENLOOP_DEBUG_TOTAL_Te             (0.04f)
+#define OPENLOOP_DEBUG_STEP_THETA           (0.0004f)
+//闭环部分
+#define CURRMENT_PERIOD      (0.0001f)//电流环周期
+#define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期
+#define CURRMENTLOOP_KP             (0.08f)         
+#define CURRMENTLOOP_KI             (0.001f)
+#define SPEEDLOOP_KP                (0.18f)
+#define SPEEDLOOP_KI                (0.008f)
+#define POSLOOP_KP                  (0.1f)
+#define POSLOOP_KI                  (0.1f)
+/*-----------------编码器类型选择-------------------*/
+#define ENCODER_TYPE_SENSORLESS              (0)
+#define ENCODER_TYPE_ABS                     (1)
+#define ENCODER_TYPE_HALL                    (2)
+#define ENCODER_TYPE_HALL_ABZ                (3)
+#define ENCODER_TYPE                         ENCODER_TYPE_HALL_ABZ
 
-/*公共模块*/
-#define DEBUG_DISABLE                  (0)
-#define DEBUG_RTT                      (1)
-#define DEBUG_UART                     (2)
-#define DEBUG_SW                       (DEBUG_RTT)
+#if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
+    #define HALL_UPDATE_PERIOD   (0.0001f)
+    #define HALL_POSITIVE_OFFSET (-0.3f)
+    #define HALL_NEGATIVE_OFFSET (-0.2f)
+    #define PLL_KP               (80.0f)
+    #define PLL_KI               (0.02f)
+    #define OMEGTOTHETA          (CURRMENT_PERIOD)         
 
-#define USE_IPC_ENABLE                 (0)
-#define USE_FSM_ENABLE                 (0)
-#define USE_GPIO_ENABLE                (0)
-#define USE_ASSERT_ENABLE              (0)
-#define USE_IQMATH_ENABLE              (1)
-#define USE_METHOD_ENABLE              (1)
-#define USE_DEBUGLOG_ENABLE            (1)
-#define USE_ANALOGI2C_ENABLE           (0)
-#define USE_DATASTRUCTURES_ENABLE      (0)
-
-/*特定模块*/
-
-/*传感器模块*/
-#define SENSOR_MODE_EN (1)
-    #ifdef SENSOR_MODE_EN
-    /*定义传感器数量*/
-    typedef enum{
-        SENSOR_NONE = -1,
-        SENSOR_01, //角度传感器
-        SENSOR_02, //电流检测传感器
-        SENSOR_NUMBER
-    }sens_idx_t;
-    #else
-    typedef enum{
-        SENSOR_NONE = -1,
-        SENSOR_NUMBER
-    }sens_idx_t;
+    /*HALL基准角度 D轴强拖 0.1f*/
+    #define SCETION_6_BASEANGLE   (5.005f)
+    #define SCETION_4_BASEANGLE   (6.057f)
+    #define SCETION_5_BASEANGLE   (0.648f)
+    #define SCETION_1_BASEANGLE   (1.854f)
+    #define SCETION_3_BASEANGLE   (2.898f)
+    #define SCETION_2_BASEANGLE   (3.815f)   
 #endif
 
-/*Motor Ctrl Mode*/
-#define BOARD_MOTORCTRL_MODE
-    #ifdef BOARD_MOTORCTRL_MODE
-        #define A_ADCCHANNL_OFFSET          (32768)
-        #define B_ADCCHANNL_OFFSET          (32768)
-        #define C_ADCCHANNL_OFFSET          (32900)
-        #define APHASE_SHUNT                 0.05F
-        #define BPHASE_SHUNT                 0.05F
-        #define CPHASE_SHUNT                 0.06F
-        #define MOTOR_PAIR                  4.0f
+/*----------------------硬件相关----------------------*/
+#define AMPLIFICATION_FACTOR (5.36f)  // 假设放大倍数为10  
+#define SAMPLING_RESISTANCE  (0.005)  // 假设采样电阻为5mR欧姆
+#define CIRCLE_MAX_VAL       (24.0f)
+#define D_MAX_VAL            (12.0f)
+#define D_MIN_VAL            -D_MAX_VAL
+#define Q_MAX_VAL            D_MAX_VAL
+#define Q_MIN_VAL            -Q_MAX_VAL
+#define CIRCLE_OUT_MAX      (12.0f) //电流环输出最大值
+#define CIRCLE_OUT_MIN      (-12.0f)
+#define SPEED_OUT_MAX       (12.0f) //速度环输出最大值
+#define SPEED_OUT_MIN       (-12.0f)
 
-        /*Ia = (float)ADC1*(float)(3.3f/4096.0f/RA_S/BETA_);*/
-        #define A_VOLITETOCURRENT_FACTOR    (0.002f)
-        #define B_VOLITETOCURRENT_FACTOR    (0.002f)
-        #define C_VOLITETOCURRENT_FACTOR    (0.002f)
+/*---------------------电机本体----------------------- */
+#define MOTOR_PAIRS          (14.0f)//电机极对数
 
-        #define T_PWM                       (100.0f)
-        #define U_DC                        (24.0f)
-        #define F_PWM                       (float)(1.0f/T_PWM)
-        #define T_UDC                       (float)(T_PWM/U_DC)
-
-        #define ANGLE_COMPENSATA            (-1.3f - 3.1415926/2.0f)
-
-        #define CIRCLE_MAX_VAL               16.0f
-        #define D_MAX_VAL                    CIRCLE_MAX_VAL*0.95f
-        #define D_MIN_VAL                    -D_MAX_VAL
-        #define Q_MAX_VAL                    D_MAX_VAL
-        #define Q_MIN_VAL                    -Q_MAX_VAL
-    #endif
 #endif

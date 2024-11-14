@@ -549,128 +549,13 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-#include "debuglog.h"
-uint16_t adc_buf_02[4];
-#if 0
-enum{
-  START,
-  END,
-  CHANNL_0,
-  CHANNL_1,
-  CHANNL_2,
-  CHANNL_3
-};
-typedef struct adc3
-{
-  uint16_t state;
-}adc3_t;
-static adc3_t sg_adc3_fsm = {START}; 
-void adc_pollvale(void)
-{
-
-  switch (sg_adc3_fsm.state)
-  {
-  case START:
-    HAL_ADC_Start(&hadc3);
-    sg_adc3_fsm.state = CHANNL_0;
-  case CHANNL_0:
-    if(__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC))
-    {
-      adc_buf_02[0] = HAL_ADC_GetValue(&hadc3);
-      __HAL_ADC_CLEAR_FLAG(&hadc3,ADC_FLAG_EOC);
-      sg_adc3_fsm.state = CHANNL_1; 
-      LL_ADC_REG_StartConversion((&hadc3)->Instance);
-    }else{
-      break;
-    }
-  case CHANNL_1:
-    if(__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC))
-    {
-      __HAL_ADC_CLEAR_FLAG(&hadc3,ADC_FLAG_EOC);    
-      adc_buf_02[1] = HAL_ADC_GetValue(&hadc3);
-      // HAL_ADC_Start(&hadc3);
-      LL_ADC_REG_StartConversion((&hadc3)->Instance);
-      sg_adc3_fsm.state = CHANNL_2; 
-    };    
-    break;
-  case CHANNL_2:
-    if(__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC))
-    {
-      __HAL_ADC_CLEAR_FLAG(&hadc3,ADC_FLAG_EOC);    
-      adc_buf_02[2] = HAL_ADC_GetValue(&hadc3);
-      // HAL_ADC_Start(&hadc3);
-      LL_ADC_REG_StartConversion((&hadc3)->Instance);
-      sg_adc3_fsm.state = CHANNL_3; 
-    };
-    break;
-  case CHANNL_3:
-    if(__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC))
-    {
-      __HAL_ADC_CLEAR_FLAG(&hadc3,ADC_FLAG_EOC);    
-      adc_buf_02[3] = HAL_ADC_GetValue(&hadc3);
-      sg_adc3_fsm.state = END; 
-    };
-    break;
-  case END:
-    HAL_ADC_Stop(&hadc3);
-    sg_adc3_fsm.state = START; 
-    break;
-  default:
-    break;
-  }
-  return;
-}
-#else
-void adc_pollvale(void)
-{
-  #if 1
-    adc_buf_02[0] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_1);
-    adc_buf_02[1] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_2);
-    adc_buf_02[2] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_3);    
-    adc_buf_02[3] = HAL_ADCEx_InjectedGetValue(&hadc3,ADC_INJECTED_RANK_4); 
-  #else
-    HAL_ADC_Start(&hadc3);
-    for (uint8_t i = 0; i < 4; i++)
-    {
-      LL_ADC_Enable(ADC3);
-      while (!__HAL_ADC_GET_FLAG(&hadc3,ADC_FLAG_EOC));
-      adc_buf_02[i] = HAL_ADC_GetValue(&hadc3);   
-      HAL_Delay(100);   
-    }  
-    HAL_ADC_Stop(&hadc3);
-  #endif
-}
-#endif
-
-
-
-// #include "motorctrl.h"
 void adc_start(void)
 {
-  HAL_ADCEx_Calibration_Start(&hadc3,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
-  HAL_ADCEx_InjectedStart_IT(&hadc3);
+  HAL_ADCEx_Calibration_Start(&hadc2,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
+  HAL_ADCEx_InjectedStart_IT(&hadc2);
 }
 void adc_stop(void)
 {
-  HAL_ADCEx_InjectedStop_IT(&hadc3);
-}
-// #include "perf_counter.h"
-float BusVolite = 0.0F;
-uint32_t ADC_BUS = 0;
-void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-    unsigned int adc_vale[3];
-    adc_vale[0] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-    adc_vale[1] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
-    adc_vale[2] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
-    ADC_BUS =     HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_4);
-    BusVolite = ADC_BUS/65536.0f*3.0f * (104.7f/4.7f);
-
-  // unsigned int nCycleUsed = 0;
-  // __cycleof__("full test",{nCycleUsed = _;}){
-  //   _50uscycle_process(adc_vale,0.0f);
-  // }
-  // USER_DEBUG_NORMAL("nCycleUsed %d\r\n",nCycleUsed/550);
-
+  HAL_ADCEx_InjectedStop_IT(&hadc2);
 }
 /* USER CODE END 1 */

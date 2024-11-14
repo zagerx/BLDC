@@ -343,20 +343,22 @@ void tim_tigger_adc(void)
 }
 
 
-void tim_encode_start(void)
+void tim_abzencoder_enable(void)
 {
   HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1 | TIM_CHANNEL_2);
 }
 
-short tim_encode_readcnt(void)
+uint32_t tim_abzencoder_getcount(void)
 {
-  return __HAL_TIM_GET_COUNTER(&htim4);
+  uint32_t ret;
+  ret = __HAL_TIM_GET_COUNTER(&htim4);
+  return ret;
 }
-void tim_encode_writecnt(unsigned short cnt)
+void tim_abzencoder_setcount(uint32_t cnt)
 {
-  return __HAL_TIM_SET_COUNTER(&htim4,cnt);
+  __HAL_TIM_SET_COUNTER(&htim4,cnt);
 }
-void tim_encode_stop(void)
+void tim_abzencoder_disable(void)
 {
   HAL_TIM_Encoder_Stop(&htim4, TIM_CHANNEL_ALL);
 }
