@@ -4,6 +4,7 @@
 #include "stdint.h"
 #include "mc_utils.h"
 #include "board.h"//TODO
+#include "debuglog.h"
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
 	#include "board.h"
 	#include "sensor.h"
@@ -59,7 +60,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
 	#ifdef MOTOR_OPENLOOP
 		encoder->sensor.self_angle = encoder->self_theta;
 	#endif
-		if (encoder->sensor.hall_runflag)
+		// if (encoder->sensor.hall_runflag)
 		{
 			encoder->update(&(encoder->sensor));
 			encoder->cacle(&(encoder->sensor));
@@ -70,6 +71,10 @@ void mc_encoder_read(mc_encoder_t *encoder)
 }
 void mc_encoder_init(mc_encoder_t *encoder)
 {
+	if (!(encoder->init))
+	{
+		USER_DEBUG_NORMAL("encoder->init is null\n");
+	}
 	encoder->init(&(encoder->sensor));
 }
 

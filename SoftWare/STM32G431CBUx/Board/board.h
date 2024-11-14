@@ -1,7 +1,7 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
-#define OPENLOOP_DEBUG_TOTAL_Te              (0.3f)
+#define OPENLOOP_DEBUG_TOTAL_Te              (0.08f)
 #define OPENLOOP_DEBUG_STEP_THETA            (-0.001f)
 #define MOTOR_PAIRS                          (2.0f)//电机极对数
 #define CURRMENT_PERIOD                      (0.0001f)//电流环周期
@@ -19,8 +19,8 @@
     #define HALL_UPDATE_PERIOD              (0.0001f)
     #define HALL_POSITIVE_OFFSET            (-0.78f)
     #define HALL_NEGATIVE_OFFSET            (-1.28f)
-    #define PLL_KP                          (1800.50f)
-    #define PLL_KI                          (0.01f)
+    #define PLL_KP                          (180.50f)
+    #define PLL_KI                          (10.2f)
     #define OMEGTOTHETA                     (0.0001f)     
     //D轴强拖
     #define SCETION_6_BASEANGLE            (3.4891f)

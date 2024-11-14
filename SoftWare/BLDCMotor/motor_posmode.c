@@ -70,7 +70,7 @@ fsm_rt_t motor_posmode(fsm_cb_t *pthis)
 
 static void mc_param_init(void)
 {
-    flash_t temp;
+    // flash_t temp;
     /*从FLASH指定位置读取PID参数数据*/
     // user_flash_read(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
     /*初始化PID参数*/

@@ -3,7 +3,6 @@
 #include "motorctrl_common.h"
 #include "string.h"
 #include "mc_encoder.h"
-// #include "flash.h"
 #include "mc_speedloop.h"
 #include "board.h"
 #include "motorctrl_cfg.h"
@@ -18,7 +17,9 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     enum{
         READY = USER,
         CALIBRATE,
+        IDLE,
         RUN,
+        INIT,
     };
     motor_t *motor;
     motor = (motor_t*)pthis->pdata;    
@@ -26,6 +27,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     {
     case ENTER:
         USER_DEBUG_NORMAL("entry speed mode\n");
+        motor_paraminit(motor);//编码器初始化，获取初始位置
         pthis->chState = READY;
     case READY:
         if (motor->curmode != M_SET_START)
@@ -34,11 +36,12 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         }
         motor->enable();
         #ifdef MOTOR_OPENLOOP
-            pthis->chState = CALIBRATE;
+            pthis->chState = IDLE;
         #else
             pthis->chState = CALIBRATE;
         #endif
         break;
+
     case CALIBRATE:
         {
             static unsigned short cnt;
@@ -49,7 +52,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
                 dq.d = 0.0f;
                 dq.q = 0.0f;    
                 ab = _2r_2s(dq, 0.0f);
-                pthis->chState = RUN;
+                pthis->chState = INIT;
             }else{
                 dq.d = OPENLOOP_DEBUG_TOTAL_Te;
                 dq.q = 0.0f;    
@@ -59,40 +62,27 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
             motor->setpwm(duty._a, duty._b, duty._c);
         }
         break;
+    
+    case IDLE:
+        if (motor->curmode == M_SET_STOP)
+        {
+            pthis->chState = EXIT;
+        }    
+        break;
+    case INIT:
+        pthis->chState = RUN;
+        break;    
     case RUN:
         if (motor->curmode == M_SET_STOP)
         {
             pthis->chState = EXIT;
         }else{
-            #ifdef MOTOR_CURMENLOOP_DEBUG
-                motor->currment_handle.id_tar = motor->currment_handle.pid_debug_target;
-                motor->currment_handle.iq_tar = 0.0f;
-            #elif MOTOR_CURMENLOOP_TEST 
-                motor->currment_handle.id_tar = 0.0f;
-                motor->currment_handle.iq_tar = motor->currment_handle.pid_debug_target;
-            #elif MOTOR_OPENLOOP
-                motor->currment_handle.id_tar = 0.0f;
-                motor->currment_handle.iq_tar = motor->currment_handle.pid_debug_target;
-                if (motor->currment_handle.iq_tar!=0.0f)
-                {
-                    if (motor->encoder_handle.sensor.hall_runflag == 0)
-                    {
-                        motor_paraminit(motor);
-                    }
-                    motor->encoder_handle.sensor.hall_runflag = 1;
-                }else{
-                    motor->encoder_handle.sensor.hall_runflag = 0;
-                }                
-            #else
+            #ifdef MOTOR_SPEEDLOOP_DEBUG
                 motor->speed_handle.tar = motor->currment_handle.pid_debug_target;
                 motor->speed_handle.real = motor->encoder_handle.speed;
                 motor->currment_handle.iq_tar = speed_loop(&(motor->speed_handle));
                 motor->currment_handle.id_tar = 0.0f;
             #endif
-
-
-            
-
         }
         break;    
     case EXIT:
@@ -138,7 +128,7 @@ static void motor_paraminit(motor_t *motor)
 
 static void motor_paramdeinit(motor_t *motor)
 {
-    memset(motor,0,sizeof(motor_t));
-    motor_func_register(motor);
+    // memset(motor,0,sizeof(motor_t));
+    // motor_func_register(motor);
 }
 

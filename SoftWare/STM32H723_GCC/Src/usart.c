@@ -200,11 +200,14 @@ int _write(int file, char *data, int len)
 extern void protocol_getdata_tofifo(unsigned char *data,unsigned short len);
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
+  	uint32_t tmp;
     if(USART1 == huart1.Instance)                                   
     {
         if(RESET != __HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))   
         {
             __HAL_UART_CLEAR_IDLEFLAG(&huart1);                     
+            tmp = huart1.Instance->ISR;
+            tmp = huart1.Instance->RDR; 
             HAL_UART_DMAStop(&huart1);
             unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
             USER_DEBUG_NORMAL("datalen %d %d\n",data_length,__HAL_DMA_GET_COUNTER(&hdma_usart1_rx));

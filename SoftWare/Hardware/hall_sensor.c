@@ -46,7 +46,6 @@ uint8_t hall_update(void *pthis)
 {
     hall_sensor_t *hall;
     hall = (hall_sensor_t *)pthis;
-    hall->count++;
     uint8_t cur_section = hall->getsection();
     uint32_t cur_tick = hall->gettick();
     uint32_t delt_tick = hall->last_tick - cur_tick;
@@ -59,6 +58,7 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 2){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
+            hall->count++;
         }
         break;
 
@@ -68,6 +68,7 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 6){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
+            hall->count++;
         }
         break;
     case 5:
@@ -77,6 +78,7 @@ uint8_t hall_update(void *pthis)
         {
             hall_update_baseangle(hall, -1, cur_section);
         }else{
+            hall->count++;
         }
         break;
     case 1:
@@ -85,7 +87,9 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 5){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
+            hall->count++;
         }
+        
         break;
     case 3:
         if (cur_section == 2){
@@ -93,6 +97,7 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 1){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
+            hall->count++;
         }
         break;
     case 2:
@@ -101,6 +106,7 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 3){
             hall_update_baseangle(hall, -1, cur_section);
         }else{
+            hall->count++;
         }
         break;
     case 0:

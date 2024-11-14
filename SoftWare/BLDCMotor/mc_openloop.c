@@ -143,7 +143,8 @@ static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
         _2s_2r(i_ab, theta, &i_dq);
         motor->currment_handle.i_debugd = i_dq.d;
         motor->currment_handle.i_debugq = i_dq.q;
-        udq.d = motor->currment_handle.id_tar;udq.q = motor->currment_handle.iq_tar;//OPENLOOP_DEBUG_TOTAL_Te;//
+        udq.d = motor->currment_handle.id_tar;
+        udq.q = motor->currment_handle.pid_debug_target;//OPENLOOP_DEBUG_TOTAL_Te;//
         temp_ab = _2r_2s(udq, theta);
         duty = SVM(temp_ab.alpha, temp_ab.beta);
         motor->setpwm(duty._a, duty._b, duty._c);
