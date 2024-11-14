@@ -62,52 +62,7 @@ void PeriphCommonClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#define SYSRUNNING_PERCI            (1)
-#define DELAY_1MS                   (1)/SYSRUNNING_PERCI
-#define DELAY_2MS                   (2)/SYSRUNNING_PERCI
-#define DELAY_5MS                   (5)/SYSRUNNING_PERCI
-#define DELAY_20MS                  (20)/SYSRUNNING_PERCI
-#define DELAY_500MS                 (500)/SYSRUNNING_PERCI
-#define DELAY_1000MS                (1000)/SYSRUNNING_PERCI
-#define DELAY_5000MS                (5000)/SYSRUNNING_PERCI
-typedef struct
-{
-    /* data */
-    unsigned int time_cnt;
-    unsigned char state;
-}sys_run_t;
-static sys_run_t sg_SYSRuning;
-void sysrunning_process(void)
-{
-    enum{
-        SYS_IDLE,
-        SYS_NORMLE,
-    };
-    /*-----------------------*/
-    sg_SYSRuning.time_cnt++;
-    switch (sg_SYSRuning.state)
-    {
-        case SYS_IDLE:
-            if(!(sg_SYSRuning.time_cnt % (DELAY_5000MS))){
-                sg_SYSRuning.time_cnt = 0;
-                break;
-            }           
-            if(!(sg_SYSRuning.time_cnt % (DELAY_1000MS))){
-            }
-            if(!(sg_SYSRuning.time_cnt % (DELAY_500MS)))
-            {
-            }            
-            if(!(sg_SYSRuning.time_cnt % (DELAY_20MS)))
-            {
-                HAL_GPIO_TogglePin(WATCHDOG_IN_GPIO_Port,WATCHDOG_IN_Pin);
-                HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
-            }
-            if(!(sg_SYSRuning.time_cnt % (DELAY_2MS))){
-            }
-        default:
-            break;
-    }
-}
+unsigned short count = 0;
 
 /* USER CODE END 0 */
 
@@ -117,8 +72,9 @@ void sysrunning_process(void)
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
 
+  /* USER CODE BEGIN 1 */
+  do_initcalls();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -133,7 +89,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-/* Configure the peripherals common clocks */
+  /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
@@ -150,22 +106,25 @@ int main(void)
   MX_TIM4_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  HAL_Delay(100);
   USER_DEBUG_NORMAL("H7 hello word\r\n");
-
-  // pro_devinit();
   
-  // while(1);
-  // HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // uart2_process();
-    HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
-    HAL_Delay(2000);
-    // HAL_Delay(1);
+    do_taskcalls();
+    // HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
+    HAL_GPIO_TogglePin(WATCH_DOG_IN_GPIO_Port,WATCH_DOG_IN_Pin);
+    if (count++ > 500)
+    {
+      USER_DEBUG_NORMAL(".\r\n");    
+      count = 0;
+    }    
+    HAL_Delay(1);
 
     /* USER CODE END WHILE */
 

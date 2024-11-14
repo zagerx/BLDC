@@ -48,27 +48,39 @@ void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, LED_01_Pin|EBAKE_PWM_EN_Pin|VCC3V3_OUT_EN_Pin|TEST_IO_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, LED_01_Pin|WATCH_DOG_IN_Pin|VCC3V3_OUT_EN_Pin|TEST_IO_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, MAIN_POWER_OFF_Pin|VCC5V_OUT_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(WATCHDOG_IN_GPIO_Port, WATCHDOG_IN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port, EBAKE_PWM_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PEPin PEPin PEPin PEPin */
-  GPIO_InitStruct.Pin = LED_01_Pin|EBAKE_PWM_EN_Pin|VCC3V3_OUT_EN_Pin|TEST_IO_Pin;
+  GPIO_InitStruct.Pin = LED_01_Pin|WATCH_DOG_IN_Pin|VCC3V3_OUT_EN_Pin|TEST_IO_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PCPin PCPin */
+  GPIO_InitStruct.Pin = HALL_U1_Pin|HALL_V1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PtPin */
+  GPIO_InitStruct.Pin = HALL_W1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(HALL_W1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PDPin PDPin */
   GPIO_InitStruct.Pin = MAIN_POWER_OFF_Pin|VCC5V_OUT_EN_Pin;
@@ -86,11 +98,11 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = WATCHDOG_IN_Pin;
+  GPIO_InitStruct.Pin = EBAKE_PWM_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(WATCHDOG_IN_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(EBAKE_PWM_EN_GPIO_Port, &GPIO_InitStruct);
 
 }
 

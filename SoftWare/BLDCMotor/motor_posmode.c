@@ -72,7 +72,7 @@ static void mc_param_init(void)
 {
     flash_t temp;
     /*从FLASH指定位置读取PID参数数据*/
-    user_flash_read(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
+    // user_flash_read(PID_PARSE_ADDR,(uint8_t *)&temp,PID_PARSE_SIZE);
     /*初始化PID参数*/
     pid_init(&(motor1.currment_handle.d_pid),0.1f,0.01f,1.0,D_MAX_VAL,D_MIN_VAL);
     pid_init(&(motor1.currment_handle.q_pid),0.1f,0.01f,1.0,D_MAX_VAL,D_MIN_VAL);       

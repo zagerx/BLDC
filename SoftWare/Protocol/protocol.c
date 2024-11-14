@@ -23,6 +23,11 @@ extern void protocol_process(void)
 }
 extern void protocol_getdata_tofifo(unsigned char *pdata, unsigned short len)
 {
+    // for (unsigned char i = 0; i < len; i++)
+    // {
+    //     USER_DEBUG_NORMAL("0x%x  ",pdata[i]);
+    // }
+    // USER_DEBUG_NORMAL("\n");
     bytefifo_writemulitebyge(&pro_recivefifo, pdata, len);
 }
 
@@ -36,8 +41,8 @@ static void _recivethread(void)
     }
     frame_t frame;
     _unpack_proframe(pbuf, len, &frame);
-    // USER_DEBUG_NORMAL("head: %04X, cmd: %04X, datalen: %04X, crc: %04X, tail: %04X\n",
-    //                   frame.head, frame.cmd, frame.datalen, frame.crc, frame.tail);
+    USER_DEBUG_NORMAL("head: %04X, cmd: %04X, datalen: %04X, crc: %04X, tail: %04X\n",
+                      frame.head, frame.cmd, frame.datalen, frame.crc, frame.tail);
     _forch_cmdmap(frame.cmd, frame.pdata, frame.datalen);
 }
 static char _readdata_fromrecivefifo(unsigned char *pbuf, unsigned short *buf_size)

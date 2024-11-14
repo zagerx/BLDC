@@ -17,7 +17,7 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 {
     static unsigned char sg_uartsend_buf[125];
     memcpy(sg_uartsend_buf,pdata,len);
-    HAL_UART_Transmit_DMA(&hlpuart1,sg_uartsend_buf,len);
+    HAL_UART_Transmit_DMA(&huart1,sg_uartsend_buf,len);
 }
 
 void user_softresetsystem(void)
