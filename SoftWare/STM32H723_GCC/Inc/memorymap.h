@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    tim.h
+  * @file    memorymap.h
   * @brief   This file contains all the function prototypes for
-  *          the tim.c file
+  *          the memorymap.c file
   ******************************************************************************
   * @attention
   *
@@ -18,8 +18,8 @@
   */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __TIM_H__
-#define __TIM_H__
+#ifndef __MEMORYMAP_H__
+#define __MEMORYMAP_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,37 +32,17 @@ extern "C" {
 
 /* USER CODE END Includes */
 
-extern TIM_HandleTypeDef htim3;
-
-extern TIM_HandleTypeDef htim4;
-
-extern TIM_HandleTypeDef htim8;
-
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-void MX_TIM3_Init(void);
-void MX_TIM4_Init(void);
-void MX_TIM8_Init(void);
-
-void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-
 /* USER CODE BEGIN Prototypes */
-void tim_tigger_adc(void);
-void tim_pwm_disable(void);
-void tim_pwm_enable(void);
-void tim_set_pwm(float _a,float _b,float _c);
 
-void tim_abzencoder_enable(void);          
-uint32_t tim_abzencoder_getcount(void);    
-void tim_abzencoder_setcount(uint32_t cnt);
-void tim_abzencoder_disable(void);  
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __TIM_H__ */
+#endif /* __MEMORYMAP_H__ */
 

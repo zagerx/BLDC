@@ -57,14 +57,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define _ENCODERLINS 16384
+#define _ENCODERLINS 2500
 #define _ARR 13750
 #define LED_01_Pin GPIO_PIN_3
 #define LED_01_GPIO_Port GPIOE
-#define HALL_U1_Pin GPIO_PIN_14
-#define HALL_U1_GPIO_Port GPIOC
-#define HALL_V1_Pin GPIO_PIN_15
+#define HALL_V1_Pin GPIO_PIN_14
 #define HALL_V1_GPIO_Port GPIOC
+#define HALL_U1_Pin GPIO_PIN_15
+#define HALL_U1_GPIO_Port GPIOC
 #define WATCH_DOG_IN_Pin GPIO_PIN_7
 #define WATCH_DOG_IN_GPIO_Port GPIOE
 #define VCC3V3_OUT_EN_Pin GPIO_PIN_15

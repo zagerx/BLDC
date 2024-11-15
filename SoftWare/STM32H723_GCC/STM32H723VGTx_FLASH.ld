@@ -205,7 +205,11 @@ SECTIONS
     . = ALIGN(8);
   } >DTCMRAM
 
-  
+  .D2_Area :
+  {
+    . = ALIGN(4);   
+    . = ALIGN(4);
+  } >RAM_D2
 
   /* Remove information from the standard libraries */
   /DISCARD/ :

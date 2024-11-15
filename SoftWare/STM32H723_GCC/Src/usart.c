@@ -21,7 +21,7 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-static uint8_t sg_uartreceive_buff[125];
+__attribute__((section(".D2_Area"))) uint8_t sg_uartreceive_buff[125];
 
 /* USER CODE END 0 */
 
@@ -148,7 +148,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart1_rx);
 
     /* USART1 interrupt Init */
-    HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(USART1_IRQn, 2, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
 
@@ -206,8 +206,6 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
         if(RESET != __HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))   
         {
             __HAL_UART_CLEAR_IDLEFLAG(&huart1);                     
-            tmp = huart1.Instance->ISR;
-            tmp = huart1.Instance->RDR; 
             HAL_UART_DMAStop(&huart1);
             unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
             USER_DEBUG_NORMAL("datalen %d %d\n",data_length,__HAL_DMA_GET_COUNTER(&hdma_usart1_rx));

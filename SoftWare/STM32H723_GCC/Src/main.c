@@ -21,6 +21,7 @@
 #include "adc.h"
 #include "dma.h"
 #include "i2c.h"
+#include "memorymap.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -63,7 +64,6 @@ void PeriphCommonClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 unsigned short count = 0;
-
 /* USER CODE END 0 */
 
 /**
@@ -105,6 +105,7 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM4_Init();
   MX_USART1_UART_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   HAL_Delay(100);
   USER_DEBUG_NORMAL("H7 hello word\r\n");
@@ -117,15 +118,14 @@ int main(void)
   while (1)
   {
     do_taskcalls();
-    // HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
     HAL_GPIO_TogglePin(WATCH_DOG_IN_GPIO_Port,WATCH_DOG_IN_Pin);
     if (count++ > 500)
     {
-      USER_DEBUG_NORMAL(".\r\n");    
+      // USER_DEBUG_NORMAL(".\r\n");    
       count = 0;
     }    
     HAL_Delay(1);
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
