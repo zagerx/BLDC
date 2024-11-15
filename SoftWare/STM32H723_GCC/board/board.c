@@ -29,6 +29,7 @@ void user_softresetsystem(void)
 #include "tim.h"
 static void motor_enable(void)
 {
+    HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
     gpio_setencoder_power();
     tim_abzencoder_enable();
     tim_pwm_enable();
@@ -37,6 +38,7 @@ static void motor_enable(void)
 }
 static void motor_disable(void)
 {
+    HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_RESET);
     tim_abzencoder_disable();
     tim_pwm_disable();
     adc_stop();
@@ -62,7 +64,7 @@ static void _convert_current(uint16_t* adc_buf,float *i_abc)
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {    
-    unsigned short adc_vale[3];
+    static unsigned short adc_vale[3];
     float iabc[3]; 
     {
         adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
