@@ -57,7 +57,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define _ENCODERLINS 2500
+#define _ENCODERLINS 8192
 #define _ARR 13750
 #define LED_01_Pin GPIO_PIN_3
 #define LED_01_GPIO_Port GPIOE

@@ -45,7 +45,7 @@ void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 4096;
+  htim3.Init.Period = _ENCODERLINS;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
@@ -432,14 +432,13 @@ void tim_tigger_adc(void)
 
 void tim_abzencoder_enable(void)
 {
-  // HAL_TIM_Base_Start(&htim3);
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1 | TIM_CHANNEL_2);
 }
 
 uint32_t tim_abzencoder_getcount(void)
 {
   uint32_t ret;
-  ret = 0;//4096 - __HAL_TIM_GET_COUNTER(&htim3);
+  ret =  __HAL_TIM_GET_COUNTER(&htim3);
   return ret;
 }
 void tim_abzencoder_setcount(uint32_t cnt)

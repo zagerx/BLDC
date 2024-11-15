@@ -64,7 +64,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
 		{
 			encoder->update(&(encoder->sensor));
 			encoder->cacle(&(encoder->sensor));
-			encoder->ele_theta = encoder->sensor.angle;
+			encoder->ele_theta = (encoder->sensor.angle);
 			encoder->speed = encoder->sensor.speed;
 		}
 #endif
