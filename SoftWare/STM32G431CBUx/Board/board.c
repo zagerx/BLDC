@@ -20,10 +20,12 @@ static void motor_enable(void)
     tim_tigger_adc();
     adc_start();
     opamp_start();
+    tim_hallmode_enable();
 
 }
 static void motor_disable(void)
 {
+    tim_hallmode_disable();
     tim_pwm_disable();
     adc_stop();
 }
@@ -31,7 +33,16 @@ static void motor_set_pwm(float _a,float _b,float _c)
 {
     tim_set_pwm(_a ,_b,_c);
 }
-
+uint32_t test_cout = 0;
+uint32_t test_c1,test_c2,test_c3;
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM4)
+    {
+        test_cout++;
+        test_c1 = HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1);
+    }
+}
 
 static void user_softresetsystem(void)
 {

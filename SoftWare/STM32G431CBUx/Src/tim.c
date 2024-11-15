@@ -344,4 +344,12 @@ void tim_tigger_adc(void)
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
 
+void tim_hallmode_enable(void)
+{
+  HAL_TIM_IC_Start_IT(&htim4,TIM_CHANNEL_1);
+}
+void tim_hallmode_disable(void)
+{
+  HAL_TIM_IC_Stop_IT(&htim4,TIM_CHANNEL_1);
+}
 /* USER CODE END 1 */

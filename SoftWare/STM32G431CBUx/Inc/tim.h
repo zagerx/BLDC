@@ -49,8 +49,9 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void tim_set_pwm(float _a,float _b,float _c);
 void tim_pwm_enable(void);
 void tim_pwm_disable(void);
-void tim_pwm_enable_noirq(void);
 void tim_tigger_adc(void);
+void tim_hallmode_enable(void);
+void tim_hallmode_disable(void);
 
 /* USER CODE END Prototypes */
 

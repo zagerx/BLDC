@@ -19,8 +19,9 @@
     #define HALL_UPDATE_PERIOD              (0.0001f)
     #define HALL_POSITIVE_OFFSET            (-0.78f)
     #define HALL_NEGATIVE_OFFSET            (-1.28f)
-    #define PLL_KP                          (180.50f)
-    #define PLL_KI                          (10.2f)
+    #define ENCODER_OFFSET_                 (+0.785398f)//pi/2/Motor_Pairs
+    #define PLL_KP                          (80.50f)
+    #define PLL_KI                          (1.2f)
     #define OMEGTOTHETA                     (0.0001f)     
     //D轴强拖
     #define SCETION_6_BASEANGLE            (3.4891f)

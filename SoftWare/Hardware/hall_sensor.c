@@ -33,7 +33,7 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
             delt_ -= 6.2831852f;
         }
         realcacle_speed = hall->dir * (-1.0*delt_ / (HALL_UPDATE_PERIOD * hall->count));
-        hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter),realcacle_speed);        
+        hall->realcacle_speed = realcacle_speed;//lowfilter_cale(&(hall->speedfilter),realcacle_speed);        
         hall->realcacle_angle = hall->hall_baseBuff[hall->last_section] + HALL_NEGATIVE_OFFSET;
     }
     hall->last_section = cur_sect;
