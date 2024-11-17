@@ -98,7 +98,8 @@ struct mc_encoder
     float total_realmectheta;
     float self_theta;//调试使用
     lowfilter_t speedfilter;
-
+    float self_te;
+    uint8_t runflag;
     /*输入*/
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
     int32_t raw_data;
@@ -111,6 +112,7 @@ struct mc_encoder
     void (*init)(void*);
     uint8_t (*update)(void*);
     void (*cacle)(void*);  
+    void (*get_firstpos)(void *);
 };
 
 

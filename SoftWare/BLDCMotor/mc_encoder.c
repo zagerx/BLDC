@@ -60,7 +60,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
 	#ifdef MOTOR_OPENLOOP
 		encoder->sensor.self_angle = encoder->self_theta;
 	#endif
-		// if (encoder->sensor.hall_runflag)
+		if (encoder->runflag)
 		{
 			encoder->update(&(encoder->sensor));
 			encoder->cacle(&(encoder->sensor));

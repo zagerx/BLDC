@@ -45,6 +45,7 @@ typedef struct hall_sensor
 
 uint8_t hall_update(void *pthis);
 void hall_cale(void  *pthis);
+void hall_get_initpos(void *pthis);
 void hall_init(void *this);
 
 #endif

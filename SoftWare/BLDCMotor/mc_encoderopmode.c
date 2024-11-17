@@ -24,7 +24,8 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
     {
     case ENTER:
         USER_DEBUG_NORMAL("entry encoer openloop mode\n");
-        motor_paraminit(motor);//编码器初始化，获取初始位置
+        motor_paraminit(motor);//编码器初始化
+        motor->encoder_handle.runflag = 0;
         pthis->chState = READY;
     case READY:
         if (motor->curmode != M_SET_START)
@@ -38,6 +39,13 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
 
     case CALIBRATE:
         {
+            motor->encoder_handle.get_firstpos(&(motor->encoder_handle.sensor));
+            if (  motor->currment_handle.pid_debug_target != 0.0f)
+            {
+                motor->encoder_handle.self_te = motor->currment_handle.pid_debug_target;
+                motor->encoder_handle.runflag = 1;
+                pthis->chState = RUN;
+            }
         }
         break;
     
@@ -46,6 +54,13 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
     case INIT:
         break;    
     case RUN:
+        if (motor->curmode == M_SET_STOP)
+        {
+            pthis->chState = EXIT;
+        }else{
+            motor->encoder_handle.self_te = motor->currment_handle.pid_debug_target;
+        }
+        break;
         break;    
     case EXIT:
         USER_DEBUG_NORMAL("exit encoder openloop mode\n");
@@ -68,6 +83,8 @@ static void motor_paraminit(motor_t *motor)
 
 static void motor_paramdeinit(motor_t *motor)
 {
-    memset(motor,0,sizeof(motor_t));
+    // memset(motor,0,sizeof(motor_t));
+    motor->encoder_handle.self_te = 0.0f;
+    motor->currment_handle.pid_debug_target = 0.0f;
     motor_func_register(motor);
 }

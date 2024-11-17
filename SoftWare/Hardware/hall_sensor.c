@@ -182,7 +182,14 @@ void hall_cale(void *pthis)
     hall->speed = hall->realcacle_speed;
 }
 
-
+void hall_get_initpos(void *pthis)
+{
+    hall_sensor_t *hall;
+    hall = (hall_sensor_t*)pthis;
+    uint8_t cur_sect = hall->getsection();
+    hall->last_section = cur_sect;
+    hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + 1.0471f;
+}
 
 
 
@@ -210,15 +217,14 @@ void hall_init(void *this)
     memset(this,0,sizeof(hall_sensor_t));    
     hall->getsection = hall_get_sectionnumb;
     hall->gettick = hall_gettick;
-    
     #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
         hall->get_abzcount = tim_abzencoder_getcount;
         hall->set_abzcount = tim_abzencoder_setcount;    
     #endif
 
     // hall->last_section = 0;
-    hall->last_section = hall->getsection();
-    hall->realcacle_angle = hall->hall_baseBuff[hall->last_section];
+    // hall->last_section = hall->getsection();
+    // hall->realcacle_angle = hall->hall_baseBuff[hall->last_section];
     // hall->realcacle_angle = 0.0f;
     hall->realcacle_speed = 0.0f;
     hall->count = 0.0f;
