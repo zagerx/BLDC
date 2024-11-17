@@ -342,6 +342,9 @@ void serialwindow::onReadSerialData()
         QTextEdit *edit = ui->RiceveEdit;
         // edit->append(stringData);
         edit->insertPlainText(stringData);
+        QTextCursor cursor = edit->textCursor();
+        cursor.movePosition(QTextCursor::End);
+        edit->setTextCursor(cursor);
     }
 }
 /******************************************************************************
@@ -571,6 +574,13 @@ void serialwindow::onBTSlotFunc(void)
         datafram.UnPack();
         datafram.PrintFrame();
         pMcProtocl->AddFrameToBuf(datafram);
+    }else if(clickedButton == ui->EncoderOPModeBT){
+        MC_Frame datafram;
+        datafram.CMD = M_SET_EncoderLoopM;
+        datafram.UnPack();
+        pMcProtocl->AddFrameToBuf(datafram);
+        ui->MotorStartBT->setDisabled(false);
+        ui->MotorStopBT->setDisabled(false);
     }
 }
 
@@ -590,6 +600,7 @@ void serialwindow::ButtonInit(void)
     QObject::connect(ui->OpenSerilBT,    SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
     QObject::connect(ui->CMDEnterBT_2,   SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
     QObject::connect(ui->CMDEnterBT_3,   SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
+    QObject::connect(ui->EncoderOPModeBT,SIGNAL(clicked()), this, SLOT(onBTSlotFunc()));
 
     /*心跳灯初始化*/
     QLabel *lightLabel = ui->LED_Label;

@@ -1,7 +1,9 @@
 #include "motor_normalmode.h"
 #include "motor_speedmode.h"
+#include "mc_encoderopmode.h"
 #include "motorctrl_common.h"
 #include "mc_protocol.h"
+#include "debuglog.h"
 fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
 {
     motor_t *motor;
@@ -14,6 +16,12 @@ fsm_rt_t motor_normalmode(fsm_cb_t *pthis)
             motor->curmode = 0;//TODO
             TRAN_STATE(pthis,motor_speedmode);
         }
+        if (motor->curmode == M_SET_EncoderLoopM)
+        {
+            USER_DEBUG_NORMAL("motor enter encoder loop mode\n");
+            motor->curmode = 0;//TODO
+            TRAN_STATE(pthis,motor_encoder_ol_mode);
+        }        
         break;
     case EXIT:
         break;

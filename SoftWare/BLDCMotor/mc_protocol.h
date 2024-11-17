@@ -14,6 +14,7 @@
 #define M_SET_PIDParam               (0x0109)
 #define M_SET_PIDTarge               (0x010A)
 #define M_SET_PosM                   (0x010B)     
+#define M_SET_EncoderLoopM                   (0x010C)       
 
 
 #define S_CMD                        (0x02)

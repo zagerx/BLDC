@@ -28,8 +28,6 @@ static void convert_floats(unsigned char *pdata, unsigned short datalen, float *
 static void test_func(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_motorstart(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_motorstop(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
-static void _cmd_setMotorNormalM(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
-static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setMotorModel(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
 
 static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen);
@@ -42,6 +40,7 @@ static cmdmap_t commend_map[] = {
     {M_SET_NormalM,    _cmd_setMotorModel,   },
     {M_SET_SpeedM,     _cmd_setMotorModel,   },
     {M_SET_PosM,       _cmd_setMotorModel,   },
+    {M_SET_EncoderLoopM,       _cmd_setMotorModel,   },
     {M_GET_MotorInfo,  test_func,              },
     {M_GET_CtrlParaseInfo,   _cmd_getinfo,       },
     {M_SET_PIDParam,   _cmd_setparam,       },
@@ -79,16 +78,7 @@ static void _cmd_motorstop(cmdmap_t *pactor,unsigned char *pdata, unsigned short
     USER_DEBUG_NORMAL("Motor Stop CMD\n");
     motor1.curmode = pactor->cmd;
 }
-static void _cmd_setMotorNormalM(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
-{
-    motor1.curmode = pactor->cmd;
-    USER_DEBUG_NORMAL("Set Motor enter Normal Model CMD\n");
-}
-static void _cmd_setMotorNormalD(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
-{
-    motor1.curmode = pactor->cmd;
-    USER_DEBUG_NORMAL("Set Motor enter Debug Model CMD\n");    
-}
+
 static void _cmd_setMotorModel(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
     motor1.curmode = pactor->cmd;

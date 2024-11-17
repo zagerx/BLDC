@@ -124,17 +124,6 @@ static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
     static uint16_t state = RUN;
     switch (state)
     {
-    case IDLE:
-        duty = SVM(0.08f, 0);
-        motor->setpwm(duty._a, duty._b, duty._c);
-        mc_encoder_read(&(motor->encoder_handle));
-        static uint32_t cnt = 0;
-        if (cnt++>8000)
-        {
-            cnt = 0;
-            state = RUN;
-        }
-        break;
     case RUN:
         mc_encoder_read(&(motor->encoder_handle));
         theta = motor->encoder_handle.ele_theta;
