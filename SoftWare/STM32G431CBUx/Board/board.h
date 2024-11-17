@@ -17,19 +17,27 @@
 
 #elif (ENCODER_TYPE == ENCODER_TYPE_HALL)
     #define HALL_UPDATE_PERIOD              (0.0001f)
-    #define HALL_POSITIVE_OFFSET            (-0.78f)
-    #define HALL_NEGATIVE_OFFSET            (-1.28f)
-    #define ENCODER_OFFSET_                 (+0.785398f)//pi/2/Motor_Pairs
+    #define HALL_POSITIVE_OFFSET            (-0.0f)
+    #define HALL_NEGATIVE_OFFSET            (+0.18f)
+    // #define ENCODER_OFFSET_                 (-0.785398f)//pi/2/Motor_Pairs
+    #define ENCODER_OFFSET_                 (+0.0f)//pi/2/Motor_Pairs
+
     #define PLL_KP                          (80.50f)
     #define PLL_KI                          (1.2f)
     #define OMEGTOTHETA                     (0.0001f)     
     //D轴强拖
-    #define SCETION_6_BASEANGLE            (3.4891f)
-    #define SCETION_4_BASEANGLE            (4.5670f)
-    #define SCETION_5_BASEANGLE            (5.581f)
-    #define SCETION_1_BASEANGLE            (0.312f)
-    #define SCETION_3_BASEANGLE            (1.428f)
-    #define SCETION_2_BASEANGLE            (2.424f)
+    // #define SCETION_6_BASEANGLE            (3.4891f)
+    // #define SCETION_4_BASEANGLE            (4.5670f)
+    // #define SCETION_5_BASEANGLE            (5.581f)
+    // #define SCETION_1_BASEANGLE            (0.312f)
+    // #define SCETION_3_BASEANGLE            (1.428f)
+    // #define SCETION_2_BASEANGLE            (2.424f)
+    #define SCETION_6_BASEANGLE            (2.9086f)
+    #define SCETION_4_BASEANGLE            (3.9781f)
+    #define SCETION_5_BASEANGLE            (4.9991f)
+    #define SCETION_1_BASEANGLE            (6.0460f)
+    #define SCETION_3_BASEANGLE            (0.8203f)
+    #define SCETION_2_BASEANGLE            (1.8650f)    
 #endif
 
 
