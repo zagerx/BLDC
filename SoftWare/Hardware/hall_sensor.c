@@ -6,9 +6,9 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
 {
     float delt_,realcacle_speed;
 #ifdef MOTOR_OPENLOOP
-    // volatile static float test_temp[7];
-    // test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle);
-    // USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
+    volatile static float test_temp[7];
+    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle);
+    USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
 #endif
     hall->dir = dir;
     /*计算扇区速度*/
@@ -34,7 +34,6 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
         }
         realcacle_speed = hall->dir * (-1.0*delt_ / (HALL_UPDATE_PERIOD * hall->count));
         hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter),realcacle_speed);        
-        // hall->realcacle_angle = hall->hall_baseBuff[hall->last_section] + HALL_NEGATIVE_OFFSET;
         hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + HALL_NEGATIVE_OFFSET;
 
     }

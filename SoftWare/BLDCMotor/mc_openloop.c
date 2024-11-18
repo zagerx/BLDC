@@ -74,6 +74,8 @@ static void mc_self_openlooptest(float *iabc,motor_t* motor)
     {
     case PREPOSITIONING:
     {
+        motor->encoder_handle.runflag = 1;
+
         float theta;
         alpbet_t iab;
         duty_t duty;

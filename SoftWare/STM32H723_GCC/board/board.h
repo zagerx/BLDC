@@ -4,7 +4,7 @@
 /*--------------------电控软件---------------------*/
 //开环部分
 #define OPENLOOP_DEBUG_TOTAL_Te             (0.03f)
-#define OPENLOOP_DEBUG_STEP_THETA           (0.001f)
+#define OPENLOOP_DEBUG_STEP_THETA           (-0.001f)
 //闭环部分
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期
 #define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期
@@ -26,20 +26,20 @@
 
 #if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
     #define HALL_UPDATE_PERIOD   (0.0001f)
-    #define HALL_POSITIVE_OFFSET (+0.3f)
-    #define HALL_NEGATIVE_OFFSET (-0.8f)
-    #define ENCODER_OFFSET_      (+0.3926f)
+    #define HALL_POSITIVE_OFFSET (+0.0f)
+    #define HALL_NEGATIVE_OFFSET (+0.14f)
+    #define ENCODER_OFFSET_      (+0.0f)
     #define PLL_KP               (80.0f)
     #define PLL_KI               (0.02f)
     #define OMEGTOTHETA          (CURRMENT_PERIOD)         
 
     /*HALL基准角度 D轴强拖 0.1f*/
-    #define SCETION_6_BASEANGLE   (3.447f)
-    #define SCETION_4_BASEANGLE   (4.486f)
-    #define SCETION_5_BASEANGLE   (5.595f)
-    #define SCETION_1_BASEANGLE   (0.283f)
-    #define SCETION_3_BASEANGLE   (1.385f)
-    #define SCETION_2_BASEANGLE   (2.432f)   
+    #define SCETION_6_BASEANGLE   (3.686f)
+    #define SCETION_4_BASEANGLE   (4.724f)
+    #define SCETION_5_BASEANGLE   (5.774f)
+    #define SCETION_1_BASEANGLE   (0.539f)
+    #define SCETION_3_BASEANGLE   (1.591f)
+    #define SCETION_2_BASEANGLE   (2.645f)   
 #endif
 
 /*----------------------硬件相关----------------------*/
@@ -55,7 +55,7 @@
 #define SPEED_OUT_MAX       (12.0f) //速度环输出最大值
 #define SPEED_OUT_MIN       (-12.0f)
 
-/*---------------------电机本体----------------------- */
-#define MOTOR_PAIRS          (4.0f)//电机极对数
+/*---------------------电机本体(超龙电机)----------------------- */
+#define MOTOR_PAIRS          (5.0f)//电机极对数
 
 #endif
