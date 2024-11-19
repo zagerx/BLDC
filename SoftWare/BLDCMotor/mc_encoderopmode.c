@@ -34,7 +34,14 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
         }
         motor->enable();
         USER_DEBUG_NORMAL("motor enable\n");
-        pthis->chState = CALIBRATE;
+        #if(MOTOR_OPENLOOP && MOTOR_OPENLOOP_ENCODER)
+            pthis->chState = CALIBRATE;
+            USER_DEBUG_NORMAL("encoder loop test\n");
+        #else
+            USER_DEBUG_NORMAL("self loop test\n");
+            pthis->chState = RUN;
+        #endif
+        
         break;
 
     case CALIBRATE:

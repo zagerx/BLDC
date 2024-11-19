@@ -2,47 +2,39 @@
 #include "debuglog.h"
 #include "board.h"
 #include "stdint.h"
-static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_sect)
-{
-    float delt_,realcacle_speed;
-#ifdef MOTOR_OPENLOOPgit pus
+static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_sect) {
+    float delta, real_calc_speed;
+    const float TWO_PI = 6.2831852f;
+ #ifdef MOTOR_OPENLOOP
     volatile static float test_temp[7];
     test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle);
     USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
 #endif
     hall->dir = dir;
-    /*计算扇区速度*/
-    if (dir > 0)
-    {
-        delt_ = -(hall->hall_baseBuff[hall->last_section] - hall->hall_baseBuff[cur_sect]);
+    delta = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
 
-        if (delt_ < 0.0f)
-        {
-            delt_ += 6.2831852f;
+    // Adjust delta based on direction and ensure it is within the range [-PI, PI]
+    if (dir > 0) {
+        if (delta < 0.0f) {
+            delta += TWO_PI;
         }
-        realcacle_speed = hall->dir * (delt_ / (HALL_UPDATE_PERIOD * hall->count));
-        hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter),realcacle_speed);
-        hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + HALL_POSITIVE_OFFSET;
-    }
-    else
-    {
-        delt_ = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
-
-        if (delt_ > 0.0f)
-        {
-            delt_ -= 6.2831852f;
+    } else {
+        if (delta > 0.0f) {
+            delta -= TWO_PI;
         }
-        realcacle_speed = hall->dir * (-1.0*delt_ / (HALL_UPDATE_PERIOD * hall->count));
-        hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter),realcacle_speed);        
-        hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + HALL_NEGATIVE_OFFSET;
-
     }
+ 
+    // Calculate the real speed, applying the direction and filtering
+    real_calc_speed = 1 * (delta / (HALL_UPDATE_PERIOD * hall->count));
+    hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter), real_calc_speed);
+ 
+    // Update the angle with the appropriate offset
+    hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
+ 
+    // Update the last section and reset the count
     hall->last_section = cur_sect;
     hall->count = 0;
 }
-
-
-
 uint8_t hall_update(void *pthis)
 {
     hall_sensor_t *hall;

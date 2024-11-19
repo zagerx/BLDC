@@ -18,7 +18,7 @@
 #elif (ENCODER_TYPE == ENCODER_TYPE_HALL)
     #define HALL_UPDATE_PERIOD              (0.0001f)
     #define HALL_POSITIVE_OFFSET            (-0.0f)
-    #define HALL_NEGATIVE_OFFSET            (+0.18f)
+    #define HALL_NEGATIVE_OFFSET            (+0.27f)
     // #define ENCODER_OFFSET_                 (-0.785398f)//pi/2/Motor_Pairs
     #define ENCODER_OFFSET_                 (+0.0f)//pi/2/Motor_Pairs
 
