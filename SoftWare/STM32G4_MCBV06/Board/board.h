@@ -22,6 +22,8 @@
 #define ENCODER_TYPE                         ENCODER_TYPE_HALL_ABZ
 
 #if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
+    #define ABZ_ENCODER_LINES           (8192)
+    #define ABZ_ENCODER_RESOLUTION      (0.0030679f)// 2*pi/4096*motor_pairs  
     #define HALL_UPDATE_PERIOD   (0.0001f)
     #define HALL_POSITIVE_OFFSET (-0.3f)
     #define HALL_NEGATIVE_OFFSET (-0.2f)
@@ -52,6 +54,6 @@
 #define SPEED_OUT_MIN       (-12.0f)
 
 /*---------------------电机本体----------------------- */
-#define MOTOR_PAIRS          (14.0f)//电机极对数
+#define MOTOR_PAIRS          (15.0f)//电机极对数
 
 #endif

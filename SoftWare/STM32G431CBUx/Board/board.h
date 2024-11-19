@@ -41,7 +41,7 @@
 
 #define CURRMENTLOOP_KP             (0.08f)         
 #define CURRMENTLOOP_KI             (0.001f)
-#define SPEEDLOOP_KP                (5.0f)
+#define SPEEDLOOP_KP                (0.02f)
 #define SPEEDLOOP_KI                (0.01f)
 #define POSLOOP_KP                  (0.1f)
 #define POSLOOP_KI                  (0.1f)
