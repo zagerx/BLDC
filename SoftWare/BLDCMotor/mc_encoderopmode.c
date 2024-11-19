@@ -90,8 +90,9 @@ static void motor_paraminit(motor_t *motor)
 
 static void motor_paramdeinit(motor_t *motor)
 {
-    // memset(motor,0,sizeof(motor_t));
     motor->encoder_handle.self_te = 0.0f;
+    motor->encoder_handle.deinit(&(motor->encoder_handle.sensor));
+
     motor->currment_handle.pid_debug_target = 0.0f;
-    // motor_func_register(motor);
+    motor->currment_handle.pid_debug_target = 0.0f;
 }

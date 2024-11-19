@@ -28,7 +28,6 @@
     #define HALL_UPDATE_PERIOD   (0.0001f)
     #define HALL_POSITIVE_OFFSET (+0.0f)
     #define HALL_NEGATIVE_OFFSET (+0.14f)
-    #define ENCODER_OFFSET_      (+0.0f)
     #define PLL_KP               (80.0f)
     #define PLL_KI               (0.02f)
     #define OMEGTOTHETA          (CURRMENT_PERIOD)         

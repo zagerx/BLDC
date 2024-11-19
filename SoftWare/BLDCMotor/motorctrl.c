@@ -97,9 +97,4 @@ void mc_hightfreq_task(float *iabc,motor_t *motor)
 #endif
 }
 
-
-
-
-
-
 board_task(motortctrl_process)

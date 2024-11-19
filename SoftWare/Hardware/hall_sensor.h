@@ -8,7 +8,6 @@
 typedef struct hall_sensor
 {
     /* data */
-    uint8_t hall_runflag;
     uint8_t last_section;
     int8_t dir;
     uint32_t count;
@@ -48,5 +47,6 @@ void hall_cale(void  *pthis);
 void hall_get_initpos(void *pthis);
 void hall_init(void *this);
 void hall_register(void *this);
+void hall_deinit(void *this);
 
 #endif

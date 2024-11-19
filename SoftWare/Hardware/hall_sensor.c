@@ -2,10 +2,12 @@
 #include "debuglog.h"
 #include "board.h"
 #include "stdint.h"
+#include "math.h"
+
 static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_sect) {
     float delta, real_calc_speed;
     const float TWO_PI = 6.2831852f;
- #ifdef MOTOR_OPENLOOP
+ #if( MOTOR_OPENLOOP && !MOTOR_OPENLOOP_ENCODER)//CPU负担过重，只能在自开环条件下打开
     volatile static float test_temp[7];
     test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle);
     USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
@@ -35,6 +37,7 @@ static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_s
     hall->last_section = cur_sect;
     hall->count = 0;
 }
+
 uint8_t hall_update(void *pthis)
 {
     hall_sensor_t *hall;
@@ -112,7 +115,6 @@ uint8_t hall_update(void *pthis)
     return 0;
 }
 
-#include "math.h"
 void hall_cale(void *pthis)
 {
     int32_t  delt_cnt;
@@ -237,6 +239,47 @@ void hall_init(void *this)
         lowfilter_init(&(hall->lfilter[i]), 5.0F);
     }
 #endif // DEBUG
-    lowfilter_init(&(hall->speedfilter), 30.0F);
+    lowfilter_init(&(hall->speedfilter), 3.0F);
     lowfilter_init(&(hall->pll_speedfilter),95.0f);
+}
+void hall_deinit(void *this)
+{
+    hall_sensor_t *sensor;
+    sensor = (hall_sensor_t *)this;
+    // 清零数值变量
+    sensor->last_section = 0;
+    sensor->dir = 0;
+    sensor->count = 0;
+    for (int i = 0; i < 7; i++) {
+        sensor->hall_baseBuff[i] = 0.0f;
+    }
+    sensor->last_tick = 0;
+    sensor->speed = 0.0f;
+    sensor->angle = 0.0f;
+    sensor->realcacle_angle = 0.0f;
+    sensor->realcacle_speed = 0.0f;
+    sensor->self_angle = 0.0f;
+ 
+#if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
+    sensor->cur_abzcout = 0;
+    sensor->last_abzcout = 0;
+#endif
+ 
+    sensor->hat_angle = 0.0f;
+    sensor->hat_speed = 0.0f;
+    sensor->pll_sum = 0.0f;
+ 
+#ifdef MOTOR_OPENLOOP
+    for (int i = 0; i < 7; i++) {
+        // 假设 lowfilter_t 有一个合适的清零方法，这里只是示例
+        // 如果 lowfilter_t 是简单的数值结构体，你也可以直接清零它的每个成员
+        memset(&(sensor->lfilter[i]), 0, sizeof(lowfilter_t)); // 如果 lowfilter_t 可以这样清零
+    }
+#endif
+    // 清零 speedfilter 和 pll_speedfilter，假设它们也是可以直接清零的结构体
+    memset(&(sensor->speedfilter), 0, sizeof(lowfilter_t));
+    memset(&(sensor->pll_speedfilter), 0, sizeof(lowfilter_t));
+    // 或者，如果 lowfilter_t 有特定的清零函数，则调用该函数
+    // lowfilter_zero(&sensor->speedfilter);
+    // lowfilter_zero(&sensor->pll_speedfilter);
 }
