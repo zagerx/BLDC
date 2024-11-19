@@ -3,49 +3,11 @@
 #include "debuglog.h"
 #include "perf_counter.h"
 /************************传感器*****************************/
-#include "sensor.h"
 #undef NULL
 #define NULL 0
 
-#include "as5047.h"
-static sensor_t sg_sensor_as5047 = {
-        .pf_read = as5047_readangle,
-        .pf_write = NULL,
-        .pf_init = as5047_init,
-        .cycle = 0,
-        .status = EN_SENSOR_INIT
-};
-#include "mt6816.h"
-static sensor_t sg_sensor_mt6816 = {
-        .pf_read = mt6816_read,
-        .pf_write = NULL,
-        .pf_init = mt6816_init,
-        .cycle = 0,
-        .status = EN_SENSOR_INIT
-};
-#include "adc.h"
-static sensor_t sg_sensor_vbus = {
-        .pf_read = adc_readvbus,
-        .pf_write = NULL,
-        .pf_init = adc_vbusinit,
-        .cycle = 2,
-        .status = EN_SENSOR_INIT
-};
-#if 0
-#include "spi_device.h"
-static spi_bus_t spi_bus1 = {
-    .init = spi_bus1_init,
-    .rw = spi_bus1_rw,    
-};
-static spi_device_t spi_dev_as5047={
-    .bus = &spi_bus1,
-    // .init = as5047_init;
-};
-#endif
 void user_board_init(void)
 {
-    sensor_register(&sg_sensor_as5047,SENSOR_01);
-    sensor_register(&sg_sensor_vbus,SENSOR_02);
 }
 void board_deinit(void)
 {
@@ -66,12 +28,12 @@ void motor_enable(void)
 {
     tim_pwm_enable();
     tim_tigger_adc();
-    adc_start();
+    // adc_start();
 }
 void motor_disable(void)
 {
     tim_pwm_disable();
-    adc_stop();
+    // adc_stop();
 }
 void motor_set_pwm(float _a,float _b,float _c)
 {
@@ -79,6 +41,9 @@ void motor_set_pwm(float _a,float _b,float _c)
 }
 
 #include "motorctrl.h"
+#include "adc.h"
+extern motor_t motor1;
+
 static void _convert_current(uint16_t* adc_buf,float *i_abc)
 {
     i_abc[0]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[0] - (1 << 11)) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE); 
@@ -100,7 +65,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         iabc[1] = -iabc[1];
         iabc[2] = -iabc[2];
         // __cycleof__("mc_hightfreq_task") {
-            mc_hightfreq_task(iabc);
+        mc_hightfreq_task(iabc,&motor1);
         // }            
     }
 }

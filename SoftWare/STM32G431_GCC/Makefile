@@ -150,19 +150,14 @@ C_INCLUDES += -I../Common/debuglog
 # C_DEFS += -DDEBUG_MODE_UART
 
 C_SOURCES += $(wildcard ../Hardware/as5047.c)
+C_SOURCES += $(wildcard ../Hardware/abs_sensor.c)
+
 C_INCLUDES += -I../Hardware 
 C_SOURCES += $(wildcard ./Board/*.c)
 C_INCLUDES += -I./Board
 
 C_INCLUDES += -I../Common/systemmodule
 C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
-
-C_INCLUDES += -I../SpiBus 
-C_SOURCES += $(wildcard ../SpiBus/*.c)
-
-C_DEFS += -DENABLE_SENSORMODULE
-C_INCLUDES += -I../Sensor 
-C_SOURCES += $(wildcard ../Sensor/*.c)
 
 C_INCLUDES += -I../Common/data_structures
 C_SOURCES += $(wildcard ../Common/data_structures/heap.c)

@@ -47,5 +47,6 @@ uint8_t hall_update(void *pthis);
 void hall_cale(void  *pthis);
 void hall_get_initpos(void *pthis);
 void hall_init(void *this);
+void hall_register(void *this);
 
 #endif

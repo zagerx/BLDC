@@ -5,7 +5,7 @@
 static void hall_update_baseangle(hall_sensor_t *hall, int8_t dir, uint8_t cur_sect)
 {
     float delt_,realcacle_speed;
-#ifdef MOTOR_OPENLOOP
+#ifdef MOTOR_OPENLOOPgit pus
     volatile static float test_temp[7];
     test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle);
     USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
@@ -208,7 +208,7 @@ static uint32_t hall_gettick()
     return 0;
 }
 #include "string.h"
-void hall_init(void *this)
+void hall_register(void *this)
 {
     hall_sensor_t *hall;
     hall = this;
@@ -220,11 +220,11 @@ void hall_init(void *this)
         hall->get_abzcount = tim_abzencoder_getcount;
         hall->set_abzcount = tim_abzencoder_setcount;    
     #endif
-
-    // hall->last_section = 0;
-    // hall->last_section = hall->getsection();
-    // hall->realcacle_angle = hall->hall_baseBuff[hall->last_section];
-    // hall->realcacle_angle = 0.0f;
+}
+void hall_init(void *this)
+{
+    hall_sensor_t *hall;
+    hall = this;
     hall->realcacle_speed = 0.0f;
     hall->count = 0.0f;
     hall->speed = 0.0f;
