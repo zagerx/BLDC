@@ -95,7 +95,7 @@ void motor_read(void *pdata,uint16_t datalen)
 }
 void motor_func_register(motor_t *motor)
 {
-    hall_register((void*)&(motor->encoder_handle));
+    hall_register((void*)&(motor->encoder_handle.sensor));
 
     motor->encoder_handle.init = hall_init;
     motor->encoder_handle.update = hall_update;

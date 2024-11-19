@@ -92,6 +92,7 @@ void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 
 void motor_func_register(motor_t *motor)
 {
+    hall_register((void*)&(motor->encoder_handle.sensor));
     motor->encoder_handle.init = hall_init;
     motor->encoder_handle.update = hall_update;
     motor->encoder_handle.cacle = hall_cale;

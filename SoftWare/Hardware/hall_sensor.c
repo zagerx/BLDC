@@ -203,9 +203,9 @@ static uint32_t hall_gettick()
 void hall_register(void *this)
 {
     hall_sensor_t *hall;
-    hall = this;
-    USER_DEBUG_NORMAL("hall_init\n");
-    memset(this,0,sizeof(hall_sensor_t));    
+    hall = (hall_sensor_t *)this;
+    USER_DEBUG_NORMAL("hall register\n");
+    memset(hall,0,sizeof(hall_sensor_t));    
     hall->getsection = hall_get_sectionnumb;
     hall->gettick = hall_gettick;
     #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
@@ -215,6 +215,7 @@ void hall_register(void *this)
 }
 void hall_init(void *this)
 {
+    USER_DEBUG_NORMAL("hall init\n");
     hall_sensor_t *hall;
     hall = this;
     hall->realcacle_speed = 0.0f;
