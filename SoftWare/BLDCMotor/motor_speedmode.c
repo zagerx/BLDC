@@ -11,6 +11,7 @@
 #include "math.h"
 static void motor_paraminit(motor_t *motor);
 static void motor_paramdeinit(motor_t *motor);
+static float constant_accel_decel(float current_target);
 
 fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
 {
@@ -46,7 +47,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
             if (motor->currment_handle.pid_debug_target!=0.0f)
             {                
                 motor->encoder_handle.runflag = 1;
-                motor->speed_handle.tar = motor->currment_handle.pid_debug_target;
+                motor->speed_handle.tar = constant_accel_decel(motor->currment_handle.pid_debug_target) ;//motor->currment_handle.pid_debug_target;
                 motor->speed_handle.real = motor->encoder_handle.speed;
                 motor->currment_handle.iq_tar = speed_loop(&(motor->speed_handle));
                 motor->currment_handle.id_tar = 0.0f;
@@ -111,112 +112,89 @@ static void motor_paramdeinit(motor_t *motor)
 }
 
 
-
 #include <stdint.h>
-#include <stdbool.h>
-
+#include <stdio.h>
+ 
 // 定义一些常量
-#define MAX_ACCEL 100.0f  // 最大加速度，单位：速度/时间（例如，速度/毫秒）
-#define MAX_DECEL 100.0f  // 最大减速度，单位同上
-#define TIME_STEP 1.0f    // 时间步长，单位：毫秒
+#define MAX_ACCELERATION 100.0f  // 最大加速度，单位：速度/时间（例如，速度/毫秒）
+#define MAX_DECELERATION -100.0f  // 最大减速度，单位同上
+#define EPSILON 0.01f            // 用于浮点数比较的容差
 
-// 状态枚举
-typedef enum {
-    ACCELERATING,
-    CONSTANT_SPEED,
-    DECELERATING,
-    IDLE
-} MotionState;
-
-// 梯形加减速函数
-float trapezoidal_accel_decel(float target_speed, float current_speed, float *last_target_speed) {
-    static float accumulated_time = 0.0f;  // 累计时间，用于计算速度变化
-    static MotionState state = IDLE;      // 当前运动状态
-    static float acceleration = 0.0f;     // 当前加速度
-    static float deceleration = 0.0f;     // 当前减速度
-    static float target_reached_time = 0.0f; // 预计达到目标速度的时间
-    static float max_speed = 0.0f;         // 梯形速度曲线的最大速度
-
-    // 如果目标速度变化了，重新计算梯形曲线参数
-    if (target_speed != *last_target_speed) {
-        float speed_diff = target_speed - current_speed;
-        float accel_time = fabs(speed_diff) / MAX_ACCEL;
-        float decel_time = fabs(speed_diff) / MAX_DECEL;
-        float total_time = accel_time + decel_time;
-        max_speed = current_speed + (speed_diff > 0 ? MAX_ACCEL : -MAX_ACCEL) * accel_time;
-
-        // 如果加速和减速时间之和大于0，则更新状态和时间参数
-        if (total_time > 0) {
-            target_reached_time = accumulated_time + total_time;
-            acceleration = (speed_diff > 0 ? MAX_ACCEL : -MAX_ACCEL);
-            deceleration = (speed_diff > 0 ? -MAX_DECEL : MAX_DECEL);
-
-            // 根据当前速度与目标速度的关系设置初始状态
-            if (current_speed < target_speed) {
-                state = ACCELERATING;
-            } else {
-                state = DECELERATING;
-                acceleration = deceleration; // 在减速开始时，加速度实际上是负值的减速度
-            }
-        } else {
-            // 如果目标速度与当前速度相同，则无需移动
-            state = IDLE;
-        }
-
-        // 更新最后的目标速度值
-        *last_target_speed = target_speed;
+/*==========================================================================================
+ * @brief 匀加减速规划
+ * 实现简单的加减速规划。
+ * @FuncName     
+ * @param        current_target 
+ * @return       * float 
+ * @version      v0.1
+--------------------------------------------------------------------------------------------*/
+static float constant_accel_decel(float current_target)
+{
+    static enum State {
+        INIT,
+        ACCELERATING,
+        DECELERATING,
+        IDLE
+    } status = INIT;
+ 
+    static float current_output = 0.0f;
+    static float last_target = 0.0f;
+    static float acceleration = 0.0f;
+    static uint16_t accumulator = 0;
+ 
+    // 如果目标值改变，重新规划
+    if (last_target != current_target)
+    {
+        float speed_difference = current_target - current_output;
+        speed_difference > 0 ? (acceleration = MAX_ACCELERATION) : (acceleration = MAX_DECELERATION);
+        last_target = current_target;
+        accumulator = 0;
+        status = INIT;
+        USER_DEBUG_NORMAL("Start planning\n");
     }
-
-    // 根据当前状态更新速度和累计时间
-    switch (state) {
+ 
+    // 状态机逻辑
+    switch (status)
+    {
+        case INIT:
+            status = (acceleration > 0) ? ACCELERATING : DECELERATING;
+            break;
+ 
         case ACCELERATING:
-            if (accumulated_time < (target_reached_time - fabs(target_speed - max_speed) / MAX_DECEL)) {
-                current_speed += acceleration * TIME_STEP;
-            } else {
-                // 切换到恒速阶段（如果需要的话，可以省略此阶段，直接跳到减速）
-                // 但为了完整性，这里保留它
-                current_speed = max_speed;
-                state = CONSTANT_SPEED; // 实际上，为了简化，我们可以直接跳到减速阶段
-                // 注意：为了简化代码，我们没有实现恒速阶段，而是直接准备减速
+            current_output += acceleration;
+            accumulator++;
+ 
+            if (current_output >= (current_target - EPSILON))
+            {
+                current_output = current_target;
+                status = IDLE;
+                USER_DEBUG_NORMAL("Acceleration Finish\n");
+            }else{
+                USER_DEBUG_NORMAL("Accelerating, Current Value: %f\n", current_output);
             }
             break;
-
-        case CONSTANT_SPEED:
-            // 此处可以添加恒速阶段的逻辑，但为简化起见，我们直接跳过到减速阶段
-            state = DECELERATING; // 强制进入减速阶段（如果需要恒速，请移除此行）
-            // 注意：为了保持示例的简洁性，我们省略了恒速阶段
-            // 在实际应用中，您可能希望在此处添加一些逻辑来处理恒速阶段
-            break;
-
+ 
         case DECELERATING:
-            if (accumulated_time < target_reached_time) {
-                if ((current_speed - deceleration * TIME_STEP) > target_speed) {
-                    current_speed -= deceleration * TIME_STEP;
-                } else {
-                    current_speed = target_speed;
-                    state = IDLE;
-                }
-            } else {
-                current_speed = target_speed;
-                state = IDLE;
+            current_output += acceleration;
+            accumulator++;
+ 
+            if (current_output <= (current_target + EPSILON))
+            {
+                current_output = current_target;
+                status = IDLE;
+                USER_DEBUG_NORMAL("Deceleration Finish\n");
+            }else{
+                USER_DEBUG_NORMAL("Decelerating, Current Value: %f\n", current_output);
             }
             break;
-
+ 
         case IDLE:
-            // 无需更新速度，保持在目标速度
+            break;
+ 
+        default:
             break;
     }
-
-    // 更新累计时间
-    accumulated_time += TIME_STEP;
-
-    // 返回更新后的速度
-    return current_speed;
+ 
+    return current_output;
 }
-
-// 注意：这个函数需要外部调用者提供当前速度（可能是从传感器读取的）和上次的目标速度（用于检测变化）
-// 调用示例：
-// float current_speed = 0.0f; // 初始速度
-// float last_target_speed = 0.0f; // 上次的目标速度，用于比较是否变化
-// float new_target_speed = 500.0f; // 新的目标速度
-// current_speed = trapezoidal_accel_decel(new_target_speed, current_speed, &last_target_speed);
+  
