@@ -93,10 +93,30 @@ void motor_read(void *pdata,uint16_t datalen)
     USER_DEBUG_NORMAL("flash wait write\n");
     // user_flash_read(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
 }
+
+
+
+
+#include "gpio.h"
+#include "tim.h"
+static uint8_t hall_get_sectionnumb(void)
+{
+    uint8_t u,v,w;
+    u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
+    v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
+    w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
+    return u | (w<<1) | (v<<2);
+}
+static uint32_t hall_gettick()
+{
+    return 0;
+}
 void motor_func_register(motor_t *motor)
 {
-    hall_register((void*)&(motor->encoder_handle.sensor));
-
+    hall_register((void*)&(motor->encoder_handle.sensor),hall_get_sectionnumb,\
+                                                         hall_gettick,\
+                                                         tim_abzencoder_getcount,\
+                                                         tim_abzencoder_setcount);
     motor->encoder_handle.init = hall_init;
     motor->encoder_handle.deinit = hall_deinit;
 

@@ -187,34 +187,42 @@ void hall_get_initpos(void *pthis)
 
 
 /*--------------------硬件相关---------------------------------*/
-#include "gpio.h"
-#include "tim.h"
-static uint8_t hall_get_sectionnumb(void)
-{
-    uint8_t u,v,w;
-    u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
-    v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
-    w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
-    return u | (w<<1) | (v<<2);
-}
-static uint32_t hall_gettick()
-{
-    return 0;
-}
 #include "string.h"
-void hall_register(void *this)
+#include <stdarg.h>
+
+// void hall_register(void *this)
+// {
+//     hall_sensor_t *hall;
+//     hall = (hall_sensor_t *)this;
+//     USER_DEBUG_NORMAL("hall register\n");
+//     memset(hall,0,sizeof(hall_sensor_t));    
+//     hall->getsection = hall_get_sectionnumb;
+//     hall->gettick = hall_gettick;
+//     #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
+//         hall->get_abzcount = tim_abzencoder_getcount;
+//         hall->set_abzcount = tim_abzencoder_setcount;    
+//     #endif
+// }
+void hall_register(hall_sensor_t *hall,...) 
 {
-    hall_sensor_t *hall;
-    hall = (hall_sensor_t *)this;
-    USER_DEBUG_NORMAL("hall register\n");
-    memset(hall,0,sizeof(hall_sensor_t));    
-    hall->getsection = hall_get_sectionnumb;
-    hall->gettick = hall_gettick;
+    va_list args;
+    va_start(args, hall); // 初始化 args 以读取 hall 之后的参数
+
+    // 初始化 hall 结构体
+    memset(hall, 0, sizeof(hall_sensor_t));
+    hall->getsection = va_arg(args,uint8_t (*)(void));
+    hall->gettick = va_arg(args,uint32_t (*)(void));
+ 
+    // 检查是否设置 ABZ 回调函数
     #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
-        hall->get_abzcount = tim_abzencoder_getcount;
-        hall->set_abzcount = tim_abzencoder_setcount;    
+    {
+        hall->get_abzcount = va_arg(args,uint32_t (*)(void));
+        hall->set_abzcount = va_arg(args,void (*)(uint32_t));
+    }
     #endif
+    va_end(args);
 }
+ 
 void hall_init(void *this)
 {
     USER_DEBUG_NORMAL("hall init\n");
