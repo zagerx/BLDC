@@ -9,6 +9,7 @@
 #include "debuglog.h"
 #include "mc_smo.h"
 #include "math.h"
+#include "accdece_speed.h"
 static void motor_paraminit(motor_t *motor);
 static void motor_paramdeinit(motor_t *motor);
 static float constant_accel_decel(float current_target);
@@ -116,8 +117,8 @@ static void motor_paramdeinit(motor_t *motor)
 #include <stdio.h>
  
 // 定义一些常量
-#define MAX_ACCELERATION 100.0f  // 最大加速度，单位：速度/时间（例如，速度/毫秒）
-#define MAX_DECELERATION -100.0f  // 最大减速度，单位同上
+#define MAX_ACCELERATION 10.0f  // 最大加速度，单位：速度/时间（例如，速度/毫秒）
+#define MAX_DECELERATION -10.0f  // 最大减速度，单位同上
 #define EPSILON 0.01f            // 用于浮点数比较的容差
 
 /*==========================================================================================
