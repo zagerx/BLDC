@@ -9,7 +9,6 @@
 #include "debuglog.h"
 #include "mc_smo.h"
 #include "math.h"
-#include "accdece_speed.h"
 static void motor_paraminit(motor_t *motor);
 static void motor_paramdeinit(motor_t *motor);
 static float constant_accel_decel(float current_target);
