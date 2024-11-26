@@ -53,6 +53,8 @@ float S_constant_accel_decel(float current_target)
         T4 = 200;
 
         V0 = -100.0F;
+
+
         status = INIT;
         tau = 0;
 
@@ -172,6 +174,7 @@ void test(void) {
     return 0;
 }  
 
+board_task(test)
 
 
 
@@ -187,55 +190,77 @@ void test(void) {
  * linear_interpolation
  * 直线插补算法
  * 
- * delt_y://init时赋值
- * count://时间 根据count计算，delt_y
- * y = delt_y*count;
- * diff
  * 
  * 该函数被一定频率调用
  ------------------------------------------------------------------------*/
+ #define EPSILON 0.01f            // 用于浮点数比较的容差
+#include "debuglog.h"
 float linear_interpolation(void *Object,float new_targe)
 {
     enum {
-        INIT = 0,
+        INIT = 1,
         RASING,//上升插补
         FALLING,//下降插补
         IDLE
     };
     linear_in_t* linear = (linear_in_t*)Object;
 
-    if (linear->last_targe!=linear->cur_targe)
+    if (linear->last_targe != new_targe)//路径规划
     {
-        
+        float diff = new_targe - linear->last_targe;
+        diff > 0 ? (linear->acc = 2.0f) : (linear->acc = -2.0f);
+        linear->last_targe = new_targe;
+        linear->status = INIT;
     }
-    
+
     switch (linear->status)
     {
     case INIT:
+        linear->status = (linear->acc > 0) ? RASING : FALLING;
         break;
-    case ACCELERATING:
+    case RASING:
+        linear->cur_output += linear->acc;
+        if (linear->cur_output >= (new_targe - EPSILON))
+        {
+            linear->cur_output = new_targe;
+            linear->status = IDLE;
+            USER_DEBUG_NORMAL("Acceleration Finish\n");
+        }else{
+            USER_DEBUG_NORMAL("Accelerating, Current Value: %f\n", linear->cur_output);
+        }        
         break;
-    case DECELERATING:
+    case FALLING:
+        linear->cur_output += linear->acc;
+        if (linear->cur_output <= (new_targe + EPSILON))
+        {
+            linear->cur_output = new_targe;
+            linear->status = IDLE;
+            USER_DEBUG_NORMAL("Acceleration Finish\n");
+        }else{
+            USER_DEBUG_NORMAL("Accelerating, Current Value: %f\n", linear->cur_output);
+        }        
         break;
     case IDLE:
         break;    
     default:
         break;
     }
+    return linear->cur_output;
 }
 
-void linear_interpolation_init(void *Object)
+void linear_interpolation_init(void *Object,float max_acc,float max_dece)
 {
     linear_in_t* linear = (linear_in_t*)Object;
-    linear->delt_y = 0.0f;
-    linear->count = 0;
+    linear->max_acc = max_acc;
+    linear->max_dece = max_dece;
 }
 
 void linear_interpolation_deinit(void *Object)
 {
-
+    linear_in_t* linear = (linear_in_t*)Object;
+    linear->max_acc = 0.0f;
+    linear->max_dece = 0.0f;
 }
 
-board_task(test)
 
 

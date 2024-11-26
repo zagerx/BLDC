@@ -6,6 +6,7 @@
 #include "stdint.h"
 #include "pid.h"
 #include "filter.h"
+#include "trajectory_planning.c.h"
 
 #include "board.h"
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
@@ -59,6 +60,7 @@ typedef struct {
 typedef struct mc_speed
 {
     pid_cb_t pid;
+    linear_in_t linear;
     float tar;
     float real;
 }mc_speed_t;
