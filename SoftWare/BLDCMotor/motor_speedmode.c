@@ -22,7 +22,8 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         INIT,
     };
     motor_t *motor;
-    motor = (motor_t*)pthis->pdata;    
+    motor = (motor_t*)pthis->pdata;  
+    static s_in_t test_s_valu;  
     switch (pthis->chState)
     {
     case ENTER:
@@ -46,7 +47,9 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
             if (motor->currment_handle.pid_debug_target!=0.0f)
             {                
                 motor->encoder_handle.runflag = 1;
-                motor->speed_handle.tar = linear_interpolation(&(motor->speed_handle.linear),motor->currment_handle.pid_debug_target);
+                motor->speed_handle.tar = linear_interpolation(&(motor->speed_handle.linear),\
+                                                                motor->currment_handle.pid_debug_target);
+                s_interpolation(&test_s_valu,motor->currment_handle.pid_debug_target);
                 motor->speed_handle.real = motor->encoder_handle.speed;
                 motor->currment_handle.iq_tar = speed_loop(&(motor->speed_handle));
                 motor->currment_handle.id_tar = 0.0f;
