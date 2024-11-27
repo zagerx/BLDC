@@ -39,6 +39,7 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
             USER_DEBUG_NORMAL("encoder loop test\n");
         #else
             USER_DEBUG_NORMAL("self loop test\n");
+            motor->encoder_handle.runflag = 1;
             pthis->chState = RUN;
         #endif
         

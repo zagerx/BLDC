@@ -23,21 +23,27 @@
 
 #if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
     #define ABZ_ENCODER_LINES           (8192)
-    #define ABZ_ENCODER_RESOLUTION      (0.0030679f)// 2*pi/4096*motor_pairs  
+    #define ABZ_ENCODER_RESOLUTION      (0.023f)// 2*pi/4096*motor_pairs  
     #define HALL_UPDATE_PERIOD   (0.0001f)
     #define HALL_POSITIVE_OFFSET (-0.3f)
     #define HALL_NEGATIVE_OFFSET (-0.2f)
-    #define PLL_KP               (80.0f)
+    #define PLL_KP               (10.0f)
     #define PLL_KI               (0.02f)
     #define OMEGTOTHETA          (CURRMENT_PERIOD)         
 
     /*HALL基准角度 D轴强拖 0.1f*/
+    // #define SCETION_6_BASEANGLE   (5.840f)
+    // #define SCETION_4_BASEANGLE   (0.642f)
+    // #define SCETION_5_BASEANGLE   (1.565f)
+    // #define SCETION_1_BASEANGLE   (2.686f)
+    // #define SCETION_3_BASEANGLE   (3.765f)
+    // #define SCETION_2_BASEANGLE   (4.737f) 
     #define SCETION_6_BASEANGLE   (5.005f)
     #define SCETION_4_BASEANGLE   (6.057f)
     #define SCETION_5_BASEANGLE   (0.648f)
     #define SCETION_1_BASEANGLE   (1.854f)
     #define SCETION_3_BASEANGLE   (2.898f)
-    #define SCETION_2_BASEANGLE   (3.815f)   
+    #define SCETION_2_BASEANGLE   (3.815f)       
 #endif
 
 /*----------------------硬件相关----------------------*/

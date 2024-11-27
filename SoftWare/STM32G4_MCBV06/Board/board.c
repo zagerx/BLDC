@@ -119,7 +119,7 @@ void motor_func_register(motor_t *motor)
     motor->encoder_handle.init = hall_init;
     motor->encoder_handle.update = hall_update;
     motor->encoder_handle.cacle = hall_cale;
-
+    motor->encoder_handle.get_firstpos = hall_get_initpos;
     motor->enable = motor_enable;
     motor->disable = motor_disable;
     motor->setpwm = motor_set_pwm;
