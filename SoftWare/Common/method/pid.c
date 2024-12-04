@@ -18,6 +18,10 @@ void pid_init(pid_cb_t *pid,float kp,float ki,float kc,\
 
 void pid_reset(pid_cb_t *pid)
 {
+    if (!pid)
+    {
+        return;
+    }
     pid->out_debug = 0.0f;
     pid->u_i = 0.0f;
     pid->satErr = 0.0f;
@@ -28,7 +32,6 @@ float pid_contrl(pid_cb_t *pid,float tar,float cur)
     {
         return 0.0f;
     }
-    
     float err,u_p,v_out,presat;
     err = tar - cur;
     u_p = pid->kp*err;

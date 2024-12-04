@@ -6,7 +6,7 @@
 #include "stdint.h"
 #include "pid.h"
 #include "filter.h"
-#include "trajectory_planning.c.h"
+#include "trajectory_planning.h"
 
 #include "board.h"
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)

@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 typedef struct _s_in s_in_t;
- struct _s_in
+struct _s_in
 {
     float Ja;//加加速度
     uint16_t Ts[8];//Ts[1]代表第一阶段
@@ -19,7 +19,6 @@ typedef struct _s_in s_in_t;
     int16_t status;
 };
 float s_interpolation(void *object,float new_targe);
-float S_constant_accel_decel(float current_target);
 
 
 
