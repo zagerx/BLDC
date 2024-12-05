@@ -22,7 +22,7 @@
  
  * diff = v1+v2+v3 = v0+0.5*a*T1^2 + v0+0.5*a*T1^2+aT2 + v0+0.5*a*T1^2+aT2+0.5*a*T1^2
  *                 = 3v0+4(0.5*a*T1^2) + 2aT2
- *                 
+ * 
  * 
 --------------------------------------------------------------------------------------------*/
 float s_interpolation(void *object,float new_targe)
@@ -38,7 +38,7 @@ float s_interpolation(void *object,float new_targe)
         FALLING  = 8,
         IDLE = 9,
     };
-    static float out_val;
+    float out_val;
     s_in_t *s = (s_in_t*)object;
     if (s->last_targe != new_targe)//路径规划
     {
@@ -46,61 +46,59 @@ float s_interpolation(void *object,float new_targe)
         {
             s->Ja = 1.0f;
             s->status = RISING;
-            s->Ts[1] = 50;s->Ts[3] = 50;
-            s->Ts[2] = 100;
+            s->Ts[1] = s->Ts[3] = 50;//加速/减速阶段 时间需要保持一致
+            s->Ts[2] = 0;
         }else{
             s->Ts[5] = 50;s->Ts[7] = 50;
             s->Ts[6] = 100;
-            s->Ja = 1.0f;            
+            s->Ja = 1.0f;
             s->status = FALLING;
-            USER_DEBUG_WARING("s dece step\n");
         }
+        s->V0 = s->cur_output;
         s->last_targe = new_targe;
-        s->step = 0;s->tau = 0;
+        s->cout = 0;s->tau = 0;
     }
+
     switch (s->status)
     {
     case RISING:
         s->status = TS_STEP1;
     case TS_STEP1:
-        out_val = s->V0 + (0.5f)*s->Ja*s->tau*s->tau;
-        s->V[1] = out_val;
-        if (s->step++ < s->Ts[1])
+        s->V[1] = s->V0 + (0.5f)*s->Ja*s->tau*s->tau;;
+        out_val = s->V[1];
+        if (s->cout++ < s->Ts[1])//第一阶段未完成
         {
             s->tau++;
             break;
         }
-        s->V0 = s->V[1];
-        s->step = 0;
+        s->cout = 0;
         s->tau = 0;
         s->status = TS_STEP2;
         break;
 
     case TS_STEP2:
-        out_val = s->V[1] + (s->Ts[1])*(s->Ja)*(s->tau);
-        s->V[2] = out_val;   
-        s->V0 = out_val; 
-        if (s->step++ < s->Ts[2])
+        s->V[2] = s->V[1] + (s->Ts[1])*(s->Ja)*(s->tau);;   
+        out_val = s->V[2];
+        if (s->cout++ < s->Ts[2])
         {
             s->tau++;
             break;
         }
-        s->step = 0;
+        s->cout = 0;
         s->tau = 0;
         s->status = TS_STEP3;
         break;
     case TS_STEP3:
-        s->V0 = out_val;
-        out_val = s->V[2] \
+        s->V[3] = s->V[2] \
                         + s->Ts[1]*s->Ja*s->tau \
                         - 0.5f*s->Ja*s->tau*s->tau;
-        s->V[3] = out_val;
-        if (s->step++ < s->Ts[3])
+        out_val = s->V[3];
+        if (s->cout++ < s->Ts[3])
         {
             s->tau++;
             break;
         }
-        s->step = 0;
+        s->cout = 0;
         s->tau = 0;
         s->status = IDLE;
         break;    
@@ -110,49 +108,45 @@ float s_interpolation(void *object,float new_targe)
     case FALLING:
         s->status = TS_STEP5;
     case TS_STEP5:
-        out_val = s->V0 \
+        s->V[5] = s->V0 \
                         - 0.5f*(s->Ja)*(s->tau)*(s->tau);
-        s->V[5] = out_val;
-        if (s->step++ < s->Ts[5])
+        out_val = s->V[5];
+        if (s->cout++ < s->Ts[5])
         {
             s->tau++;            
             break;
         }
-        s->V0 = out_val;
-        s->step = 0;
+        s->cout = 0;
         s->tau = 0;
         s->status = TS_STEP6;
         break;
     case TS_STEP6:
-        out_val = s->V[5] \
+        s->V[6] = s->V[5] \
                         - (s->Ja)*(s->Ts[5])*(s->tau);
-        s->V[6] = out_val;
-        s->V0 = out_val;
-        if (s->step++ < s->Ts[6])
+        out_val = s->V[6];
+        if (s->cout++ < s->Ts[6])
         {
             s->tau++;            
             break;
         }
-        s->step = 0;
+        s->cout = 0;
         s->tau = 0;
         s->status = TS_STEP7;
         break;
     case TS_STEP7:
-        out_val = s->V[6] \
+        s->V[7] = s->V[6] \
                         - (s->Ja)*(s->Ts[5])*(s->tau)\
                         + 0.5f*(s->Ja)*(s->tau)*(s->tau);
-        s->V[7] = out_val;
-        s->V0 = out_val;
-        if (s->step++ < s->Ts[7])
+        out_val = s->V[7];
+        if (s->cout++ < s->Ts[7])
         {
             s->tau++;            
             break;
         }
-        s->step = 0;
+        s->cout = 0;
         s->tau = 0;
         s->status = IDLE;
         break;
-
     case IDLE:
         break;
     

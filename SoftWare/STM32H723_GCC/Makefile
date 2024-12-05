@@ -270,5 +270,4 @@ jlinkdown:
 	$(Q)echo "r" >> jlink.jlink             
 	$(Q)echo "q" >> jlink.jlink   
 	$(Q)$(JLINKEXE) -device $(CHIP) -Speed 4000 -IF SWD -CommanderScript jlink.jlink
-
 # *** EOF ***

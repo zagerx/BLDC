@@ -9,7 +9,7 @@ struct _s_in
     uint16_t Ts[8];//Ts[1]代表第一阶段
     float V[8];//V[1]代表第一阶段结束速度
     float V0;//每次规划时的初始速度
-    uint16_t step;//每个阶段的step
+    uint16_t cout;//每个阶段的step
     uint16_t tau;
     float cur_output;
     float last_targe;
