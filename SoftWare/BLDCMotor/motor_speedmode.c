@@ -50,7 +50,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
                 #ifdef ENABLE_LINEAR_IN
                     motor->speed_handle.tar = linear_interpolation(&(motor->speed_handle.linear),\
                                                                     motor->currment_handle.pid_debug_target);
-                    s_interpolation(&test_s_valu,motor->currment_handle.pid_debug_target);                
+                    s_type_interpolation(&test_s_valu,motor->currment_handle.pid_debug_target);                
                 #endif // DEBUG
                 motor->speed_handle.real = motor->encoder_handle.speed;
                 motor->currment_handle.iq_tar = speed_loop(&(motor->speed_handle));
