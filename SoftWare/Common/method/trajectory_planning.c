@@ -27,55 +27,77 @@ enum
 --------------------------------------------------------------------------------------------*/
 static void s_shape_path_planning(void *object, float new_targe)
 {
+    enum
+    {
+        INIT,
+        STEP1,
+        STEP2,
+        STEP3,
+        PLAN_FAIL,
+        PLAN_SUCESS,
+    };
     s_in_t *s = (s_in_t *)object;
     float diff;
     float v0, v1, v2, v3;
     float temp_delte;
     float temp_ja;
-
-    diff = new_targe - s->last_targe;
-    s->V0 = s->cur_output;
-    v0 = s->cur_output;
-    temp_ja = s->max_acc;
-
-    /*更新规划时间*/
-    uint16_t T2 = s->Tm / 2;
-    uint16_t T1 = (s->Tm - T2) / 2;
-    if (diff > EPSILON)
-    {
-        s->Ts[1] = s->Ts[3] = T1; // 加速/减速阶段 时间需要保持一致
-        s->Ts[2] = T2;
-        s->status = RISING;
-    }
-    else
-    {
-        s->Ts[5] = s->Ts[7] = T1; // 加速/减速阶段 时间需要保持一致
-        s->Ts[6] = T2;
-        s->status = FALLING;
-    }
-
+    uint16_t T2;
+    uint16_t T1;
     /*规划更新Ja*/
+    s->state = INIT;
     while (1)
     {
-        if (temp_ja < 0.0f) // 规划失败
+        switch (s->state)
         {
+        case INIT:
+            diff = new_targe - s->last_targe;
+            s->V0 = s->cur_output;
+            v0 = s->cur_output;
+            temp_ja = s->max_acc;
+            s->state = STEP1;
             break;
-        }
-        temp_ja -= 0.01f;
-        s->Ja = (s->status == RISING) ? temp_ja : -temp_ja;
-        v1 = v0 + (0.5f) * (s->Ja) * (T1) * (T1);
-        v2 = v1 + (T1) * (s->Ja) * (T2);
-        v3 = v2 + T1 * s->Ja * T1 - 0.5f * s->Ja * T1 * T1;
-        temp_delte = (s->status == RISING) ? (v3 - new_targe) : -(v3 - new_targe);
-        if (temp_delte < EPSILON)
-        {
+        case STEP1:
+            /*更新规划时间*/
+            T2 = s->Tm / 2;
+            T1 = (s->Tm - T2) / 2;
+            if (diff > EPSILON)
+            {
+                s->Ts[1] = s->Ts[3] = T1; // 加速/减速阶段 时间需要保持一致
+                s->Ts[2] = T2;
+            }
+            s->state = STEP2;
+            break;
+        case STEP2:
+            if (temp_ja < 0.0f) // 规划失败
+            {
+                s->state = PLAN_FAIL;
+            }
+            temp_ja -= 0.01f;
+            s->Ja = (diff > EPSILON) ? temp_ja : -temp_ja;
+            v1 = v0 + (0.5f) * (s->Ja) * (T1) * (T1);
+            v2 = v1 + (T1) * (s->Ja) * (T2);
+            v3 = v2 + T1 * s->Ja * T1 - 0.5f * s->Ja * T1 * T1;
+            temp_delte = (diff > EPSILON) ? (v3 - new_targe) : -(v3 - new_targe);
+            if (temp_delte < EPSILON) // 规划成功
+            {
+                s->state = PLAN_SUCESS; // 规划成功
+                break;
+            }
+            break;
+        case PLAN_FAIL:
+            return;
+            break;
+        case PLAN_SUCESS:
+            s->cout = 0;
+            s->tau = 0;
+            s->status = RISING;
+            s->state = INIT; // 规划成功
+            return;
+            break;
+        default:
             break;
         }
     }
-
-    s->cout = 0;
-    s->tau = 0;
-
     return;
 }
 /*==========================================================================================
