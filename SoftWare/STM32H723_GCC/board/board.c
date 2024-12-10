@@ -32,8 +32,8 @@ static void motor_enable(void)
     HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
     gpio_setencoder_power();
     tim_abzencoder_enable();
-    // tim_pwm_enable();
-    // tim_tigger_adc();
+    tim_pwm_enable();
+    tim_tigger_adc();
     adc_start();
 }
 static void motor_disable(void)

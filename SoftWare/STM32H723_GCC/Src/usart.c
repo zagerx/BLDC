@@ -208,7 +208,7 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
             __HAL_UART_CLEAR_IDLEFLAG(&huart1);                     
             HAL_UART_DMAStop(&huart1);
             unsigned short data_length  = sizeof(sg_uartreceive_buff) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
-            USER_DEBUG_NORMAL("datalen %d %d\n",data_length,__HAL_DMA_GET_COUNTER(&hdma_usart1_rx));
+            // USER_DEBUG_NORMAL("datalen %d %d\n",data_length,__HAL_DMA_GET_COUNTER(&hdma_usart1_rx));
             protocol_getdata_tofifo(sg_uartreceive_buff,data_length);
             memset(sg_uartreceive_buff,0,data_length);
             data_length = 0;

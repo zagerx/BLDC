@@ -1,0 +1,1220 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="utf-8"> 
+  <link rel="canonical" href="https://blog.csdn.net/HandsomeHong/article/details/123216558"> 
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+  <meta name="renderer" content="webkit"> 
+  <meta name="force-rendering" content="webkit"> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+  <meta name="report" content="{&quot;pid&quot;: &quot;blog&quot;, &quot;spm&quot;:&quot;1001.2101&quot;}"> 
+  <meta name="referrer" content="always"> 
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <link rel="alternate" media="handheld" href="#"> 
+  <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848"> 
+  <meta name="applicable-device" content="pc"> 
+  <link href="https://g.csdnimg.cn/static/logo/favicon32.ico" rel="shortcut icon" type="image/x-icon"> 
+  <title>全网唯一OpenCyphal/UAVCAN教程（10）canfd协议详解_uavcan协议-CSDN博客</title>  
+  <meta name="keywords" content="uavcan协议"> 
+  <meta name="csdn-baidu-search" content="{&quot;autorun&quot;:true,&quot;install&quot;:true,&quot;keyword&quot;:&quot;uavcan协议&quot;}"> 
+  <meta name="description" content="文章浏览阅读1.6k次，点赞2次，收藏5次。CAN-FD协议是为解决传统CAN总线在速率和带宽上的局限，满足高实时性高数据传输需求而产生的。CAN-FD特性包括：最高5Mbit/s的传输速率，64字节数据段，向下兼容CAN2.0。本文详细介绍了CAN-FD的协议特性和帧结构，包括标准帧和扩展帧的区别，以及位速率转换、CRC校验等关键点。
+"> 
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-62005624ac.min.css"> 
+  <style>
+        #content_views{
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none; 
+            user-select: none; 
+        }
+    </style>  
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin-growway/skin-growway-d937252ffc.min.css">    
+  <meta name="toolbar" content="{&quot;type&quot;:&quot;0&quot;,&quot;fixModel&quot;:&quot;1&quot;}">    
+  <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css"> 
+  <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>    
+ 	<style>
+	main div.blog-content-box pre {
+		max-height: 100%;
+		overflow-y: hidden;
+	}
+	</style>
+ </head>  
+ <body class="nodata " style=""> 
+  <div id="toolbarBox" style="min-height: 48px;"></div>    
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css"> 
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/swiper/6.0.4/css/swiper.css">   
+  <div class="main_father clearfix d-flex justify-content-center mainfather-concision" style="height:100%;"> 
+   <div class="container clearfix container-concision" id="mainBox">  
+    <main>  
+     <div class="blog-content-box"> 
+      <div class="article-header-box"> 
+       <div class="article-header"> 
+        <div class="article-title-box"> 
+         <h1 class="title-article" id="articleContentId">全网唯一OpenCyphal/UAVCAN教程（10）canfd协议详解</h1> 
+        </div> 
+        <div class="article-info-box"> 
+         <div class="article-bar-top"> 
+          <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt=""> 
+          <div class="bar-content"> 
+           <a class="follow-nickName " href="https://hongjh.blog.csdn.net" target="_blank" rel="noopener" title="奇妙之二进制">奇妙之二进制</a> 
+           <img class="article-time-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUpTime2.png" alt=""> 
+           <span class="time">已于&nbsp;2023-08-20 18:00:59&nbsp;修改</span> 
+           <div class="read-count-box"> 
+            <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes2.png" alt=""> 
+            <span class="read-count">阅读量1.6k</span> 
+            <a id="blog_detail_zk_collection" class="un-collection" data-report-click="{&quot;mod&quot;:&quot;popu_823&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt=""> <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt=""> <span class="name">收藏</span> <span class="get-collection"> 5 </span> </a> 
+            <div class="read-count-box is-like"> 
+             <img class="article-read-img article-heard-img" style="display:none" id="is-like-imgactive-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Active.png" alt=""> 
+             <img class="article-read-img article-heard-img" style="display:block" id="is-like-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2023Black.png" alt=""> 
+             <span class="read-count" id="blog-digg-num">点赞数 2 </span> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="blog-tags-box"> 
+          <div class="tags-box artic-tag-box"> 
+           <span class="label">文章标签：</span> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;linux&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;linux\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;linux&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;linux\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=linux&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">linux</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;canfd&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;canfd\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;canfd&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;canfd\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=canfd&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">canfd</a> 
+           <a rel="noopener" data-report-query="spm=1001.2101.3001.4223" data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;uavcan&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;uavcan\&quot;}&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;uavcan&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;extra&quot;:&quot;{\&quot;searchword\&quot;:\&quot;uavcan\&quot;}&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=uavcan&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=&amp;from_tracking_code=tag_word&amp;from_code=app_blog_art" target="_blank">uavcan</a> 
+          </div> 
+         </div> 
+         <div class="up-time">
+          <span>于&nbsp;2022-03-02 00:49:12&nbsp;首次发布</span>
+         </div> 
+         <div class="slide-content-box"> 
+          <div class="article-copyright"> 
+           <div class="creativecommons">
+             版权声明：本文为博主原创文章，遵循
+            <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。 
+           </div> 
+           <div class="article-source-link">
+             本文链接：
+            <a href="https://blog.csdn.net/HandsomeHong/article/details/123216558" target="_blank">https://blog.csdn.net/HandsomeHong/article/details/123216558</a> 
+           </div> 
+          </div> 
+         </div> 
+         <div class="operating"> 
+          <a class="href-article-edit slide-toggle">版权</a> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div id="blogHuaweiyunAdvert"></div> 
+      <div id="blogColumnPayAdvert"> 
+       <div class="column-group"> 
+        <div class="column-group-item column-group0 column-group-item-one"> 
+         <div class="item-l"> 
+          <a class="item-target" href="https://blog.csdn.net/handsomehong/category_10675064.html" target="_blank" title="全网唯一OpenCyphal/UAVCAN教程" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.6332&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.6332&quot;}"> <img class="item-target" src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_224,w_224" alt=""> <span class="title item-target"> <span> <span class="tit">全网唯一OpenCyphal/UAVCAN教程</span> <span class="dec">专栏收录该内容</span> </span> </span> </a> 
+         </div> 
+         <div class="item-m"> 
+          <span>13 篇文章</span> 
+          <span>123 订阅</span> 
+          <span class="old-add-new-box"> <span class="price">¥49.90</span> <span class="oldprice">¥99.00</span> </span> 
+         </div> 
+         <div class="item-r"> 
+          <a class="item-target article-column-subscribe">已订阅 </a> 
+          <a class="item-target column-studyvip-discount column-studyvip-pass" data-report-view="{&quot;spm&quot;:&quot;1001.2015.3001.8590&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2015.3001.8590&quot;}">8折续费 </a> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="learning_the_member_box"> 
+       <a href="https://www.csdn.net/vip?utm_source=bkzl_cjhy_ckqy" target="_blank"> 
+        <div class="left">
+         <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconVIpCrown.png" alt="">
+         <span>您已是超级会员，正在免费阅读会员专享内容</span>
+        </div> 
+        <div class="right">
+         <span>查看更多超级会员权益</span>
+         <img src="https://csdnimg.cn/release/blogv2/dist/components/img/vipIconArrowLeftWhite.png" alt="">
+        </div> </a> 
+      </div> 
+      <div class="ai-abstract-box"> 
+       <div class="ai-abstract"> 
+        <div class="abstract-content"> 
+         <img class="lock-img" src="https://img-home.csdnimg.cn/images/20240711042549.png" alt=""> CAN-FD协议是为解决传统CAN总线在速率和带宽上的局限，满足高实时性高数据传输需求而产生的。CAN-FD特性包括：最高5Mbit/s的传输速率，64字节数据段，向下兼容CAN2.0。本文详细介绍了CAN-FD的协议特性和帧结构，包括标准帧和扩展帧的区别，以及位速率转换、CRC校验等关键点。 
+        </div> 
+        <span>摘要由CSDN通过智能技术生成</span> 
+       </div> 
+      </div> 
+      <article class="baidu_pl"> 
+       <div id="article_content" class="article_content clearfix"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/kdoc_html_views-1a98987dfd.css"> 
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-704d5b9767.css"> 
+        <div id="content_views" class="markdown_views prism-atom-one-light"> 
+         <svg xmlns="http://www.w3.org/2000/svg" style="display: none;"> 
+          <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path> 
+         </svg> 
+         <p>OpenCyphal除了支持can 2.0 B，还支持canfd扩展协议。所以先学习下canfd协议。</p> 
+         <p></p> 
+         <div class="toc"> 
+          <h4>文章目录</h4> 
+          <ul>
+           <li>
+            <ul>
+             <li><a href="#1CANFD_3" rel="nofollow">1、CAN-FD协议特性</a></li>
+             <li><a href="#2CANFD_43" rel="nofollow">2、CAN-FD帧结构分析</a></li>
+            </ul> </li>
+          </ul> 
+         </div> 
+         <p></p> 
+         <h3><a id="1CANFD_3"></a>1、CAN-FD协议特性</h3> 
+         <p>随着电动汽车，无人驾驶汽车技术的快速发展，以及对汽车高级驾驶辅助系统和人机交互的增加，传统的CAN总线在传输速率和带宽等方面越来越显得力不从心，因此改进版的CAN总线应运而生。</p> 
+         <p>普通can主要有以下几方面不足：</p> 
+         <p>（1）最高数据传输速率限制为1 Mbit/s，车载领域实际使用速率最高为500 Kbit/s，无法满足越来越高的数据吞吐量需求；</p> 
+         <p>（2）每帧报文有效数据场为8 字节，有效负载比率不足50%；</p> 
+         <p>（3）性能上难以应对Flexray、Ethernet 等新型车载总线的威胁。</p> 
+         <p>市场对提升CAN 总线性能的强烈需求使CAN-FD （CAN with Flexible Data rate）应运而生，CAN-FD发扬了CAN 的优点，并弥补了CAN 的不足，其主要特性如下：</p> 
+         <p>（1）采用与CAN 通信相同的事件触发模式，软件容易开发和移植；</p> 
+         <p>（2）最高数据传输速率达5Mbit/s，更好地满足要求高实时性高数据传输速率的应用；</p> 
+         <p>（3）每帧报文有效数据场为64 字节，有效负载超过70%；</p> 
+         <p>（4）相比Flexray、Ethernet 等新兴总线成本更低。</p> 
+         <p>（5）CAN-FD标准向下兼容CAN2.0A/B标准，CAN-FD节点可以与现存的CAN2.0协议的节点进行通信，当然在这点情况下不能够使用CAN-FD帧。这种兼容性为了CAN2.0设备能够平滑地过渡到CAN-FD功能的硬件上。所以，我们对CAN-FD有了另一种说法，为“CAN3.0”。</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/e2381775f6e25667f8ee21b19c082e7d.png" alt="img"></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/3655544a37667225ddba1d71441a8907.png" alt="img"></p> 
+         <p>CAN-FD比CAN总线的带宽更高，具有与CAN总线相似的控制器接口，这种相似性使ECU供应商不需要对ECU的软件部分做大规模修改，降低了开发难度和成本。CAN-FD是CAN总线的升级换代设计，它继承了CAN总线的主要特性，**提高了CAN总线的网络通信带宽，改善了错误帧漏检率，同时可以保持网络系统大部分软硬件特别是物理层不变。**CAN-FD协议充分利用CAN总线的保留位进行判断以及区分不同的帧格式。在现有车载网络中应用CAN-FD协议时，需要加入CAN-FD控制器，但是CAN-FD也可以参与到原来的CAN通信网络中，提高了网络系统的兼容性。</p> 
+         <h3><a id="2CANFD_43"></a>2、CAN-FD帧结构分析</h3> 
+         <p>canfd也分标准帧和扩展帧两种。</p> 
+         <p>CAN-FD仅定义了数据帧，与传统CAN相比，取消了远程帧的支持。原因是在没有数据的情况下，远程帧没有必要改变数据段的比特率。<br> 与CAN一样，数据帧分为“标准帧（11位ID）”和“扩展帧（29位ID）”格式。从BRS（Bit Rate Switch）到CRC分界符之间为可变速率。绿色表示与CAN的传输速度相同，黄色表示可加速传输速度。</p> 
+         <p><strong>标准帧</strong></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/907c4d2a6445da345ea371d351a7a00b.png" alt="img"></p> 
+         <blockquote> 
+          <p>备注：r1，r0表示保留位，有些地方r1写为RRS，远程请求替代位。</p> 
+         </blockquote> 
+         <img src="https://i-blog.csdnimg.cn/blog_migrate/b45b6dd19006f0e02c8e70bb1f26ad99.png" alt="img"> 
+         <p>[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-3ybiwxA6-1646140900048)(/home/syrius/.config/Typora/typora-user-images/image-20220228153341987.png)]</p> 
+         <p>**SOF（Start Of Frame）**帧起始</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/d419322e4a8d45de1ba4a046207b17c9.png" alt="img"></p> 
+         <p>在SOF，CAN FD与CAN相同，仅有1bit的“显性”位。只有总线空闲时才允许节点发送信号，发送时，SOF将总线从隐性（1）改变为显性（0），所有节点必须同步于首先开始发送报文的节点的帧起始前沿。对于SOF的定义，CAN FD和CAN是相同的。</p> 
+         <p><strong>仲裁场</strong></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/b27f92fef9726611cc2857941f1d4fcc.png" alt="img"></p> 
+         <p>CAN FD的仲裁场是由Identifier识别符和RRS位构成。CAN FD 与 CAN 相同的地方是，都有Identifier识别符，可用于区别消息的同时又可以表示消息的优先级。不同的是，在CAN FD中使用的RRS位，而CAN中使用的是RTR位。</p> 
+         <p>RRS位（Remote Request Substitution）远程请求替换位：即传统CAN中的RTR位</p> 
+         <p>与传统CAN相比，CAN FD取消了对远程帧的支持，<strong>用RRS位替换了RTR位</strong>，<strong>为常显性</strong>。</p> 
+         <p><strong>控制场</strong></p> 
+         <p>CAN-FD新增了FDF、BRS、ESI位。</p> 
+         <p>IDE（Identifier Extension） 扩展帧标志：显性（0）=11位ID，隐性（1）=29位 ID。</p> 
+         <p>FDF：对应原来can帧的保留位r，表示CAN报文还是CAN-FD报文。</p> 
+         <p>BRS(Bit Rate Switch)：表示位速率转换开关，该位隐性时，速率可变（即BSR到CRC使用转换速率传输），该位为显性时，以正常的CAN-FD总线速率传输（恒定速率）。CAN FD采用了两种位速率：从控制场中的BRS位到ACK场之前（含CRC分界符）为可变速率，其余部分为原CAN总线用的速率，即仲裁段和数据控制段使用标准的通信波特率，而数据传输段时就会切换到更高的通信波特率，数据传输速率可大于。两种速率各有一套位时间定义寄存器，它们除了采用不同的位时间单位TQ外，位时间各段的分配比例也可不同。</p> 
+         <p>ESI(Error State Indicator)错误状态指示，主动错误时发送显性位，被动错误时发送隐性位。</p> 
+         <p><strong>DLC字段</strong></p> 
+         <p>DLC为data lenght content的缩写，用于表示DATA数据场的字节数。</p> 
+         <p>CAN-FD一帧最多可以传输64个字节，因此DLC将重新定义CAN-FD的数据长度，值的范围将由原来的0000b<sub>1000b（覆盖8个字节）扩大至0000b</sub>1111b以满足需求，如图所示为DLC数值与字节数的对应关系。</p> 
+         <p>在数据场长度为0-8个字节时，采用线性规则；数据场长度为12-64字节时，使用非线性编码。</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/1190c41e27b20c4d40c49d1400a44305.png" alt="img"></p> 
+         <p><strong>位填充法</strong></p> 
+         <p>CRC校验场的第一位以及往后每间隔4位添加一个固定填充位。插入的填充位个数是经过格雷码计算转换后的值，并且用奇偶校验位保护（Stuff Count）。<br> 在CRC校验场中，填充位被放置在固定的位位置，这称为固定填充位（Fixed Stuff Bit FSB）。固定填充位的值是上一位的反码。</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/e0733adfc48c286862662914904dfd03.png" alt="在这里插入图片描述"></p> 
+         <p><strong>CRC-stuff count</strong></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/ef3b873a30db1b2758056c425a33097f.png#pic_center" alt="在这里插入图片描述"></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/4d572acedcc7e1cbb3e2d5da0efa237b.png" alt="在这里插入图片描述"></p> 
+         <p>CAN FD还在安全性上有了提高。为了避免位填充对CRC的影响，CAN FD在CRC场中增加了stuff count记录填充位的个数对应8的模（占用3位），并用Grey Code表示，还增加了1位奇偶校验位，所以Stuff Count总共占据4位。FSB（fixed stuff-bit）固定为前一位的补码。</p> 
+         <p>Stuff Count由以下两个元素组成：<br> 格雷码计算：CRC区域之前的填充位数除以8，得到的余数（Stuff bit count modulo 8）进行格雷码计算得到的值（Bit0-2）<br> 奇偶校验：通过格雷码计算后的值的奇偶校验（偶校验Bit3）</p> 
+         <p><strong>格雷码</strong></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/8b4fe0f56cb675f3956507fd7608b914.png" alt="在这里插入图片描述"></p> 
+         <p><strong>CRC</strong><br> 随着数据场的扩大，为了保证信息发送的质量，CAN FD的CRC计算不仅要包括数据段的位，还包括来自SOF的Stuff Count和填充位。通过比较CRC的计算结果，可以判断接收节点是否能够正常接收。</p> 
+         <p>[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-OQ2pYRYX-1646140900050)(/home/syrius/.config/Typora/typora-user-images/image-20220228151805903.png)]在CAN中，CRC的位数是15位，而在CAN FD中，CRC场扩展到了21位，详见以下：<br> 当传输数据为16字节或更少时：CRC 17位<br> 当传输数据超过16个字节时：CRC 21位</p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/ed936a598694d90a808a366ae5a3f00d.png" alt="在这里插入图片描述"></p> 
+         <p><strong>CRC界定符</strong><br> CRC界定符是表示CRC校验场的结束，是一个1位的常态隐性位。但是，在CAN FD中，考虑到节点之间的位的距离，在接收端允许最大2位时间。CAN FD帧的数据场（可变速段）是CRC界定符的第一位采样点。</p> 
+         <p><strong>ACK应答场</strong><br> CAN FD的ACK应答场包括应答间隙和应答界定符，其构成和CAN是相同的。不同的是，在CAN中，应答场的长度是1位，但在CAN FD，接收节点利用2位时间将其识别为有效应答。<br> 由从高速的数据场到慢速的仲裁场时，时钟切换会引起收发器相移和总线传播延迟。为了补偿其相移和延迟，相比传统的CAN，在CAN FD中多加了这额外的1位时间。在ACK之后，发送ACK界定符。这是一个表示ACK结束的分隔符，为是1位隐性位。</p> 
+         <p><strong>帧结尾</strong></p> 
+         <p><img src="https://i-blog.csdnimg.cn/blog_migrate/375bfd3acfdfa1ebf4fb0bf2bdc804c5.png" alt="在这里插入图片描述"></p> 
+         <p>每一个数据帧均由一标志序列界定，这个标志序列由7个“隐性”位组成。<strong>CAN FD的帧结尾与CAN相同</strong>。</p> 
+         <p><strong>有关CRC的ISO CAN FD、non-ISO CAN FD兼容性问题</strong><br> 当前CAN FD协议有两个版本,为提高故障(错误)检测能力，新版本特别引入了一个3位填充位计数器和一个额外的奇偶校验位。此外，CRC计算方法也发生了变化。这些改进使最新的CAN FD协议与博世(BOSCH)开发的原始CAN FD协议不兼容。负责ISO的工作组已完成其文件，并已将其提交给DIS(国际标准草案)在进行投票程序。<br> 为了避免误解，CiA建议使用术语“ISO CAN FD”和“non-ISO CAN FD”。所有符合ISO 11898-2:2015的产品都应称为“ISO CAN FD”。执行博世(BOSCH)原始CAN FD协议的产品应命名为“non-ISO CAN FD”，在这个过度阶段的产品主要目的是用于前期评估和开发,将来所有产品都将符合ISO标准。<br> 请注意，早前一些供应商提供的组件或者工具是针对non-ISO CAN FD协议的，包括目前在售的部分CAN FD产品，CiA建议仅使用ISO CAN FD产品进行设计和开发，不过你可继续使用non-ISO CAN FD做评估和前期开发，因为协议的改变对于用户界面是不可见，但注意的是不能同一个网络混用non-ISO CAN FD和ISO CAN FD接口设备，这样会造成CAN总线错误无法完成发送和接收，如果仅仅是发送或接收传统的CAN帧将不会受到任何影响，幸运的是部分设备供应商提供的组件或者工具允许用户选择支持ISO或者non-ISO模式，这样能很好地在过渡时期帮助你完成工作。</p> 
+         <p>CAN-FD保留了所有的CAN<strong>错误界定机制</strong>，包括错误帧、错误计数器、主动错误/被动错误状态等。</p> 
+        </div> 
+        <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/markdown_views-f23dff6052.css" rel="stylesheet"> 
+        <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/style-e504d6a974.css" rel="stylesheet"> 
+       </div> 
+      </article>  
+     </div> 
+     <div class="directory-boxshadow-dialog" style="display:none;"> 
+      <div class="directory-boxshadow-dialog-box"> 
+      </div> 
+      <div class="vip-limited-time-offer-box-new" id="vip-limited-time-offer-box-new"> 
+       <img class="limited-img limited-img-new" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-newWhite.png"> 
+       <div class="vip-limited-time-top">
+         确定要放弃本次机会？ 
+       </div> 
+       <span class="vip-limited-time-text">福利倒计时</span> 
+       <div class="limited-time-box-new"> 
+        <span class="time-hour"></span> 
+        <i>:</i> 
+        <span class="time-minite"></span> 
+        <i>:</i> 
+        <span class="time-second"></span> 
+       </div> 
+       <div class="limited-time-vip-box"> 
+        <p> <img class="coupon-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/vip-limited-close-roup.png"> <span class="def">立减 ¥</span> <span class="active limited-num"></span> </p> 
+        <span class="">普通VIP年卡可用</span> 
+       </div> 
+       <a class="limited-time-btn-new" href="https://mall.csdn.net/vip" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.9621&quot;}" data-report-query="spm=1001.2101.3001.9621">立即使用</a> 
+      </div> 
+     </div> 
+     <div class="more-toolbox-new" id="toolBarBox"> 
+      <div class="left-toolbox"> 
+       <div class="toolbox-left"> 
+        <div class="profile-box"> 
+         <a class="profile-href" target="_blank" href="https://hongjh.blog.csdn.net"><img class="profile-img" src="https://profile-avatar.csdnimg.cn/63778f1c86c34ca58c6067f2a528ddc5_handsomehong.jpg!1"> <span class="profile-name"> 奇妙之二进制 </span> </a> 
+        </div> 
+        <div class="profile-attend"> 
+         <a class="tool-attend tool-bt-button tool-unbt-attend" href="javascript:;" data-report-view="{&quot;mod&quot;:&quot;1592215036_002&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;extend1&quot;:&quot;已关注&quot;}">已关注</a> 
+         <a class="tool-item-follow active-animation" style="display:none;">关注</a> 
+        </div> 
+       </div> 
+       <div class="toolbox-middle"> 
+        <ul class="toolbox-list"> 
+         <li class="tool-item tool-item-size tool-active is-like" id="is-like"> <a class="tool-item-href"> <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt=""> <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2021Active.png" alt=""> <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2021Black.png" alt=""> <span id="spanCount" class="count "> 2 </span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">点赞</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-unlike" id="is-unlike"> <a class="tool-item-href"> <img class="isactive" style="margin-right:0px;display:none" id="is-unlike-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnHeart2021Active.png" alt=""> <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnHeart2021Black.png" alt=""> <span id="unlikeCount" class="count "></span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">踩</span>
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active is-collection "> <a class="tool-item-href" href="javascript:;" data-report-click="{&quot;mod&quot;:&quot;popu_824&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4130&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive.png" alt=""> <img class="isdefault" id="is-collection-img" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectBlack.png" alt=""> <img class="isactive" id="is-collection-imgactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectActive.png" alt=""> <span class="count get-collection " data-num="5" id="get-collection"> 5 </span> </a> 
+          <div class="tool-hover-tip collect"> 
+           <div class="collect-operate-box"> 
+            <span class="collect-text" id="is-collection"> 收藏 </span> 
+           </div> 
+          </div> 
+          <div class="tool-active-list"> 
+           <div class="text">
+             觉得还不错? 
+            <span class="collect-text" id="tool-active-list-collection"> 一键收藏 </span> 
+            <img id="tool-active-list-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/collectionCloseWhite.png" alt=""> 
+           </div> 
+          </div> </li> 
+         <li class="tool-item tool-item-size tool-active tool-item-comment"> 
+          <div class="guide-rr-first"> 
+           <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward01.png" alt=""> 
+           <button class="btn-guide-known">知道了</button> 
+          </div> <a class="tool-item-href go-side-comment" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.7009&quot;}"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newComment2021Black.png" alt=""> <span class="count"> 0 </span> </a> 
+          <div class="tool-hover-tip">
+           <span class="text space">评论</span>
+          </div> </li> 
+         <li class="tool-item tool-item-bar"> </li> 
+         <li class="tool-item tool-item-size tool-active tool-QRcode" data-type="article" id="tool-share"> <a class="tool-item-href" href="javascript:;" data-report-view="{&quot;spm&quot;:&quot;3001.4129&quot;,&quot;extra&quot;:{&quot;type&quot;:&quot;blogdetail&quot;}}"> <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newShareBlack.png" alt=""> </a> 
+          <div class="QRcode" id="tool-QRcode"> 
+           <div class="share-bg-box"> 
+            <div class="share-content"> 
+             <a id="copyPosterUrl" data-type="link" class="btn-share">复制链接</a> 
+            </div> 
+            <div class="share-content"> 
+             <a class="btn-share" data-type="qq">分享到 QQ</a> 
+            </div> 
+            <div class="share-content"> 
+             <a class="btn-share" data-type="weibo">分享到新浪微博</a> 
+            </div> 
+            <div class="share-code"> 
+             <div class="share-code-box" id="shareCode"></div> 
+             <div class="share-code-text"> 
+              <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/share/icon-wechat.png" alt="">扫一扫 
+             </div> 
+            </div> 
+           </div> 
+          </div> </li> 
+        </ul> 
+       </div> 
+       <div class="toolbox-right"> 
+        <div class="tool-directory"> 
+         <a class="bt-columnlist-show" data-id="10675064" data-free="false" data-description="全网唯一OpenCyphal/UAVCAN教程" data-subscribe="true" data-title="全网唯一OpenCyphal/UAVCAN教程" data-img="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_224,w_224" data-url="https://blog.csdn.net/handsomehong/category_10675064.html" data-sum="13" data-people="123" data-price="49.90" data-hotrank="0" data-status="true" data-oldprice="99.00" data-join="true" data-studyvip="true" data-studysubscribe="true" data-report-view="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.6334&quot;,&quot;extend1&quot;:&quot;专栏目录&quot;}">专栏目录</a> 
+        </div> 
+        <div class="tool-column"> 
+         <a class="tool-bt-button tool-unbt-subscribe" href="javascript:;" data-report-view="{&quot;mod&quot;:&quot;1592215036_001&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4405&quot;,&quot;extend1&quot;:&quot;已订阅&quot;}" data-report-click="{&quot;mod&quot;:&quot;1592215036_001&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4405&quot;,&quot;extend1&quot;:&quot;已订阅&quot;}">已订阅</a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>   
+     <a id="commentBox" name="commentBox"></a> 
+     <div id="pcCommentBox" class="comment-box comment-box-new2 login-comment-box-new" style="display:none"> 
+      <div class="has-comment" style="display:block"> 
+       <div class="one-line-box"> 
+        <div class="has-comment-tit go-side-comment"> 
+         <span class="count">0</span>&nbsp;条评论 
+        </div> 
+        <div class="has-comment-con comment-operate-item"></div> 
+        <a class="has-comment-bt-right go-side-comment focus">写评论</a> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="first-recommend-box recommend-box recommend-highlight-default"> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://hongjh.blog.csdn.net/article/details/113918352" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-113918352-blog-123216558.235^v43^control\&quot;,\&quot;dist_request_id\&quot;:\&quot;1733572990210_23374\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1733572990210_23374&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/113918352&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://hongjh.blog.csdn.net/article/details/113918352" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-113918352-blog-123216558.235^v43^control\&quot;,\&quot;dist_request_id\&quot;:\&quot;1733572990210_23374\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1733572990210_23374&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/113918352&quot;}" data-report-query="spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-113918352-blog-123216558.235%5Ev43%5Econtrol&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-113918352-blog-123216558.235%5Ev43%5Econtrol"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            <em>全网</em>
+            <em>唯一</em>
+            <em>OpenCy</em>
+            <em>phal</em>/
+            <em>UAV</em>CAN
+            <em>教程</em>（5）
+            <em>协议</em>原理分析
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/HandsomeHong" target="_blank"><span class="blog-title">二进制君</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">02-21</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 7172 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://hongjh.blog.csdn.net/article/details/113918352" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6661.1&quot;,&quot;mod&quot;:&quot;popu_871&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-113918352-blog-123216558.235^v43^control\&quot;,\&quot;dist_request_id\&quot;:\&quot;1733572990210_23374\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1733572990210_23374&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/113918352&quot;}" data-report-query="spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-113918352-blog-123216558.235%5Ev43%5Econtrol&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-113918352-blog-123216558.235%5Ev43%5Econtrol"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           实际上
+           <em>uav</em>can底层的传输
+           <em>协议</em>不一定是can，只不过最初就是基于can总线。 前面说过
+           <em>uav</em>can提供了两种传输方式，广播订阅和服务请求。这是传输层之上的东西，对于传输层而言，它只看到了can帧。 消息比较短，单个can帧就可以携带，这种传输叫单帧传输； 消息较长，需要几个can帧传输，这种叫多帧传输。 那么一个can帧有多大呢？包含哪些字段？接下来我们来认识can帧结构。 can帧结构 1、单帧结构 单帧最大8个字节，其中数据是可变的，最大占7个字节，最后一个字节叫尾部字节。 尾部1字节8个位拆分成了
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div>  
+     <div class="second-recommend-box recommend-box recommend-highlight-default"> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://hongjh.blog.csdn.net/article/details/123288266" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-123288266-blog-123216558.235^v43^control\&quot;,\&quot;dist_request_id\&quot;:\&quot;1733572990210_23374\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1733572990210_23374&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/123288266&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://hongjh.blog.csdn.net/article/details/123288266" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-123288266-blog-123216558.235^v43^control\&quot;,\&quot;dist_request_id\&quot;:\&quot;1733572990210_23374\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1733572990210_23374&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/123288266&quot;}" data-report-query="spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-123288266-blog-123216558.235%5Ev43%5Econtrol&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-123288266-blog-123216558.235%5Ev43%5Econtrol"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            <em>全网</em>
+            <em>唯一</em>
+            <em>UAV</em>CAN中文
+            <em>教程</em>（4）从can 2.0升级到
+            <em>canf</em>d的变化
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/HandsomeHong" target="_blank"><span class="blog-title">二进制君</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">03-05</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 2744 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://hongjh.blog.csdn.net/article/details/123288266" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.1&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-123288266-blog-123216558.235^v43^control\&quot;,\&quot;dist_request_id\&quot;:\&quot;1733572990210_23374\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1733572990210_23374&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/123288266&quot;}" data-report-query="spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-123288266-blog-123216558.235%5Ev43%5Econtrol&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-123288266-blog-123216558.235%5Ev43%5Econtrol"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           文章目录1、什么是CAN FD？2、CAN FD如何工作？两个关键挑战解决方案：CAN FD框架NEED FOR SPEED：开启比特率切换3、混合经典CAN和CAN FD节点CAN FD与CAN的开销和数据效率CAN FD的最大比特率是多少？4、CAN FD应用 1、什么是CAN FD？ CAN FD
+           <em>协议</em>由Bosch（与行业专家）预先开发，并于2012年发布。 在标准化过程中已得到显着改进，如今已在ISO 11898-1：2015中进行了改进。原始的Bosch CAN FD版本（非ISO CAN FD）与
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="recommend-box insert-baidu-box  recommend-highlight-default"> 
+      <div class="recommend-item-box no-index" style="display:none"></div> 
+      <div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/BreederBai/article/details/80235560" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-80235560-blog-123216558.235^v43^control\&quot;,\&quot;dist_request_id\&quot;:\&quot;1733572990210_23374\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1733572990210_23374&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/BreederBai/article/details/80235560&quot;}"> 
+       <div class="content-box"> 
+        <div class="content-blog display-flex"> 
+         <div class="title-box"> 
+          <span class="type"> <img src="https://csdnimg.cn/release/blogv2/dist/components/img/blogType.png" alt=""> <span class="tip">博客</span> </span> 
+          <a href="https://blog.csdn.net/BreederBai/article/details/80235560" class="tit" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-80235560-blog-123216558.235^v43^control\&quot;,\&quot;dist_request_id\&quot;:\&quot;1733572990210_23374\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1733572990210_23374&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/BreederBai/article/details/80235560&quot;}" data-report-query="spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-80235560-blog-123216558.235%5Ev43%5Econtrol&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-80235560-blog-123216558.235%5Ev43%5Econtrol"> 
+           <div class="left ellipsis-online ellipsis-online-1">
+            APM-3.5.2 
+            <em>UAV</em>CAN笔记
+           </div> </a> 
+         </div> 
+         <div class="info-box display-flex"> 
+          <div class="info"> 
+           <a href="https://blog.csdn.net/BreederBai" target="_blank"><span class="blog-title">BreederBai的博客</span></a> 
+          </div> 
+          <div class="info display-flex"> 
+           <span class="info-block time">11-13</span> 
+           <span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> 1240 </span> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="desc-box"> 
+         <a href="https://blog.csdn.net/BreederBai/article/details/80235560" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;spm&quot;:&quot;1001.2101.3001.6650.2&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;highlightScore\&quot;:0.0,\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-80235560-blog-123216558.235^v43^control\&quot;,\&quot;dist_request_id\&quot;:\&quot;1733572990210_23374\&quot;}&quot;,&quot;dist_request_id&quot;:&quot;1733572990210_23374&quot;,&quot;ab_strategy&quot;:&quot;vipdefault&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;2~default~BlogCommendFromBaidu~Rate&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/BreederBai/article/details/80235560&quot;}" data-report-query="spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-80235560-blog-123216558.235%5Ev43%5Econtrol&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-80235560-blog-123216558.235%5Ev43%5Econtrol"> 
+          <div class="desc ellipsis-online ellipsis-online-1">
+           20180402： &nbsp; &nbsp; 
+           <em>UAV</em>CAN使用的主要逻辑代码，在AP_
+           <em>UAV</em>CAN.cpp文件中，AP_
+           <em>UAV</em>CAN类的任务是在硬件配置支持的情况下使用
+           <em>UAV</em>CAN
+           <em>协议</em>，进行数据的收发。
+           <em>UAV</em>CAN
+           <em>协议</em>的收发逻辑代码太过于复杂，看了几天仍然云里雾里，所以我决定转换思路，不再过深的去了解
+           <em>协议</em>的收发逻辑代码，转而去了解需要经过哪些步骤，使用哪些
+           <em>UAV</em>CAN
+           <em>协议</em>提供的API，可以完成收发任务。 &nbsp; &nbsp; 接...
+          </div> </a> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="blog-footer-bottom" style="margin-top:10px;"></div>   
+    </main> 
+    <aside class="blog_container_aside"> 
+     <div id="asideProfile" class="aside-box"> 
+      <div class="profile-intro d-flex"> 
+       <div class="avatar-box d-flex justify-content-center flex-column"> 
+        <a href="https://hongjh.blog.csdn.net" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4121&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <img src="https://profile-avatar.csdnimg.cn/63778f1c86c34ca58c6067f2a528ddc5_handsomehong.jpg!1" class="avatar_pic"> </a> 
+       </div> 
+       <div class="user-info d-flex flex-column profile-intro-name-box"> 
+        <div class="profile-intro-name-boxTop"> 
+         <a href="https://hongjh.blog.csdn.net" target="_blank" class="" id="uid" title="奇妙之二进制" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4122&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net&quot;,&quot;ab&quot;:&quot;new&quot;}"> <span class="name " username="HandsomeHong">奇妙之二进制</span> </a> 
+         <span> </span> 
+         <span class="flag expert-blog"> <img class="identity" src="https://csdnimg.cn/release/blogv2/dist/mobile/img/expertNew.png" alt=""> <span class="bubble">CSDN认证博客专家</span> </span> 
+         <span class="flag company-blog"> <span class="bubble">CSDN认证企业博客</span> </span> 
+        </div> 
+        <div class="profile-intro-name-boxFooter"> 
+         <span class="personal-home-page personal-home-years" title="已加入 CSDN 9年">码龄9年</span> 
+         <span class="personal-home-page"> <a class="personal-home-certification" href="https://i.csdn.net/#/uc/profile?utm_source=14998968" target="_blank" title="C/C++领域优质创作者"> <img src="https://img-home.csdnimg.cn/images/20210412060958.png" alt=""> C/C++领域优质创作者 </a> </span> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="data-info d-flex item-tiling"> 
+       <dl class="text-center" title="917"> 
+        <a href="https://hongjh.blog.csdn.net" data-report-click="{&quot;mod&quot;:&quot;1598321000_001&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4310&quot;}" data-report-query="t=1"> 
+         <dt>
+          <span class="count">917</span>
+         </dt> 
+         <dd class="font">
+          原创
+         </dd> </a> 
+       </dl> 
+       <dl class="text-center" data-report-click="{&quot;mod&quot;:&quot;1598321000_002&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4311&quot;}" title="2299"> 
+        <a href="https://blog.csdn.net/rank/list/weekly" target="_blank"> 
+         <dt>
+          <span class="count">2299</span>
+         </dt> 
+         <dd class="font">
+          周排名
+         </dd> </a> 
+       </dl> 
+       <dl class="text-center" title="912"> 
+        <a href="https://blog.csdn.net/rank/list/total" data-report-click="{&quot;mod&quot;:&quot;1598321000_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4312&quot;}" target="_blank"> 
+         <dt>
+          <span class="count">912</span>
+         </dt> 
+         <dd class="font">
+          总排名
+         </dd> </a> 
+       </dl> 
+       <dl class="text-center" style="min-width:58px" title="4184584"> 
+        <dt>
+         <span class="count">418万+</span>
+        </dt> 
+        <dd>
+         访问
+        </dd> 
+       </dl> 
+       <dl class="text-center" title="7级,点击查看等级说明"> 
+        <dt>
+         <a href="https://blog.csdn.net/blogdevteam/article/details/103478461" target="_blank"> <img class="level" src="https://csdnimg.cn/identity/blog7.png"> </a> 
+        </dt> 
+        <dd>
+         等级
+        </dd> 
+       </dl> 
+      </div> 
+      <div class="item-rank"></div> 
+      <div class="data-info d-flex item-tiling"> 
+       <dl class="text-center" title="21710"> 
+        <dt>
+         <span class="count">2万+</span>
+        </dt> 
+        <dd>
+         积分
+        </dd> 
+       </dl> 
+       <dl class="text-center" id="fanBox" title="25392"> 
+        <dt>
+         <span class="count" id="fan">2万+</span>
+        </dt> 
+        <dd>
+         粉丝
+        </dd> 
+       </dl> 
+       <dl class="text-center" title="2789"> 
+        <dt>
+         <span class="count">2789</span>
+        </dt> 
+        <dd>
+         获赞
+        </dd> 
+       </dl> 
+       <dl class="text-center" title="853"> 
+        <dt>
+         <span class="count">853</span>
+        </dt> 
+        <dd>
+         评论
+        </dd> 
+       </dl> 
+       <dl class="text-center" title="8572"> 
+        <dt>
+         <span class="count">8572</span>
+        </dt> 
+        <dd>
+         收藏
+        </dd> 
+       </dl> 
+      </div> 
+      <div class="aside-box-footer" data-report-view="{&quot;spm&quot;:&quot;3001.4296&quot;}"> 
+       <div class="badge-box d-flex"> 
+        <div class="badge d-flex"> 
+         <div class="icon-badge" title="持之以恒"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/40b51eba5a10460f96da7e1f9ef534f0.png" alt="持之以恒"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="签到新秀"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/qiandao20@240.png" alt="签到新秀"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="国庆勋章"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/46719b7f416940a38051072f841c67c0.png" alt="国庆勋章"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="五一创作勋章"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/51_create.png" alt="五一创作勋章"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="签到达人"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/qiandao50@240.png" alt="签到达人"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="脉脉勋章"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/maimai@240.png" alt="脉脉勋章"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="笔耕不辍"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/d47ed691c4ed4e23885dc553c0c1ca22.png" alt="笔耕不辍"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="话题达人"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/96ac957ca0a64be3a6393da7a9474486.png" alt="话题达人"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="阅读者勋章"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/yuedu30@240.png" alt="阅读者勋章"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="习惯养成"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/xiguanyangchengLv1.png" alt="习惯养成"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="分享小兵"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/fengxiangxiaobing@240.png" alt="分享小兵"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="求知"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/c0535f9cefbd4cc0a4878be28bfc4590.png" alt="求知"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="持续创作"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/chizhiyiheng@240.png" alt="持续创作"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="勤写标兵"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/eabb492c5e3343738376cdb052649492.png" alt="勤写标兵"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="1024勋章"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/1024up@240.png" alt="1024勋章"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="1024超级勋章"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/chaoji1024@240.png" alt="1024超级勋章"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="创作能手"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/qixiebiaobing4@240.png" alt="创作能手"> 
+          </div> 
+         </div> 
+         <div class="icon-badge" title="新人勋章"> 
+          <div class="mouse-box"> 
+           <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="https://csdnimg.cn/medal/blinknewcomer@240.png" alt="新人勋章"> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="profile-intro-name-boxOpration"> 
+       <div class="opt-letter-watch-box"> 
+        <a rel="noopener" class="bt-button personal-letter" href="https://im.csdn.net/chat/HandsomeHong" target="_blank">私信</a> 
+       </div> 
+       <div class="opt-letter-watch-box"> 
+        <a class="attented personal-watch bt-button" id="btnAttent">已关注</a> 
+       </div> 
+      </div> 
+     </div> 
+     <a id="remuneration" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.9809&quot;}" rel="nofollow" href="" class="remuneration-box"> <img src="" alt=""> </a> 
+     <div id="asideWriteGuide" class="aside-box side-write-guide-box type-2" data-report-view="{&quot;spm&quot;:&quot;3001.9727&quot;}"> 
+      <div class="content-box"> 
+       <a rel="nofollow" href="https://edu.csdn.net/cloud/houjie?utm_source=hjblogllq" target="_blank" class="btn-go-write" data-report-query="spm=3001.9727" data-report-click="{&quot;spm&quot;:&quot;3001.9727&quot;}"> <img src="https://img-home.csdnimg.cn/images/20241202111142.jpg" alt="写文章"> </a> 
+      </div> 
+     </div> 
+     <div id="asideSearchArticle" class="aside-box"> 
+      <div class="aside-content search-comter"> 
+       <div class="aside-search aside-search-blog"> 
+        <input type="text" class="input-serch-blog" name="" autocomplete="off" value="" id="search-blog-words" placeholder="搜博主文章"> 
+        <a class="btn-search-blog" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.9182&quot;}"> <img src="https://csdnimg.cn/cdn/content-toolbar/csdn-sou.png?v=1587021042"> </a> 
+       </div> 
+      </div> 
+     </div> 
+     <div id="asideHotArticle" class="aside-box"> 
+      <h3 class="aside-title">热门文章</h3> 
+      <div class="aside-content"> 
+       <ul class="hotArticle-list"> 
+        <li> <a href="https://hongjh.blog.csdn.net/article/details/80016249" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4139&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/80016249&quot;,&quot;ab&quot;:&quot;new&quot;}"> 简单网络管理协议SNMP（史上最全） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">152254</span> </a> </li> 
+        <li> <a href="https://hongjh.blog.csdn.net/article/details/72528869" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4139&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/72528869&quot;,&quot;ab&quot;:&quot;new&quot;}"> PID算法详解（1） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">100569</span> </a> </li> 
+        <li> <a href="https://hongjh.blog.csdn.net/article/details/119823915" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4139&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/119823915&quot;,&quot;ab&quot;:&quot;new&quot;}"> 深入学习USB（6）USB Type-C接口定义概念解析 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">52904</span> </a> </li> 
+        <li> <a href="https://hongjh.blog.csdn.net/article/details/108051988" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4139&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/108051988&quot;,&quot;ab&quot;:&quot;new&quot;}"> Linux系统软件工程师/嵌入式Linux应用开发工程师 知识体系构建 500篇（持续更新） <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">50875</span> </a> </li> 
+        <li> <a href="https://hongjh.blog.csdn.net/article/details/129327278" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4139&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/129327278&quot;,&quot;ab&quot;:&quot;new&quot;}"> 学习C++这几个网站足矣 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt=""> <span class="read">38852</span> </a> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideCategory" class="aside-box flexible-box"> 
+      <h3 class="aside-title">分类专栏</h3> 
+      <div class="aside-content"> 
+       <ul> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_12840562.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_12840562.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/direct/d27dd81f3e28494fb22f520a1366fec1.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> C/C++笔试面试系列2025春招修订版 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">2篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10633318.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10633318.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar "></div> <img src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 嵌入式/Linux C/C++软件工程师知识体系（包括面试） </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">511篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11254909.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11254909.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/9677e10da9f6484baf4b7789571f92d5.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> shell基础与实战 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">28篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10951004.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10951004.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/202104150944169.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 面向工作git基础教程 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">49篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10557493.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10557493.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/2021040511044754.jpg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> C++编译工具cmake教程 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">41篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10279663.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10279663.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20210314180755639.jfif?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> C++ STL教程 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">19篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10881043.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10881043.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/da3eccae034442f8b06e5dd29d97d89a.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> C++11新特性深入剖析 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">53篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10946881.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10946881.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/57b060ca94fe4c469974d6a9aa7106fd.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> C++模板元编程 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">21篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10234704.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10234704.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20200725220219323.jpg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> Linux网络编程面试实战 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">20篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11118640.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11118640.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20210607001849446.jpg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 编译链接实战 </span> </a> <span class="special-column-num">27篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_12742339.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_12742339.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> mqtt协议详解 </span> </a> <span class="special-column-num">2篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_12573485.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_12573485.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/direct/470503976b984eb8bb6e3153742b3df9.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 计算机科学与操作系统 </span> </a> <span class="special-column-num">4篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_12715051.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_12715051.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/direct/7fcbe8b17036444d97d1f46cef1b606f.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 安全与加密常识 </span> </a> <span class="special-column-num">10篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10980891.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10980891.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20210415094225465.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 面向对象分析与设计 </span> </a> <span class="special-column-num">39篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11962576.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11962576.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20190927151132530.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> Linux C/C++并发编程实战 </span> </a> <span class="special-column-num">12篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10904544.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10904544.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> C++编程法则 </span> </a> <span class="special-column-num">88篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11880718.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11880718.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/77636684a37d431e9d454ba3f997a8fd.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> Linux多进程多线程面试 </span> </a> <span class="special-column-num">24篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11891361.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11891361.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/62295a8e14a846e0b27404a39f57ec12.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> Ubuntu/Linux系统管理 </span> </a> <span class="special-column-num">56篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11880717.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11880717.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/8324c4358fe349afb1ca129a7b2f510c.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> C/C++笔面试 </span> </a> <span class="special-column-num">14篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11896032.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11896032.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/3c893d8ba8fa4d86869d34fa9768d038.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> Linux文本处理三剑客 </span> </a> <span class="special-column-num">29篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11409813.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11409813.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/7ce73a146ae84a14b8ffcd46fd16686f.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> linux命令 </span> </a> <span class="special-column-num">57篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11758016.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11758016.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/fb9fe034020948739897bce9d8bfeaae.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> VIM实用指南 </span> </a> <span class="special-column-num">17篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10961192.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10961192.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/2021041509462116.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 常用开源库实战以及基础设施搭建 </span> </a> <span class="special-column-num">19篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11022837.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11022837.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20210428191835625.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> linux程序调试与调优专题 </span> </a> <span class="special-column-num">13篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11531923.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11531923.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/4f3b3ed15b88404d80070fc712eb923c.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 炼丹炉打造--vscode </span> </a> <span class="special-column-num">16篇</span> </li> 
+        <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10616567.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10616567.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+          <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/7053e1c872c1402cb359764eaee10504.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class="title oneline"> 工欲善其事，必先利其器 </span> </a> <span class="special-column-num">43篇</span> </li> 
+       </ul> 
+      </div> 
+      <p class="text-center"> <a class="flexible-btn" data-fbox="aside-archive"><img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowDownWhite.png" alt=""></a> </p> 
+     </div> 
+     <div id="asideNewComments" class="aside-box"> 
+      <h3 class="aside-title">最新评论</h3> 
+      <div class="aside-content"> 
+       <ul class="newcomment-list"> 
+        <li> <a class="title text-truncate" target="_blank" href="https://hongjh.blog.csdn.net/article/details/123101771#comments_35496845" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/123101771#comments_35496845&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/123101771#comments_35496845&quot;,&quot;ab&quot;:&quot;new&quot;}">5分钟图解磁盘结构（软件层面）</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/2302_81910218" class="user-name" target="_blank">boluo_people12345: </a> <span class="code-comments">哈哈哈哈，感谢感谢</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://hongjh.blog.csdn.net/article/details/127749038#comments_35172893" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/127749038#comments_35172893&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/127749038#comments_35172893&quot;,&quot;ab&quot;:&quot;new&quot;}">2022-2023全网最新linux系列教程100集--Linux目录结构你了解吗</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/ldnono1" class="user-name" target="_blank">ldnono1: </a> <span class="code-comments">大佬，没有文档啊B站过来得</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://hongjh.blog.csdn.net/article/details/129675437#comments_35079582" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/129675437#comments_35079582&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/129675437#comments_35079582&quot;,&quot;ab&quot;:&quot;new&quot;}">C++造轮子飙车现场（4）开发一个定时器框架，支持周期性执行任务，取消任务</a> <p class="comment ellipsis"> <a href="https://hongjh.blog.csdn.net" class="user-name" target="_blank">奇妙之二进制: </a> <span class="code-comments">感谢提醒，已修正</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://hongjh.blog.csdn.net/article/details/119823915#comments_34581798" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/119823915#comments_34581798&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/119823915#comments_34581798&quot;,&quot;ab&quot;:&quot;new&quot;}">深入学习USB（6）USB Type-C接口定义概念解析</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/m0_67105519" class="user-name" target="_blank">Yuki.710: </a> <span class="code-comments">CC功能中，配置VBUS,USBTypeC算什么模式？TypeC不是只是接口吗？</span> </p> </li> 
+        <li> <a class="title text-truncate" target="_blank" href="https://hongjh.blog.csdn.net/article/details/119823915#comments_34520286" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/119823915#comments_34520286&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/119823915#comments_34520286&quot;,&quot;ab&quot;:&quot;new&quot;}">深入学习USB（6）USB Type-C接口定义概念解析</a> <p class="comment ellipsis"> <a href="https://blog.csdn.net/m0_67105519" class="user-name" target="_blank">Yuki.710: </a> <span class="code-comments">辅助信号sub1和sub2写错了，是sbu1和sbu2</span> </p> </li> 
+       </ul> 
+      </div> 
+     </div> 
+     <div id="asideArchive" class="aside-box" style="display:block!important; width:300px;"> 
+      <h3 class="aside-title">最新文章</h3> 
+      <div class="aside-content"> 
+       <ul class="inf_list clearfix"> 
+        <li class="clearfix"> <a href="https://hongjh.blog.csdn.net/article/details/125476876" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4136&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/125476876&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/125476876&quot;,&quot;ab&quot;:&quot;new&quot;}">Linux开发者的CI/CD（11）jenkins变量</a> </li> 
+        <li class="clearfix"> <a href="https://hongjh.blog.csdn.net/article/details/144004822" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4136&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/144004822&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/144004822&quot;,&quot;ab&quot;:&quot;new&quot;}">2025年春招修订版《C/C++笔面试系列》(2) C语言经典笔面试题(下)</a> </li> 
+        <li class="clearfix"> <a href="https://hongjh.blog.csdn.net/article/details/144004629" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4136&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/144004629&quot;,&quot;ab&quot;:&quot;new&quot;}" data-report-view="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net/article/details/144004629&quot;,&quot;ab&quot;:&quot;new&quot;}">2025年春招修订版《C/C++笔面试系列》(1) C语言经典笔面试题(上)</a> </li> 
+       </ul> 
+       <div class="archive-bar"></div> 
+       <div class="archive-box"> 
+        <div class="archive-title">
+         2024
+        </div> 
+        <div class="archive-content"> 
+         <div class="archive-item"> 
+          <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=11" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=11&quot;}"> <span class="time">11月</span> <span class="count">8篇</span> </a> 
+         </div> 
+         <div class="archive-item"> 
+          <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=09" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=09&quot;}"> <span class="time">09月</span> <span class="count">5篇</span> </a> 
+         </div> 
+         <div class="archive-item"> 
+          <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=08" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=08&quot;}"> <span class="time">08月</span> <span class="count">7篇</span> </a> 
+         </div> 
+         <div class="archive-item"> 
+          <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=07" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=07&quot;}"> <span class="time">07月</span> <span class="count">6篇</span> </a> 
+         </div> 
+         <div class="archive-item"> 
+          <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=06" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=06&quot;}"> <span class="time">06月</span> <span class="count">11篇</span> </a> 
+         </div> 
+         <div class="archive-item"> 
+          <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=05" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=05&quot;}"> <span class="time">05月</span> <span class="count">3篇</span> </a> 
+         </div> 
+         <div class="archive-item"> 
+          <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=04" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=04&quot;}"> <span class="time">04月</span> <span class="count">8篇</span> </a> 
+         </div> 
+         <div class="archive-item"> 
+          <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=03" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=03&quot;}"> <span class="time">03月</span> <span class="count">6篇</span> </a> 
+         </div> 
+         <div class="archive-item"> 
+          <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=02" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=02&quot;}"> <span class="time">02月</span> <span class="count">11篇</span> </a> 
+         </div> 
+         <div class="archive-item"> 
+          <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=01" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2024&amp;month=01&quot;}"> <span class="time">01月</span> <span class="count">11篇</span> </a> 
+         </div> 
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2023&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2023&amp;month=12&quot;}"><span class="year">2023年</span><span class="num">127篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2022&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2022&amp;month=12&quot;}"><span class="year">2022年</span><span class="num">270篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2021&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2021&amp;month=12&quot;}"><span class="year">2021年</span><span class="num">386篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2020&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2020&amp;month=12&quot;}"><span class="year">2020年</span><span class="num">212篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2019&amp;month=12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2019&amp;month=12&quot;}"><span class="year">2019年</span><span class="num">4篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2018&amp;month=08" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2018&amp;month=08&quot;}"><span class="year">2018年</span><span class="num">19篇</span></a>
+        </div> 
+        <div class="archive-list-item">
+         <a href="https://hongjh.blog.csdn.net?type=blog&amp;year=2017&amp;month=08" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;https://hongjh.blog.csdn.net?type=blog&amp;year=2017&amp;month=08&quot;}"><span class="year">2017年</span><span class="num">39篇</span></a>
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 详情页显示目录 --> 
+     <!--文章目录--> 
+     <div id="asidedirectory" class="aside-box"> 
+      <div class="groupfile" id="directory"> 
+       <h3 class="aside-title">目录</h3> 
+       <div class="align-items-stretch group_item"> 
+        <div class="pos-box"> 
+         <div class="scroll-box"> 
+          <div class="toc-box"></div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside>    
+   </div> 
+   <div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div id="recommend-right"> 
+      <div class="flex-column aside-box groupfile" id="groupfile"> 
+       <div class="groupfile-div"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="aside-box kind_person d-flex flex-column"> 
+       <h3 class="aside-title">分类专栏</h3> 
+       <div class="align-items-stretch kindof_item" id="kind_person_column"> 
+        <div class="aside-content"> 
+         <ul> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_12840562.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_12840562.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://i-blog.csdnimg.cn/direct/d27dd81f3e28494fb22f520a1366fec1.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> C/C++笔试面试系列2025春招修订版 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">2篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10633318.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10633318.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar "></div> <img src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 嵌入式/Linux C/C++软件工程师知识体系（包括面试） </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">511篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11254909.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11254909.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/9677e10da9f6484baf4b7789571f92d5.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> shell基础与实战 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">28篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10951004.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10951004.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/202104150944169.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 面向工作git基础教程 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">49篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10557493.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10557493.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/2021040511044754.jpg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> C++编译工具cmake教程 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">41篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10279663.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10279663.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20210314180755639.jfif?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> C++ STL教程 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">19篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10881043.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10881043.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/da3eccae034442f8b06e5dd29d97d89a.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> C++11新特性深入剖析 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">53篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10946881.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10946881.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/57b060ca94fe4c469974d6a9aa7106fd.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> C++模板元编程 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">21篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10234704.html" data-report-click="{&quot;mod&quot;:&quot;popu_826&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4230&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10234704.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20200725220219323.jpg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> Linux网络编程面试实战 </span> <span class="pay-tag">付费</span> </a> <span class="special-column-num">20篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11118640.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11118640.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20210607001849446.jpg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 编译链接实战 </span> </a> <span class="special-column-num">27篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_12742339.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_12742339.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://i-blog.csdnimg.cn/columns/default/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> mqtt协议详解 </span> </a> <span class="special-column-num">2篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_12573485.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_12573485.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/direct/470503976b984eb8bb6e3153742b3df9.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 计算机科学与操作系统 </span> </a> <span class="special-column-num">4篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_12715051.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_12715051.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/direct/7fcbe8b17036444d97d1f46cef1b606f.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 安全与加密常识 </span> </a> <span class="special-column-num">10篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10980891.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10980891.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20210415094225465.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 面向对象分析与设计 </span> </a> <span class="special-column-num">39篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11962576.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11962576.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20190927151132530.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> Linux C/C++并发编程实战 </span> </a> <span class="special-column-num">12篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10904544.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10904544.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> C++编程法则 </span> </a> <span class="special-column-num">88篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11880718.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11880718.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/77636684a37d431e9d454ba3f997a8fd.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> Linux多进程多线程面试 </span> </a> <span class="special-column-num">24篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11891361.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11891361.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/62295a8e14a846e0b27404a39f57ec12.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> Ubuntu/Linux系统管理 </span> </a> <span class="special-column-num">56篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11880717.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11880717.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/8324c4358fe349afb1ca129a7b2f510c.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> C/C++笔面试 </span> </a> <span class="special-column-num">14篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11896032.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11896032.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/3c893d8ba8fa4d86869d34fa9768d038.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> Linux文本处理三剑客 </span> </a> <span class="special-column-num">29篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11409813.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11409813.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/7ce73a146ae84a14b8ffcd46fd16686f.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> linux命令 </span> </a> <span class="special-column-num">57篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11758016.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11758016.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/fb9fe034020948739897bce9d8bfeaae.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> VIM实用指南 </span> </a> <span class="special-column-num">17篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10961192.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10961192.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/2021041509462116.jpeg?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 常用开源库实战以及基础设施搭建 </span> </a> <span class="special-column-num">19篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11022837.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11022837.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/20210428191835625.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> linux程序调试与调优专题 </span> </a> <span class="special-column-num">13篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_11531923.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_11531923.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/4f3b3ed15b88404d80070fc712eb923c.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 炼丹炉打造--vscode </span> </a> <span class="special-column-num">16篇</span> </li> 
+          <li> <a class="clearfix special-column-name" href="https://blog.csdn.net/handsomehong/category_10616567.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/handsomehong/category_10616567.html&quot;,&quot;ab&quot;:&quot;new&quot;}"> 
+            <div class="special-column-bar special-column-bar-second"></div> <img src="https://img-blog.csdnimg.cn/7053e1c872c1402cb359764eaee10504.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://i-blog.csdnimg.cn/columns/default/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'"> <span class=""> 工欲善其事，必先利其器 </span> </a> <span class="special-column-num">43篇</span> </li> 
+         </ul> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+   <div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend"> 
+    <aside class="recommend-right_aside"> 
+     <div id="recommend-right-concision"> 
+      <div class="flex-column aside-box groupfile" id="groupfileConcision"> 
+       <div class="groupfile-div1"> 
+        <h3 class="aside-title">目录</h3> 
+        <div class="align-items-stretch group_item"> 
+         <div class="pos-box"> 
+          <div class="scroll-box"> 
+           <div class="toc-box"></div> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </aside> 
+   </div> 
+  </div> 
+  <div class="mask-dark"></div> 
+  <div class="skin-boxshadow"></div> 
+  <div class="directory-boxshadow"></div> 
+  <div class="comment-side-box-shadow comment-side-tit-close" id="commentSideBoxshadow"> 
+   <div class="comment-side-content"> 
+    <div class="comment-side-tit"> 
+     <span class="comment-side-tit-count">评论</span> 
+     <img class="comment-side-tit-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png">
+    </div> 
+    <div id="pcCommentSideBox" class="comment-box comment-box-new2 " style="display:block"> 
+     <div class="comment-edit-box d-flex"> 
+      <div class="user-img"> 
+       <a href="https://blog.csdn.net/yyqim" target="_blank"> <img src="https://profile-avatar.csdnimg.cn/8ba3948abf0c4fe997e3dd6c6f0a02b9_yyqim.jpg!1"> </a> 
+      </div> 
+      <form id="commentform"> 
+       <textarea class="comment-content" name="comment_content" id="comment_content" placeholder="欢迎高质量的评论，低质的评论会被折叠" maxlength="1000"></textarea> 
+       <div class="comment-reward-box" style="background-image: url('https://img-home.csdnimg.cn/images/20230131025301.png');"> 
+        <a class="btn-remove-reward"></a> 
+        <div class="form-reward-box"> 
+         <div class="info">
+           成就一亿技术人! 
+         </div> 
+         <div class="price-info">
+           拼手气红包
+          <span class="price">6.0元</span> 
+         </div> 
+        </div> 
+       </div> 
+       <div class="comment-operate-box"> 
+        <div class="comment-operate-l"> 
+         <span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span> 
+        </div> 
+        <div class="comment-operate-c">
+          &nbsp; 
+        </div> 
+        <div class="comment-operate-r"> 
+         <div class="comment-operate-item comment-reward"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentReward.png" alt="红包"> 
+          <span class="comment-operate-tip">添加红包</span> 
+         </div> 
+         <div class="comment-operate-item comment-emoticon"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentEmotionIcon.png" alt="表情包"> 
+          <span class="comment-operate-tip">插入表情</span> 
+          <div class="comment-emoticon-box comment-operate-isshow"> 
+           <div class="comment-emoticon-img-box"></div> 
+          </div> 
+         </div> 
+         <div class="comment-operate-item comment-code"> 
+          <img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentCodeIcon.png" alt="表情包"> 
+          <span class="comment-operate-tip">代码片</span> 
+          <div class="comment-code-box comment-operate-isshow"> 
+           <ul id="commentCode"> 
+            <li><a data-code="html">HTML/XML</a></li> 
+            <li><a data-code="objc">objective-c</a></li> 
+            <li><a data-code="ruby">Ruby</a></li> 
+            <li><a data-code="php">PHP</a></li> 
+            <li><a data-code="csharp">C</a></li> 
+            <li><a data-code="cpp">C++</a></li> 
+            <li><a data-code="javascript">JavaScript</a></li> 
+            <li><a data-code="python">Python</a></li> 
+            <li><a data-code="java">Java</a></li> 
+            <li><a data-code="css">CSS</a></li> 
+            <li><a data-code="sql">SQL</a></li> 
+            <li><a data-code="plain">其它</a></li> 
+           </ul> 
+          </div> 
+         </div> 
+         <div class="comment-operate-item"> 
+          <input type="hidden" id="comment_replyId" name="comment_replyId"> 
+          <input type="hidden" id="article_id" name="article_id" value="123216558"> 
+          <input type="hidden" id="comment_userId" name="comment_userId" value=""> 
+          <input type="hidden" id="commentId" name="commentId" value=""> 
+          <a data-report-click="{&quot;mod&quot;:&quot;1582594662_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4227&quot;,&quot;ab&quot;:&quot;new&quot;}"> <input type="submit" class="btn-comment btn-comment-input" value="评论"> </a> 
+         </div> 
+        </div> 
+       </div> 
+      </form> 
+     </div> 
+     <div class="comment-list-container"> 
+      <div class="comment-list-box comment-operate-item"> 
+      </div> 
+      <div id="lookFlodComment" class="look-flod-comment"> 
+       <span class="count"></span>&nbsp;条评论被折叠&nbsp;
+       <a class="look-more-flodcomment">查看</a> 
+      </div> 
+      <div class="opt-box text-center"> 
+       <div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div> 
+      </div> 
+     </div> 
+    </div> 
+    <div id="pcFlodCommentSideBox" class="pc-flodcomment-sidebox"> 
+     <div class="comment-fold-tit">
+      <span id="lookUnFlodComment" class="back"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowLeftWhite.png" alt=""></span>被折叠的&nbsp;
+      <span class="count"></span>&nbsp;条评论 
+      <a href="https://blogdev.blog.csdn.net/article/details/122245662" class="tip" target="_blank">为什么被折叠?</a> 
+      <a href="https://bbs.csdn.net/forums/FreeZone" class="park" target="_blank"> <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconPark.png">到【灌水乐园】发言</a> 
+     </div> 
+     <div class="comment-fold-content"></div> 
+     <div id="lookBadComment" class="look-bad-comment side-look-comment"> 
+      <a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a> 
+     </div> 
+    </div> 
+   </div> 
+   <div class="comment-rewarddialog-box"> 
+    <div class="form-box"> 
+     <div class="title-box">
+       添加红包 
+      <a class="btn-form-close"></a> 
+     </div> 
+     <form id="commentRewardForm"> 
+      <div class="ipt-box"> 
+       <label for="txtName">祝福语</label> 
+       <div class="ipt-btn-box"> 
+        <input type="text" name="name" id="txtName" autocomplete="off" maxlength="50"> 
+        <a class="btn-ipt btn-random"></a> 
+       </div> 
+       <p class="notice">请填写红包祝福语或标题</p> 
+      </div> 
+      <div class="ipt-box"> 
+       <label for="txtSendAmount">红包数量</label> 
+       <div class="ipt-txt-box"> 
+        <input type="text" name="sendAmount" maxlength="4" id="txtSendAmount" placeholder="请填写红包数量(最小10个)" autocomplete="off"> 
+        <span class="after-txt">个</span> 
+       </div> 
+       <p class="notice">红包个数最小为10个</p> 
+      </div> 
+      <div class="ipt-box"> 
+       <label for="txtMoney">红包总金额</label> 
+       <div class="ipt-txt-box error"> 
+        <input type="text" name="money" maxlength="5" id="txtMoney" placeholder="请填写总金额(最低5元)" autocomplete="off"> 
+        <span class="after-txt">元</span> 
+       </div> 
+       <p class="notice">红包金额最低5元</p> 
+      </div> 
+      <div class="balance-info-box"> 
+       <label>余额支付</label> 
+       <div class="balance-info">
+         当前余额
+        <span class="balance">3.43</span>元 
+        <a href="https://i.csdn.net/#/wallet/balance/recharge" class="link-charge" target="_blank">前往充值 &gt;</a> 
+       </div> 
+      </div> 
+      <div class="opt-box"> 
+       <div class="pay-info">
+         需支付：
+        <span class="price">10.00</span>元 
+       </div> 
+       <button type="button" class="ml-auto btn-cancel">取消</button> 
+       <button type="button" class="ml8 btn-submit" disabled="true">确定</button> 
+      </div> 
+     </form> 
+    </div> 
+   </div> 
+   <div class="rr-guide-box"> 
+    <div class="rr-first-box"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward02.png" alt=""> 
+     <button class="btn-guide-known next">下一步</button> 
+    </div> 
+    <div class="rr-second-box"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/guideRedReward03.png" alt=""> 
+     <button class="btn-guide-known known">知道了</button> 
+    </div> 
+   </div> 
+  </div> 
+  <div class="redEnvolope" id="redEnvolope"> 
+   <div class="env-box"> 
+    <div class="env-container"> 
+     <div class="pre-open" id="preOpen"> 
+      <div class="top"> 
+       <header> 
+        <img class="clearTpaErr" :src="redpacketAuthor.avatar" alt=""> 
+        <div class="author">
+         成就一亿技术人!
+        </div> 
+       </header> 
+       <div class="bot-icon"></div> 
+      </div> 
+      <footer> 
+       <div class="red-openbtn open-start"></div> 
+       <div class="tip">
+         领取后你会自动成为博主和红包主的粉丝 
+        <a class="rule" target="_blank">规则</a> 
+       </div> 
+      </footer> 
+     </div> 
+     <div class="opened" id="opened"> 
+      <div class="bot-icon"> 
+       <header> 
+        <a class="creatorUrl" href="" target="_blank"> <img class="clearTpaErr" src="https://profile-avatar.csdnimg.cn/default.jpg!2" alt=""> </a> 
+        <div class="author"> 
+         <div class="tt">
+          hope_wisdom
+         </div> 发出的红包 
+        </div> 
+       </header> 
+      </div> 
+      <div class="receive-box"> 
+       <header></header> 
+       <div class="receive-list"> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="close-btn"></div> 
+   </div> 
+  </div> 
+  <div class="pay-code"> 
+   <div class="pay-money">
+    实付
+    <span class="pay-money-span" data-nowprice="" data-oldprice="">元</span>
+   </div> 
+   <div class="content-blance">
+    <a class="blance-bt" href="javascript:;">使用余额支付</a>
+   </div> 
+   <div class="content-code"> 
+    <div id="payCode" data-id=""> 
+     <div class="renovate"> 
+      <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png"> 
+      <span>点击重新获取</span> 
+     </div> 
+    </div> 
+    <div class="pay-style">
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/weixin.png"></span>
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/zhifubao.png"></span>
+     <span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/jingdong.png"></span>
+     <span class="text">扫码支付</span>
+    </div> 
+   </div> 
+   <div class="bt-close"> 
+    <svg t="1567152543821" class="icon" viewbox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12"> 
+     <defs> 
+      <style type="text/css"></style> 
+     </defs> 
+     <path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path> 
+    </svg> 
+   </div> 
+   <div class="pay-balance"> 
+    <input type="radio" class="pay-code-radio" data-type="details"> 
+    <span class="span">钱包余额</span> 
+    <span class="balance" style="color:#FC5531;font-size:14px;">0</span> 
+    <div class="pay-code-tile"> 
+     <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-help.png" alt=""> 
+     <div class="pay-code-content"> 
+      <div class="span"> 
+       <p class="title">抵扣说明：</p> 
+       <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、付费专栏及课程。</p> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/recharge.png" alt=""><span>余额充值</span></a> 
+  </div> 
+  <div style="display:none;"> 
+   <img src="" onerror="setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){var test=&quot;\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74&quot;}},3000);"> 
+  </div> 
+  <div class="keyword-dec-box" id="keywordDecBox"></div>       
+  <link rel="stylesheet" href="https://g.csdnimg.cn/lib/cboxEditor/1.1.6/embed-editor.min.css"> 
+  <link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/atom-one-light.css">                  
+ </body>
+</html>

@@ -14,8 +14,10 @@
 #define SPEEDLOOP_KI                (0.008f)
 #define POSLOOP_KP                  (0.1f)
 #define POSLOOP_KI                  (0.1f)
-/*-----------------编码器类型选择-------------------*/
 
+/*---------------------电机本体+编码器(超龙电机)----------------------- */
+#define MOTOR_PAIRS          (5.0f)//电机极对数
+/*------------------------------------*/
 #define ABZ_ENCODER_LINES           (8192)
 #define ABZ_ENCODER_RESOLUTION      (0.0030679f)// 2*pi/4096*motor_pairs  
 #define ENCODER_TYPE_SENSORLESS              (0)
@@ -54,7 +56,5 @@
 #define SPEED_OUT_MAX       (12.0f) //速度环输出最大值
 #define SPEED_OUT_MIN       (-12.0f)
 
-/*---------------------电机本体(超龙电机)----------------------- */
-#define MOTOR_PAIRS          (5.0f)//电机极对数
 
 #endif
