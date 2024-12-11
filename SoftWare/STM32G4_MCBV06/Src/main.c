@@ -113,6 +113,7 @@ int main(void)
     {
       count = 0;
       HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);
+      USER_DEBUG_NORMAL(".\n");
     }
     
     HAL_Delay(1);

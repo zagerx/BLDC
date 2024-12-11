@@ -153,10 +153,17 @@ C_INCLUDES += -I../Common/data_structures
 C_SOURCES += $(wildcard ../Common/data_structures/heap.c)
 C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
 
-C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
+
+C_INCLUDES += -I../I2cBus 
+C_SOURCES += $(wildcard ../I2cBus/*.c)
+
 C_INCLUDES += -I../Hardware 
-C_SOURCES += $(wildcard ./Board/Board.c)
+C_SOURCES += $(wildcard ../Hardware/tca9539pwr.c)
+C_SOURCES += $(wildcard ../Hardware/ian226.c)
+C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
+
 C_INCLUDES += -I./Board
+C_SOURCES += $(wildcard ./Board/Board.c)
 
 C_INCLUDES += -I../Protocol
 C_SOURCES += $(wildcard ../Protocol/*.c)
@@ -171,7 +178,7 @@ C_INCLUDES += -I../Common/Fsm
 C_INCLUDES += -I../BLDCMotor 
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
 C_DEFS += -DMOTOR_OPENLOOP 
-# C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
+C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
 # C_DEFS += -DMOTOR_CURMENLOOP_DEBUG 
 # C_DEFS += -DMOTOR_CURMENLOOP_TEST
 # C_DEFS += -DMOTOR_SPEEDLOOP_DEBUG
@@ -258,6 +265,11 @@ clean:
 # dependencies
 #######################################
 -include $(wildcard $(BUILD_DIR)/*.d)
+
+
+dapdown:
+	openocd -f cmsis-dap.cfg -f stm32h7x.cfg -c "init" -c "reset halt" -c \
+	"flash write_image erase $(BUILD_DIR)/$(TARGET).hex" -c reset -c shutdown
 
 
 stlinkdown:

@@ -4,7 +4,8 @@
 #include "stdint.h"
 #include "math.h"
 
-#define TWO_PI 6.283185
+#define TWO_PI 6.283185F
+static float temp_curbase;
 
 static float wrapToTwoPiSimplified(float x)
 {
@@ -20,11 +21,20 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
     float delta, real_calc_speed;
  #if( MOTOR_OPENLOOP && !MOTOR_OPENLOOP_ENCODER)//CPU负担过重，只能在自开环条件下打开
     volatile static float test_temp[7];
-    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle);
+    float temp_self = hall->self_angle;
+    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), temp_self);
+    temp_curbase = temp_self;
     USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
 #endif
-    delta = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
 
+#if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))
+    // 使用霍尔进行校准
+    if (cur_sect == 6)
+    {
+        hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
+    }
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+    delta = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
     // Adjust delta based on direction and ensure it is within the range [-PI, PI]
     if (hall->dir > 0) {
         if (delta < 0.0f) {
@@ -35,21 +45,14 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
             delta -= TWO_PI;
         }
     }
-
     // Calculate the real speed, applying the direction and filtering
     real_calc_speed = 1 * (delta / (HALL_UPDATE_PERIOD * hall->count));
-    hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter), real_calc_speed);
- 
-    // Update the angle with the appropriate offset
-    if (cur_sect == 6)
-    {
-        hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
-    }
+    hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter), real_calc_speed); 
+#endif
     // Update the last section and reset the count
     hall->last_section = cur_sect;
     hall->count = 0;
 }
-
 uint8_t hall_update(void *pthis)
 {
     hall_sensor_t *hall;
@@ -127,11 +130,8 @@ uint8_t hall_update(void *pthis)
             hall->count++;
         }
         break;
-    case 0:
-        hall->last_section = cur_section;
-        hall->realcacle_angle = hall->hall_baseBuff[cur_section];
-        break;
     default:
+        hall->last_section = cur_section;
         break;
     }
     return 0;
@@ -139,61 +139,53 @@ uint8_t hall_update(void *pthis)
 
 void hall_cale(void *pthis)
 {
-    int32_t  delt_cnt;
+    static volatile int32_t  delt_cnt;
     uint32_t cur_cnt;
     hall_sensor_t *hall;
     hall = (hall_sensor_t *)pthis;
 
     #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))
-        cur_cnt = hall->get_abzcount();
-        // hall->realcacle_angle = wrapToTwoPiSimplified(cur_cnt*(ABZ_ENCODER_RESOLUTION));
-        if (hall->dir == 1)
+        delt_cnt = hall->get_abzcount()-ABZ_ENCODER_LINES_HALF;
+        hall->set_abzcount(ABZ_ENCODER_LINES_HALF);
+
+        hall->realcacle_angle += ((delt_cnt)*ABZ_ENCODER_RESOLUTION);
+        hall->realcacle_angle = fmodf(hall->realcacle_angle,TWO_PI);
+        if (hall->realcacle_angle<0.0f)
         {
-            delt_cnt = cur_cnt - hall->last_abzcout;        
-            if (delt_cnt<0)
-            {
-                delt_cnt += ABZ_ENCODER_LINES;
-            }
-            hall->realcacle_angle += delt_cnt*(ABZ_ENCODER_RESOLUTION);
-        }else if(hall->dir == -1)
-        {
-            delt_cnt = hall->last_abzcout - cur_cnt;        
-            if (delt_cnt<0)
-            {
-                delt_cnt += ABZ_ENCODER_LINES;
-            }
-            hall->realcacle_angle -= delt_cnt*(ABZ_ENCODER_RESOLUTION);    
+            hall->realcacle_angle += TWO_PI;
         }
-        hall->last_abzcout = cur_cnt;
+        // hall->realcacle_angle = hall->realcacle_angle;
+        hall->angle = hall->realcacle_angle;
+        hall->speed = hall->realcacle_speed;  
     #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
         hall->realcacle_angle += hall->realcacle_speed * HALL_UPDATE_PERIOD;
-    #endif
+        if (hall->realcacle_angle > 6.2831852f)
+        {
+            hall->realcacle_angle -= 6.2831852f;
+        }
+        if (hall->realcacle_angle < 0.0f)
+        {
+            hall->realcacle_angle += 6.2831852f;
+        }
+        float delt_theta;
+        delt_theta = sinf(hall->realcacle_angle)*cosf(hall->hat_angle) - cosf(hall->realcacle_angle)*sinf(hall->hat_angle);
+        hall->pll_sum += delt_theta;
+        float omega;
+        omega =  PLL_KP*delt_theta + PLL_KI*hall->pll_sum;
+        hall->hat_angle += (omega*OMEGTOTHETA);
+        if (hall->hat_angle > 6.2831852f)
+        {
+            hall->hat_angle -= 6.2831852f;
+        }
+        if (hall->hat_angle < 0.0f)
+        {
+            hall->hat_angle += 6.2831852f;
+        }
+        hall->hat_speed = omega;
+        hall->angle = hall->hat_angle;
+        hall->speed = hall->realcacle_speed;
 
-    if (hall->realcacle_angle > 6.2831852f)
-    {
-        hall->realcacle_angle -= 6.2831852f;
-    }
-    if (hall->realcacle_angle < 0.0f)
-    {
-        hall->realcacle_angle += 6.2831852f;
-    }
-    float delt_theta;
-    delt_theta = sinf(hall->realcacle_angle)*cosf(hall->hat_angle) - cosf(hall->realcacle_angle)*sinf(hall->hat_angle);
-    hall->pll_sum += delt_theta;
-    float omega;
-    omega =  PLL_KP*delt_theta + PLL_KI*hall->pll_sum;
-    hall->hat_angle += (omega*OMEGTOTHETA);
-    if (hall->hat_angle > 6.2831852f)
-    {
-        hall->hat_angle -= 6.2831852f;
-    }
-    if (hall->hat_angle < 0.0f)
-    {
-        hall->hat_angle += 6.2831852f;
-    }
-    hall->hat_speed = omega;
-    hall->angle = hall->hat_angle;
-    hall->speed = hall->realcacle_speed;
+    #endif
 }
 
 void hall_get_initpos(void *pthis)
@@ -232,8 +224,11 @@ void hall_init(void *this)
     USER_DEBUG_NORMAL("hall init\n");
     hall_sensor_t *hall;
     hall = (hall_sensor_t*)this;
-
-    hall->set_abzcount(0);
+    #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
+    {
+      hall->set_abzcount(2500);
+    }
+    #endif
     hall->realcacle_speed = 0.0f;
     hall->count = 0.0f;
     hall->speed = 0.0f;

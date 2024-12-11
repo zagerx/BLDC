@@ -45,7 +45,7 @@ void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = _ENCODERLINS;
+  htim3.Init.Period = _ENCODERLINS-1;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
@@ -394,7 +394,7 @@ void tim_set_pwm(float _a,float _b,float _c)
   __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,b);
   __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,c);
 
-  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,30);
+  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,_ARR-30);
 }
 #include "debuglog.h"
 void tim_pwm_enable(void)

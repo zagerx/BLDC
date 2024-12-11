@@ -2,9 +2,31 @@
 #include "initmodule.h"
 #include "debuglog.h"
 /************************传感器*****************************/
+#include "ina226.h"
+#include "tac9539pwr.h"
+#include "i2c_device.h"
+#include "i2c_bus.h"
+#include "i2c.h"
+static i2c_bus_t i2c_bus1 = {
+    .init = i2c_bus1_init,
+    .read = i2c_bus1_read,
+    .write = i2c_bus1_write,
+};
+static i2c_device_t ina226 = {
+    .bus = &i2c_bus1,
+    .init = dev_ina226_init,
+};
 
+static i2c_device_t dev_tca9538 = {
+    .bus = &i2c_bus1,
+    .init = tca9539pwr_init,
+};
 void user_board_init(void)
 {
+    i2c_bus1.init();
+    // i2c_device_init(&ina226);
+    // i2c_device_init(&dev_tca9538);
+    USER_DEBUG_NORMAL("board_init finish\n"); 
 }
 void board_deinit(void)
 {
@@ -57,27 +79,27 @@ extern motor_t motor1;
 #include "adc.h"
 static void _convert_current(uint16_t* adc_buf,float *i_abc)
 {
-    i_abc[2]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[0] - 2120) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE); 
-    i_abc[1]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[1] - 2120) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE);          //shunt_conductance_ = 1/0.001采样电阻;
-    i_abc[0]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[2] - 2130) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE);
+    i_abc[0]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[0] - 2020) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE); 
+    i_abc[1]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[1] - 2040) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE);          //shunt_conductance_ = 1/0.001采样电阻;
+    i_abc[2]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[2] - 2060) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE);
 }
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {    
-    static unsigned short adc_vale[3];
+    unsigned short adc_vale[3];
     float iabc[3]; 
     {
-        adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-        adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
-        adc_vale[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
+        adc_vale[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
+        adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
+        adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
         _convert_current((uint16_t*)adc_vale,iabc);
 
-        iabc[0] = -iabc[0];
-        iabc[1] = -iabc[1];
-        iabc[2] = -iabc[2];
+        // iabc[2] = iabc[0];
+        // iabc[1] = iabc[1];
+        // iabc[0] = iabc[2];
         // __cycleof__("mc_hightfreq_task") {
             mc_hightfreq_task(iabc,&motor1);
-        // }            
+        // }
     }
 }
 
@@ -102,8 +124,8 @@ void motor_read(void *pdata,uint16_t datalen)
 static uint8_t hall_get_sectionnumb(void)
 {
     uint8_t u,v,w;
-    u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
-    v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
+    v = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
+    u = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
     w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
     return u | (w<<1) | (v<<2);
 }
@@ -131,5 +153,10 @@ void motor_func_register(motor_t *motor)
     // motor->bsptransmit = _bsp_protransmit;//TODO
     motor->write = motor_write;
     motor->read = motor_read;
+}
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
+    motor1.encoder_handle.update(&(motor1.encoder_handle.sensor));
 }
 

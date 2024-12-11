@@ -3,8 +3,8 @@
 
 /*--------------------电控软件---------------------*/
 //开环部分
-#define OPENLOOP_DEBUG_TOTAL_Te             (0.04f)
-#define OPENLOOP_DEBUG_STEP_THETA           (0.0004f)
+#define OPENLOOP_DEBUG_TOTAL_Te             (-0.04f)
+#define OPENLOOP_DEBUG_STEP_THETA           (-0.00008f)
 //闭环部分
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期
 #define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期
@@ -22,6 +22,7 @@
 #define ENCODER_TYPE                         ENCODER_TYPE_HALL_ABZ
 
 #if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
+    #define ABZ_ENCODER_LINES_HALF           (4096)
     #define ABZ_ENCODER_LINES           (8192)
     #define ABZ_ENCODER_RESOLUTION      (0.023f)// 2*pi/4096*motor_pairs  
     #define HALL_UPDATE_PERIOD   (0.0001f)

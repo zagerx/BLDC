@@ -103,7 +103,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_Delay(100);
   USER_DEBUG_NORMAL("H7 hello word\r\n");
-  
+  user_board_init();
 
   /* USER CODE END 2 */
 
@@ -115,7 +115,7 @@ int main(void)
     HAL_GPIO_TogglePin(WATCH_DOG_IN_GPIO_Port,WATCH_DOG_IN_Pin);
     if (count++ > 500)
     {
-      // USER_DEBUG_NORMAL(".\r\n");    
+      USER_DEBUG_NORMAL(".\r\n");    
       count = 0;
     }    
     HAL_Delay(1);

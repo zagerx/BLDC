@@ -17,6 +17,7 @@
 #define OUTPUT_PORT_REGISTER_1    (0x03)
 #define POLARITY_INVERSION_REGISTER_0 (0x04)
 #define POLARITY_INVERSION_REGISTER_1 (0x05)
+
 #define CONFIGURATION_REGISTER_0  (0x06)
 #define CONFIGURATION_REGISTER_1  (0x07)
 // define for input port pos
@@ -35,7 +36,7 @@
 
 void tca9539pwr_init(i2c_bus_t *bus)
 {
-  HAL_GPIO_WritePin(GPIO_PORT_RESET, GPIO_PIN_RESET, 1); 
+  // HAL_GPIO_WritePin(GPIO_PORT_RESET, GPIO_PIN_RESET, 1); 
   //config port0 as output
   uint8_t u1Buf[2] = {0};
   u1Buf[0] = 0x00;
@@ -43,6 +44,7 @@ void tca9539pwr_init(i2c_bus_t *bus)
   // write value
   for (unsigned char i = 0; i < 20; i++)
   {
+    USER_DEBUG_NORMAL("SSSS\n");
     u1Buf[0] = 1<<1;
     bus->write(TCA9539_I2C_ADDRESS_WRITE,CONFIGURATION_REGISTER_1,u1Buf,1);    
     HAL_Delay(500);
@@ -51,3 +53,10 @@ void tca9539pwr_init(i2c_bus_t *bus)
     HAL_Delay(500);
   }
 }
+
+void tca9539pwr_read(i2c_bus_t *bus)
+{
+  
+}
+
+

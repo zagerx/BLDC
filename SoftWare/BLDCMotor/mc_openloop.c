@@ -27,7 +27,7 @@ unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
     static float theta = 0.0f;
 
     /*读取编码器角度值*/
-    motor->encoder_handle.self_theta = theta;
+    // motor->encoder_handle.self_theta = theta;
     mc_encoder_read(&(motor->encoder_handle)); 
     /*反PARK CLARK变换*/
     i_abc.a = iabc[0];
@@ -41,7 +41,10 @@ unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
     i_dq.q = 0.00f; 
 
     /*park变换*/
-    i_ab = _2r_2s(i_dq, theta);
+    float temp;
+    temp = fmodf(theta*5.0f,6.28f);
+    motor->encoder_handle.self_theta = temp;
+    i_ab = _2r_2s(i_dq, temp);
     /*SVPWM*/
     duty = SVM(i_ab.alpha, i_ab.beta);
     motor->setpwm(duty._a, duty._b, duty._c);
@@ -129,6 +132,7 @@ static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
     case RUN:
         mc_encoder_read(&(motor->encoder_handle));
         theta = motor->encoder_handle.ele_theta;
+        theta += 1.57F;
         i_abc.a = iabc[0];i_abc.b = iabc[1];i_abc.c = iabc[2];
         _3s_2s(i_abc, &i_ab);
         _2s_2r(i_ab, theta, &i_dq);

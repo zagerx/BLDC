@@ -358,7 +358,7 @@ void tim_abzencoder_enable(void)
 uint32_t tim_abzencoder_getcount(void)
 {
   uint32_t cnt;
-  cnt = 4096 - __HAL_TIM_GET_COUNTER(&htim4);
+  cnt = __HAL_TIM_GET_COUNTER(&htim4);
   return cnt;
 }
 void tim_abzencoder_setcount(uint32_t cnt)

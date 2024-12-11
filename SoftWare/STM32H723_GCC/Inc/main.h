@@ -57,20 +57,23 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define _ENCODERLINS 8192
+#define _ENCODERLINS 5000
 #define _ARR 13750
 #define LED_01_Pin GPIO_PIN_3
 #define LED_01_GPIO_Port GPIOE
-#define HALL_V1_Pin GPIO_PIN_14
-#define HALL_V1_GPIO_Port GPIOC
-#define HALL_U1_Pin GPIO_PIN_15
+#define HALL_U1_Pin GPIO_PIN_14
 #define HALL_U1_GPIO_Port GPIOC
+#define HALL_U1_EXTI_IRQn EXTI15_10_IRQn
+#define HALL_V1_Pin GPIO_PIN_15
+#define HALL_V1_GPIO_Port GPIOC
+#define HALL_V1_EXTI_IRQn EXTI15_10_IRQn
 #define WATCH_DOG_IN_Pin GPIO_PIN_7
 #define WATCH_DOG_IN_GPIO_Port GPIOE
 #define VCC3V3_OUT_EN_Pin GPIO_PIN_15
 #define VCC3V3_OUT_EN_GPIO_Port GPIOE
 #define HALL_W1_Pin GPIO_PIN_12
 #define HALL_W1_GPIO_Port GPIOB
+#define HALL_W1_EXTI_IRQn EXTI15_10_IRQn
 #define MAIN_POWER_OFF_Pin GPIO_PIN_11
 #define MAIN_POWER_OFF_GPIO_Port GPIOD
 #define VCC5V_OUT_EN_Pin GPIO_PIN_3

@@ -121,8 +121,6 @@ void MX_ADC2_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN ADC2_Init 2 */
-    HAL_ADCEx_Calibration_Start(&hadc2,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
-    HAL_ADCEx_InjectedStart_IT(&hadc2); 
   /* USER CODE END ADC2_Init 2 */
 
 }
@@ -231,6 +229,5 @@ void adc_start(void)
 void adc_stop(void)
 {
   HAL_ADCEx_InjectedStop_IT(&hadc2);
-
 }
 /* USER CODE END 1 */

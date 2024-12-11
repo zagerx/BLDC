@@ -3,8 +3,8 @@
 
 /*--------------------电控软件---------------------*/
 //开环部分
-#define OPENLOOP_DEBUG_TOTAL_Te             (0.03f)
-#define OPENLOOP_DEBUG_STEP_THETA           (-0.001f)
+#define OPENLOOP_DEBUG_TOTAL_Te             (-0.04f)
+#define OPENLOOP_DEBUG_STEP_THETA           (-0.0004f)
 //闭环部分
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期
 #define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期
@@ -18,8 +18,9 @@
 /*---------------------电机本体+编码器(超龙电机)----------------------- */
 #define MOTOR_PAIRS          (5.0f)//电机极对数
 /*------------------------------------*/
-#define ABZ_ENCODER_LINES           (8192)
-#define ABZ_ENCODER_RESOLUTION      (0.0030679f)// 2*pi/4096*motor_pairs  
+#define ABZ_ENCODER_LINES_HALF           (2500)
+#define ABZ_ENCODER_LINES           (5000)
+#define ABZ_ENCODER_RESOLUTION      (0.00628f)// 2*pi/5000  
 #define ENCODER_TYPE_SENSORLESS              (0)
 #define ENCODER_TYPE_ABS                     (1)
 #define ENCODER_TYPE_HALL                    (2)
@@ -28,19 +29,40 @@
 
 #if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
     #define HALL_UPDATE_PERIOD   (0.0001f)
-    #define HALL_POSITIVE_OFFSET (+0.0f)
-    #define HALL_NEGATIVE_OFFSET (+0.14f)
+    #define HALL_POSITIVE_OFFSET (+0.0f+1.0f)
+    #define HALL_NEGATIVE_OFFSET (3.18f-1.0f)
     #define PLL_KP               (80.0f)
     #define PLL_KI               (0.02f)
     #define OMEGTOTHETA          (CURRMENT_PERIOD)         
 
     /*HALL基准角度 D轴强拖 0.1f*/
-    #define SCETION_6_BASEANGLE   (3.686f)
-    #define SCETION_4_BASEANGLE   (4.724f)
-    #define SCETION_5_BASEANGLE   (5.774f)
-    #define SCETION_1_BASEANGLE   (0.539f)
-    #define SCETION_3_BASEANGLE   (1.591f)
-    #define SCETION_2_BASEANGLE   (2.645f)   
+    // #define SCETION_6_BASEANGLE   (3.496f)
+    // #define SCETION_4_BASEANGLE   (4.420f)
+    // #define SCETION_5_BASEANGLE   (5.540f)
+    // #define SCETION_1_BASEANGLE   (0.363f)
+    // #define SCETION_3_BASEANGLE   (1.284f)
+    // #define SCETION_2_BASEANGLE   (2.397f)  
+
+    // #define SCETION_6_BASEANGLE   (4.036f)
+    // #define SCETION_4_BASEANGLE   (5.023f)
+    // #define SCETION_5_BASEANGLE   (6.050f)
+    // #define SCETION_1_BASEANGLE   (0.898f)
+    // #define SCETION_3_BASEANGLE   (1.885f)
+    // #define SCETION_2_BASEANGLE   (2.914f)      
+
+    // #define SCETION_6_BASEANGLE   (0.615f)
+    // #define SCETION_4_BASEANGLE   (1.610f)
+    // #define SCETION_5_BASEANGLE   (2.664f)
+    // #define SCETION_1_BASEANGLE   (3.757f)
+    // #define SCETION_3_BASEANGLE   (4.750f)
+    // #define SCETION_2_BASEANGLE   (5.802f)  
+
+    #define SCETION_6_BASEANGLE   (3.610f)
+    #define SCETION_4_BASEANGLE   (4.703f)
+    #define SCETION_5_BASEANGLE   (5.763f)
+    #define SCETION_1_BASEANGLE   (0.473f)
+    #define SCETION_3_BASEANGLE   (1.564f)
+    #define SCETION_2_BASEANGLE   (2.617f)     
 #endif
 
 /*----------------------硬件相关----------------------*/
@@ -56,5 +78,6 @@
 #define SPEED_OUT_MAX       (12.0f) //速度环输出最大值
 #define SPEED_OUT_MIN       (-12.0f)
 
+void user_board_init(void);
 
 #endif

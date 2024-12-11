@@ -38,7 +38,6 @@
 
 static fsm_cb_t MotorFsm;
 motor_t motor1 = {0};
-extern void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen);
 
 static void MotorFsm_Init(void)
 {

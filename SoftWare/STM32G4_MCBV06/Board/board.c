@@ -103,7 +103,7 @@ static uint8_t hall_get_sectionnumb(void)
     u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
     v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
     w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
-    return u | (w<<1) | (v<<2);
+    return v | (u<<1) | (w<<2);
 }
 static uint32_t hall_gettick()
 {
@@ -129,3 +129,8 @@ void motor_func_register(motor_t *motor)
     motor->read = motor_read;
 }
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
+    // motor1.encoder_handle.update(&(motor1.encoder_handle.sensor));
+}
