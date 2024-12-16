@@ -15,7 +15,9 @@ void mc_encoder_read(mc_encoder_t *encoder)
 	#endif
 		if (encoder->runflag)
 		{
-			encoder->update(&(encoder->sensor));
+			#ifdef ENCODER_HALL_NOIRQ
+				encoder->update(&(encoder->sensor));//MCB_V06
+			#endif
 			encoder->cacle(&(encoder->sensor));
 			encoder->ele_theta = (encoder->sensor.angle);
 			encoder->speed = encoder->sensor.speed;

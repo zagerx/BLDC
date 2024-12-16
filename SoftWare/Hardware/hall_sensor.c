@@ -3,19 +3,15 @@
 #include "board.h"
 #include "stdint.h"
 #include "math.h"
-
-#define TWO_PI 6.283185F
-static float temp_curbase;
-
-static float wrapToTwoPiSimplified(float x)
-{
-    float temp = fmod(x, TWO_PI);
-    if (temp < 0) {
-        temp += TWO_PI;
-    }
-    return temp;
-}
-
+#include "string.h"
+#include <stdarg.h>
+/*==========================================================================================
+ * @brief        更新基准角度
+ * @FuncName     
+ * @param        hall 
+ * @param        cur_sect 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
 {
     float delta, real_calc_speed;
@@ -23,6 +19,7 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
     volatile static float test_temp[7];
     float temp_self = hall->self_angle;
     test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), temp_self);
+    static float temp_curbase;
     temp_curbase = temp_self;
     USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
 #endif
@@ -35,24 +32,28 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
     }
 #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
     delta = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
-    // Adjust delta based on direction and ensure it is within the range [-PI, PI]
     if (hall->dir > 0) {
         if (delta < 0.0f) {
-            delta += TWO_PI;
+            delta += 6.283185f;
         }
     } else {
         if (delta > 0.0f) {
-            delta -= TWO_PI;
+            delta -= 6.283185f;
         }
     }
-    // Calculate the real speed, applying the direction and filtering
     real_calc_speed = 1 * (delta / (HALL_UPDATE_PERIOD * hall->count));
     hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter), real_calc_speed); 
-#endif
-    // Update the last section and reset the count
-    hall->last_section = cur_sect;
     hall->count = 0;
+#endif
+    hall->last_section = cur_sect;
 }
+/*==========================================================================================
+ * @brief        更新HALL扇区和方向
+ * @FuncName     
+ * @param        pthis 
+ * @return       uint8_t 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 uint8_t hall_update(void *pthis)
 {
     hall_sensor_t *hall;
@@ -67,8 +68,10 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 2){
             hall->dir = -1;
             _update_base_dir_angle(hall,cur_section);
-        }else{
+        }else if (cur_section == 6){
             hall->count++;
+        }else{
+            goto HALL_ERROR;
         }
         break;
 
@@ -79,8 +82,10 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 6){
             hall->dir = -1;
             _update_base_dir_angle(hall,cur_section);
-        }else{
+        }else if (cur_section == 4){
             hall->count++;
+        }else{
+            goto HALL_ERROR;
         }
         break;
 
@@ -92,8 +97,10 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 4){
             hall->dir = -1;
             _update_base_dir_angle(hall,cur_section);
-        }else{
+        }else if (cur_section == 5){
             hall->count++;
+        }else{
+            goto HALL_ERROR;
         }
         break;
 
@@ -104,8 +111,10 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 5){
             hall->dir = -1;
             _update_base_dir_angle(hall,cur_section);
-        }else{
+        }else if (cur_section == 1){
             hall->count++;
+        }else{
+            goto HALL_ERROR;
         }
         break;
     case 3:
@@ -115,8 +124,10 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 1){
             hall->dir = -1;
             _update_base_dir_angle(hall,cur_section);
-        }else{
+        }else if (cur_section == 3){
             hall->count++;
+        }else{
+            goto HALL_ERROR;
         }
         break;
     case 2:
@@ -126,8 +137,10 @@ uint8_t hall_update(void *pthis)
         }else if (cur_section == 3){
             hall->dir = -1;
             _update_base_dir_angle(hall,cur_section);
-        }else{
+        }else if (cur_section == 2){
             hall->count++;
+        }else{
+            goto HALL_ERROR;
         }
         break;
     default:
@@ -135,8 +148,17 @@ uint8_t hall_update(void *pthis)
         break;
     }
     return 0;
-}
 
+HALL_ERROR:
+    USER_DEBUG_NORMAL("HALL err\n");  
+    hall->hallerr_count++;  
+}
+/*==========================================================================================
+ * @brief        计算Hall角度
+ * @FuncName     
+ * @param        pthis 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 void hall_cale(void *pthis)
 {
     static volatile int32_t  delt_cnt;
@@ -144,20 +166,16 @@ void hall_cale(void *pthis)
     hall_sensor_t *hall;
     hall = (hall_sensor_t *)pthis;
 
-    #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))
+    #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))//ABZ+HALL类传感器
         delt_cnt = hall->get_abzcount()-ABZ_ENCODER_LINES_HALF;
         hall->set_abzcount(ABZ_ENCODER_LINES_HALF);
 
         hall->realcacle_angle += ((delt_cnt)*ABZ_ENCODER_RESOLUTION);
-        hall->realcacle_angle = fmodf(hall->realcacle_angle,TWO_PI);
-        if (hall->realcacle_angle<0.0f)
-        {
-            hall->realcacle_angle += TWO_PI;
-        }
-        // hall->realcacle_angle = hall->realcacle_angle;
+        hall->realcacle_angle = fmodf(hall->realcacle_angle,6.283185f);
+        hall->realcacle_angle += (hall->realcacle_angle < 0.0f) ? 6.283185f : 0.0f;
         hall->angle = hall->realcacle_angle;
-        hall->speed = hall->realcacle_speed;  
-    #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+        hall->speed = hall->realcacle_speed;
+    #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)//HALL类传感器
         hall->realcacle_angle += hall->realcacle_speed * HALL_UPDATE_PERIOD;
         if (hall->realcacle_angle > 6.2831852f)
         {
@@ -195,11 +213,17 @@ void hall_get_initpos(void *pthis)
     uint8_t cur_sect = hall->getsection();
     hall->last_section = cur_sect;
     hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + 1.0471f;
+    hall->cairlbe_angle = hall->hall_baseBuff[cur_sect]+2.094f;
+    hall->cairlbe_section = cur_sect;
 }
 
-
-#include "string.h"
-#include <stdarg.h>
+/*==========================================================================================
+ * @brief 
+ * @FuncName     
+ * @param        hall 
+ * @param        ... 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 void hall_register(hall_sensor_t *hall,...) 
 {
     va_list args;
@@ -218,7 +242,12 @@ void hall_register(hall_sensor_t *hall,...)
     #endif
     va_end(args);
 }
- 
+ /*==========================================================================================
+  * @brief 
+  * @FuncName     
+  * @param        this 
+  * @version      0.1
+ --------------------------------------------------------------------------------------------*/
 void hall_init(void *this)
 {
     USER_DEBUG_NORMAL("hall init\n");
@@ -226,11 +255,12 @@ void hall_init(void *this)
     hall = (hall_sensor_t*)this;
     #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
     {
-      hall->set_abzcount(2500);
+      hall->set_abzcount(ABZ_ENCODER_LINES_HALF);
     }
     #endif
     hall->realcacle_speed = 0.0f;
     hall->count = 0.0f;
+    hall->hallerr_count = 0;
     hall->speed = 0.0f;
     hall->hall_baseBuff[0] = 0.0000f;
     {
@@ -250,7 +280,12 @@ void hall_init(void *this)
     lowfilter_init(&(hall->speedfilter), 3.0F);
     lowfilter_init(&(hall->pll_speedfilter),95.0f);
 }
-
+/*==========================================================================================
+ * @brief 
+ * @FuncName     
+ * @param        this 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 void hall_deinit(void *this)
 {
     hall_sensor_t *sensor;
@@ -258,21 +293,16 @@ void hall_deinit(void *this)
     sensor->last_section = 0;
     sensor->dir = 0;
     sensor->count = 0;
+    sensor->hallerr_count = 0;
     for (int i = 0; i < 7; i++) {
         sensor->hall_baseBuff[i] = 0.0f;
     }
-    sensor->last_tick = 0;
     sensor->speed = 0.0f;
     sensor->angle = 0.0f;
     sensor->realcacle_angle = 0.0f;
     sensor->realcacle_speed = 0.0f;
     sensor->self_angle = 0.0f;
- 
-#if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
-    sensor->cur_abzcout = 0;
-    sensor->last_abzcout = 0;
-#endif
- 
+  
     sensor->hat_angle = 0.0f;
     sensor->hat_speed = 0.0f;
     sensor->pll_sum = 0.0f;

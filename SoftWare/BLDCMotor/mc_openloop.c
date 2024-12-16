@@ -96,6 +96,8 @@ static void mc_self_openlooptest(float *iabc,motor_t* motor)
             cnt = 0;
             state = RUNING;
         }
+        motor->encoder_handle.get_firstpos(&(motor->encoder_handle.sensor));
+
     }
     break;
 

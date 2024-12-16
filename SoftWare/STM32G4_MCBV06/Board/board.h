@@ -3,8 +3,8 @@
 
 /*--------------------电控软件---------------------*/
 //开环部分
-#define OPENLOOP_DEBUG_TOTAL_Te             (-0.04f)
-#define OPENLOOP_DEBUG_STEP_THETA           (-0.00008f)
+#define OPENLOOP_DEBUG_TOTAL_Te             (0.06f)
+#define OPENLOOP_DEBUG_STEP_THETA           (0.00002f)
 //闭环部分
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期
 #define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期
@@ -15,6 +15,9 @@
 #define POSLOOP_KP                  (0.1f)
 #define POSLOOP_KI                  (0.1f)
 /*-----------------编码器类型选择-------------------*/
+
+#define ENCODER_HALL_NOIRQ                   (1)//hall引脚没有开启中断功能 
+
 #define ENCODER_TYPE_SENSORLESS              (0)
 #define ENCODER_TYPE_ABS                     (1)
 #define ENCODER_TYPE_HALL                    (2)
@@ -24,10 +27,10 @@
 #if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
     #define ABZ_ENCODER_LINES_HALF           (4096)
     #define ABZ_ENCODER_LINES           (8192)
-    #define ABZ_ENCODER_RESOLUTION      (0.023f)// 2*pi/4096*motor_pairs  
+    #define ABZ_ENCODER_RESOLUTION      (-0.023f)// 2*pi/4096*motor_pairs  
     #define HALL_UPDATE_PERIOD   (0.0001f)
-    #define HALL_POSITIVE_OFFSET (-0.3f)
-    #define HALL_NEGATIVE_OFFSET (-0.2f)
+    #define HALL_POSITIVE_OFFSET (0.0f)
+    #define HALL_NEGATIVE_OFFSET (0.8943951f)
     #define PLL_KP               (10.0f)
     #define PLL_KI               (0.02f)
     #define OMEGTOTHETA          (CURRMENT_PERIOD)         
