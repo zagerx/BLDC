@@ -95,9 +95,10 @@ static void mc_self_openlooptest(float *iabc,motor_t* motor)
         {
             cnt = 0;
             state = RUNING;
+            motor->encoder_handle.init((motor->encoder_handle.sensor));
+            motor->encoder_handle.get_firstpos((motor->encoder_handle.sensor));
+            motor->encoder_handle.set_calib_points((motor->encoder_handle.sensor));
         }
-        motor->encoder_handle.get_firstpos(&(motor->encoder_handle.sensor));
-
     }
     break;
 
@@ -128,9 +129,14 @@ static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
         IDLE=0,
         RUN
     };
-    static uint16_t state = RUN;
+    static uint16_t state = IDLE;
     switch (state)
     {
+    case IDLE:
+        #ifdef MCB_V06
+            motor->encoder_handle.set_calib_points((motor->encoder_handle.sensor));
+        #endif
+        state = RUN;
     case RUN:
         mc_encoder_read(&(motor->encoder_handle));
         theta = motor->encoder_handle.ele_theta;

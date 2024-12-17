@@ -19,17 +19,28 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
     volatile static float test_temp[7];
     float temp_self = hall->self_angle;
     test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), temp_self);
-    static float temp_curbase;
-    temp_curbase = temp_self;
+    static float temp_curbase,temp_base_buf;
+    static uint8_t temp_cursect;
+    temp_curbase = test_temp[cur_sect];
+    temp_base_buf = hall->hall_baseBuff[cur_sect];
+    temp_cursect = cur_sect;
     USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, test_temp[cur_sect]);
 #endif
 
 #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))
-    // 使用霍尔进行校准
-    if (cur_sect == 6)
-    {
-        hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
-    }
+    #ifdef MCB_V06
+        // 使用霍尔进行校准
+        if (cur_sect == hall->cairlbe_section)
+        {
+            // hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
+            hall->realcacle_angle = hall->cairlbe_angle + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
+        }
+    #else
+        if (cur_sect == 6)
+        {
+            hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
+        }
+    #endif
 #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
     delta = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
     if (hall->dir > 0) {
@@ -43,8 +54,8 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
     }
     real_calc_speed = 1 * (delta / (HALL_UPDATE_PERIOD * hall->count));
     hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter), real_calc_speed); 
-    hall->count = 0;
 #endif
+    hall->count = 0;
     hall->last_section = cur_sect;
 }
 /*==========================================================================================
@@ -213,7 +224,13 @@ void hall_get_initpos(void *pthis)
     uint8_t cur_sect = hall->getsection();
     hall->last_section = cur_sect;
     hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + 1.0471f;
-    hall->cairlbe_angle = hall->hall_baseBuff[cur_sect]+2.094f;
+}
+void hall_set_calib_points(void *pthis)
+{
+    hall_sensor_t *hall;
+    hall = (hall_sensor_t*)pthis;
+    uint8_t cur_sect = hall->getsection();
+    hall->cairlbe_angle = 0.0f;
     hall->cairlbe_section = cur_sect;
 }
 

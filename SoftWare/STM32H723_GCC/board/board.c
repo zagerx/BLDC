@@ -135,16 +135,21 @@ static uint32_t hall_gettick()
 }
 void motor_func_register(motor_t *motor)
 {
-    hall_register((void*)&(motor->encoder_handle.sensor),hall_get_sectionnumb,\
+    static hall_sensor_t hall_sensor;
+    hall_register((void*)&(hall_sensor),hall_get_sectionnumb,\
                                                          hall_gettick,\
                                                          tim_abzencoder_getcount,\
                                                          tim_abzencoder_setcount);
+
+    motor->encoder_handle.sensor = &(hall_sensor);
+
     motor->encoder_handle.init = hall_init;
     motor->encoder_handle.deinit = hall_deinit;
 
     motor->encoder_handle.update = hall_update;
     motor->encoder_handle.cacle = hall_cale;
     motor->encoder_handle.get_firstpos = hall_get_initpos;
+    motor->encoder_handle.set_calib_points = hall_set_calib_points;
 
     motor->enable = motor_enable;
     motor->disable = motor_disable;
@@ -157,6 +162,6 @@ void motor_func_register(motor_t *motor)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
-    motor1.encoder_handle.update(&(motor1.encoder_handle.sensor));
+    motor1.encoder_handle.update((motor1.encoder_handle.sensor));
 }
 

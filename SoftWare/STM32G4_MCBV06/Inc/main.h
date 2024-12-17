@@ -72,10 +72,8 @@ void Error_Handler(void);
 #define LED01_GPIO_Port GPIOE
 #define HALL_V1_Pin GPIO_PIN_14
 #define HALL_V1_GPIO_Port GPIOE
-#define HALL_V1_EXTI_IRQn EXTI15_10_IRQn
 #define HALL_W1_Pin GPIO_PIN_15
 #define HALL_W1_GPIO_Port GPIOE
-#define HALL_W1_EXTI_IRQn EXTI15_10_IRQn
 #define VCC5V_OUT_EN_Pin GPIO_PIN_10
 #define VCC5V_OUT_EN_GPIO_Port GPIOB
 #define SPI3_CS_Pin GPIO_PIN_15

@@ -3,8 +3,8 @@
 
 /*--------------------电控软件---------------------*/
 //开环部分
-#define OPENLOOP_DEBUG_TOTAL_Te             (0.06f)
-#define OPENLOOP_DEBUG_STEP_THETA           (0.00002f)
+#define OPENLOOP_DEBUG_TOTAL_Te             (-0.06f)
+#define OPENLOOP_DEBUG_STEP_THETA           (-0.00006f)
 //闭环部分
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期
 #define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期
@@ -16,8 +16,7 @@
 #define POSLOOP_KI                  (0.1f)
 /*-----------------编码器类型选择-------------------*/
 
-#define ENCODER_HALL_NOIRQ                   (1)//hall引脚没有开启中断功能 
-
+#define MCB_V06                              (1)
 #define ENCODER_TYPE_SENSORLESS              (0)
 #define ENCODER_TYPE_ABS                     (1)
 #define ENCODER_TYPE_HALL                    (2)

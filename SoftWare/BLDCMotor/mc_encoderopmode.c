@@ -47,7 +47,7 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
 
     case CALIBRATE:
         {
-            motor->encoder_handle.get_firstpos(&(motor->encoder_handle.sensor));
+            motor->encoder_handle.get_firstpos((motor->encoder_handle.sensor));
             if (  motor->currment_handle.pid_debug_target != 0.0f)
             {
                 motor->encoder_handle.self_te = motor->currment_handle.pid_debug_target;
@@ -92,7 +92,7 @@ static void motor_paraminit(motor_t *motor)
 static void motor_paramdeinit(motor_t *motor)
 {
     motor->encoder_handle.self_te = 0.0f;
-    motor->encoder_handle.deinit(&(motor->encoder_handle.sensor));
+    motor->encoder_handle.deinit((motor->encoder_handle.sensor));
 
     motor->currment_handle.pid_debug_target = 0.0f;
     motor->currment_handle.pid_debug_target = 0.0f;

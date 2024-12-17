@@ -107,7 +107,7 @@ struct mc_encoder
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
     abs_sensor_t sensor;
 #elif(ENCODER_TYPE == ENCODER_TYPE_HALL || ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ)
-    hall_sensor_t sensor;
+    hall_sensor_t* sensor;
 #endif
     /*方法*/
     void (*init)(void*);
@@ -115,6 +115,7 @@ struct mc_encoder
     uint8_t (*update)(void*);
     void (*cacle)(void*);  
     void (*get_firstpos)(void *);
+    void (*set_calib_points)(void *);
 };
 
 
