@@ -78,11 +78,6 @@ typedef struct mc_pos
 typedef struct mc_currment
 {
     float i_abc[3];
-    float i_debugq;
-    float i_debugd;
-    volatile float u_debugd;
-    volatile float u_debugq;
-    float pid_debug_target;
     float theta;
     float next_theta;
     float id_tar;
@@ -103,12 +98,6 @@ struct mc_encoder
     lowfilter_t speedfilter;
     float self_te;
     uint8_t runflag;
-    /*输入*/
-#if (ENCODER_TYPE == ENCODER_TYPE_ABS)
-    abs_sensor_t sensor;
-#elif(ENCODER_TYPE == ENCODER_TYPE_HALL || ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ)
-    hall_sensor_t* sensor;
-#endif
     /*方法*/
     void (*init)(void*);
     void (*deinit)(void*);
@@ -116,26 +105,13 @@ struct mc_encoder
     void (*cacle)(void*);  
     void (*get_firstpos)(void *);
     void (*set_calib_points)(void *);
+    /*输入*/
+#if (ENCODER_TYPE == ENCODER_TYPE_ABS)
+    abs_sensor_t sensor;
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL || ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ)
+    hall_sensor_t* sensor;
+#endif    
 };
-
-
-typedef struct _motor
-{
-    mc_pos_t pos_handle;
-    mc_speed_t  speed_handle;
-    mc_currment_t currment_handle;
-    mc_encoder_t encoder_handle;
-
-    int16_t curmode;
-    int16_t curMotorstate;
-    void  (*enable)(void);
-    void  (*disable)(void);
-    void  (*setpwm)(float,float,float);
-    void  (*reset_system)(void);
-    void  (*bsptransmit)(uint8_t*,uint16_t);
-    void  (*read)(void*, uint16_t);
-    void  (*write)(void*, uint16_t);
-}motor_t;
 
 typedef struct
 {
@@ -158,14 +134,30 @@ typedef struct
     float ele_angle;
     float self_ele_theta;
 
-    float vbus;
-    float pid_kp;
-    float pid_ki;
-    float pid_kc;
-    float pid_tar;
-    float pid_out;
-    // unsigned short rec_cmd;
-}motordebug_t;
+    float pid_debug_target;
+}mc_debug_t;
+
+
+typedef struct _motor
+{
+    mc_pos_t pos_handle;
+    mc_speed_t  speed_handle;
+    mc_currment_t currment_handle;
+    mc_encoder_t encoder_handle;
+    mc_debug_t debug;
+
+    int16_t curmode;
+    int16_t curMotorstate;
+
+    void  (*enable)(void);
+    void  (*disable)(void);
+    void  (*setpwm)(float,float,float);
+    void  (*reset_system)(void);
+    void  (*bsptransmit)(uint8_t*,uint16_t);
+    void  (*read)(void*, uint16_t);
+    void  (*write)(void*, uint16_t);
+}motor_t;
+
 
 typedef struct _duty
 {

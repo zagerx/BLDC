@@ -44,13 +44,13 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         {
             pthis->chState = EXIT;
         }else{
-            if (motor->currment_handle.pid_debug_target!=0.0f)
+            if (motor->debug.pid_debug_target!=0.0f)
             {                
                 motor->encoder_handle.runflag = 1;
                 #ifdef ENABLE_LINEAR_IN
                     motor->speed_handle.tar = linear_interpolation(&(motor->speed_handle.linear),\
-                                                                    motor->currment_handle.pid_debug_target);
-                    s_type_interpolation(&test_s_valu,motor->currment_handle.pid_debug_target);                
+                                                                    motor->debug.pid_debug_target);
+                    s_type_interpolation(&test_s_valu,motor->debug.pid_debug_target);                
                 #endif // DEBUG
                 motor->speed_handle.real = motor->encoder_handle.speed;
                 motor->currment_handle.iq_tar = speed_loop(&(motor->speed_handle));
@@ -61,7 +61,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     case EXIT:
         USER_DEBUG_NORMAL("exit speed mode\n");
         motor->disable();
-        motor->currment_handle.pid_debug_target = 0.0f;
+        motor->debug.pid_debug_target = 0.0f;
         motor_paramdeinit(motor);
         pthis->chState = ENTER;
         break;
@@ -112,8 +112,6 @@ static void motor_paraminit(motor_t *motor)
 
 static void motor_paramdeinit(motor_t *motor)
 {
-    // memset(motor,0,sizeof(motor_t));
-    // motor_func_register(motor);
 #ifdef ENABLE_LINEAR_IN
     linear_interpolation_deinit(&(motor->speed_handle.linear));
 #endif

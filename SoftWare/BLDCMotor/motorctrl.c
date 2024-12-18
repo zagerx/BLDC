@@ -14,64 +14,26 @@
 #include "initmodule.h"
 #include "debuglog.h"
 #include "string.h"
+#include "stdarg.h"
 
-/*
-#ifndef VOTF_SOFTWARE
-    static unsigned flag = 0;
-    if (flag)
-    {
-        flag  = 0;
-        // cnt = 0;
-        // mc_protocol_send(S_HeartP,NULL,0,0,0);
-        // static uint32_t cout;
-        // USER_DEBUG_NORMAL("hear %d\n",cout++);
-        mc_protocol_nowsend(S_HeartP,NULL,0);
-    }else{
-        flag = 1;
-        float fbuf[2];
-        fbuf[0] = motordebug.speed_real;
-        fbuf[1] = motordebug.pos_real;
-        mc_protocol_nowsend(S_MotorSpeed,(uint8_t *)(&fbuf),8);        
-    }
-#endif
-*/
-
-static fsm_cb_t MotorFsm;
-motor_t motor1 = {0};
-
-static void MotorFsm_Init(void)
+void motorfsm_register(void *obj,void *pdata)
 {
-    MotorFsm.fsm = (fsm_t *)motor_normalmode;
-    MotorFsm.count = 0;
-    MotorFsm.chState = ENTER;
-    MotorFsm.pdata = &motor1;
+    fsm_cb_t* motorfsm = (fsm_cb_t*)obj;
+    motorfsm->fsm = (fsm_t *)motor_normalmode;
+    motorfsm->count = 0;
+    motorfsm->chState = ENTER;
+    motorfsm->pdata = pdata;
 }
 
-void motortctrl_process(void)
+void motortctrl_process(void *obj)
 {
-    static short state = 0;
-    switch (state)
-    {
-    case 0:
-        MotorFsm_Init();
-        motor_func_register((motor_t*)&motor1);
-
-        USER_DEBUG_NORMAL("MotorThread is Ready\n");
-        state = 1;
-        break;
-    case 1:
-        DISPATCH_FSM(&MotorFsm);//模式切换
-        break;    
-    default:
-        break;
-    }
+    fsm_cb_t* fsm = (fsm_cb_t*)obj;
+    DISPATCH_FSM(fsm);
+    return;
 }
 
 void mc_hightfreq_task(float *iabc,motor_t *motor)
 {
-    motor->currment_handle.i_abc[0] = iabc[0];
-    motor->currment_handle.i_abc[1] = iabc[1];
-    motor->currment_handle.i_abc[2] = iabc[2];
 #ifdef MOTOR_OPENLOOP
     mc_openloop(iabc,motor);
 #else
@@ -95,5 +57,29 @@ void mc_hightfreq_task(float *iabc,motor_t *motor)
     motor->setpwm(duty._a,duty._b,duty._c);
 #endif
 }
+void motor_encoder_register(motor_t* motor,...)
+{
+    va_list args;
+    va_start(args, motor);    
+    motor->encoder_handle.sensor = va_arg(args,void *);
+    motor->encoder_handle.init = va_arg(args,void (*)(void*));
+    motor->encoder_handle.deinit = va_arg(args,void (*)(void*));
+    motor->encoder_handle.update = va_arg(args,uint8_t (*)(void*));
+    motor->encoder_handle.cacle = va_arg(args,void (*)(void*));
+    motor->encoder_handle.get_firstpos = va_arg(args,void (*)(void*));;
+    motor->encoder_handle.set_calib_points = va_arg(args,void (*)(void*));;
+    va_end(args);
+}
 
-board_task(motortctrl_process)
+void motor_actor_register(motor_t* motor,...)
+{
+    va_list args;
+    va_start(args, motor);    
+    motor->enable = va_arg(args,void (*)(void));
+    motor->disable = va_arg(args,void (*)(void));
+    motor->setpwm = va_arg(args,void (*)(float,float,float));
+    motor->reset_system = va_arg(args,void (*)(void));
+    motor->write = va_arg(args,void (*)(void*,uint16_t));
+    motor->read = va_arg(args,void (*)(void*,uint16_t));;
+    va_end(args);    
+}

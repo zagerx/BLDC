@@ -112,6 +112,7 @@ int main(void)
   while (1)
   {
     do_taskcalls();
+    motorctrl_task();
     HAL_GPIO_TogglePin(WATCH_DOG_IN_GPIO_Port,WATCH_DOG_IN_Pin);
     if (count++ > 500)
     {

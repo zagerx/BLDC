@@ -144,8 +144,8 @@ static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
         i_abc.a = iabc[0];i_abc.b = iabc[1];i_abc.c = iabc[2];
         _3s_2s(i_abc, &i_ab);
         _2s_2r(i_ab, theta, &i_dq);
-        motor->currment_handle.i_debugd = i_dq.d;
-        motor->currment_handle.i_debugq = i_dq.q;
+        motor->debug.id_real = i_dq.d;
+        motor->debug.iq_real = i_dq.q;
         udq.d = 0.0f;
         udq.q = motor->encoder_handle.self_te;//OPENLOOP_DEBUG_TOTAL_Te;//
         temp_ab = _2r_2s(udq, theta);

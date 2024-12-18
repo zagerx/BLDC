@@ -21,17 +21,6 @@ static i2c_device_t dev_tca9538 = {
     .bus = &i2c_bus1,
     .init = tca9539pwr_init,
 };
-void user_board_init(void)
-{
-    i2c_bus1.init();
-    // i2c_device_init(&ina226);
-    // i2c_device_init(&dev_tca9538);
-    USER_DEBUG_NORMAL("board_init finish\n"); 
-}
-void board_deinit(void)
-{
-
-}
 
 #include "usart.h"
 #include "string.h"
@@ -75,8 +64,98 @@ static void motor_set_pwm(float _a,float _b,float _c)
 #include "motorctrl.h"
 #include "hall_sensor.h"
 #include "motorctrl_common.h"
-extern motor_t motor1;
+// extern motor_t motor1;
 #include "adc.h"
+
+#include "flash.h"
+void motor_write(void *pdata,uint16_t datalen)
+{
+    USER_DEBUG_NORMAL("flash wait write\n");
+    // user_flash_earse(PID_PARSE_ADDR,datalen);
+    // user_flash_write(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
+}
+void motor_read(void *pdata,uint16_t datalen)
+{
+    USER_DEBUG_NORMAL("flash wait write\n");
+    // user_flash_read(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
+}
+
+#include "gpio.h"
+#include "tim.h"
+static uint8_t hall_get_sectionnumb(void)
+{
+    uint8_t u,v,w;
+    v = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
+    u = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
+    w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
+    return u | (w<<1) | (v<<2);
+}
+static uint32_t hall_gettick()
+{
+    return 0;
+}
+
+#include "stdarg.h"
+#include "fsm.h"
+static fsm_cb_t Motor1Fsm;
+motor_t motor1 = {0};
+static hall_sensor_t hall_sensor;
+
+
+void motorctrl_init(void)
+{
+
+    /*HALL_ABZ传感器初始化  和电机模块无关*/
+    hall_register((void*)&(hall_sensor),\
+                                        hall_get_sectionnumb,\
+                                        hall_gettick,\
+                                        tim_abzencoder_getcount,\
+                                        tim_abzencoder_setcount);
+
+    motorfsm_register(&Motor1Fsm,&motor1);
+
+    motor_encoder_register(Motor1Fsm.pdata,                      \
+                                     &(hall_sensor),             \
+                                    hall_init,                   \
+                                    hall_deinit,                 \
+                                    hall_update,                 \
+                                    hall_cale,                   \
+                                    hall_get_initpos,            \
+                                    hall_set_calib_points);
+
+    motor_actor_register(Motor1Fsm.pdata,                         \
+                              motor_enable,                       \
+                              motor_disable,                      \
+                              motor_set_pwm,                      \
+                              user_softresetsystem,               \
+                              motor_write,                        \
+                              motor_read);
+}
+
+void motorctrl_task(void)
+{
+    motortctrl_process(&Motor1Fsm);
+}
+
+void user_board_init(void)
+{
+    i2c_bus1.init();
+    // i2c_device_init(&ina226);
+    // i2c_device_init(&dev_tca9538);
+    USER_DEBUG_NORMAL("board_init finish\n"); 
+
+    motorctrl_init();
+}
+void board_deinit(void)
+{
+
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
+    motor1.encoder_handle.update((motor1.encoder_handle.sensor));
+}
 static void _convert_current(uint16_t* adc_buf,float *i_abc)
 {
     i_abc[0]  = ((3.3f / (float)(1 << 12)) * (float)((int)adc_buf[0] - 2020) * (1/AMPLIFICATION_FACTOR)) * (1/SAMPLING_RESISTANCE); 
@@ -103,65 +182,4 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     }
 }
 
-#include "flash.h"
-void motor_write(void *pdata,uint16_t datalen)
-{
-    USER_DEBUG_NORMAL("flash wait write\n");
-    // user_flash_earse(PID_PARSE_ADDR,datalen);
-    // user_flash_write(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
-}
-void motor_read(void *pdata,uint16_t datalen)
-{
-    USER_DEBUG_NORMAL("flash wait write\n");
-    // user_flash_read(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
-}
-
-
-
-
-#include "gpio.h"
-#include "tim.h"
-static uint8_t hall_get_sectionnumb(void)
-{
-    uint8_t u,v,w;
-    v = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
-    u = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
-    w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
-    return u | (w<<1) | (v<<2);
-}
-static uint32_t hall_gettick()
-{
-    return 0;
-}
-void motor_func_register(motor_t *motor)
-{
-    static hall_sensor_t hall_sensor;
-    hall_register((void*)&(hall_sensor),hall_get_sectionnumb,\
-                                                         hall_gettick,\
-                                                         tim_abzencoder_getcount,\
-                                                         tim_abzencoder_setcount);
-
-    motor->encoder_handle.sensor = &(hall_sensor);
-
-    motor->encoder_handle.init = hall_init;
-    motor->encoder_handle.deinit = hall_deinit;
-
-    motor->encoder_handle.update = hall_update;
-    motor->encoder_handle.cacle = hall_cale;
-    motor->encoder_handle.get_firstpos = hall_get_initpos;
-    motor->encoder_handle.set_calib_points = hall_set_calib_points;
-
-    motor->enable = motor_enable;
-    motor->disable = motor_disable;
-    motor->setpwm = motor_set_pwm;
-    motor->reset_system = user_softresetsystem;
-    // motor->bsptransmit = _bsp_protransmit;//TODO
-    motor->write = motor_write;
-    motor->read = motor_read;
-}
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
-    motor1.encoder_handle.update((motor1.encoder_handle.sensor));
-}
-
+// board_task(motorctrl_task)

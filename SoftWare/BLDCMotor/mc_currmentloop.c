@@ -2,8 +2,9 @@
 #include "math.h"
 #include "mc_smo.h"
 #define SQRT_3__2    0.86602540378f
-duty_t currment_loop(mc_currment_t *curloop_handle)
+duty_t currment_loop(void *obj)
 {
+	mc_currment_t *curloop_handle = (mc_currment_t *)obj;
 	float theta,next_theta,id_targe,iq_targe;
     abc_t i_abc = {0};
     alpbet_t i_alphabeta;
@@ -25,9 +26,6 @@ duty_t currment_loop(mc_currment_t *curloop_handle)
 	_3s_2s(i_abc,&i_alphabeta);
 	_2s_2r(i_alphabeta,theta,&i_dq);
 
-	/*方便观察*/
-	curloop_handle->i_debugd = i_dq.d;
-	curloop_handle->i_debugq = i_dq.q;
 	/*PID Control*/
 	float Vd,Vq; 
 	Vd = pid_contrl(d_axis_pid,id_targe,i_dq.d);
@@ -59,9 +57,7 @@ duty_t currment_loop(mc_currment_t *curloop_handle)
 	alpbet_t temp_ab = {0};
 	dq_t v_dq;
 	v_dq.d = Vd;
-	v_dq.q = Vq;	
-	curloop_handle->u_debugd = Vq;
-	curloop_handle->u_debugq = Vq;
+	v_dq.q = Vq;
 	temp_ab = _2r_2s(v_dq,next_theta);
 
 #if 0
