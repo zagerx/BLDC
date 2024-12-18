@@ -4,7 +4,7 @@
 #include "mc_encoder.h"
 #include "board.h"
 #include "motorctrl_cfg.h"
-
+#include "math.h"
 
 static void mc_self_openlooptest(float *iabc,motor_t* motor);
 static void mc_encoderopenlooptest(float *iabc,motor_t* motor);
@@ -95,9 +95,9 @@ static void mc_self_openlooptest(float *iabc,motor_t* motor)
         {
             cnt = 0;
             state = RUNING;
-            motor->encoder_handle.init((motor->encoder_handle.sensor));
-            motor->encoder_handle.get_firstpos((motor->encoder_handle.sensor));
-            motor->encoder_handle.set_calib_points((motor->encoder_handle.sensor));
+            motor->encoder_handle.sensor->init((motor->encoder_handle.sensor));
+            motor->encoder_handle.sensor->get_first_points((motor->encoder_handle.sensor));
+            motor->encoder_handle.sensor->set_calib_points((motor->encoder_handle.sensor));
         }
     }
     break;
@@ -134,7 +134,7 @@ static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
     {
     case IDLE:
         #ifdef MCB_V06
-            motor->encoder_handle.set_calib_points((motor->encoder_handle.sensor));
+            motor->encoder_handle.sensor->set_calib_points((motor->encoder_handle.sensor));
         #endif
         state = RUN;
     case RUN:

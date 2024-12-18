@@ -6,8 +6,8 @@
 #define OPENLOOP_DEBUG_TOTAL_Te             (-0.04f)
 #define OPENLOOP_DEBUG_STEP_THETA           (-0.0004f)
 //闭环部分
-#define CURRMENT_PERIOD      (0.0001f)//电流环周期
-#define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期
+#define CURRMENT_PERIOD                     (0.0001f)//电流环周期
+#define SPEED_UPDATE_PERIOD                 (0.002f)//速度更新周期
 #define CURRMENTLOOP_KP             (0.08f)         
 #define CURRMENTLOOP_KI             (0.001f)
 #define SPEEDLOOP_KP                (0.18f)
@@ -18,9 +18,9 @@
 /*---------------------电机本体+编码器(超龙电机)----------------------- */
 #define MOTOR_PAIRS          (5.0f)//电机极对数
 /*------------------------------------*/
-#define ABZ_ENCODER_LINES_HALF           (2500)
-#define ABZ_ENCODER_LINES           (5000)
-#define ABZ_ENCODER_RESOLUTION      (0.00628f)// 2*pi/5000  
+#define ABZ_ENCODER_LINES_HALF               (2500)
+#define ABZ_ENCODER_LINES                    (5000)
+#define ABZ_ENCODER_RESOLUTION               (0.00628f)// 2*pi/5000
 #define ENCODER_TYPE_SENSORLESS              (0)
 #define ENCODER_TYPE_ABS                     (1)
 #define ENCODER_TYPE_HALL                    (2)

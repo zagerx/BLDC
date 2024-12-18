@@ -1,5 +1,6 @@
 #include "board.h"
 #include "initmodule.h"
+#include "taskmodule.h"
 #include "debuglog.h"
 /************************传感器*****************************/
 #include "ina226.h"
@@ -22,22 +23,43 @@ static i2c_device_t dev_tca9538 = {
     .init = tca9539pwr_init,
 };
 
+/************************电机控制*****************************/
 #include "usart.h"
 #include "string.h"
+#include "tim.h"
+#include "motorctrl.h"
+#include "hall_sensor.h"
+#include "motorctrl_common.h"
+#include "adc.h"
+#include "flash.h"
+#include "gpio.h"
+#include "tim.h"
+#include "stdarg.h"
+#include "fsm.h"
+/*---------------------------TODO---------------------------*/
 void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 {
     static unsigned char sg_uartsend_buf[125];
     memcpy(sg_uartsend_buf,pdata,len);
     HAL_UART_Transmit_DMA(&huart1,sg_uartsend_buf,len);
 }
-
 void user_softresetsystem(void)
 {
 	HAL_NVIC_SystemReset();
 }
+void motor_write(void *pdata,uint16_t datalen)
+{
+    USER_DEBUG_NORMAL("flash wait write\n");
+    // user_flash_earse(PID_PARSE_ADDR,datalen);
+    // user_flash_write(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
+}
+void motor_read(void *pdata,uint16_t datalen)
+{
+    USER_DEBUG_NORMAL("flash wait write\n");
+    // user_flash_read(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
+}
 
-
-#include "tim.h"
+/*---------------------------电机控制执行器---------------------------*/
 static void motor_enable(void)
 {
     HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_SET);
@@ -59,29 +81,7 @@ static void motor_set_pwm(float _a,float _b,float _c)
     tim_set_pwm(_a ,_b,_c);
 }
 
-
-
-#include "motorctrl.h"
-#include "hall_sensor.h"
-#include "motorctrl_common.h"
-// extern motor_t motor1;
-#include "adc.h"
-
-#include "flash.h"
-void motor_write(void *pdata,uint16_t datalen)
-{
-    USER_DEBUG_NORMAL("flash wait write\n");
-    // user_flash_earse(PID_PARSE_ADDR,datalen);
-    // user_flash_write(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
-}
-void motor_read(void *pdata,uint16_t datalen)
-{
-    USER_DEBUG_NORMAL("flash wait write\n");
-    // user_flash_read(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
-}
-
-#include "gpio.h"
-#include "tim.h"
+/*---------------------------电机控制传感器---------------------------*/
 static uint8_t hall_get_sectionnumb(void)
 {
     uint8_t u,v,w;
@@ -95,13 +95,13 @@ static uint32_t hall_gettick()
     return 0;
 }
 
-#include "stdarg.h"
-#include "fsm.h"
+
 static fsm_cb_t Motor1Fsm;
 motor_t motor1 = {0};
 static hall_sensor_t hall_sensor;
-
-
+/**
+ * 电机初始化
+ */
 void motorctrl_init(void)
 {
 
@@ -110,19 +110,19 @@ void motorctrl_init(void)
                                         hall_get_sectionnumb,\
                                         hall_gettick,\
                                         tim_abzencoder_getcount,\
-                                        tim_abzencoder_setcount);
-
+                                        tim_abzencoder_setcount,\
+                                        hall_cale,\
+                                        hall_update,\
+                                        hall_init,\
+                                        hall_deinit,\
+                                        hall_get_initpos,\
+                                        hall_set_calib_points);
+    //初始化电机控制状态机
     motorfsm_register(&Motor1Fsm,&motor1);
-
+    //注册编码器接口
     motor_encoder_register(Motor1Fsm.pdata,                      \
-                                     &(hall_sensor),             \
-                                    hall_init,                   \
-                                    hall_deinit,                 \
-                                    hall_update,                 \
-                                    hall_cale,                   \
-                                    hall_get_initpos,            \
-                                    hall_set_calib_points);
-
+                                     &(hall_sensor));
+    //注册电机动作回调
     motor_actor_register(Motor1Fsm.pdata,                         \
                               motor_enable,                       \
                               motor_disable,                      \
@@ -137,24 +137,11 @@ void motorctrl_task(void)
     motortctrl_process(&Motor1Fsm);
 }
 
-void user_board_init(void)
-{
-    i2c_bus1.init();
-    // i2c_device_init(&ina226);
-    // i2c_device_init(&dev_tca9538);
-    USER_DEBUG_NORMAL("board_init finish\n"); 
-
-    motorctrl_init();
-}
-void board_deinit(void)
-{
-
-}
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
-    motor1.encoder_handle.update((motor1.encoder_handle.sensor));
+    motorctrl_encoder_update(Motor1Fsm.pdata);
 }
 static void _convert_current(uint16_t* adc_buf,float *i_abc)
 {
@@ -172,14 +159,30 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
         adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
         _convert_current((uint16_t*)adc_vale,iabc);
-
-        // iabc[2] = iabc[0];
-        // iabc[1] = iabc[1];
-        // iabc[0] = iabc[2];
         // __cycleof__("mc_hightfreq_task") {
             mc_hightfreq_task(iabc,&motor1);
         // }
     }
 }
 
-// board_task(motorctrl_task)
+
+/*==========================================================================================
+ * @brief        板子初始化
+ * @FuncName     
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void user_board_init(void)
+{
+    i2c_bus1.init();
+    // i2c_device_init(&ina226);
+    // i2c_device_init(&dev_tca9538);
+    USER_DEBUG_NORMAL("board_init finish\n"); 
+
+    motorctrl_init();
+}
+void board_deinit(void)
+{
+
+}
+
+board_task(motorctrl_task)

@@ -98,13 +98,6 @@ struct mc_encoder
     lowfilter_t speedfilter;
     float self_te;
     uint8_t runflag;
-    /*方法*/
-    void (*init)(void*);
-    void (*deinit)(void*);
-    uint8_t (*update)(void*);
-    void (*cacle)(void*);  
-    void (*get_firstpos)(void *);
-    void (*set_calib_points)(void *);
     /*输入*/
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
     abs_sensor_t sensor;
@@ -194,14 +187,6 @@ typedef struct curloop
     pid_cb_t d_pid;
     pid_cb_t q_pid;
 }curloop_t;
-
-
-// typedef struct smo
-// {
-//     alpbet_t i;
-//     alpbet_t u;
-// }smo_t;
-
 
 #pragma pack(pop)
 

@@ -30,10 +30,10 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
 #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))
     #ifdef MCB_V06
         // 使用霍尔进行校准
-        if (cur_sect == hall->cairlbe_section)
+        if (cur_sect == 6)
         {
-            // hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
-            hall->realcacle_angle = hall->cairlbe_angle + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
+            hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
+            // hall->realcacle_angle = hall->cairlbe_angle + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
         }
     #else
         if (cur_sect == 6)
@@ -257,6 +257,13 @@ void hall_register(hall_sensor_t *hall,...)
         hall->set_abzcount = va_arg(args,void (*)(uint32_t));
     }
     #endif
+    hall->cacle = va_arg(args,void (*)(void*));
+    hall->update_base = va_arg(args,uint8_t (*)(void*));
+    hall->init = va_arg(args,void (*)(void*));
+    hall->deinit = va_arg(args,void (*)(void*));
+    hall->get_first_points = va_arg(args,void (*)(void*));
+    hall->set_calib_points = va_arg(args,void (*)(void*));
+
     va_end(args);
 }
  /*==========================================================================================

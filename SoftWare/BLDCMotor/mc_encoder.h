@@ -5,6 +5,7 @@
 #include "stdbool.h"
 void mc_encoder_init(mc_encoder_t *encoder);
 void mc_encoder_read(mc_encoder_t *encoder);
+void mc_encoder_update(mc_encoder_t *encoder);
 
 
 #endif

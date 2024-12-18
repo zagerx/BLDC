@@ -8,5 +8,6 @@ void mc_hightfreq_task(float *iabc,motor_t *motor);
 void motorfsm_register(void *obj,void *pdata);
 void motor_encoder_register(motor_t* motor,...);
 void motor_actor_register(motor_t* motor,...);
+void motorctrl_encoder_update(void *obj);
 
 #endif

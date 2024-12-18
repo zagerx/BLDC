@@ -15,13 +15,19 @@ typedef struct hall_sensor
     float cairlbe_angle;     // 校准角度
     uint8_t cairlbe_section; // 校准扇区
     uint16_t hallerr_count;
-    uint8_t (*getsection)(void);
-    uint32_t (*gettick)(void);
 
+    uint8_t  (*getsection)(void);
+    uint32_t (*gettick)(void);
 #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
     uint32_t (*get_abzcount)(void);
     void (*set_abzcount)(uint32_t);
 #endif // (0)
+    void (*cacle)(void*);
+    uint8_t (*update_base)(void*);
+    void (*init)(void*);
+    void (*deinit)(void*);
+    void (*get_first_points)(void*);
+    void (*set_calib_points)(void*);
 
     /*PLL*/
     float hat_angle;

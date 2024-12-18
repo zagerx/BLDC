@@ -100,6 +100,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_Delay(800);
   USER_DEBUG_NORMAL("Hello world\n");
+  user_board_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
