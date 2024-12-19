@@ -15,6 +15,7 @@ typedef struct hall_sensor
     float cairlbe_angle;     // 校准角度
     uint8_t cairlbe_section; // 校准扇区
     uint16_t hallerr_count;
+    float offset;
 
     uint8_t  (*getsection)(void);
     uint32_t (*gettick)(void);

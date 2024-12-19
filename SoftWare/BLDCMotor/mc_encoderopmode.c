@@ -47,9 +47,11 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
 
     case CALIBRATE:
         {
-            motor->encoder_handle.sensor->get_first_points((motor->encoder_handle.sensor));
+            // motor->encoder_handle.sensor->set_calib_points((motor->encoder_handle.sensor));
             if (  motor->debug.pid_debug_target != 0.0f)
             {
+                motor->encoder_handle.sensor->get_first_points((motor->encoder_handle.sensor));
+                motor->encoder_handle.sensor->set_calib_points((motor->encoder_handle.sensor));
                 motor->encoder_handle.self_te = motor->debug.pid_debug_target;
                 motor->encoder_handle.runflag = 1;
                 pthis->chState = RUN;

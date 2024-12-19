@@ -134,7 +134,7 @@ static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
     {
     case IDLE:
         #ifdef MCB_V06
-            motor->encoder_handle.sensor->set_calib_points((motor->encoder_handle.sensor));
+            // motor->encoder_handle.sensor->set_calib_points((motor->encoder_handle.sensor));
         #endif
         state = RUN;
     case RUN:

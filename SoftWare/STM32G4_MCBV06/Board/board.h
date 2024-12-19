@@ -3,8 +3,8 @@
 
 /*--------------------电控软件---------------------*/
 //开环部分
-#define OPENLOOP_DEBUG_TOTAL_Te             (-0.06f)
-#define OPENLOOP_DEBUG_STEP_THETA           (-0.00006f)
+#define OPENLOOP_DEBUG_TOTAL_Te             (0.1f)
+#define OPENLOOP_DEBUG_STEP_THETA           (0.00008f)
 //闭环部分
 #define CURRMENT_PERIOD      (0.0001f)//电流环周期
 #define SPEED_UPDATE_PERIOD  (0.002f)//速度更新周期
@@ -28,8 +28,8 @@
     #define ABZ_ENCODER_LINES           (8192)
     #define ABZ_ENCODER_RESOLUTION      (-0.023f)// 2*pi/4096*motor_pairs  
     #define HALL_UPDATE_PERIOD   (0.0001f)
-    #define HALL_POSITIVE_OFFSET (0.0f)
-    #define HALL_NEGATIVE_OFFSET (0.8943951f)
+    #define HALL_POSITIVE_OFFSET (-1.77f)
+    #define HALL_NEGATIVE_OFFSET (1.0f)
     #define PLL_KP               (10.0f)
     #define PLL_KI               (0.02f)
     #define OMEGTOTHETA          (CURRMENT_PERIOD)         
@@ -41,12 +41,27 @@
     // #define SCETION_1_BASEANGLE   (2.686f)
     // #define SCETION_3_BASEANGLE   (3.765f)
     // #define SCETION_2_BASEANGLE   (4.737f) 
-    #define SCETION_6_BASEANGLE   (5.005f)
-    #define SCETION_4_BASEANGLE   (6.057f)
-    #define SCETION_5_BASEANGLE   (0.648f)
-    #define SCETION_1_BASEANGLE   (1.854f)
-    #define SCETION_3_BASEANGLE   (2.898f)
-    #define SCETION_2_BASEANGLE   (3.815f)       
+
+    // #define SCETION_6_BASEANGLE   (5.005f)
+    // #define SCETION_4_BASEANGLE   (6.057f)
+    // #define SCETION_5_BASEANGLE   (0.648f)
+    // #define SCETION_1_BASEANGLE   (1.854f)
+    // #define SCETION_3_BASEANGLE   (2.898f)
+    // #define SCETION_2_BASEANGLE   (3.815f)  
+
+    #define SCETION_6_BASEANGLE   (1.344f)
+    #define SCETION_4_BASEANGLE   (2.693f)
+    #define SCETION_5_BASEANGLE   (3.553f)
+    #define SCETION_1_BASEANGLE   (4.734f)
+    #define SCETION_3_BASEANGLE   (5.639f)
+    #define SCETION_2_BASEANGLE   (0.607f)  
+
+    #define SCETION_6_NEGATIVE_BASEANGLE   (4.380f)
+    #define SCETION_4_NEGATIVE_BASEANGLE   (5.395f)
+    #define SCETION_5_NEGATIVE_BASEANGLE   (0.057f)
+    #define SCETION_1_NEGATIVE_BASEANGLE   (1.339f)
+    #define SCETION_3_NEGATIVE_BASEANGLE   (2.251f)
+    #define SCETION_2_NEGATIVE_BASEANGLE   (3.162f)      
 #endif
 
 /*----------------------硬件相关----------------------*/

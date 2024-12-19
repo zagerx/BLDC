@@ -17,16 +17,13 @@ void mc_encoder_read(mc_encoder_t *encoder)
 #if (ENCODER_TYPE == ENCODER_TYPE_HALL || ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ || ENCODER_TYPE == ENCODER_TYPE_ABS)
 	#ifdef MOTOR_OPENLOOP
 		encoder->sensor->self_angle = encoder->self_theta;
-		// encoder->set_calib_points((encoder->sensor));
 	#endif
 		if (encoder->runflag)
 		{
 			#ifdef MCB_V06
-				// encoder->update((encoder->sensor));//MCB_V06
 				mc_encoder_update(encoder);
 			#endif
 			//计算角度、速度
-			// encoder->cacle((encoder->sensor));
 			encoder->sensor->cacle(encoder->sensor);
 			//更新当前角度、速度
 			encoder->ele_theta = (encoder->sensor->angle);

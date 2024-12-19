@@ -74,7 +74,7 @@ static void motor_disable(void)
     tim_abzencoder_disable();
     tim_pwm_disable();
     adc_stop();
-    HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_RESET);
+    // HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_RESET);
 }
 static void motor_set_pwm(float _a,float _b,float _c)
 {

@@ -16,7 +16,7 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
 {
     float delta, real_calc_speed;
  #if( MOTOR_OPENLOOP && !MOTOR_OPENLOOP_ENCODER)//CPU负担过重，只能在自开环条件下打开
-    volatile static float test_temp[7];
+    float test_temp[7];
     float temp_self = hall->self_angle;
     test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), temp_self);
     static float temp_curbase,temp_base_buf;
@@ -33,7 +33,6 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
         if (cur_sect == 6)
         {
             hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
-            // hall->realcacle_angle = hall->cairlbe_angle + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
         }
     #else
         if (cur_sect == 6)
@@ -213,7 +212,6 @@ void hall_cale(void *pthis)
         hall->hat_speed = omega;
         hall->angle = hall->hat_angle;
         hall->speed = hall->realcacle_speed;
-
     #endif
 }
 
@@ -224,14 +222,17 @@ void hall_get_initpos(void *pthis)
     uint8_t cur_sect = hall->getsection();
     hall->last_section = cur_sect;
     hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + 1.0471f;
+    hall->offset = hall->hall_baseBuff[cur_sect];
+    USER_DEBUG_NORMAL("hall_get_initpos %d,%f\n",cur_sect,hall->offset);
 }
 void hall_set_calib_points(void *pthis)
 {
     hall_sensor_t *hall;
     hall = (hall_sensor_t*)pthis;
     uint8_t cur_sect = hall->getsection();
-    hall->cairlbe_angle = 0.0f;
+    hall->cairlbe_angle = 0.0f;//hall->hall_baseBuff[cur_sect] + 1.0471f;
     hall->cairlbe_section = cur_sect;
+    USER_DEBUG_NORMAL("hall_set_calib_points  %d  %f\n",cur_sect,hall->cairlbe_angle);
 }
 
 /*==========================================================================================
@@ -286,6 +287,9 @@ void hall_init(void *this)
     hall->count = 0.0f;
     hall->hallerr_count = 0;
     hall->speed = 0.0f;
+    hall->cairlbe_angle = 0.0f;
+    hall->offset = 0.0f;
+    hall->realcacle_angle = 0.0f;
     hall->hall_baseBuff[0] = 0.0000f;
     {
         hall->hall_baseBuff[6] = SCETION_6_BASEANGLE;

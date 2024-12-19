@@ -3,8 +3,8 @@
 
 /*--------------------电控软件---------------------*/
 //开环部分
-#define OPENLOOP_DEBUG_TOTAL_Te             (-0.04f)
-#define OPENLOOP_DEBUG_STEP_THETA           (-0.0004f)
+#define OPENLOOP_DEBUG_TOTAL_Te             (0.04f)
+#define OPENLOOP_DEBUG_STEP_THETA           (0.0004f)
 //闭环部分
 #define CURRMENT_PERIOD                     (0.0001f)//电流环周期
 #define SPEED_UPDATE_PERIOD                 (0.002f)//速度更新周期
@@ -36,27 +36,6 @@
     #define OMEGTOTHETA          (CURRMENT_PERIOD)         
 
     /*HALL基准角度 D轴强拖 0.1f*/
-    // #define SCETION_6_BASEANGLE   (3.496f)
-    // #define SCETION_4_BASEANGLE   (4.420f)
-    // #define SCETION_5_BASEANGLE   (5.540f)
-    // #define SCETION_1_BASEANGLE   (0.363f)
-    // #define SCETION_3_BASEANGLE   (1.284f)
-    // #define SCETION_2_BASEANGLE   (2.397f)  
-
-    // #define SCETION_6_BASEANGLE   (4.036f)
-    // #define SCETION_4_BASEANGLE   (5.023f)
-    // #define SCETION_5_BASEANGLE   (6.050f)
-    // #define SCETION_1_BASEANGLE   (0.898f)
-    // #define SCETION_3_BASEANGLE   (1.885f)
-    // #define SCETION_2_BASEANGLE   (2.914f)      
-
-    // #define SCETION_6_BASEANGLE   (0.615f)
-    // #define SCETION_4_BASEANGLE   (1.610f)
-    // #define SCETION_5_BASEANGLE   (2.664f)
-    // #define SCETION_1_BASEANGLE   (3.757f)
-    // #define SCETION_3_BASEANGLE   (4.750f)
-    // #define SCETION_2_BASEANGLE   (5.802f)  
-
     #define SCETION_6_BASEANGLE   (3.610f)
     #define SCETION_4_BASEANGLE   (4.703f)
     #define SCETION_5_BASEANGLE   (5.763f)
