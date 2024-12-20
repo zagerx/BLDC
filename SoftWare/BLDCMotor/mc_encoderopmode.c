@@ -24,8 +24,8 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
     {
     case ENTER:
         USER_DEBUG_NORMAL("entry encoer openloop mode\n");
-        motor_paraminit(motor);//编码器初始化
-        motor->encoder_handle.runflag = 0;
+        mc_encoder_init(&(motor->encoder_handle));//编码器初始化
+        motor_paraminit(motor);
         pthis->chState = READY;
     case READY:
         if (motor->curmode != M_SET_START)
@@ -34,20 +34,20 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
         }
         motor->enable();
         USER_DEBUG_NORMAL("motor enable\n");
-        #if(MOTOR_OPENLOOP && MOTOR_OPENLOOP_ENCODER)
+        #if(MOTOR_WORK_MODE == MOTOR_DEBUG_ENCODERMODE)
             pthis->chState = CALIBRATE;
             USER_DEBUG_NORMAL("encoder loop test\n");
-        #else
+        #elif(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
             USER_DEBUG_NORMAL("self loop test\n");
             motor->encoder_handle.runflag = 1;
             pthis->chState = RUN;
+        #else            
         #endif
         
         break;
 
     case CALIBRATE:
         {
-            // motor->encoder_handle.sensor->set_calib_points((motor->encoder_handle.sensor));
             if (  motor->debug.pid_debug_target != 0.0f)
             {
                 motor->encoder_handle.sensor->get_first_points((motor->encoder_handle.sensor));
@@ -75,6 +75,7 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
     case EXIT:
         USER_DEBUG_NORMAL("exit encoder openloop mode\n");
         motor->disable();
+        mc_encoder_deinit(&(motor->encoder_handle));
         motor_paramdeinit(motor);
         pthis->chState = ENTER;
         break;
@@ -86,15 +87,14 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
 
 static void motor_paraminit(motor_t *motor)
 {
-    mc_encoder_init(&(motor->encoder_handle));
+    motor->debug.pid_debug_target = 0.0f;
+    motor->debug.pid_debug_target = 0.0f;    
 }
 
 
 
 static void motor_paramdeinit(motor_t *motor)
 {
-    motor->encoder_handle.self_te = 0.0f;
-    motor->encoder_handle.sensor->deinit((motor->encoder_handle.sensor));
     motor->debug.pid_debug_target = 0.0f;
     motor->debug.pid_debug_target = 0.0f;
 }

@@ -4,7 +4,9 @@
 #define SQRT_3__2    0.86602540378f
 duty_t currment_loop(void *obj)
 {
-	mc_currment_t *curloop_handle = (mc_currment_t *)obj;
+	motor_t* motor = (motor_t*)obj;
+	mc_currment_t *curloop_handle = (mc_currment_t *)(&motor->currment_handle);
+	mc_encoder_t *encoder=(mc_encoder_t*)(&motor->encoder_handle);
 	float theta,next_theta,id_targe,iq_targe;
     abc_t i_abc = {0};
     alpbet_t i_alphabeta;
@@ -15,8 +17,8 @@ duty_t currment_loop(void *obj)
 	i_abc.a    = curloop_handle->i_abc[0];
 	i_abc.b    = curloop_handle->i_abc[1];
 	i_abc.c    = curloop_handle->i_abc[2];
-	theta      = curloop_handle->theta;
-	next_theta = curloop_handle->next_theta;
+	theta      = encoder->ele_theta;
+	next_theta = theta+1.57f;
 	d_axis_pid = &(curloop_handle->d_pid);
 	q_axis_pid = &(curloop_handle->q_pid);
 	id_targe = curloop_handle->id_tar;
@@ -25,11 +27,17 @@ duty_t currment_loop(void *obj)
 	/*Clark&&Park transform*/
 	_3s_2s(i_abc,&i_alphabeta);
 	_2s_2r(i_alphabeta,theta,&i_dq);
-
+	motor->debug.id_real = i_dq.d;
+	motor->debug.iq_real = i_dq.q;
 	/*PID Control*/
 	float Vd,Vq; 
-	Vd = pid_contrl(d_axis_pid,id_targe,i_dq.d);
-	Vq = pid_contrl(q_axis_pid,iq_targe,i_dq.q);
+	#if(MOTOR_WORK_MODE == MOTOR_DEBUG_ENCODERMODE)
+		Vd = 0.0f;
+		Vq = encoder->self_te;
+	#else
+		Vd = pid_contrl(d_axis_pid,id_targe,i_dq.d);
+		Vq = pid_contrl(q_axis_pid,iq_targe,i_dq.q);
+	#endif // DEBUG 
 
 	/*Limiting Vector Circle*/
 	#if 0

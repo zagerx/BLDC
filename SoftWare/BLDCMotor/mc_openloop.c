@@ -6,18 +6,6 @@
 #include "motorctrl_cfg.h"
 #include "math.h"
 
-static void mc_self_openlooptest(float *iabc,motor_t* motor);
-static void mc_encoderopenlooptest(float *iabc,motor_t* motor);
-
-void mc_openloop(float *iabc,motor_t* motor)
-{
-#ifndef MOTOR_OPENLOOP_ENCODER
-    mc_self_openlooptest(iabc,motor);
-#else
-    mc_encoderopenlooptest(iabc,motor);
-#endif
-}
-
 unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
 {
     duty_t duty = {0};
@@ -42,7 +30,7 @@ unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
 
     /*park变换*/
     float temp;
-    temp = fmodf(theta*5.0f,6.28f);
+    temp = fmodf(theta*MOTOR_PAIRS,6.28f);
     motor->encoder_handle.self_theta = temp;
     i_ab = _2r_2s(i_dq, temp);
     /*SVPWM*/
@@ -64,7 +52,7 @@ unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
     return 0;
 }
 
-static void mc_self_openlooptest(float *iabc,motor_t* motor)
+void mc_self_openlooptest(float *iabc,motor_t* motor)
 {
     enum
     {
@@ -113,49 +101,3 @@ static void mc_self_openlooptest(float *iabc,motor_t* motor)
         break;
     }
 }
-
-static void mc_encoderopenlooptest(float *iabc,motor_t* motor)
-{
-    float theta = 0.0f;
-    abc_t i_abc;
-    dq_t i_dq;
-
-    duty_t duty;
-    alpbet_t i_ab;
-    dq_t udq;
-    alpbet_t temp_ab;
-
-    enum{
-        IDLE=0,
-        RUN
-    };
-    static uint16_t state = IDLE;
-    switch (state)
-    {
-    case IDLE:
-        #ifdef MCB_V06
-            // motor->encoder_handle.sensor->set_calib_points((motor->encoder_handle.sensor));
-        #endif
-        state = RUN;
-    case RUN:
-        mc_encoder_read(&(motor->encoder_handle));
-        theta = motor->encoder_handle.ele_theta;
-        theta += 1.57F;
-        i_abc.a = iabc[0];i_abc.b = iabc[1];i_abc.c = iabc[2];
-        _3s_2s(i_abc, &i_ab);
-        _2s_2r(i_ab, theta, &i_dq);
-        motor->debug.id_real = i_dq.d;
-        motor->debug.iq_real = i_dq.q;
-        udq.d = 0.0f;
-        udq.q = motor->encoder_handle.self_te;//OPENLOOP_DEBUG_TOTAL_Te;//
-        temp_ab = _2r_2s(udq, theta);
-        duty = SVM(temp_ab.alpha, temp_ab.beta);
-        motor->setpwm(duty._a, duty._b, duty._c);
-        break;
-    default:
-        break;
-    }
-}
-
-
-

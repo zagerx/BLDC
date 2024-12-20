@@ -340,3 +340,42 @@ void linear_interpolation_deinit(void *Object)
     linear_in_t *linear = (linear_in_t *)Object;
     linear->max_acc = 0.0f;
 }
+static int16_t motor_speed_linear(linear_in_t *linear,int16_t target)
+{
+	test_count++;
+	enum{
+		INIT,
+		RUNING,
+		OVER
+	};
+	if (linear->last_targe != target)
+	{
+		/* 路径规划 */
+		linear->time_cnt = 0;
+
+		// int16_t delt = (target - linear->last_targe);
+		// delt>0 ? delt:-delt;
+
+		/* */
+		linear->actor_state = INIT;
+	}
+	switch (linear->actor_state)
+	{
+	case INIT:
+	case RUNING:
+		if (linear->time_cnt++ > linear->Ts)
+		{
+			linear->actor_state = OVER;
+		}
+		linear->out_ref = linear->out_ref + (linear->acc) * (linear->time_cnt);
+		break;
+	case OVER:
+		linear->time_cnt = 0;
+		linear->Ts = 0;
+		linear->acc = 0;
+		break;
+	default:
+		break;
+	}
+	return 0;
+}

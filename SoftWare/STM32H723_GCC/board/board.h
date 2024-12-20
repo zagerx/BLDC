@@ -2,6 +2,10 @@
 #define __BOARD__H
 
 /*--------------------电控软件---------------------*/
+#define MOTOR_DEBUG_SELF_MODE              (0)
+#define MOTOR_DEBUG_ENCODERMODE            (1)
+#define MOTOR_CLOSELOOP_ERMODE             (2)
+#define MOTOR_WORK_MODE                    MOTOR_DEBUG_ENCODERMODE
 //开环部分
 #define OPENLOOP_DEBUG_TOTAL_Te             (0.04f)
 #define OPENLOOP_DEBUG_STEP_THETA           (0.0004f)
@@ -16,17 +20,17 @@
 #define POSLOOP_KI                  (0.1f)
 
 /*---------------------电机本体+编码器(超龙电机)----------------------- */
-#define MOTOR_PAIRS          (5.0f)//电机极对数
-/*------------------------------------*/
+#define MOTOR_PAIRS                          (5.0f)//电机极对数
 #define ABZ_ENCODER_LINES_HALF               (2500)
 #define ABZ_ENCODER_LINES                    (5000)
 #define ABZ_ENCODER_RESOLUTION               (0.00628f)// 2*pi/5000
+
+
 #define ENCODER_TYPE_SENSORLESS              (0)
 #define ENCODER_TYPE_ABS                     (1)
 #define ENCODER_TYPE_HALL                    (2)
 #define ENCODER_TYPE_HALL_ABZ                (3)
 #define ENCODER_TYPE                         ENCODER_TYPE_HALL_ABZ
-
 #if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
     #define HALL_UPDATE_PERIOD   (0.0001f)
     #define HALL_POSITIVE_OFFSET (+0.0f+1.0f)

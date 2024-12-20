@@ -65,31 +65,7 @@ void motorctrl_currment_update(void *obj,float *iabc)
 #ifdef MOTOR_OPENLOOP
     mc_openloop(iabc,obj);
 #else    
-    float theta,next_theta,speed;
-    motor_t *motor = (motor_t *)obj;
-    //更新当前电流值
-    motor->currment_handle.i_abc[0] = iabc[0];
-    motor->currment_handle.i_abc[1] = iabc[1];
-    motor->currment_handle.i_abc[2] = iabc[2];
-    //更新角度
-    mc_encoder_read(&(motor->encoder_handle));
-    theta = motor->encoder_handle.ele_theta;
-    speed = motor->encoder_handle.speed;
-    next_theta = theta;// + 1.5f * CURRMENT_PERIOD * speed;
-    //更新电流环
-    motor->currment_handle.theta = theta;
-    motor->currment_handle.next_theta = next_theta;
-    duty = currment_loop(&(motor->currment_handle));
-    motor->setpwm(duty._a,duty._b,duty._c);           
-#endif
-}
-
-
-void mc_hightfreq_task(float *iabc,motor_t *motor)
-{
-#ifdef MOTOR_OPENLOOP
-    mc_openloop(iabc,motor);
-#else
+    motor_t *motor = (motor_t*)obj;
     duty_t duty = {0};
     /*获取角度 速度*/
 	float theta = 0.0f;
@@ -97,16 +73,31 @@ void mc_hightfreq_task(float *iabc,motor_t *motor)
     float speed = 0.0f;
 
     mc_encoder_read(&(motor->encoder_handle));
-    theta = motor->encoder_handle.ele_theta;
-    speed = motor->encoder_handle.speed;
-    next_theta = theta;// + 1.5f * CURRMENT_PERIOD * speed;
 
     motor->currment_handle.i_abc[0] = iabc[0];
     motor->currment_handle.i_abc[1] = iabc[1];
     motor->currment_handle.i_abc[2] = iabc[2];
-    motor->currment_handle.theta = theta;
-    motor->currment_handle.next_theta = next_theta;
-    duty = currment_loop(&(motor->currment_handle));
+
+    duty = currment_loop(motor);
+    motor->setpwm(duty._a,duty._b,duty._c);
+          
+#endif
+}
+
+
+void mc_hightfreq_task(float *iabc,motor_t *motor)
+{
+#if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
+    mc_self_openlooptest(iabc,motor);
+#else
+    duty_t duty = {0};
+    /*获取角度 速度*/
+    mc_encoder_read(&(motor->encoder_handle));
+
+    motor->currment_handle.i_abc[0] = iabc[0];
+    motor->currment_handle.i_abc[1] = iabc[1];
+    motor->currment_handle.i_abc[2] = iabc[2];
+    duty = currment_loop(motor);
     motor->setpwm(duty._a,duty._b,duty._c);
 #endif
 }

@@ -34,4 +34,19 @@ float linear_interpolation(void *linear, float new_targe);
 void linear_interpolation_init(void *Object, float max_acc);
 void linear_interpolation_deinit(void *Object);
 
+
+typedef struct _linear_in
+{
+	/* data */
+	int32_t acc_max;
+	int32_t acc;
+	int16_t targe;
+	int16_t out_ref;
+	int16_t last_targe;
+	uint16_t time_cnt;
+	uint16_t Ts;
+	uint16_t T_max;
+	int16_t actor_state;
+}linear_in_t;
+
 #endif

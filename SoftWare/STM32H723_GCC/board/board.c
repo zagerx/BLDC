@@ -45,6 +45,7 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 }
 void user_softresetsystem(void)
 {
+    USER_DEBUG_NORMAL("System reset\n");
 	HAL_NVIC_SystemReset();
 }
 void motor_write(void *pdata,uint16_t datalen)
@@ -55,7 +56,7 @@ void motor_write(void *pdata,uint16_t datalen)
 }
 void motor_read(void *pdata,uint16_t datalen)
 {
-    USER_DEBUG_NORMAL("flash wait write\n");
+    USER_DEBUG_NORMAL("flash wait read\n");
     // user_flash_read(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
 }
 

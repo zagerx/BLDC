@@ -42,8 +42,29 @@ void mc_encoder_init(mc_encoder_t *encoder)
 	if (!(encoder->sensor->init))
 	{
 		USER_DEBUG_NORMAL("encoder->init is null\n");
+		return;
 	}
+	encoder->runflag = 0;
+	encoder->ele_theta = 0.0f;
+	encoder->self_te = 0.0f;
+	encoder->speed = 0.0f;
+	encoder->total_realmectheta = 0.0f;
 	encoder->sensor->init((encoder->sensor));
+}
+/*==========================================================================================
+ * @brief        编码器初始化
+ * @FuncName     
+ * @param        encoder 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void mc_encoder_deinit(mc_encoder_t *encoder)
+{
+	encoder->runflag = 0;
+	encoder->ele_theta = 0.0f;
+	encoder->self_te = 0.0f;
+	encoder->speed = 0.0f;
+	encoder->total_realmectheta = 0.0f;
+	encoder->sensor->deinit((encoder->sensor));
 }
 /*==========================================================================================
  * @brief        编码器更新基准
