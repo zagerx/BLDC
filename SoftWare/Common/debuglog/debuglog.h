@@ -39,5 +39,8 @@
     #endif   
 #endif
 __attribute__((weak)) void USER_DEBUG_INIT(void);
+
+char* err_state_printf(int8_t init_flag, int8_t runflag, int16_t ia, int16_t ib, int16_t ic,int16_t cur_state,int16_t cur_cmd) ;
+
 #endif
 

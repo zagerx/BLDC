@@ -1,5 +1,5 @@
 #include "debuglog_cfg.h"
-
+#include "debuglog.h"
 #ifndef DEBUG_MODE_UART
     #define DOWN_BUFFER_NAME "DownBuffer"  
     #define DOWN_BUFFER_SIZE 1024  
@@ -47,3 +47,87 @@
     }
 
 #endif
+
+/*==========================================================================================
+ * @brief        常用的字符串处理
+ * @FuncName     
+ * @param        init_flag 
+ * @param        runflag 
+ * @param        ia 
+ * @param        ib 
+ * @param        ic 
+ * @return       char* 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+#include "string.h"
+#define TEST_SUCCESS_STRING  "ok," 
+#define TEST_FAIL_STRING     "err," 
+
+char* err_state_printf(int8_t init_flag, int8_t runflag, int16_t ia, int16_t ib, int16_t ic,int16_t cur_state,int16_t cur_cmd) 
+{
+    static char u1Src[50];  // 使用static确保u1Src在函数调用之间保持生命期
+
+    // 初始化u1Src为0，以确保字符串正确终止
+    memset(u1Src, 0, sizeof(u1Src));
+
+    // [0:4]字节存放'ok,' 或 'err,'
+    int8_t cur_pos = 0;
+    char str[20];
+    uint8_t len;
+
+    sprintf(str, "MCB: ");
+    len = strlen(str);
+    strncpy(&u1Src[cur_pos], str, len);
+    cur_pos += len;
+
+    if (init_flag) 
+    {
+        strncpy(&u1Src[cur_pos], TEST_SUCCESS_STRING, sizeof(TEST_SUCCESS_STRING)-1);  // 只复制 TEST_SUCCESS_STRING，不包括隐含的空字符
+        cur_pos += (sizeof(TEST_SUCCESS_STRING)-1);
+    } else {
+        strncpy(&u1Src[cur_pos], TEST_FAIL_STRING, sizeof(TEST_FAIL_STRING)-1); // 只复制 TEST_FAIL_STRING，不包括隐含的空字符
+        cur_pos += (sizeof(TEST_FAIL_STRING)-1);
+    }
+
+    if (runflag)
+    {
+        strncpy(&u1Src[cur_pos], TEST_SUCCESS_STRING, sizeof(TEST_SUCCESS_STRING)-1);  // 只复制 TEST_SUCCESS_STRING，不包括隐含的空字符
+        cur_pos += (sizeof(TEST_SUCCESS_STRING)-1);
+    } else {
+        strncpy(&u1Src[cur_pos], TEST_FAIL_STRING, sizeof(TEST_FAIL_STRING)-1); // 只复制 TEST_FAIL_STRING，不包括隐含的空字符
+        cur_pos += (sizeof(TEST_FAIL_STRING)-1);
+    }
+
+    sprintf(str, "ia:%d,", ia);
+    len = strlen(str);
+    strncpy(&u1Src[cur_pos], str, len);
+    cur_pos += len;
+
+    sprintf(str, "ib:%d,", ib);
+    len = strlen(str);
+    strncpy(&u1Src[cur_pos], str, len);
+    cur_pos += len;
+
+    sprintf(str, "ic:%d,", ic);
+    len = strlen(str);
+    strncpy(&u1Src[cur_pos], str, len);
+    cur_pos += len;
+
+    sprintf(str, "state:%d,", cur_state);
+    len = strlen(str);
+    strncpy(&u1Src[cur_pos], str, len);
+    cur_pos += len;
+
+    sprintf(str, "cmd:%d,", cur_cmd);
+    len = strlen(str);
+    strncpy(&u1Src[cur_pos], str, len);
+    cur_pos += len;
+
+    USER_DEBUG_NORMAL("err_flag  %s   %d\r\n",u1Src,cur_pos);
+	return u1Src;
+}
+
+
+
+
+
