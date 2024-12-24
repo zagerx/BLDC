@@ -169,7 +169,7 @@ C_INCLUDES += -I../Protocol
 C_SOURCES += $(wildcard ../Protocol/*.c)
 
 C_INCLUDES += -I../Common/method 
-# C_SOURCES += $(wildcard ../Common/method/trajectory_planning.c)
+C_SOURCES += $(wildcard ../Common/method/trajectory_planning.c)
 C_SOURCES += $(wildcard ../Common/method/pid.c)
 C_SOURCES += $(wildcard ../Common/method/filter.c)
 C_INCLUDES += -I../Common/flash

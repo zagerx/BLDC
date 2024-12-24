@@ -21,32 +21,22 @@ struct _s_in
 };
 float s_type_interpolation(void *object, float new_targe);
 
-typedef struct _linear_in linear_in_t;
-struct _linear_in
+typedef struct _linear_in
 {
-    float cur_output;
-    float last_targe;
-    float max_acc;
-    float acc;
-    int16_t status;
-};
-float linear_interpolation(void *linear, float new_targe);
-void linear_interpolation_init(void *Object, float max_acc);
-void linear_interpolation_deinit(void *Object);
+	/* data */
+	int32_t acc_max;
+	int32_t acc;
+	int16_t out_ref;          //执行输出值
+	int16_t last_targe;
+	uint16_t actor_count;     //执行器的计时器
+	uint16_t actor_Ts;        //执行器所需时间
+	uint16_t resp_max_cycle;  //响应最大周期
+	int16_t actor_state;      //执行状态
+	int16_t s_state;          //规划状态
+    int16_t test_out;
+}linear_in_t;
 
-
-// typedef struct _linear_in
-// {
-// 	/* data */
-// 	int32_t acc_max;
-// 	int32_t acc;
-// 	int16_t targe;
-// 	int16_t out_ref;
-// 	int16_t last_targe;
-// 	uint16_t time_cnt;
-// 	uint16_t Ts;
-// 	uint16_t T_max;
-// 	int16_t actor_state;
-// }linear_in_t;
+int16_t t_type_interpolation(linear_in_t *linear,int16_t target);
+void t_type_interpolation_init(linear_in_t *linear,uint16_t max_acc,uint16_t respone);
 
 #endif

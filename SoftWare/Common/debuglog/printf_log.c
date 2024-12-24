@@ -82,20 +82,28 @@ char* err_state_printf(int8_t init_flag, int8_t runflag, int16_t ia, int16_t ib,
 
     if (init_flag) 
     {
-        strncpy(&u1Src[cur_pos], TEST_SUCCESS_STRING, sizeof(TEST_SUCCESS_STRING)-1);  // 只复制 TEST_SUCCESS_STRING，不包括隐含的空字符
-        cur_pos += (sizeof(TEST_SUCCESS_STRING)-1);
+        sprintf(str, TEST_SUCCESS_STRING);
+        len = strlen(str);
+        strncpy(&u1Src[cur_pos], str, len);
+        cur_pos += len;
     } else {
-        strncpy(&u1Src[cur_pos], TEST_FAIL_STRING, sizeof(TEST_FAIL_STRING)-1); // 只复制 TEST_FAIL_STRING，不包括隐含的空字符
-        cur_pos += (sizeof(TEST_FAIL_STRING)-1);
+        sprintf(str, TEST_FAIL_STRING);
+        len = strlen(str);
+        strncpy(&u1Src[cur_pos], str, len);
+        cur_pos += len;
     }
 
     if (runflag)
     {
-        strncpy(&u1Src[cur_pos], TEST_SUCCESS_STRING, sizeof(TEST_SUCCESS_STRING)-1);  // 只复制 TEST_SUCCESS_STRING，不包括隐含的空字符
-        cur_pos += (sizeof(TEST_SUCCESS_STRING)-1);
+        sprintf(str, TEST_SUCCESS_STRING);
+        len = strlen(str);
+        strncpy(&u1Src[cur_pos], str, len);
+        cur_pos += len;
     } else {
-        strncpy(&u1Src[cur_pos], TEST_FAIL_STRING, sizeof(TEST_FAIL_STRING)-1); // 只复制 TEST_FAIL_STRING，不包括隐含的空字符
-        cur_pos += (sizeof(TEST_FAIL_STRING)-1);
+        sprintf(str, TEST_FAIL_STRING);
+        len = strlen(str);
+        strncpy(&u1Src[cur_pos], str, len);
+        cur_pos += len;
     }
 
     sprintf(str, "ia:%d,", ia);

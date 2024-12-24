@@ -103,11 +103,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_Delay(100);
   USER_DEBUG_NORMAL("H7 hello word\r\n");
-  err_state_printf(1,0,-32768,-32768,-32768,0,1);
-  err_state_printf(1,1,21,32768,8,0,1);
-  err_state_printf(0,1,21,0,8,0,1);
-  err_state_printf(0,0,21,-3,8,0,1);
-
   user_board_init();
 
   /* USER CODE END 2 */
