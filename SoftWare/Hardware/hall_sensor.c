@@ -179,12 +179,25 @@ void hall_cale(void *pthis)
     #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))//ABZ+HALL类传感器
         delt_cnt = hall->get_abzcount()-ABZ_ENCODER_LINES_HALF;
         hall->set_abzcount(ABZ_ENCODER_LINES_HALF);
-
-        hall->realcacle_angle += ((delt_cnt)*ABZ_ENCODER_RESOLUTION);
+        float diff = (delt_cnt)*ABZ_ENCODER_RESOLUTION;
+        hall->realcacle_angle += diff;
         hall->realcacle_angle = fmodf(hall->realcacle_angle,6.283185f);
         hall->realcacle_angle += (hall->realcacle_angle < 0.0f) ? 6.283185f : 0.0f;
         hall->angle = hall->realcacle_angle;
+
+        static uint8_t cnt = 0;
+        static float speed_sum = 0.0f;
+        speed_sum += diff;
+        if (cnt++>=10)
+        {
+            hall->realcacle_speed =  (speed_sum/0.001f);
+            cnt = 0;
+            speed_sum = 0.0f;
+        }
+        
+        
         hall->speed = hall->realcacle_speed;
+       
     #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)//HALL类传感器
         hall->realcacle_angle += hall->realcacle_speed * HALL_UPDATE_PERIOD;
         if (hall->realcacle_angle > 6.2831852f)

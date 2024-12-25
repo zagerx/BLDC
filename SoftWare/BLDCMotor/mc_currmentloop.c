@@ -35,6 +35,8 @@ duty_t currment_loop(void *obj)
 		Vd = 0.0f;
 		Vq = encoder->self_te;
 	#else
+		// Vd = id_targe;
+		// Vq = iq_targe;	
 		Vd = pid_contrl(d_axis_pid,id_targe,i_dq.d);
 		Vq = pid_contrl(q_axis_pid,iq_targe,i_dq.q);
 	#endif // DEBUG 

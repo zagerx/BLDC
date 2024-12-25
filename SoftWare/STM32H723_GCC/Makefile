@@ -169,7 +169,7 @@ C_INCLUDES += -I../Protocol
 C_SOURCES += $(wildcard ../Protocol/*.c)
 
 C_INCLUDES += -I../Common/method 
-C_SOURCES += $(wildcard ../Common/method/trajectory_planning.c)
+# C_SOURCES += $(wildcard ../Common/method/trajectory_planning.c)
 C_SOURCES += $(wildcard ../Common/method/pid.c)
 C_SOURCES += $(wildcard ../Common/method/filter.c)
 C_INCLUDES += -I../Common/flash
@@ -177,11 +177,6 @@ C_SOURCES += $(wildcard ../Common/flash/*.c)
 C_INCLUDES += -I../Common/Fsm 
 C_INCLUDES += -I../BLDCMotor 
 C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-# C_DEFS += -DMOTOR_OPENLOOP 
-# C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
-# C_DEFS += -DMOTOR_CURMENLOOP_DEBUG 
-# C_DEFS += -DMOTOR_CURMENLOOP_TEST
-# C_DEFS += -DMOTOR_SPEEDLOOP_DEBUG
 
 CMBACKTRACE_ENABLE = 0
 ifeq ($(CMBACKTRACE_ENABLE),1) 

@@ -28,7 +28,8 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     {
     case ENTER:
         USER_DEBUG_NORMAL("entry speed mode\n");
-        motor_paraminit(motor);//编码器初始化，获取初始位置
+         mc_encoder_init(&(motor->encoder_handle));//编码器初始化
+        motor_paraminit(motor);
         motor->encoder_handle.runflag = 0;
         pthis->chState = READY;
     case READY:
@@ -37,6 +38,8 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
             break;
         }
         motor->enable();
+        mc_encoder_calibrate(&(motor->encoder_handle));
+        motor->encoder_handle.runflag = 0;
         pthis->chState = RUN;
         break;    
     case RUN:
@@ -50,10 +53,13 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
                 #ifdef ENABLE_LINEAR_IN
                     motor->speed_handle.tar = linear_interpolation(&(motor->speed_handle.linear),\
                                                                     motor->debug.pid_debug_target);
-                    s_type_interpolation(&test_s_valu,motor->debug.pid_debug_target);                
+                    s_type_interpolation(&test_s_valu,motor->debug.pid_debug_target); 
+                #else
+                    motor->speed_handle.tar = motor->debug.pid_debug_target;                                        
                 #endif // DEBUG
+
                 motor->speed_handle.real = motor->encoder_handle.speed;
-                motor->currment_handle.iq_tar = speed_loop(&(motor->speed_handle));
+                motor->currment_handle.iq_tar = motor->debug.pid_debug_target;;//speed_loop(&(motor->speed_handle));
                 motor->currment_handle.id_tar = 0.0f;
             }
         }
@@ -61,7 +67,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     case EXIT:
         USER_DEBUG_NORMAL("exit speed mode\n");
         motor->disable();
-        motor->debug.pid_debug_target = 0.0f;
+        mc_encoder_deinit(&(motor->encoder_handle));
         motor_paramdeinit(motor);
         pthis->chState = ENTER;
         break;
@@ -73,30 +79,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
 
 static void motor_paraminit(motor_t *motor)
 {
-    mc_encoder_init(&(motor->encoder_handle));
-#ifdef MOTOR_CURMENLOOP_DEBUG
-    /*从FLASH指定位置读取PID参数数据*/
-    motor_Romparam_t temp;
-    motor->read(&temp,sizeof(motor_Romparam_t));
-    /*初始化PID参数*/
-    pid_init(&(motor->currment_handle.d_pid),temp.fbuf[0],temp.fbuf[1],1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
-    pid_init(&(motor->currment_handle.q_pid),temp.fbuf[0],temp.fbuf[1],1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
-    USER_DEBUG_NORMAL("D_Axis Kp:%.04f Ki:%.04f\n",motor->currment_handle.d_pid.kp,motor->currment_handle.d_pid.ki);  
-#elif MOTOR_CURMENLOOP_TEST
-    pid_init(&(motor->currment_handle.d_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
-    pid_init(&(motor->currment_handle.q_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);   
-#elif MOTOR_SPEEDLOOP_DEBUG
-    pid_init(&(motor->currment_handle.d_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
-    pid_init(&(motor->currment_handle.q_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);  
-
-    motor_Romparam_t temp;
-    motor->read((uint8_t *)&temp,sizeof(motor_Romparam_t));   
-    pid_init(&(motor->speed_handle.pid),temp.fbuf[0],temp.fbuf[1],1.0,SPEED_OUT_MAX,SPEED_OUT_MIN);    
-    lowfilter_init(&(motor->encoder_handle.speedfilter),15.0f);        
-    USER_DEBUG_NORMAL("Currment  :   Kp:%.4f Ki:%.4f\n",motor->currment_handle.q_pid.kp,motor->currment_handle.q_pid.ki);  
-    USER_DEBUG_NORMAL("Spedd loop:   Kp:%.4f,Ki:%.4f\n",motor->speed_handle.pid.kp,motor->speed_handle.pid.ki);
-#endif
-
+    motor->debug.pid_debug_target = 0.0f;
     pid_init(&(motor->currment_handle.d_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
     pid_init(&(motor->currment_handle.q_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);  
     pid_init(&(motor->speed_handle.pid),SPEEDLOOP_KP,SPEEDLOOP_KI,1.0,SPEED_OUT_MAX,SPEED_OUT_MIN);    
@@ -115,4 +98,6 @@ static void motor_paramdeinit(motor_t *motor)
 #ifdef ENABLE_LINEAR_IN
     linear_interpolation_deinit(&(motor->speed_handle.linear));
 #endif
+    motor->debug.pid_debug_target = 0.0f;
+
 }

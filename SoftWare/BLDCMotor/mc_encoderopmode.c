@@ -50,10 +50,8 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
         {
             if (  motor->debug.pid_debug_target != 0.0f)
             {
-                motor->encoder_handle.sensor->get_first_points((motor->encoder_handle.sensor));
-                motor->encoder_handle.sensor->set_calib_points((motor->encoder_handle.sensor));
                 motor->encoder_handle.self_te = motor->debug.pid_debug_target;
-                motor->encoder_handle.runflag = 1;
+                mc_encoder_calibrate(&motor->encoder_handle);
                 pthis->chState = RUN;
             }
         }
@@ -88,13 +86,11 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
 static void motor_paraminit(motor_t *motor)
 {
     motor->debug.pid_debug_target = 0.0f;
-    motor->debug.pid_debug_target = 0.0f;    
 }
 
 
 
 static void motor_paramdeinit(motor_t *motor)
 {
-    motor->debug.pid_debug_target = 0.0f;
     motor->debug.pid_debug_target = 0.0f;
 }

@@ -77,7 +77,12 @@ void mc_encoder_update(mc_encoder_t *encoder)
 	encoder->sensor->update_base(encoder->sensor);
 }
 
-
+void mc_encoder_calibrate(mc_encoder_t *encoder)
+{
+	encoder->sensor->get_first_points(encoder->sensor);
+	encoder->sensor->set_calib_points(encoder->sensor);
+	encoder->runflag = 1;
+}
 
 float mc_read_virvalencoder(float ialpha,float ibeta)
 {
