@@ -38,30 +38,26 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
             break;
         }
         motor->enable();
-        mc_encoder_calibrate(&(motor->encoder_handle));
-        motor->encoder_handle.runflag = 0;
-        pthis->chState = RUN;
+        USER_DEBUG_NORMAL("motor enable\n");
+        pthis->chState = CALIBRATE;
         break;    
+    case CALIBRATE:
+        {
+            if (  motor->debug.pid_debug_target != 0.0f)
+            {
+                motor->encoder_handle.self_te = motor->debug.pid_debug_target;
+                mc_encoder_calibrate(&motor->encoder_handle);
+                pthis->chState = RUN;
+            }
+        }
+        break;  
     case RUN:
         if (motor->curmode == M_SET_STOP)
         {
             pthis->chState = EXIT;
         }else{
-            if (motor->debug.pid_debug_target!=0.0f)
-            {                
-                motor->encoder_handle.runflag = 1;
-                #ifdef ENABLE_LINEAR_IN
-                    motor->speed_handle.tar = linear_interpolation(&(motor->speed_handle.linear),\
-                                                                    motor->debug.pid_debug_target);
-                    s_type_interpolation(&test_s_valu,motor->debug.pid_debug_target); 
-                #else
-                    motor->speed_handle.tar = motor->debug.pid_debug_target;                                        
-                #endif // DEBUG
-
-                motor->speed_handle.real = motor->encoder_handle.speed;
-                motor->currment_handle.iq_tar = motor->debug.pid_debug_target;;//speed_loop(&(motor->speed_handle));
-                motor->currment_handle.id_tar = 0.0f;
-            }
+            motor->currment_handle.id_tar = 0.0f;
+            motor->currment_handle.iq_tar = motor->debug.pid_debug_target;
         }
         break;
     case EXIT:
@@ -99,5 +95,7 @@ static void motor_paramdeinit(motor_t *motor)
     linear_interpolation_deinit(&(motor->speed_handle.linear));
 #endif
     motor->debug.pid_debug_target = 0.0f;
-
+    pid_reset(&(motor->currment_handle.d_pid));
+    pid_reset(&(motor->currment_handle.q_pid));  
+    pid_reset(&(motor->speed_handle.pid)); 
 }

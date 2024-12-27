@@ -28,22 +28,26 @@ duty_t currment_loop(void *obj)
 	_3s_2s(i_abc,&i_alphabeta);
 	_2s_2r(i_alphabeta,theta,&i_dq);
 	motor->debug.id_real = i_dq.d;
+	motor->debug.id_targe = id_targe;
+
 	motor->debug.iq_real = i_dq.q;
+	motor->debug.iq_targe = iq_targe;
+
 	/*PID Control*/
 	float Vd,Vq; 
 	#if(MOTOR_WORK_MODE == MOTOR_DEBUG_ENCODERMODE)
 		Vd = 0.0f;
 		Vq = encoder->self_te;
 	#else
-		// Vd = id_targe;
-		// Vq = iq_targe;	
-		Vd = pid_contrl(d_axis_pid,id_targe,i_dq.d);
-		Vq = pid_contrl(q_axis_pid,iq_targe,i_dq.q);
+		Vd = id_targe;
+		Vq = iq_targe;
+		// Vd = pid_contrl(d_axis_pid,id_targe,i_dq.d);
+		// Vq = pid_contrl(q_axis_pid,iq_targe,i_dq.q);
 	#endif // DEBUG 
 
 	/*Limiting Vector Circle*/
 	#if 0
-		float mod_to_V = (2.0f / 3.0f) * 24.0f;
+		float mod_to_V = (2.0f / 3.0f) * VOLATAGE_BUS;
 		float V_to_mod = 1.0f / mod_to_V;
 		float mod_d = V_to_mod * Vd;
 		float mod_q = V_to_mod * Vq;
@@ -54,21 +58,28 @@ duty_t currment_loop(void *obj)
 			mod_q *= mod_scalefactor;
 		}
 	#else
+		/*Inverse Park Transform*/
+		alpbet_t temp_ab = {0};
+		dq_t v_dq;
+		v_dq.d = Vd;
+		v_dq.q = Vq;
+		temp_ab = _2r_2s(v_dq,next_theta);
+
 		float k;
-		k = 0.8f*0.5773502f*sqrtf(24.0f/(Vd*Vd+Vq*Vq));
+		k = 0.8f*0.5773502f*sqrtf(VOLATAGE_BUS/(Vd*Vd+Vq*Vq));
 		if (k < 1.0f)
 		{
 			Vd *= k;
 			Vq *= k;
 		}
+		// k = 0.8f*0.5773502f*sqrtf(VOLATAGE_BUS/(temp_ab.alpha*temp_ab.alpha+temp_ab.beta*temp_ab.beta));
+		// if (k < 1.0f)
+		// {
+		// 	temp_ab.alpha *= k;
+		// 	temp_ab.beta *= k;
+		// }
 	#endif
 
-	/*Inverse Park Transform*/
-	alpbet_t temp_ab = {0};
-	dq_t v_dq;
-	v_dq.d = Vd;
-	v_dq.q = Vq;
-	temp_ab = _2r_2s(v_dq,next_theta);
 
 #if 0
 	/*Observer*/

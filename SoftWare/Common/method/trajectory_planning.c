@@ -20,6 +20,7 @@ enum
     INIT = 10,
     FAIL = 11,
     S_SUCCESS = 12,
+    OVER,
 };
 /*==========================================================================================
  * @brief        S型轨迹规划
@@ -189,6 +190,7 @@ void s_type_interpolation_deinit(void *object)
     memset(object, 0, sizeof(s_in_t));
 }
 #include "taskmodule.h"
+#if 0
 void test(void)
 {
     enum
@@ -201,12 +203,7 @@ void test(void)
         STEP5,
     };
     static s_in_t test_s_val;
-    static linear_in_t test_line_val;
-    static linear_in_t test_line2_val;
-
     static float target = 0.0f;
-    static int16_t linear_target = 0;
-    
     static uint8_t flag = 0;
     static uint8_t cnt = 0;
     static uint8_t status_ = INIT;
@@ -215,12 +212,7 @@ void test(void)
     case INIT:
         /* code */
         target = 100.0f;
-        linear_target = 8000;
-        // linear_interpolation_init(&test_line_val, 10.0f);
         s_type_interpolation_init(&test_s_val, 20.0f, 40);
-        t_type_interpolation_init(&test_line_val,100,30);
-        t_type_interpolation_init(&test_line2_val,100,30);
-
         status_ = STEP1;
         break;
     case STEP1:
@@ -228,7 +220,6 @@ void test(void)
         {
             cnt = 0;
             target += 100.0f;
-            linear_target += 3000;
             if (target > 300.0f)
             {
                 status_ = STEP2;
@@ -241,8 +232,6 @@ void test(void)
         {
             cnt = 0;
             target -= 100.0f;
-            linear_target -= 3000;
-
             if (target < -100.0f)
             {
                 status_ = STEP3;
@@ -255,8 +244,6 @@ void test(void)
         {
             cnt = 0;
             target = 800.0f;
-            linear_target = 8000;
-
             status_ = STEP4;
         }
         break;
@@ -265,8 +252,6 @@ void test(void)
         {
             cnt = 0;
             target = -800.0f;
-            linear_target = -8000;
-
             status_ = STEP5;
         }
         break;
@@ -275,21 +260,100 @@ void test(void)
     }
     float output;
     output = s_type_interpolation(&test_s_val, target);
-    // linear_interpolation(&test_line_val, target);
-    t_type_interpolation(&test_line_val, linear_target);
-    t_type_interpolation(&test_line2_val, linear_target+4000);
-
     return 0;
 }
-
 board_task(test)
-#define ACC_STEP (2) 
+#endif
+
+#if 1 //T型测试函数
+#define MAX_CYC  800  //最大加速周期
+#define MAX_ACC  300  //最大加速度
+#define MIN_SPEED_DIFF (MAX_CYC) //最小速度差
+#define MAX_SPEED_DIFF (48888)   //最大速度差
+#define ACC_STEP (1) //加加速度
+
+/*
+*  最大速度差 = v0 + acc*最大加速周期
+*  最大加速周期固定 唯一的变量是acc。所以acc_max = max_diff/最大加速周期
+*  
+*  最小速度差的确定:当加速度最小是，在
+*/
+
+
+void t_shape_test(void)
+{
+    enum
+    {
+        INIT,
+        STEP1,
+        STEP2,
+        STEP3,
+        STEP4,
+        STEP5,
+    };    
+    static linear_in_t test_line1_val;
+    static linear_in_t test_line2_val;
+    static int32_t linear1_target = 0;
+    static int32_t linear2_target = 0;
+    
+    static uint32_t cnt = 0;
+    static uint8_t status_ = INIT;
+    switch (status_)
+    {
+    case INIT:
+        /* code */
+        t_type_interpolation_init(&test_line1_val,MAX_ACC,MAX_CYC);
+        t_type_interpolation_init(&test_line2_val,MAX_ACC,MAX_CYC);
+        status_ = STEP1;
+        break;
+    case STEP1:
+        if (cnt++ > (MAX_CYC+200))
+        {
+            cnt = 0;
+            linear1_target = 800;
+            linear2_target = 24444;
+            status_ = STEP2;
+        }
+        break;
+    case STEP2:
+        if (cnt++ > (MAX_CYC+200))
+        {
+            cnt = 0;
+            linear1_target = -800;
+            linear2_target = -24444; 
+            status_ = STEP5;
+        }
+        break;
+    case STEP3:
+        if (cnt++ > (MAX_CYC+200))
+        {
+            cnt = 0;
+            linear1_target = -800;
+            linear2_target = -24444; 
+            status_ = STEP5;
+        }        
+        break;
+    case STEP4:
+        break;
+    default:
+        break;
+    }
+    static int32_t output1;
+    static int32_t output2;
+    output1 = t_type_interpolation(&test_line1_val, linear1_target);
+    output2 = t_type_interpolation(&test_line2_val, linear2_target);
+    return 0;    
+}
+board_task(t_shape_test)
+#endif
+
 static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
 {
 	int32_t out = 0;
+    int32_t v0;
 	int32_t count = 0;
 	int32_t acc = 0;
-    int16_t diff = 0;
+    int32_t diff = 0;
 	while (1)
 	{
 		switch (linear->s_state)
@@ -297,34 +361,37 @@ static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
             case IDLE:
             break;
 		case INIT:
-            out = linear->out_ref;
-            acc = 0;
+            v0 = linear->V0;
             diff = new_targe - linear->last_targe;
+            acc = 0;
 			linear->s_state = TS_STEP1;
 			break;
 		case TS_STEP1:
 			//计算末端速度
-			out +=  acc*(count++);
-			if (count >= linear->resp_max_cycle)//超过响应时间
-			{
-                count = 0;
-				linear->s_state = TS_STEP2;
-                break;
-			}
-            //判断是否规划成功
-            bool is_successful = (diff > 0 && out >= new_targe) || (diff <= 0 && out <= new_targe);
-            if (is_successful) {               
-                linear->s_state = S_SUCCESS;
+			out = v0 +  acc*(count);
+            if ((count == linear->resp_max_cycle))//是否在指定时间
+            {
+                bool is_successful = (diff > 0 && out >= new_targe) || (diff <= 0 && out <= new_targe);
+                if (is_successful) {
+                    linear->s_state = S_SUCCESS;
+                    break;    
+                }else{
+                    count = 0;
+                    linear->s_state = TS_STEP2; 
+                    break;                   
+                }
             }
+            count++;
+
             break;
 		case TS_STEP2:
             acc += (diff > 0) ? ACC_STEP : -ACC_STEP;
             if (abs(acc) > linear->acc_max) {
                 linear->s_state = FAIL; // 规划失败
             } else {
-                out = linear->out_ref; // 更新输出为参考值
+                v0 = linear->V0; // 更新v0
                 linear->s_state = TS_STEP1; // 重新规划
-            }            
+            }
 			break;
 		case S_SUCCESS:
             linear->actor_Ts = count;
@@ -345,7 +412,7 @@ static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
 		}
 	}
 }
-int16_t t_type_interpolation(linear_in_t *linear,int16_t target)
+int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
 {
 	if (linear->last_targe != target)
 	{	//开始规划
@@ -356,6 +423,7 @@ int16_t t_type_interpolation(linear_in_t *linear,int16_t target)
         linear->last_targe = target;
 	}
 
+    uint32_t out = 0;
 	switch (linear->actor_state)
 	{
 	case IDLE:
@@ -363,28 +431,47 @@ int16_t t_type_interpolation(linear_in_t *linear,int16_t target)
         linear->actor_count = 0;
         linear->actor_Ts = 0;
 		break;
-	case RISING:
-		linear->out_ref = linear->out_ref + (linear->acc) * (linear->actor_count++);
-		if (linear->actor_count >= linear->actor_Ts)//到达目标速度
+	case RISING://加速中
+		out = linear->V0 + (linear->acc) * (linear->actor_count);
+
+        /*是否到达目标速度*/
+		if (linear->actor_count >= linear->actor_Ts)
 		{
-			linear->actor_state = IDLE;
+            out = target;//限制速输出
+            linear->V0 = out;
+            linear->out_ref = out; 
+            linear->acc = 0;
+            linear->actor_count = 0;
+            linear->actor_Ts = 0;             
+			linear->actor_state = OVER;
             break;
 		}
+
+        linear->actor_count++;
 		break;
+    case OVER://加速结束
+        out = linear->out_ref;
+        break;
 	default:
 		break;
 	}
-    /*限制执行器的输出*/
-    if ((linear->acc > 0 && (linear->out_ref > target)) || (linear->acc <= 0 && (linear->out_ref < target))) {
-        linear->out_ref = target;
-    }
-    
-	return linear->out_ref;
+	return out;
 }
 
-void t_type_interpolation_init(linear_in_t *linear,uint16_t max_acc,uint16_t respone)
+void t_type_interpolation_init(linear_in_t *linear,uint32_t max_acc,uint32_t respone)
 {
+    linear->last_targe = 0;
     linear->acc_max = max_acc;
     linear->resp_max_cycle = respone;
 }
-
+void t_type_interpolation_deinit(linear_in_t *linear)
+{
+    linear->acc         = 0;
+    linear->out_ref     = 0;
+    linear->V0          = 0;
+    linear->last_targe  = 0;
+    linear->actor_count = 0;
+    linear->actor_Ts    = 0;
+    linear->actor_state = 0;
+    linear->s_state     = 0;
+}

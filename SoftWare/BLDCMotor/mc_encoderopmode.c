@@ -69,7 +69,6 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
             motor->encoder_handle.self_te = motor->debug.pid_debug_target;
         }
         break;
-        break;    
     case EXIT:
         USER_DEBUG_NORMAL("exit encoder openloop mode\n");
         motor->disable();

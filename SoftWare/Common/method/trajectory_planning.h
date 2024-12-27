@@ -25,18 +25,20 @@ typedef struct _linear_in
 {
 	/* data */
 	int32_t acc_max;
-	int32_t acc;
-	int16_t out_ref;          //执行输出值
-	int16_t last_targe;
-	uint16_t actor_count;     //执行器的计时器
-	uint16_t actor_Ts;        //执行器所需时间
-	uint16_t resp_max_cycle;  //响应最大周期
-	int16_t actor_state;      //执行状态
-	int16_t s_state;          //规划状态
-    int16_t test_out;
+   uint32_t resp_max_cycle;  //响应最大周期
+
+	int32_t acc;          
+	int32_t out_ref;          //执行输出值
+    int32_t V0;           
+	int32_t last_targe;    
+   uint32_t actor_count;     //执行器的计时器
+   uint32_t actor_Ts;        //执行器所需时间
+	int32_t actor_state;      //执行状态
+	int32_t s_state;          //规划状态
+    int32_t test_out;
 }linear_in_t;
 
-int16_t t_type_interpolation(linear_in_t *linear,int16_t target);
-void t_type_interpolation_init(linear_in_t *linear,uint16_t max_acc,uint16_t respone);
-
+int32_t t_type_interpolation(linear_in_t *linear,int32_t target);
+void t_type_interpolation_init(linear_in_t *linear,uint32_t max_acc,uint32_t respone);
+void t_type_interpolation_deinit(linear_in_t *linear);
 #endif
