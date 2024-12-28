@@ -72,7 +72,10 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 #include "motorctrl_common.h"
 #include "voft.h"
 #include "motorctrl.h"
-extern motor_t motor1;
+#include "fsm.h"
+static fsm_cb_t Motor1Fsm;
+motor_t motor1 = {0};
+static hall_sensor_t hall_sensor;
 
 void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
@@ -103,26 +106,41 @@ static uint32_t hall_gettick()
     return 0;
 }
 
-void motor_func_register(motor_t *motor)
+/**
+ * 电机初始化
+ */
+void motorctrl_init(void)
 {
-    hall_register((void*)&(motor->encoder_handle.sensor),hall_get_sectionnumb,\
-                                                        hall_gettick);
-    motor->encoder_handle.init = hall_init;
-    motor->encoder_handle.deinit = hall_deinit;
-    motor->encoder_handle.update = hall_update;
-    motor->encoder_handle.cacle = hall_cale;
-    motor->encoder_handle.get_firstpos = hall_get_initpos;
-    USER_DEBUG_NORMAL("motor_func_register \n");
 
-    motor->enable = motor_enable;
-    motor->disable = motor_disable;
-    motor->setpwm = motor_set_pwm;
-    motor->reset_system = user_softresetsystem;
-    // motor->bsptransmit = _bsp_protransmit;//TODO
-    motor->write = motor_write;
-    motor->read = motor_read;    
+    /*HALL_ABZ传感器初始化  和电机模块无关*/
+    hall_register((void*)&(hall_sensor),\
+                                        hall_get_sectionnumb,\
+                                        hall_gettick,\
+                                        hall_cale,\
+                                        hall_update,\
+                                        hall_init,\
+                                        hall_deinit,\
+                                        hall_get_initpos,\
+                                        hall_set_calib_points);
+    //初始化电机控制状态机
+    motorfsm_register(&Motor1Fsm,&motor1);
+    //注册编码器接口
+    motor_encoder_register(Motor1Fsm.pdata,                      \
+                                     &(hall_sensor));
+    //注册电机动作回调
+    motor_actor_register(Motor1Fsm.pdata,                         \
+                              motor_enable,                       \
+                              motor_disable,                      \
+                              motor_set_pwm,                      \
+                              user_softresetsystem,               \
+                              motor_write,                        \
+                              motor_read);
 }
 
+void motorctrl_task(void)
+{
+    motortctrl_process(&Motor1Fsm);
+}
 
 
 

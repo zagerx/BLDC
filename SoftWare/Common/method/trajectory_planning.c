@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include "string.h"
+#include "stdlib.h"
 #define EPSILON 0.01f // 用于浮点数比较的容差
 enum
 {
@@ -279,7 +280,10 @@ board_task(test)
 *  最小速度差的确定:当加速度最小是，在
 */
 
-
+#include "main.h"
+#include "rng.h"
+#include "random.h"
+#include "stdlib.h"
 void t_shape_test(void)
 {
     enum
@@ -295,7 +299,14 @@ void t_shape_test(void)
     static linear_in_t test_line2_val;
     static int32_t linear1_target = 0;
     static int32_t linear2_target = 0;
-    
+    static int32_t rand_value = 0;
+
+    static random_t rand1;
+    static random_t rand2;
+    static random_t rand3;
+
+    int32_t xxx;
+
     static uint32_t cnt = 0;
     static uint8_t status_ = INIT;
     switch (status_)
@@ -304,6 +315,10 @@ void t_shape_test(void)
         /* code */
         t_type_interpolation_init(&test_line1_val,MAX_ACC,MAX_CYC);
         t_type_interpolation_init(&test_line2_val,MAX_ACC,MAX_CYC);
+        random_init(&rand1,24444,800);
+        random_init(&rand2,24444,800);
+        random_init(&rand3,80,20);
+
         status_ = STEP1;
         break;
     case STEP1:
@@ -321,27 +336,43 @@ void t_shape_test(void)
             cnt = 0;
             linear1_target = -800;
             linear2_target = -24444; 
-            status_ = STEP5;
+            status_ = STEP4;
         }
         break;
     case STEP3:
-        if (cnt++ > (MAX_CYC+200))
+        if (cnt++ > (MAX_CYC+rand_value))
         {
             cnt = 0;
             linear1_target = -800;
             linear2_target = -24444; 
-            status_ = STEP5;
+            status_ = STEP4;
+            __HAL_RNG_ENABLE(&hrng);
         }        
         break;
     case STEP4:
+        if (cnt++ < MAX_CYC+rand_value)
+        {
+            break;
+        }
+        cnt = 0;
+        HAL_RNG_GenerateRandomNumber(&hrng, &xxx);
+        linear1_target = random_cacle(&rand1,xxx);
+        HAL_RNG_GenerateRandomNumber(&hrng, &xxx);
+        linear2_target = random_cacle(&rand2,xxx);
+        USER_DEBUG_NORMAL("rng = %d\r\n", xxx);
+            
         break;
     default:
+
         break;
     }
     static int32_t output1;
     static int32_t output2;
     output1 = t_type_interpolation(&test_line1_val, linear1_target);
     output2 = t_type_interpolation(&test_line2_val, linear2_target);
+    HAL_RNG_GenerateRandomNumber(&hrng, &xxx);    
+    rand_value = random_cacle(&rand3,xxx);
+    rand_value = 10;
     return 0;    
 }
 board_task(t_shape_test)
@@ -432,13 +463,16 @@ int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
         linear->actor_Ts = 0;
 		break;
 	case RISING://加速中
-		out = linear->V0 + (linear->acc) * (linear->actor_count);
 
+		out = linear->V0 + (linear->acc);
+        linear->V0 = out;
+    
         /*是否到达目标速度*/
-		if (linear->actor_count >= linear->actor_Ts)
+		// if (linear->actor_count >= linear->resp_max_cycle-1)
+        if ((linear->acc > 0 && (linear->V0 >= linear->last_targe)) || (linear->acc < 0 && (linear->V0 <= linear->last_targe)))
 		{
             out = target;//限制速输出
-            linear->V0 = out;
+            // linear->V0 = out;
             linear->out_ref = out; 
             linear->acc = 0;
             linear->actor_count = 0;
@@ -446,8 +480,8 @@ int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
 			linear->actor_state = OVER;
             break;
 		}
-
         linear->actor_count++;
+
 		break;
     case OVER://加速结束
         out = linear->out_ref;
