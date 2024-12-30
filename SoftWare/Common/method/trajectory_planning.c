@@ -299,26 +299,24 @@ void t_shape_test(void)
     static linear_in_t test_line2_val;
     static int32_t linear1_target = 0;
     static int32_t linear2_target = 0;
-    static int32_t rand_value = 0;
-
+    static int32_t CMD_deployment_cycle = 0;//指令下发周期
     static random_t rand1;
     static random_t rand2;
     static random_t rand3;
 
     int32_t xxx;
+    int32_t rand_value = 0;
 
     static uint32_t cnt = 0;
     static uint8_t status_ = INIT;
     switch (status_)
     {
-    case INIT:
-        /* code */
+    case INIT://初始化待测试模块
         t_type_interpolation_init(&test_line1_val,MAX_ACC,MAX_CYC);
         t_type_interpolation_init(&test_line2_val,MAX_ACC,MAX_CYC);
         random_init(&rand1,24444,800);
         random_init(&rand2,24444,800);
         random_init(&rand3,80,20);
-
         status_ = STEP1;
         break;
     case STEP1:
@@ -336,31 +334,27 @@ void t_shape_test(void)
             cnt = 0;
             linear1_target = -800;
             linear2_target = -24444; 
-            status_ = STEP4;
+            status_ = IDLE;
         }
         break;
-    case STEP3:
-        if (cnt++ > (MAX_CYC+rand_value))
-        {
-            cnt = 0;
-            linear1_target = -800;
-            linear2_target = -24444; 
-            status_ = STEP4;
-            __HAL_RNG_ENABLE(&hrng);
-        }        
-        break;
-    case STEP4:
-        if (cnt++ < MAX_CYC+rand_value)
+    case IDLE:
+        if (cnt++ < CMD_deployment_cycle )
         {
             break;
         }
         cnt = 0;
+        HAL_RNG_GenerateRandomNumber(&hrng, &xxx);    
+        rand_value = random_cacle(&rand3,xxx);    
+        CMD_deployment_cycle = MAX_CYC + rand_value;//更新指令周期
+        status_ = STEP4;
+        break;        
+    case STEP4:
         HAL_RNG_GenerateRandomNumber(&hrng, &xxx);
         linear1_target = random_cacle(&rand1,xxx);
         HAL_RNG_GenerateRandomNumber(&hrng, &xxx);
         linear2_target = random_cacle(&rand2,xxx);
         USER_DEBUG_NORMAL("rng = %d\r\n", xxx);
-            
+        status_ = IDLE;
         break;
     default:
 
@@ -370,14 +364,17 @@ void t_shape_test(void)
     static int32_t output2;
     output1 = t_type_interpolation(&test_line1_val, linear1_target);
     output2 = t_type_interpolation(&test_line2_val, linear2_target);
-    HAL_RNG_GenerateRandomNumber(&hrng, &xxx);    
-    rand_value = random_cacle(&rand3,xxx);
-    rand_value = 10;
     return 0;    
 }
 board_task(t_shape_test)
 #endif
-
+/*==========================================================================================
+ * @brief        线性规划函数
+ * @FuncName     
+ * @param        linear 
+ * @param        new_targe 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
 {
 	int32_t out = 0;
@@ -443,6 +440,14 @@ static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
 		}
 	}
 }
+/*==========================================================================================
+ * @brief        线性插补算法
+ * @FuncName     
+ * @param        linear 
+ * @param        target 
+ * @return       int32_t 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
 {
 	if (linear->last_targe != target)
@@ -466,7 +471,7 @@ int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
 
 		out = linear->V0 + (linear->acc);
         linear->V0 = out;
-    
+
         /*是否到达目标速度*/
 		// if (linear->actor_count >= linear->resp_max_cycle-1)
         if ((linear->acc > 0 && (linear->V0 >= linear->last_targe)) || (linear->acc < 0 && (linear->V0 <= linear->last_targe)))
@@ -491,13 +496,26 @@ int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
 	}
 	return out;
 }
-
+/*==========================================================================================
+ * @brief        线性插补chushih
+ * @FuncName     
+ * @param        linear 
+ * @param        max_acc 
+ * @param        respone 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 void t_type_interpolation_init(linear_in_t *linear,uint32_t max_acc,uint32_t respone)
 {
     linear->last_targe = 0;
     linear->acc_max = max_acc;
     linear->resp_max_cycle = respone;
 }
+/*==========================================================================================
+ * @brief        线性插补反初始化
+ * @FuncName     
+ * @param        linear 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 void t_type_interpolation_deinit(linear_in_t *linear)
 {
     linear->acc         = 0;
