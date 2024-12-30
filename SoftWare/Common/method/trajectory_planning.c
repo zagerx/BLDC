@@ -269,7 +269,7 @@ board_task(test)
 #endif
 
 #if 1 //T型测试函数
-#define MAX_CYC  800  //最大加速周期
+#define MAX_CYC  3200  //最大加速周期
 #define MAX_ACC  300  //最大加速度
 #define MIN_SPEED_DIFF (MAX_CYC) //最小速度差
 #define MAX_SPEED_DIFF (48888)   //最大速度差
@@ -322,7 +322,8 @@ void t_shape_test(void)
         status_ = STEP1;
         break;
     case STEP1:
-        if (cnt++ > (MAX_CYC+200))
+        USER_DEBUG_NORMAL("enter STEP1\r\n");
+        // if (cnt++ > (MAX_CYC+200))
         {
             cnt = 0;
             linear1_target = 800;
@@ -331,7 +332,8 @@ void t_shape_test(void)
         }
         break;
     case STEP2:
-        if (cnt++ > (MAX_CYC+200))
+        // if (cnt++ > (MAX_CYC+200))
+        if (cnt++ > (800+200))        
         {
             cnt = 0;
             linear1_target = -800;
@@ -396,13 +398,17 @@ static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
 		case INIT:
             v0 = linear->V0;
             diff = new_targe - linear->last_targe;
-            acc = 0;
+            acc = (diff > 0) ? ACC_STEP : -ACC_STEP;
 			linear->s_state = TS_STEP1;
+            USER_DEBUG_NORMAL("INIT:acc = %d\r\n",acc);
 			break;
 		case TS_STEP1:
+#if 0
 			//计算末端速度
 			out = v0 +  acc*(count);
-            if ((count == linear->resp_max_cycle))//是否在指定时间
+            USER_DEBUG_NORMAL("acc = %d  out = %d count = %d\r\n",acc,out,count);
+
+            if ((count <= linear->resp_max_cycle))//是否在指定时间
             {
                 bool is_successful = (diff > 0 && out >= new_targe) || (diff <= 0 && out <= new_targe);
                 if (is_successful) {
@@ -415,7 +421,33 @@ static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
                 }
             }
             count++;
+#else
+			//计算末端速度
+			out = v0 +  acc*(count);
+            // USER_DEBUG_NORMAL("acc = %d  out = %d count = %d\r\n",acc,out,count);
+            bool is_successful = (diff > 0 && out >= new_targe) || (diff <= 0 && out <= new_targe);
+            if (is_successful) {
+                linear->s_state = S_SUCCESS;
+                break;    
+            }
 
+            int32_t resp_cycle;
+            if (linear->zero_flag)
+            {
+                resp_cycle = linear->resp_max_cycle - (linear->resp_max_cycle/8);
+            }else{
+                resp_cycle = linear->resp_max_cycle;
+            }
+            
+            if (count > resp_cycle)
+            {
+                count = 0;
+                linear->s_state = TS_STEP2; 
+                break;   
+            }
+            
+            count++;
+#endif
             break;
 		case TS_STEP2:
             acc += (diff > 0) ? ACC_STEP : -ACC_STEP;
@@ -429,7 +461,7 @@ static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
 		case S_SUCCESS:
             linear->actor_Ts = count;
             linear->acc = acc;
-
+            USER_DEBUG_NORMAL("success acc %d\r\n",linear->acc);
             /*是否穿越0点*/
             if ((new_targe > 0 && linear->last_targe<0) || (new_targe<0 && linear->last_targe>0))
             {
@@ -490,7 +522,6 @@ int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
         if ((linear->acc > 0 && (linear->V0 >= linear->last_targe)) || (linear->acc < 0 && (linear->V0 <= linear->last_targe)))
 		{
             out = target;//限制速输出
-            // linear->V0 = out;
             linear->out_ref = out; 
             linear->acc = 0;
             linear->actor_count = 0;
@@ -512,7 +543,7 @@ int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
         break;
     case WAIT:
         out = 0;
-        if(linear->actor_count++<=(linear->actor_Ts/4))
+        if(linear->actor_count++<=(linear->actor_Ts/8))
         {
             break;
         }
