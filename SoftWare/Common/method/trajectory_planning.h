@@ -36,6 +36,8 @@ typedef struct _linear_in
 	int32_t actor_state;      //执行状态
 	int32_t s_state;          //规划状态
     int32_t test_out;
+    int32_t zero_flag;
+
 }linear_in_t;
 
 int32_t t_type_interpolation(linear_in_t *linear,int32_t target);

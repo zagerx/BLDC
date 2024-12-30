@@ -21,7 +21,9 @@ enum
     INIT = 10,
     FAIL = 11,
     S_SUCCESS = 12,
-    OVER,
+    ZERO_POINT = 13,
+    OVER = 14,
+    WAIT = 15,
 };
 /*==========================================================================================
  * @brief        S型轨迹规划
@@ -335,6 +337,8 @@ void t_shape_test(void)
             linear1_target = -800;
             linear2_target = -24444; 
             status_ = IDLE;
+            // status_ = STEP5;
+            CMD_deployment_cycle = MAX_CYC;
         }
         break;
     case IDLE:
@@ -345,7 +349,9 @@ void t_shape_test(void)
         cnt = 0;
         HAL_RNG_GenerateRandomNumber(&hrng, &xxx);    
         rand_value = random_cacle(&rand3,xxx);    
-        CMD_deployment_cycle = MAX_CYC + rand_value;//更新指令周期
+        // CMD_deployment_cycle = MAX_CYC + rand_value;//更新指令周期
+        CMD_deployment_cycle = MAX_CYC + 200;//更新指令周期
+
         status_ = STEP4;
         break;        
     case STEP4:
@@ -353,7 +359,6 @@ void t_shape_test(void)
         linear1_target = random_cacle(&rand1,xxx);
         HAL_RNG_GenerateRandomNumber(&hrng, &xxx);
         linear2_target = random_cacle(&rand2,xxx);
-        USER_DEBUG_NORMAL("rng = %d\r\n", xxx);
         status_ = IDLE;
         break;
     default:
@@ -424,7 +429,17 @@ static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
 		case S_SUCCESS:
             linear->actor_Ts = count;
             linear->acc = acc;
-            linear->actor_state = RISING;
+
+            /*是否穿越0点*/
+            if ((new_targe > 0 && linear->last_targe<0) || (new_targe<0 && linear->last_targe>0))
+            {
+                linear->zero_flag = 1;//穿越0点
+                linear->actor_state = ZERO_POINT;
+            }else{
+                linear->zero_flag = 0;//不穿越0点
+                linear->actor_state = RISING;
+            }
+
 			linear->s_state = IDLE;
             return;
 			break;
@@ -468,10 +483,8 @@ int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
         linear->actor_Ts = 0;
 		break;
 	case RISING://加速中
-
 		out = linear->V0 + (linear->acc);
         linear->V0 = out;
-
         /*是否到达目标速度*/
 		// if (linear->actor_count >= linear->resp_max_cycle-1)
         if ((linear->acc > 0 && (linear->V0 >= linear->last_targe)) || (linear->acc < 0 && (linear->V0 <= linear->last_targe)))
@@ -485,9 +498,33 @@ int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
 			linear->actor_state = OVER;
             break;
 		}
-        linear->actor_count++;
+        // linear->actor_count++;
 
 		break;
+
+    case ZERO_POINT:
+		out = linear->V0 + (linear->acc);
+        linear->V0 = out;
+        if (out < (linear->acc>0?linear->acc:-linear->acc))
+        {
+            linear->actor_state = WAIT;
+        }
+        break;
+    case WAIT:
+        out = 0;
+        if(linear->actor_count++<=(linear->actor_Ts/4))
+        {
+            break;
+        }
+        linear->actor_count = 0;
+        linear->actor_state = RISING;
+        break;
+    case FALLING://第二次加速
+		out = linear->V0 + (linear->acc);
+        linear->V0 = out;        
+        break;
+
+
     case OVER://加速结束
         out = linear->out_ref;
         break;
