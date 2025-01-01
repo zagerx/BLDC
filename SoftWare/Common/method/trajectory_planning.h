@@ -27,9 +27,9 @@ typedef struct _linear_in
 	int32_t acc_max;
    uint32_t resp_max_cycle;  //响应最大周期
 
-	int32_t acc;          
-	int32_t out_ref;          //执行输出值
-    int32_t V0;           
+	float acc;          
+	float out_ref;          //执行输出值
+    float V0;           
 	int32_t last_targe;    
    uint32_t actor_count;     //执行器的计时器
    uint32_t actor_Ts;        //执行器所需时间
