@@ -31,6 +31,7 @@
 #include "debuglog.h"
 #include "taskmodule.h"
 #include "board.h"
+// #include 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -178,6 +179,67 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+int main(void)
+{
+
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_USART3_UART_Init();
+  MX_TIM4_Init();
+  MX_ADC1_Init();
+  MX_ADC2_Init();
+  MX_OPAMP1_Init();
+  MX_OPAMP2_Init();
+  MX_OPAMP3_Init();
+  MX_TIM1_Init();
+  MX_RNG_Init();
+  /* USER CODE BEGIN 2 */
+  USER_DEBUG_NORMAL("G431CBUx Hello Word\n");
+  Board_init();
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    do_taskcalls();
+    static uint8_t cout;
+    if (cout++>200)
+    {
+      /* code */
+      cout = 0;
+      HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);
+    }
+    
+    HAL_Delay(1);
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
 
 /* USER CODE END 4 */
 

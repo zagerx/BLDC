@@ -6,11 +6,6 @@
 
 #include "adc.h"
 #include "opamp.h"
-void Board_init(void)
-{
-    // adc_start();
-    // opamp_start();
-}
 #include "voft.h"
 
 #include "tim.h"
@@ -143,6 +138,12 @@ void motorctrl_task(void)
 }
 
 
+void Board_init(void)
+{
+    // adc_start();
+    // opamp_start();
+    motorctrl_init();
+}
 
 void baord_process(void)
 {
@@ -150,4 +151,4 @@ void baord_process(void)
     // a = adc_getval()*(3.3f/4096);
 }
 
-board_task(baord_process)
+board_task(motorctrl_task)

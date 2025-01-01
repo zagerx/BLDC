@@ -269,7 +269,7 @@ board_task(test)
 #endif
 
 #if 1 //T型测试函数
-#define MAX_CYC  3200  //最大加速周期
+#define MAX_CYC  1600  //最大加速周期
 #define MAX_ACC  300  //最大加速度
 #define MIN_SPEED_DIFF (MAX_CYC) //最小速度差
 #define MAX_SPEED_DIFF (48888)   //最大速度差
@@ -280,6 +280,19 @@ board_task(test)
 *  最大加速周期固定 唯一的变量是acc。所以acc_max = max_diff/最大加速周期
 *  
 *  最小速度差的确定:当加速度最小是，在
+
+1、速度规划第一参考：必须满足规定响应时间
+2、在规定时间内:以最大加速度运行，任然不能满足指定目标
+3、以最小加速度运行，提前到达目标值
+
+
+计算速度差 
+
+速度差/最大加速 = 加速时间  是否大于响应时间，规划失败，则以最大加速进行规划
+
+如果小于等于响应时间 
+以响应时间，计算合适的加速度。
+若无解(加速度小于)
 */
 
 #include "main.h"
@@ -322,21 +335,17 @@ void t_shape_test(void)
         status_ = STEP1;
         break;
     case STEP1:
-        USER_DEBUG_NORMAL("enter STEP1\r\n");
-        // if (cnt++ > (MAX_CYC+200))
-        {
-            cnt = 0;
-            linear1_target = 800;
+            linear1_target = -400;
             linear2_target = 24444;
+            cnt = 0;
             status_ = STEP2;
-        }
         break;
     case STEP2:
         // if (cnt++ > (MAX_CYC+200))
         if (cnt++ > (800+200))        
         {
             cnt = 0;
-            linear1_target = -800;
+            linear1_target = 400;
             linear2_target = -24444; 
             status_ = IDLE;
             // status_ = STEP5;
@@ -382,13 +391,11 @@ board_task(t_shape_test)
  * @param        new_targe 
  * @version      0.1
 --------------------------------------------------------------------------------------------*/
-static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
+static void linear_shape_path_planning(linear_in_t *linear, int32_t new_targe)
 {
-	int32_t out = 0;
-    int32_t v0;
-	int32_t count = 0;
-	int32_t acc = 0;
-    int32_t diff = 0;
+	float out = 0;
+	float acc = 0;
+    float diff = 0;
 	while (1)
 	{
 		switch (linear->s_state)
@@ -396,89 +403,37 @@ static void linear_shape_path_planning(linear_in_t *linear, float new_targe)
             case IDLE:
             break;
 		case INIT:
-            v0 = linear->V0;
-            diff = new_targe - linear->last_targe;
-            acc = (diff > 0) ? ACC_STEP : -ACC_STEP;
-			linear->s_state = TS_STEP1;
-            USER_DEBUG_NORMAL("INIT:acc = %d\r\n",acc);
-			break;
-		case TS_STEP1:
-#if 0
-			//计算末端速度
-			out = v0 +  acc*(count);
-            USER_DEBUG_NORMAL("acc = %d  out = %d count = %d\r\n",acc,out,count);
 
-            if ((count <= linear->resp_max_cycle))//是否在指定时间
-            {
-                bool is_successful = (diff > 0 && out >= new_targe) || (diff <= 0 && out <= new_targe);
-                if (is_successful) {
-                    linear->s_state = S_SUCCESS;
-                    break;    
-                }else{
-                    count = 0;
-                    linear->s_state = TS_STEP2; 
-                    break;                   
-                }
-            }
-            count++;
-#else
-			//计算末端速度
-			out = v0 +  acc*(count);
-            // USER_DEBUG_NORMAL("acc = %d  out = %d count = %d\r\n",acc,out,count);
-            bool is_successful = (diff > 0 && out >= new_targe) || (diff <= 0 && out <= new_targe);
-            if (is_successful) {
-                linear->s_state = S_SUCCESS;
-                break;    
-            }
-
-            int32_t resp_cycle;
-            if (linear->zero_flag)
-            {
-                resp_cycle = linear->resp_max_cycle - (linear->resp_max_cycle/8);
-            }else{
-                resp_cycle = linear->resp_max_cycle;
-            }
-            
-            if (count > resp_cycle)
-            {
-                count = 0;
-                linear->s_state = TS_STEP2; 
-                break;   
-            }
-            
-            count++;
-#endif
-            break;
-		case TS_STEP2:
-            acc += (diff > 0) ? ACC_STEP : -ACC_STEP;
-            if (abs(acc) > linear->acc_max) {
-                linear->s_state = FAIL; // 规划失败
-            } else {
-                v0 = linear->V0; // 更新v0
-                linear->s_state = TS_STEP1; // 重新规划
-            }
-			break;
-		case S_SUCCESS:
-            linear->actor_Ts = count;
-            linear->acc = acc;
-            USER_DEBUG_NORMAL("success acc %d\r\n",linear->acc);
-            /*是否穿越0点*/
+            /*是否穿越0点  更新执行器状态*/
             if ((new_targe > 0 && linear->last_targe<0) || (new_targe<0 && linear->last_targe>0))
             {
-                linear->zero_flag = 1;//穿越0点
                 linear->actor_state = ZERO_POINT;
-            }else{
-                linear->zero_flag = 0;//不穿越0点
-                linear->actor_state = RISING;
-            }
+                /*计算加速度*/
+                diff = (float)new_targe - (float)linear->last_targe;
+                acc = ((float)diff/(float)(linear->resp_max_cycle - (linear->resp_max_cycle/8)));
 
-			linear->s_state = IDLE;
-            return;
+            }else{
+                linear->actor_state = RISING;
+                /*计算加速度*/
+                diff = (float)new_targe - (float)linear->last_targe;
+                acc = ((float)diff/(float)linear->resp_max_cycle);
+            }
+			linear->s_state = TS_STEP1;
 			break;
-		case FAIL:
+		case TS_STEP1:
+            if(fabs(acc)>linear->acc_max)
+            {
+                acc = acc>0.0f?linear->acc_max:-linear->acc_max;
+            }
+            if(fabs(acc)<0.01f)
+            {
+                acc = acc>0.0f?0.01f:-0.01f;
+            }
+            linear->s_state = S_SUCCESS;
+            break;
+		case S_SUCCESS:
             linear->actor_Ts = linear->resp_max_cycle;
             linear->acc = acc;
-            linear->actor_state = RISING;
 			linear->s_state = IDLE;
             return;
 			break;
@@ -506,37 +461,37 @@ int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
         linear->last_targe = target;
 	}
 
-    uint32_t out = 0;
+    /* 执行器 */
+    float out = 0;
 	switch (linear->actor_state)
 	{
 	case IDLE:
-        linear->acc = 0;
+        linear->acc = 0.0f;
         linear->actor_count = 0;
         linear->actor_Ts = 0;
+        linear->out_ref = 0.0f;
 		break;
 	case RISING://加速中
 		out = linear->V0 + (linear->acc);
         linear->V0 = out;
         /*是否到达目标速度*/
-		// if (linear->actor_count >= linear->resp_max_cycle-1)
-        if ((linear->acc > 0 && (linear->V0 >= linear->last_targe)) || (linear->acc < 0 && (linear->V0 <= linear->last_targe)))
+        if ((linear->acc > 0.0f && (out >= (float)linear->last_targe)) \
+         || (linear->acc < 0.0f && (out <= (float)linear->last_targe)))
 		{
             out = target;//限制速输出
             linear->out_ref = out; 
-            linear->acc = 0;
+            linear->acc = 0.0f;
             linear->actor_count = 0;
             linear->actor_Ts = 0;             
 			linear->actor_state = OVER;
             break;
 		}
-        // linear->actor_count++;
-
 		break;
 
     case ZERO_POINT:
 		out = linear->V0 + (linear->acc);
         linear->V0 = out;
-        if (out < (linear->acc>0?linear->acc:-linear->acc))
+        if((-fabs(linear->acc))<out && out<(fabs(linear->acc)))        
         {
             linear->actor_state = WAIT;
         }
@@ -550,19 +505,13 @@ int32_t t_type_interpolation(linear_in_t *linear,int32_t target)
         linear->actor_count = 0;
         linear->actor_state = RISING;
         break;
-    case FALLING://第二次加速
-		out = linear->V0 + (linear->acc);
-        linear->V0 = out;        
-        break;
-
-
     case OVER://加速结束
         out = linear->out_ref;
         break;
 	default:
 		break;
 	}
-	return out;
+	return (int32_t)out;
 }
 /*==========================================================================================
  * @brief        线性插补chushih
