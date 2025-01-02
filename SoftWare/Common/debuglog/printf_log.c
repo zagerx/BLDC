@@ -60,6 +60,7 @@
  * @version      0.1
 --------------------------------------------------------------------------------------------*/
 #include "string.h"
+#include "stdio.h"
 #define TEST_SUCCESS_STRING  "ok," 
 #define TEST_FAIL_STRING     "err," 
 

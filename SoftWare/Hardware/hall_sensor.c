@@ -223,7 +223,7 @@ void hall_cale(void *pthis)
             hall->hat_angle += 6.2831852f;
         }
         hall->hat_speed = omega;
-        hall->angle = hall->hat_angle;
+        hall->angle = hall->realcacle_angle;
         hall->speed = hall->realcacle_speed;
     #endif
 }
@@ -243,7 +243,11 @@ void hall_set_calib_points(void *pthis)
     hall_sensor_t *hall;
     hall = (hall_sensor_t*)pthis;
     uint8_t cur_sect = hall->getsection();
-    hall->cairlbe_angle = 0.0f;//hall->hall_baseBuff[cur_sect] + 1.0471f;
+    #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))//ABZ+HALL类传感器
+        hall->cairlbe_angle = 0.0f;
+    #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)//HALL类传感器
+        hall->hall_baseBuff[cur_sect] + 1.0471f;
+    #endif
     hall->cairlbe_section = cur_sect;
     USER_DEBUG_NORMAL("hall_set_calib_points  %d  %f\n",cur_sect,hall->cairlbe_angle);
 }

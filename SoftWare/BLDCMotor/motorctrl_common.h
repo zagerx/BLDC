@@ -100,7 +100,7 @@ struct mc_encoder
     uint8_t runflag;
     /*输入*/
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
-    abs_sensor_t sensor;
+    abs_sensor_t* sensor;
 #elif(ENCODER_TYPE == ENCODER_TYPE_HALL || ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ)
     hall_sensor_t* sensor;
 #endif    

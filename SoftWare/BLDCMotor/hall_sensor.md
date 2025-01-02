@@ -3,7 +3,7 @@
 - n对极电机，每旋转一圈，产生n*6个跳变沿。将其进行组合，得到`6,4,5,1,3,2`
 - 伪代码如下
 ```C
-static uint8_t hall_get_sectionnumb(void)
+static uint8_t get_section_numb(void)
 {
     uint8_t u,v,w;
     u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);

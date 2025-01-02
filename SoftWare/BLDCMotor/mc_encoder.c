@@ -20,7 +20,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
 	#endif
 		if (encoder->runflag)
 		{
-			#ifdef MCB_V06
+			#if defined(MCB_V06) || defined(STM32G4CUBX)
 				mc_encoder_update(encoder);
 			#endif
 			//计算角度、速度

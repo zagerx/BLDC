@@ -42,7 +42,10 @@ void motor_set_pwm(float _a,float _b,float _c)
 
 #include "motorctrl.h"
 #include "adc.h"
-extern motor_t motor1;
+#include "fsm.h"
+static fsm_cb_t Motor1Fsm;
+motor_t motor1 = {0};
+static abs_sensor_t abs_sensor;
 
 static void _convert_current(uint16_t* adc_buf,float *i_abc)
 {
