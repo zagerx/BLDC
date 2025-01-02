@@ -1,22 +1,22 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
-#define OPENLOOP_DEBUG_TOTAL_Te              (0.08f)
-#define OPENLOOP_DEBUG_STEP_THETA            (0.001f)
+#define OPENLOOP_DEBUG_TOTAL_Te              (-0.08f)
+#define OPENLOOP_DEBUG_STEP_THETA            (-0.001f)
 #define MOTOR_PAIRS                          (2.0f)//电机极对数
 #define CURRMENT_PERIOD                      (0.0001f)//电流环周期
 
 #define MOTOR_DEBUG_SELF_MODE              (0)
 #define MOTOR_DEBUG_ENCODERMODE            (1)
 #define MOTOR_CLOSELOOP_ERMODE             (2)
-#define MOTOR_WORK_MODE                    MOTOR_DEBUG_SELF_MODE
+#define MOTOR_WORK_MODE                    MOTOR_DEBUG_ENCODERMODE
 
 #define ENCODER_TYPE_SENSORLESS              (0)
 #define ENCODER_TYPE_ABS                     (1)
 #define ENCODER_TYPE_HALL                    (2)
 #define ENCODER_TYPE                         ENCODER_TYPE_HALL
 
-
+#define STM32G4CUBX
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
 
 #elif (ENCODER_TYPE == ENCODER_TYPE_HALL)

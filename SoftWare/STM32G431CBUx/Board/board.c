@@ -28,16 +28,6 @@ static void motor_set_pwm(float _a,float _b,float _c)
 {
     tim_set_pwm(_a ,_b,_c);
 }
-uint32_t test_cout = 0;
-uint32_t test_c1,test_c2,test_c3;
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
-{
-    if (htim->Instance == TIM4)
-    {
-        test_cout++;
-        test_c1 = HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1);
-    }
-}
 
 static void user_softresetsystem(void)
 {
@@ -71,6 +61,16 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 static fsm_cb_t Motor1Fsm;
 motor_t motor1 = {0};
 static hall_sensor_t hall_sensor;
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM4)
+    {
+        HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1);
+        // motorctrl_encoder_update(Motor1Fsm.pdata);
+    }
+}
+
 
 void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
