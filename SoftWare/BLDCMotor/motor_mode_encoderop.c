@@ -1,6 +1,5 @@
-#include "mc_encoderopmode.h"
+#include "motor_mode_encoderop.h"
 #include "board.h"
-#include "motorctrl_cfg.h"
 #include "debuglog.h"
 #include "string.h"
 #include "motorctrl_common.h"

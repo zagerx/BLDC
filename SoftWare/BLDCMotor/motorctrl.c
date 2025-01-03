@@ -1,13 +1,14 @@
 #include "mc_protocol.h"
-#include "mc_currmentloop.h"
+#include "mc_loop.h"
 #include "mc_utils.h"
 #include "mc_encoder.h"
-#include "motor_speedmode.h"
-#include "motor_normalmode.h"
-#include "motor_posmode.h"
-#include "motorctrl_cfg.h"
+#include "motor_mode_speed.h"
+#include "motor_mode_normal.h"
+#include "motor_mode_speed.h"
+#include "motor_mode_encoderop.h"
+
 #include "motorctrl_common.h"
-#include "mc_openloop.h"
+#include "mc_loop_open.h"
 #include "board.h"
 #include "fsm.h"
 #include "taskmodule.h"
@@ -25,10 +26,15 @@
 void motorfsm_register(void *obj,void *pdata)
 {
     fsm_cb_t* motorfsm = (fsm_cb_t*)obj;
-    motorfsm->fsm = (fsm_t *)motor_normalmode;
+    motorfsm->fsm = (fsm_t *)motor_normalmode;    
     motorfsm->count = 0;
     motorfsm->chState = ENTER;
     motorfsm->pdata = pdata;
+
+    //TODO
+    motor_t* motor = (motor_t*)(motorfsm->pdata);
+    motor->lastmode = M_SET_NormalM;
+    motor->curmode = M_SET_NormalM;
 }
 /*==========================================================================================
  * @brief        执行当前状态机   
@@ -39,8 +45,23 @@ void motorfsm_register(void *obj,void *pdata)
 void motortctrl_process(void *obj)
 {
     fsm_cb_t* fsm = (fsm_cb_t*)obj;
+    motor_t *motor = (motor_t*)(fsm->pdata);
+    if (motor->curmode != motor->lastmode)
+    {    
+        /* 状态机迁移 */
+        if (motor->curmode == M_SET_SpeedM)
+        {
+            TRAN_STATE(fsm,motor_speedmode);
+            motor->lastmode = motor->curmode;
+        }else if (motor->curmode == M_SET_EncoderLoopM)
+        {
+            TRAN_STATE(fsm,motor_encoder_ol_mode);
+            motor->lastmode = motor->curmode;
+        }else{
+        }         
+    }
+    /* 状态机执行 */
     DISPATCH_FSM(fsm);
-    return;
 }
 /*==========================================================================================
  * @brief        更新编码器基准
@@ -85,8 +106,9 @@ void motorctrl_currment_update(void *obj,float *iabc)
 }
 
 
-void mc_hightfreq_task(float *iabc,motor_t *motor)
+void mc_hightfreq_task(float *iabc,void *obj)
 {
+    motor_t* motor = (motor_t*)obj;
 #if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
     mc_self_openlooptest(iabc,motor);
 #else
@@ -109,10 +131,11 @@ void mc_hightfreq_task(float *iabc,motor_t *motor)
  * @param        ... 
  * @version      0.1
 --------------------------------------------------------------------------------------------*/
-void motor_encoder_register(motor_t* motor,...)
+void motor_encoder_register(void* obj,...)
 {
     va_list args;
-    va_start(args, motor);    
+    va_start(args, obj);    
+    motor_t* motor = (motor_t*)obj;
     motor->encoder_handle.sensor = va_arg(args,void *);
     va_end(args);
 }
@@ -123,10 +146,11 @@ void motor_encoder_register(motor_t* motor,...)
  * @param        ... 
  * @version      0.1
 --------------------------------------------------------------------------------------------*/
-void motor_actor_register(motor_t* motor,...)
+void motor_actor_register(void* obj,...)
 {
     va_list args;
-    va_start(args, motor);    
+    va_start(args, obj);    
+    motor_t* motor = (motor_t*)obj;    
     motor->enable = va_arg(args,void (*)(void));
     motor->disable = va_arg(args,void (*)(void));
     motor->setpwm = va_arg(args,void (*)(float,float,float));

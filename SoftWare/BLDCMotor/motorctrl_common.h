@@ -140,6 +140,7 @@ typedef struct _motor
     mc_debug_t debug;
 
     int16_t curmode;
+    int16_t lastmode;
     int16_t curMotorstate;
 
     void  (*enable)(void);

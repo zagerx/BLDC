@@ -1,4 +1,4 @@
-#include "mc_currmentloop.h"
+#include "mc_loop.h"
 #include "math.h"
 #include "mc_smo.h"
 #define SQRT_3__2    0.86602540378f
@@ -72,12 +72,6 @@ duty_t currment_loop(void *obj)
 			Vd *= k;
 			Vq *= k;
 		}
-		// k = 0.8f*0.5773502f*sqrtf(VOLATAGE_BUS/(temp_ab.alpha*temp_ab.alpha+temp_ab.beta*temp_ab.beta));
-		// if (k < 1.0f)
-		// {
-		// 	temp_ab.alpha *= k;
-		// 	temp_ab.beta *= k;
-		// }
 	#endif
 
 
@@ -97,12 +91,7 @@ duty_t currment_loop(void *obj)
 	return duty;
 }
 
-void currment_loop_paraminit(pid_cb_t *pid)
+float speed_loop(mc_speed_t *pthis)
 {
-	/*pid 参数*/
-}
-
-void currment_loop_paramdeinit(pid_cb_t *pid)
-{
-	/*pid 反向初始化参数*/
+    return pid_contrl(&(pthis->pid),pthis->tar,pthis->real);
 }

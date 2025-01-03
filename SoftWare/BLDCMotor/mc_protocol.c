@@ -10,8 +10,7 @@
 #include "debuglog.h"
 #include "protocol.h"
 #include "math.h"
-// #include "flash.h"
-#include "motorctrl_cfg.h"
+
 extern msg_list_t* msg_list;
 extern motor_t motor1;
 typedef struct _cmdmap cmdmap_t;
@@ -84,7 +83,6 @@ static void _cmd_setMotorModel(cmdmap_t *pactor,unsigned char *pdata, unsigned s
     motor1.curmode = pactor->cmd;
 }
 
-extern void mc_tarpos_update(float delte_dist);
 
 static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short datalen)
 {
@@ -116,7 +114,6 @@ static void _cmd_setparam(cmdmap_t *pactor,unsigned char *pdata, unsigned short 
         float temp;
         convert_floats(pdata,datalen,&(temp));
         USER_DEBUG_NORMAL("pos = %.2f\n",temp);
-        mc_tarpos_update(temp);
     }
 }
 

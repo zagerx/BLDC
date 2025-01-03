@@ -1,16 +1,16 @@
-#include "motor_speedmode.h"
+#include "motor_mode_speed.h"
 #include "mc_protocol.h"
 #include "motorctrl_common.h"
 #include "string.h"
 #include "mc_encoder.h"
-#include "mc_speedloop.h"
+
 #include "board.h"
-#include "motorctrl_cfg.h"
+
 #include "debuglog.h"
 #include "mc_smo.h"
 #include "math.h"
-static void motor_paraminit(motor_t *motor);
-static void motor_paramdeinit(motor_t *motor);
+static void speed_ctrlparam_init(motor_t *motor);
+static void speed_ctrlparam_deinit(motor_t *motor);
 
 fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
 {
@@ -28,8 +28,8 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     {
     case ENTER:
         USER_DEBUG_NORMAL("entry speed mode\n");
-         mc_encoder_init(&(motor->encoder_handle));//编码器初始化
-        motor_paraminit(motor);
+        mc_encoder_init(&(motor->encoder_handle));//编码器初始化
+        speed_ctrlparam_init(motor);
         motor->encoder_handle.runflag = 0;
         pthis->chState = READY;
     case READY:
@@ -54,7 +54,10 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     case RUN:
         if (motor->curmode == M_SET_STOP)
         {
-            pthis->chState = EXIT;
+            motor->disable();
+            mc_encoder_deinit(&(motor->encoder_handle));
+            speed_ctrlparam_deinit(motor);            
+            pthis->chState = ENTER;
         }else{
             motor->currment_handle.id_tar = 0.0f;
             motor->currment_handle.iq_tar = motor->debug.pid_debug_target;
@@ -64,8 +67,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         USER_DEBUG_NORMAL("exit speed mode\n");
         motor->disable();
         mc_encoder_deinit(&(motor->encoder_handle));
-        motor_paramdeinit(motor);
-        pthis->chState = ENTER;
+        speed_ctrlparam_deinit(motor);
         break;
     default:
         break;
@@ -73,7 +75,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
     return 0;
 }
 
-static void motor_paraminit(motor_t *motor)
+static void speed_ctrlparam_init(motor_t *motor)
 {
     motor->debug.pid_debug_target = 0.0f;
     pid_init(&(motor->currment_handle.d_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
@@ -89,7 +91,7 @@ static void motor_paraminit(motor_t *motor)
 
 
 
-static void motor_paramdeinit(motor_t *motor)
+static void speed_ctrlparam_deinit(motor_t *motor)
 {
 #ifdef ENABLE_LINEAR_IN
     linear_interpolation_deinit(&(motor->speed_handle.linear));

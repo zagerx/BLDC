@@ -6,7 +6,7 @@
 #include "string.h"
 #include <stdarg.h>
 /*==========================================================================================
- * @brief        更新基准角度
+ * @brief        更新基准角度&&更新速度
  * @FuncName     
  * @param        hall 
  * @param        cur_sect 
@@ -41,6 +41,7 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
         }
     #endif
 #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+    //Cacle speed
     delta = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
     if (hall->dir > 0) {
         if (delta < 0.0f) {
@@ -185,6 +186,7 @@ void hall_cale(void *pthis)
         hall->realcacle_angle += (hall->realcacle_angle < 0.0f) ? 6.283185f : 0.0f;
         hall->angle = hall->realcacle_angle;
 
+        //cacle speed  TODO
         static uint8_t cnt = 0;
         static float speed_sum = 0.0f;
         speed_sum += diff;
@@ -194,8 +196,6 @@ void hall_cale(void *pthis)
             cnt = 0;
             speed_sum = 0.0f;
         }
-        
-        
         hall->speed = hall->realcacle_speed;
        
     #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)//HALL类传感器
@@ -208,6 +208,8 @@ void hall_cale(void *pthis)
         {
             hall->realcacle_angle += 6.2831852f;
         }
+
+        //PLL
         float delt_theta;
         delt_theta = sinf(hall->realcacle_angle)*cosf(hall->hat_angle) - cosf(hall->realcacle_angle)*sinf(hall->hat_angle);
         hall->pll_sum += delt_theta;
@@ -223,6 +225,8 @@ void hall_cale(void *pthis)
             hall->hat_angle += 6.2831852f;
         }
         hall->hat_speed = omega;
+        
+        //update angle&speed to sensor
         hall->angle = hall->realcacle_angle;
         hall->speed = hall->realcacle_speed;
     #endif
@@ -246,7 +250,7 @@ void hall_set_calib_points(void *pthis)
     #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))//ABZ+HALL类传感器
         hall->cairlbe_angle = 0.0f;
     #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)//HALL类传感器
-        hall->hall_baseBuff[cur_sect] + 1.0471f;
+        hall->cairlbe_angle = hall->hall_baseBuff[cur_sect] + 1.0471f;
     #endif
     hall->cairlbe_section = cur_sect;
     USER_DEBUG_NORMAL("hall_set_calib_points  %d  %f\n",cur_sect,hall->cairlbe_angle);

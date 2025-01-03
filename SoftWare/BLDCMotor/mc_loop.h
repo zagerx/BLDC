@@ -3,5 +3,7 @@
 
 #include "motorctrl_common.h"
 duty_t currment_loop(void *obj);
+float speed_loop(mc_speed_t *pthis);
+
 #endif
 

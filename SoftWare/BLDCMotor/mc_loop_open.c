@@ -3,7 +3,7 @@
 #include "string.h"
 #include "mc_encoder.h"
 #include "board.h"
-#include "motorctrl_cfg.h"
+
 #include "math.h"
 
 unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
