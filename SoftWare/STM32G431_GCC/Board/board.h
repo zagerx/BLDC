@@ -24,7 +24,14 @@
 
 #define AMPLIFICATION_FACTOR (5.7f)  // 假设放大倍数为10  
 #define SAMPLING_RESISTANCE  (0.025)  // 假设采样电阻为100欧姆
+#define CURRMENTLOOP_KP             (0.08f)         
+#define CURRMENTLOOP_KI             (0.001f)
+#define SPEEDLOOP_KP                (0.02f)
+#define SPEEDLOOP_KI                (0.01f)
+#define POSLOOP_KP                  (0.1f)
+#define POSLOOP_KI                  (0.1f)
 
+#define VOLATAGE_BUS         (24.0f)
 #define CIRCLE_MAX_VAL       (24.0f)
 #define D_MAX_VAL            (12.0f)
 #define D_MIN_VAL            -D_MAX_VAL

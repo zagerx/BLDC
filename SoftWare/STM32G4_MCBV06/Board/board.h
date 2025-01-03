@@ -65,6 +65,7 @@
 #endif
 
 /*----------------------硬件相关----------------------*/
+#define VOLATAGE_BUS         (24.0f)
 #define AMPLIFICATION_FACTOR (5.36f)  // 假设放大倍数为10  
 #define SAMPLING_RESISTANCE  (0.005)  // 假设采样电阻为5mR欧姆
 #define CIRCLE_MAX_VAL       (24.0f)

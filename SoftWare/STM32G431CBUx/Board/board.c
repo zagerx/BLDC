@@ -88,7 +88,7 @@ void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
   }
 }
 
-static uint8_t hall_get_sectionnumb(void)
+static uint8_t get_section_numb(void)
 {
     uint8_t u,v,w;
     u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
@@ -96,7 +96,7 @@ static uint8_t hall_get_sectionnumb(void)
     w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
     return u | (w<<1) | (v<<2);
 }
-static uint32_t hall_gettick()
+static uint32_t get_tick()
 {
     return 0;
 }
@@ -109,8 +109,8 @@ void motorctrl_init(void)
 
     /*HALL_ABZ传感器初始化  和电机模块无关*/
     hall_register((void*)&(hall_sensor),\
-                                        hall_get_sectionnumb,\
-                                        hall_gettick,\
+                                        get_section_numb,\
+                                        get_tick,\
                                         hall_cale,\
                                         hall_update,\
                                         hall_init,\

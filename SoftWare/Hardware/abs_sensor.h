@@ -14,6 +14,13 @@ typedef struct abs_sensor
     lowfilter_t speedfilter;
     float  total_realmectheta;
     uint32_t (*get_rawdata)(void);
+
+    void (*cacle)(void*);
+    uint8_t (*update_base)(void*);
+    void (*init)(void*);
+    void (*deinit)(void*);
+    void (*get_first_points)(void*);
+    void (*set_calib_points)(void*);
 }abs_sensor_t;
 
 
