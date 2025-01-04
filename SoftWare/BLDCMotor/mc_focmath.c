@@ -13,7 +13,15 @@
 #include "mc_utils.h"
 
 #if 1
-duty_t SVM(float alpha, float beta) 
+/*==========================================================================================
+ * @brief        svpwm函数
+ * @FuncName     SVM
+ * @param        alpha 
+ * @param        beta 
+ * @return       duty_t 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void SVM(float alpha, float beta,float *duty) 
 {
 	float tA,tB,tC;
     int Sextant;
@@ -128,11 +136,9 @@ duty_t SVM(float alpha, float beta)
             tA >= 0.0f && tA <= 1.0f
          && tB >= 0.0f && tB <= 1.0f
          && tC >= 0.0f && tC <= 1.0f;
-	duty_t duty;
-	duty._a = tA;
-	duty._b = tB;
-	duty._c = tC;
-    return duty ;
+	duty[0] = tA;
+	duty[1] = tB;
+	duty[2] = tC;
 }
 
 #else
@@ -225,29 +231,82 @@ duty_t SVM(float ualpha,float ubeta)
 }
 #endif
 
- void _3s_2s(abc_t i_abc,alpbet_t *alp_bet)
+/*==========================================================================================
+ * @brief        Clark变换
+ * @FuncName     _3s_2s
+ * @param        abc 
+ * @param        alpbet 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void _3s_2s(float* abc,float *alpbet)
 {
-    alpbet_t i_alphabeta;
-    // alp_bet->alpha = 2.0f/3.0f*(i_abc.a - 1.0f/2.0f*i_abc.b - 1.0f/2.0f*i_abc.c);
-    // alp_bet->beta =  2.0f/3.0f*(sqrt3_2*i_abc.b - sqrt3_2*i_abc.c);
-    alp_bet->alpha = i_abc.a;
-    alp_bet->beta = sqrt3/3.0f * (i_abc.b - i_abc.c);
+    // alp_bet[0] = 2.0f/3.0f*(i_abc[0] - 1.0f/2.0f*i_abc[1] - 1.0f/2.0f*i_abc[2]);
+    // alp_bet[1] =  2.0f/3.0f*(sqrt3_2*i_abc[1] - sqrt3_2*i_abc[2]);
+    alpbet[0] = abc[0];
+    alpbet[1] = sqrt3/3.0f * (abc[1] - abc[2]);
 }
- void _2s_2r(alpbet_t i_alphabeta,float theta,dq_t *dq)
+/*==========================================================================================
+ * @brief        Park变换
+ * @FuncName     _2s_2r
+ * @param        alpbet 
+ * @param        theta 
+ * @param        dq 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void _2s_2r(float* alpbet,float theta,float *dq)
 {
-    dq->d =  cosf(theta)*i_alphabeta.alpha + sinf(theta)*i_alphabeta.beta;
-    dq->q = -sinf(theta)*i_alphabeta.alpha + cosf(theta)*i_alphabeta.beta;    
+    dq[0] =  cosf(theta)*alpbet[0] + sinf(theta)*alpbet[1];
+    dq[1] = -sinf(theta)*alpbet[0] + cosf(theta)*alpbet[1];    
 }
- alpbet_t _2r_2s(dq_t i_dq,float theta)
+/*==========================================================================================
+ * @brief        反Park变换
+ * @FuncName     _2r_2s
+ * @param        dq 
+ * @param        theta 
+ * @param        alpbet 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void _2r_2s(float* dq,float theta,float* alpbet)
 {
-    alpbet_t i_alphabeta;
-    i_alphabeta.alpha = i_dq.d * cosf(theta) -  i_dq.q * sinf(theta);
-    i_alphabeta.beta = i_dq.d * sinf(theta) +  i_dq.q * cosf(theta);
-    return i_alphabeta;
+    alpbet[0] = dq[0] * cosf(theta) -  dq[1] * sinf(theta);
+    alpbet[1] = dq[0] * sinf(theta) +  dq[1] * cosf(theta);
 }
-
+/*==========================================================================================
+ * @brief        数据归一化
+ * @FuncName     _normalize_angle
+ * @param        angle 
+ * @return       float 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 float _normalize_angle(float angle)
 {
   float a = fmod(angle, _2PI);
   return a >= 0 ? a : (a + 2.0f*PI);  
 }
+/*==========================================================================================
+ * @brief        限制矢量圆
+ * @FuncName     _limit_vector_circle
+ * @param        dq 
+ * @param        limit_dq 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void _limit_vector_circle(float *dq,float *limit_dq)
+{
+    /*TODO */
+    float mod_to_V = (2.0f / 3.0f) * VOLATAGE_BUS;
+    float V_to_mod = 1.0f / mod_to_V;
+    float mod_d = V_to_mod * dq[0];
+    float mod_q = V_to_mod * dq[1];
+    float mod_scalefactor = 0.80f * 0.86602540378f * 1.0f / sqrtf(mod_d * mod_d + mod_q * mod_q);//#define SQRT_3__2    0.86602540378f
+    if (mod_scalefactor < 1.0f)
+    {
+        mod_d *= mod_scalefactor;
+        mod_q *= mod_scalefactor;
+    }
+    limit_dq[0] = mod_d;
+    limit_dq[1] = mod_q;
+
+    limit_dq[0] = dq[0];
+    limit_dq[1] = dq[1];
+}
+

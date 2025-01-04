@@ -135,7 +135,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         iabc[1] = -iabc[1];
         iabc[2] = -iabc[2];
         // __cycleof__("mc_hightfreq_task") {
-            mc_hightfreq_task(iabc,&motor1);
+            motorctrl_currment_update(&motor1,iabc);
         // }            
     }
 }

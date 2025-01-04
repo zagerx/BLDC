@@ -79,7 +79,7 @@ void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
   {
     iabc[0] = -((int16_t)(hadc->Instance->JDR1) -1970)*0.02197f;
     iabc[2] = -((int16_t)(hadc->Instance->JDR2) - 1980)*0.02197f;
-    mc_hightfreq_task(iabc,&motor1);
+    motorctrl_currment_update(&motor1,iabc);
     // votf_sendf(iabc,3);
   }
   if (hadc->Instance == ADC2)

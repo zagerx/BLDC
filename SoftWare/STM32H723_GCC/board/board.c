@@ -161,7 +161,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
         _convert_current((uint16_t*)adc_vale,iabc);
         // __cycleof__("mc_hightfreq_task") {
-            mc_hightfreq_task(iabc,&motor1);
+            motorctrl_currment_update(&motor1,iabc);
         // }
     }
 }

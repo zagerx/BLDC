@@ -21,6 +21,6 @@ $(SUBDIRS):
 # Clean target, defined to clean both subdirectories
 clean:
 	@for dir in $(SUBDIRS); do \
-	$(MAKE) -C $$dir clean; \
+	D:/Program Files (x86)/GnuWin32/bin/$(MAKE_CMD)" -C $$dir clean; \
 	done
 .PHONY: all $(SUBDIRS) clean

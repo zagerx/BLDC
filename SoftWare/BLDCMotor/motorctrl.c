@@ -83,44 +83,21 @@ void motorctrl_encoder_update(void *obj)
 --------------------------------------------------------------------------------------------*/
 void motorctrl_currment_update(void *obj,float *iabc)
 {
-#ifdef MOTOR_OPENLOOP
-    mc_openloop(iabc,obj);
-#else    
-    motor_t *motor = (motor_t*)obj;
-    duty_t duty = {0};
-    /*获取角度 速度*/
-	float theta = 0.0f;
-    float next_theta = 0.0f;
-    float speed = 0.0f;
-
-    mc_encoder_read(&(motor->encoder_handle));
-
-    motor->currment_handle.i_abc[0] = iabc[0];
-    motor->currment_handle.i_abc[1] = iabc[1];
-    motor->currment_handle.i_abc[2] = iabc[2];
-
-    duty = currment_loop(motor);
-    motor->setpwm(duty._a,duty._b,duty._c);
-          
-#endif
-}
-
-
-void mc_hightfreq_task(float *iabc,void *obj)
-{
     motor_t* motor = (motor_t*)obj;
 #if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
     mc_self_openlooptest(iabc,motor);
 #else
-    duty_t duty = {0};
+    float duty[3] = {0};
     /*获取角度 速度*/
     mc_encoder_read(&(motor->encoder_handle));
 
     motor->currment_handle.i_abc[0] = iabc[0];
     motor->currment_handle.i_abc[1] = iabc[1];
     motor->currment_handle.i_abc[2] = iabc[2];
-    duty = currment_loop(motor);
-    motor->setpwm(duty._a,duty._b,duty._c);
+
+    currment_loop(motor,duty);
+    motor->setpwm(duty[0],duty[1],duty[2]);
+          
 #endif
 }
 

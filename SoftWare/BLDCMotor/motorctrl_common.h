@@ -80,8 +80,10 @@ typedef struct mc_currment
     float i_abc[3];
     float i_alpbe[2];
     float i_dq[2];
+
     float id_tar;
     float iq_tar;
+
     pid_cb_t d_pid;
     pid_cb_t q_pid;
     smo_t ti_smo;
@@ -152,45 +154,8 @@ typedef struct _motor
     void  (*write)(void*, uint16_t);
 }motor_t;
 
-
-typedef struct _duty
-{
-    /* data */
-    float _a;
-    float _b;
-    float _c;
-}duty_t;
-
-typedef struct _dq
-{
-    /* data */
-    float d;
-    float q;
-}dq_t;
-
-typedef struct _alphabeta
-{
-    /* data */
-    float alpha;
-    float beta;
-}alpbet_t;
-
-typedef struct _abc
-{
-    /* data */
-    float a;
-    float b;
-    float c;
-}abc_t;
-
 #pragma pack(pop)
 
 
-float _normalize_angle(float angle);
-duty_t _svpwm(float ualpha,float ubeta);
-alpbet_t _2r_2s(dq_t i_dq,float theta);
-void _2s_2r(alpbet_t i_alphabeta,float theta,dq_t *dq);
-void _3s_2s(abc_t i_abc,alpbet_t *alp_bet);
-duty_t SVM(float alpha, float beta) ;
 
 #endif

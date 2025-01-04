@@ -3,39 +3,41 @@
 #include "string.h"
 #include "mc_encoder.h"
 #include "board.h"
-
+#include "mc_focmath.h"
 #include "math.h"
-
+/*==========================================================================================
+ * @brief        VF开环强拖
+ * @FuncName     mc_self_openloop_VF
+ * @param        iabc 
+ * @param        motor 
+ * @return       unsigned char 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
 {
-    duty_t duty = {0};
-    alpbet_t i_ab;
-    dq_t i_dq;
-    abc_t i_abc = {0};
+    float duty[3] = {0};
+    float i_ab[2];
+    float i_dq[2];
     static float theta = 0.0f;
 
     /*读取编码器角度值*/
-    // motor->encoder_handle.self_theta = theta;
     mc_encoder_read(&(motor->encoder_handle)); 
     /*反PARK CLARK变换*/
-    i_abc.a = iabc[0];
-    i_abc.b = iabc[1];
-    i_abc.c = iabc[2];
-    _3s_2s(i_abc, &i_ab);
-    _2s_2r(i_ab, theta, &i_dq);
+    _3s_2s(iabc, i_ab);
+    _2s_2r(i_ab, theta, i_dq);
 
     /*强制拖动电机转动*/
-    i_dq.d = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
-    i_dq.q = 0.00f; 
+    i_dq[0] = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
+    i_dq[1] = 0.00f; 
 
     /*park变换*/
     float temp;
     temp = fmodf(theta*MOTOR_PAIRS,6.28f);
     motor->encoder_handle.self_theta = temp;
-    i_ab = _2r_2s(i_dq, temp);
+    _2r_2s(i_dq, temp,i_ab);
     /*SVPWM*/
-    duty = SVM(i_ab.alpha, i_ab.beta);
-    motor->setpwm(duty._a, duty._b, duty._c);
+    SVM(i_ab[0], i_ab[1],duty);
+    motor->setpwm(duty[0], duty[1], duty[2]);
 
     theta += OPENLOOP_DEBUG_STEP_THETA;
     if (theta > _2PI)
@@ -51,7 +53,13 @@ unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
     
     return 0;
 }
-
+/*==========================================================================================
+ * @brief        开环自测函数
+ * @FuncName     mc_self_openlooptest
+ * @param        iabc 
+ * @param        motor 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 void mc_self_openlooptest(float *iabc,motor_t* motor)
 {
     enum
@@ -68,15 +76,15 @@ void mc_self_openlooptest(float *iabc,motor_t* motor)
         motor->encoder_handle.runflag = 1;
 
         float theta;
-        alpbet_t iab;
-        duty_t duty;
-        dq_t i_dq;
-        i_dq.d = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
-        i_dq.q = 0.00f;
+        float iab[2];
+        float duty[3];
+        float i_dq[2];
+        i_dq[0] = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
+        i_dq[1] = 0.00f;
         theta = 0.0f;
-        iab = _2r_2s(i_dq, theta);
-        duty = SVM(iab.alpha, iab.beta);
-        motor->setpwm(duty._a, duty._b, duty._c);
+        _2r_2s(i_dq, theta,iab);
+        SVM(iab[0], iab[1],duty);
+        motor->setpwm(duty[0], duty[1], duty[2]);
         // 延时等待一段时间
         static unsigned short cnt = 0;
         if (cnt++ > 16000)

@@ -32,12 +32,9 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
             break;
         }
         motor->enable();
-        USER_DEBUG_NORMAL("motor enable\n");
         #if(MOTOR_WORK_MODE == MOTOR_DEBUG_ENCODERMODE)
             pthis->chState = CALIBRATE;
-            USER_DEBUG_NORMAL("encoder loop test\n");
         #elif(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
-            USER_DEBUG_NORMAL("self loop test\n");
             motor->encoder_handle.runflag = 1;
             pthis->chState = RUN;
         #else            
