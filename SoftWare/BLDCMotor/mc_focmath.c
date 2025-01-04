@@ -1,3 +1,13 @@
+/*==========================================================================================
+ * @file mc_focmath.c
+ * @author zager
+ * @version      0.1
+ * @date 2025-01-04
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ * @brief 
+--------------------------------------------------------------------------------------------*/
 #include "./motorctrl_common.h"
 #include "debuglog.h"
 #include "mc_utils.h"

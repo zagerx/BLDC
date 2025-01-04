@@ -78,8 +78,8 @@ typedef struct mc_pos
 typedef struct mc_currment
 {
     float i_abc[3];
-    // float theta;
-    // float next_theta;
+    float i_alpbe[2];
+    float i_dq[2];
     float id_tar;
     float iq_tar;
     pid_cb_t d_pid;
@@ -182,12 +182,6 @@ typedef struct _abc
     float b;
     float c;
 }abc_t;
-
-typedef struct curloop
-{
-    pid_cb_t d_pid;
-    pid_cb_t q_pid;
-}curloop_t;
 
 #pragma pack(pop)
 

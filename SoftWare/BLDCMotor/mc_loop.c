@@ -1,7 +1,26 @@
+/*==========================================================================================
+ * @file mc_loop.c
+ * @author zager
+ * @version      0.1
+ * @date 2025-01-04
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ * @brief 
+--------------------------------------------------------------------------------------------*/
 #include "mc_loop.h"
 #include "math.h"
 #include "mc_smo.h"
 #define SQRT_3__2    0.86602540378f
+
+
+/*==========================================================================================
+ * @brief        电流环
+ * @FuncName     currment_loop
+ * @param        obj 
+ * @return       duty_t 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 duty_t currment_loop(void *obj)
 {
 	motor_t* motor = (motor_t*)obj;
@@ -91,6 +110,14 @@ duty_t currment_loop(void *obj)
 	return duty;
 }
 
+
+/*==========================================================================================
+ * @brief        速度环
+ * @FuncName     speed_loop
+ * @param        pthis 
+ * @return       float 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 float speed_loop(mc_speed_t *pthis)
 {
     return pid_contrl(&(pthis->pid),pthis->tar,pthis->real);
