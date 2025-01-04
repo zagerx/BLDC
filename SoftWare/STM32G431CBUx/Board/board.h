@@ -1,15 +1,15 @@
 #ifndef __BOARD__H
 #define __BOARD__H
 
-#define OPENLOOP_DEBUG_TOTAL_Te              (-0.08f)
-#define OPENLOOP_DEBUG_STEP_THETA            (-0.001f)
+#define OPENLOOP_DEBUG_STEP_THETA            (+0.001f)
+#define OPENLOOP_DEBUG_TOTAL_Te              (+0.08f)
 #define MOTOR_PAIRS                          (2.0f)//电机极对数
 #define CURRMENT_PERIOD                      (0.0001f)//电流环周期
 
 #define MOTOR_DEBUG_SELF_MODE              (0)
 #define MOTOR_DEBUG_ENCODERMODE            (1)
 #define MOTOR_CLOSELOOP_ERMODE             (2)
-#define MOTOR_WORK_MODE                    MOTOR_DEBUG_ENCODERMODE
+#define MOTOR_WORK_MODE                    MOTOR_DEBUG_SELF_MODE
 
 #define ENCODER_TYPE_SENSORLESS              (0)
 #define ENCODER_TYPE_ABS                     (1)
@@ -23,7 +23,7 @@
     #define HALL_UPDATE_PERIOD              (0.0001f)
     #define HALL_POSITIVE_OFFSET            (-0.00f)
     #define HALL_NEGATIVE_OFFSET            (+0.27f)
-
+    #define MEC_ANGLE_OFFSET                (-0.809f)
     #define PLL_KP                          (80.50f)
     #define PLL_KI                          (1.2f)
     #define OMEGTOTHETA                     (0.0001f)     

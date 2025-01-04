@@ -2,16 +2,95 @@
 #include "board.h"
 #include "math.h"
 #include "mc_utils.h"
-void Absolute_encoder_read(void *this)
+#include "debuglog.h"
+#include <stdarg.h>
+#include <string.h>
+/*==========================================================================================
+ * @brief 
+ * @FuncName     
+ * @param        obj 
+ * @param        ... 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void abs_sensor_register(void *obj,...)
 {
-    abs_sensor_t *abs_sensor = this;
-    uint32_t data = abs_sensor->get_rawdata;
+    va_list args;
+    va_start(args, obj);
+    abs_sensor_t *abs_sensor = (abs_sensor_t *)obj;
+
+    // 初始化 abs_sensor 结构体
+    memset(abs_sensor, 0, sizeof(abs_sensor_t));
+    abs_sensor->get_rawdata = va_arg(args,uint32_t (*)(void));
+
+    abs_sensor->cacle = va_arg(args,void (*)(void*));
+    abs_sensor->update_base = va_arg(args,uint8_t (*)(void*));
+    abs_sensor->init = va_arg(args,void (*)(void*));
+    abs_sensor->deinit = va_arg(args,void (*)(void*));
+    abs_sensor->get_first_points = va_arg(args,void (*)(void*));
+    abs_sensor->set_calib_points = va_arg(args,void (*)(void*));
+
+    va_end(args);
+}
+/*==========================================================================================
+ * @brief 
+ * @FuncName     
+ * @param        obj 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void abs_sensor_init(void *obj)
+{
+    abs_sensor_t *abs_sensor = (abs_sensor_t *)obj;
+    lowfilter_init(&(abs_sensor->speedfilter),5.0f);
+}
+/*==========================================================================================
+ * @brief 
+ * @FuncName     
+ * @param        obj 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void abs_sensor_deinit(void *obj)
+{
+    abs_sensor_t *abs_sensor = (abs_sensor_t *)obj;
+
+}
+/*==========================================================================================
+ * @brief 
+ * @FuncName     
+ * @param        obj 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void abs_sensor_get_firstpoint(void *obj)
+{
+    abs_sensor_t *abs_sensor = (abs_sensor_t *)obj;
+    // uint32_t data = abs_sensor->get_rawdata();
+    // float mec_theta = data * ENCODER_CPR;
+    // abs_sensor->raw_data = data;
+    // abs_sensor->mec_theta = mec_theta;
+}
+/*==========================================================================================
+ * @brief 
+ * @FuncName     
+ * @param        obj 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void abs_sensor_set_cairbpoint(void *obj)
+{
+    abs_sensor_t *abs_sensor = (abs_sensor_t *)obj;
+}
+
+/*==========================================================================================
+ * @brief 
+ * @FuncName     
+ * @param        obj 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void abs_sensor_cacle(void *obj)
+{
+    abs_sensor_t *abs_sensor = (abs_sensor_t *)obj;
+    uint32_t data = abs_sensor->get_rawdata();
 
     abs_sensor->raw_data = data;
     float mec_theta = data * ENCODER_CPR - MEC_ANGLE_OFFSET;
-    float ele_theta = mec_theta * MOTOR_PAIRS;
-    abs_sensor->ele_theta = wrap_pm_pi(ele_theta);
-    abs_sensor->mec_theta = mec_theta;
     
     /*更新速度*/
     // 将mec_theta归一化到[0, 2π)区间  
@@ -39,14 +118,16 @@ void Absolute_encoder_read(void *this)
 
     float filter_n_rap;
     filter_n_rap = lowfilter_cale(&(abs_sensor->speedfilter),n_rap);
-
     // 更新转速  
+    abs_sensor->angle = mec_theta;
     abs_sensor->speed = filter_n_rap;
 }
-
-void abs_sensor_update(void* sensor)
+/*==========================================================================================
+ * @brief 
+ * @FuncName     
+ * @param        obj 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void abs_sensor_update(void *obj)
 {
-    abs_sensor_t *pthis = (abs_sensor_t*)sensor;
-    //读取原始数据
-    
 }

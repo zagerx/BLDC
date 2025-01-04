@@ -66,6 +66,7 @@ void mc_self_openlooptest(float *iabc,motor_t* motor)
     {
         PREPOSITIONING,
         RUNING,
+        IDLE,
         STOP
     };
     static unsigned short state = PREPOSITIONING;

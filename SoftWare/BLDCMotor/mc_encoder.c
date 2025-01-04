@@ -5,7 +5,7 @@
 #include "mc_utils.h"
 #include "board.h"//TODO
 #include "debuglog.h"
-
+#include "mc_focmath.h"
 /*==========================================================================================
  * @brief        读取编码器值
  * @FuncName     
@@ -26,7 +26,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
 			//计算角度、速度
 			encoder->sensor->cacle(encoder->sensor);
 			//更新当前角度、速度
-			encoder->ele_theta = (encoder->sensor->angle);
+			encoder->ele_theta = _normalize_angle((encoder->sensor->angle + MEC_ANGLE_OFFSET)*MOTOR_PAIRS);
 			encoder->speed = encoder->sensor->speed;
 		}
 #endif

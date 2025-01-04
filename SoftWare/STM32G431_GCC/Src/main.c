@@ -70,6 +70,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   USER_DEBUG_NORMAL("Init finish\n");
+  user_board_init();
   while (1)
   {
     do_taskcalls();

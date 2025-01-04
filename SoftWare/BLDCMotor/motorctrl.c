@@ -47,7 +47,7 @@ void motortctrl_process(void *obj)
     fsm_cb_t* fsm = (fsm_cb_t*)obj;
     motor_t *motor = (motor_t*)(fsm->pdata);
     if (motor->curmode != motor->lastmode)
-    {    
+    {
         /* 状态机迁移 */
         if (motor->curmode == M_SET_SpeedM)
         {

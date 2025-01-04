@@ -5,14 +5,13 @@
 typedef struct abs_sensor
 {
     int32_t raw_data;
-    float mec_theta;
     float pre_theta; 
     float total_distance;   
-    float ele_theta;
     float angle;
     float speed;
     lowfilter_t speedfilter;
     float  total_realmectheta;
+    float self_angle;
     uint32_t (*get_rawdata)(void);
 
     void (*cacle)(void*);
@@ -23,6 +22,12 @@ typedef struct abs_sensor
     void (*set_calib_points)(void*);
 }abs_sensor_t;
 
-
+void abs_sensor_register(void *obj,...);
+void abs_sensor_init(void *obj);
+void abs_sensor_deinit(void *obj);
+void abs_sensor_get_firstpoint(void *obj);
+void abs_sensor_set_cairbpoint(void *obj);
+void abs_sensor_cacle(void *obj);
+void abs_sensor_update(void *obj);
 
 #endif

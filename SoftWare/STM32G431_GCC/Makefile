@@ -138,8 +138,8 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Include
 
 
-C_INCLUDES += -I../Common/Perf_counter
-C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
+# C_INCLUDES += -I../Common/Perf_counter
+# C_SOURCES += $(wildcard ../Common/Perf_counter/*.c)
 
 
 C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
@@ -147,7 +147,7 @@ C_SOURCES += $(wildcard ../Common/debuglog/*.c)
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
 C_INCLUDES += -I../Common/debuglog 
-# C_DEFS += -DDEBUG_MODE_UART
+C_DEFS += -DDEBUG_MODE_UART
 
 C_SOURCES += $(wildcard ../Hardware/as5047.c)
 C_SOURCES += $(wildcard ../Hardware/abs_sensor.c)

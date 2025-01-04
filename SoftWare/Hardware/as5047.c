@@ -41,5 +41,10 @@ static uint16_t as5047_read_data(uint16_t _txdata)
     }
 }
 
+uint32_t as5047_get_data(void)
+{
+    uint32_t data = as5047_read_data(0xFFFF);
+    return data;
+}
 
 

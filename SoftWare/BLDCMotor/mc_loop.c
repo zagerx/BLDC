@@ -29,7 +29,7 @@ void currment_loop(void *obj,float *duty)
 
 	float theta,next_theta;
 	theta      = encoder->ele_theta;
-	next_theta = theta + 1.57079632f;
+	next_theta = theta ;//+ 1.57079632f;
 
 	/*Clark&&Park transform*/
 	_3s_2s(curloop_handle->i_abc,curloop_handle->i_alpbe);
