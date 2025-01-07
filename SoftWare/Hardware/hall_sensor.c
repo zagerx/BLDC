@@ -15,10 +15,10 @@
 static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
 {
     float delta, real_calc_speed;
- #if( MOTOR_OPENLOOP && !MOTOR_OPENLOOP_ENCODER)//CPU负担过重，只能在自开环条件下打开
+#if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
     float test_temp[7];
     float temp_self = hall->self_angle;
-    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), temp_self);
+    test_temp[cur_sect] = temp_self;//lowfilter_cale(&(hall->lfilter[cur_sect]), temp_self);
     static float temp_curbase,temp_base_buf;
     static uint8_t temp_cursect;
     temp_curbase = test_temp[cur_sect];
@@ -35,12 +35,14 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
             hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
         }
     #else
-        if (cur_sect == 6)
+        // if (cur_sect == 6)
         {
             hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
         }
     #endif
 #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+    hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
+
     //Cacle speed
     delta = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
     if (hall->dir > 0) {
@@ -52,7 +54,7 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
             delta -= 6.283185f;
         }
     }
-    real_calc_speed = 1 * (delta / (HALL_UPDATE_PERIOD * hall->count));
+    // real_calc_speed = 1 * (delta / (HALL_UPDATE_PERIOD * hall->count));
     hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter), real_calc_speed); 
 #endif
     hall->count = 0;
@@ -231,14 +233,14 @@ void hall_cale(void *pthis)
         hall->speed = hall->realcacle_speed;
     #endif
 }
-
+#include "mc_focmath.h"
 void hall_get_initpos(void *pthis)
 {
     hall_sensor_t *hall;
     hall = (hall_sensor_t*)pthis;
     uint8_t cur_sect = hall->getsection();
     hall->last_section = cur_sect;
-    hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + 1.0471f;
+    hall->realcacle_angle = _normalize_angle(hall->hall_baseBuff[cur_sect] + 1.0471f);
     hall->offset = hall->hall_baseBuff[cur_sect];
     USER_DEBUG_NORMAL("hall_get_initpos %d,%f\n",cur_sect,hall->offset);
 }
@@ -320,7 +322,7 @@ void hall_init(void *this)
         hall->hall_baseBuff[3] = SCETION_3_BASEANGLE;
         hall->hall_baseBuff[2] = SCETION_2_BASEANGLE;
     }
-#ifdef MOTOR_OPENLOOP
+#if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
     for (uint8_t i = 0; i < 7; i++)
     {
         lowfilter_init(&(hall->lfilter[i]), 5.0F);

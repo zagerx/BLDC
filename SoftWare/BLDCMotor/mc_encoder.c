@@ -15,18 +15,19 @@
 void mc_encoder_read(mc_encoder_t *encoder)
 {
 #if (ENCODER_TYPE == ENCODER_TYPE_HALL || ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ || ENCODER_TYPE == ENCODER_TYPE_ABS)
-	#ifdef MOTOR_OPENLOOP
+	#if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
 		encoder->sensor->self_angle = encoder->self_theta;
 	#endif
 		if (encoder->runflag)
 		{
 			#if defined(MCB_V06) || defined(STM32G4CUBX)
-				mc_encoder_update(encoder);
+				// mc_encoder_update(encoder);
 			#endif
 			//计算角度、速度
 			encoder->sensor->cacle(encoder->sensor);
 			//更新当前角度、速度
-			encoder->ele_theta = _normalize_angle((encoder->sensor->angle + MEC_ANGLE_OFFSET)*MOTOR_PAIRS);
+			// encoder->ele_theta = _normalize_angle((encoder->sensor->angle + MEC_ANGLE_OFFSET)*MOTOR_PAIRS);
+			encoder->ele_theta = _normalize_angle((encoder->sensor->angle + MEC_ANGLE_OFFSET));
 			encoder->speed = encoder->sensor->speed;
 		}
 #endif

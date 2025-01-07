@@ -43,7 +43,7 @@ typedef struct hall_sensor
     float self_angle;
 /*OUTPUT*/
 
-#ifdef MOTOR_OPENLOOP//后续需要删除
+#if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)//后续需要删除
     lowfilter_t lfilter[7];
 #endif // DEBUG
     lowfilter_t speedfilter;
