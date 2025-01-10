@@ -4,6 +4,15 @@
 #include "stdint.h"
 #include "filter.h"
 #pragma pack(push, 4)
+typedef struct _sect
+{
+    /* data */
+    // uint8_t cur_sect;
+    uint8_t last_sect;
+    uint8_t next_sect;
+    float angle;
+    float diff;
+}sect_t;
 
 typedef struct hall_sensor
 {
@@ -16,6 +25,9 @@ typedef struct hall_sensor
     uint8_t cairlbe_section; // 校准扇区
     uint16_t hallerr_count;
     float offset;
+
+    sect_t positive_sect[7];
+    sect_t negative_sect[7];
 
     uint8_t  (*getsection)(void);
     uint32_t (*gettick)(void);

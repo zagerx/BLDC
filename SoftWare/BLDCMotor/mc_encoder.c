@@ -21,7 +21,7 @@ void mc_encoder_read(mc_encoder_t *encoder)
 		if (encoder->runflag)
 		{
 			#if defined(MCB_V06) || defined(STM32G4CUBX)
-				// mc_encoder_update(encoder);
+				mc_encoder_update(encoder);
 			#endif
 			//计算角度、速度
 			encoder->sensor->cacle(encoder->sensor);

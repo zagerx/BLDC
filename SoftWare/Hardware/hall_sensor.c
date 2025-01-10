@@ -6,6 +6,31 @@
 #include "string.h"
 #include <stdarg.h>
 /*==========================================================================================
+ * @brief 
+ * @FuncName     _cacle_baseangle_speed
+ * @param        obj 
+ * @param        cur_sect 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+static void _cacle_baseangle_speed(void *obj,uint8_t cur_sect)
+{
+    hall_sensor_t *hall =( hall_sensor_t *)(obj);
+    sect_t *psect;
+    if (hall->dir == -1)
+    {
+        psect = hall->negative_sect;
+    }else{
+        psect = hall->positive_sect;
+    }
+    hall->realcacle_angle = psect[cur_sect].angle;//更新基准角度
+    hall->realcacle_speed = psect[cur_sect].diff/(HALL_UPDATE_PERIOD * hall->count);
+    // hall->realcacle_speed = 1.047f/(HALL_UPDATE_PERIOD * hall->count);
+    hall->count = 0;
+    hall->last_section = cur_sect;    
+}
+
+
+/*==========================================================================================
  * @brief        更新基准角度&&更新速度
  * @FuncName     
  * @param        hall 
@@ -41,21 +66,23 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
         }
     #endif
 #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
-    hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
+    // hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
 
-    //Cacle speed
-    delta = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
-    if (hall->dir > 0) {
-        if (delta < 0.0f) {
-            delta += 6.283185f;
-        }
-    } else {
-        if (delta > 0.0f) {
-            delta -= 6.283185f;
-        }
-    }
-    // real_calc_speed = 1 * (delta / (HALL_UPDATE_PERIOD * hall->count));
-    hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter), real_calc_speed); 
+    // //Cacle speed
+    // delta = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
+    // if (hall->dir > 0) {
+    //     if (delta < 0.0f) {
+    //         delta += 6.283185f;
+    //     }
+    // } else {
+    //     if (delta > 0.0f) {
+    //         delta -= 6.283185f;
+    //     }
+    // }
+    // // real_calc_speed = 1 * (delta / (HALL_UPDATE_PERIOD * hall->count));
+    // hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter), real_calc_speed); 
+
+    _cacle_baseangle_speed(hall,cur_sect);
 #endif
     hall->count = 0;
     hall->last_section = cur_sect;
@@ -238,14 +265,18 @@ void hall_get_initpos(void *pthis)
 {
     hall_sensor_t *hall;
     hall = (hall_sensor_t*)pthis;
+
     uint8_t cur_sect = hall->getsection();
-    hall->last_section = cur_sect;
-    hall->realcacle_angle = _normalize_angle(hall->hall_baseBuff[cur_sect] + 1.0471f);
-    hall->offset = hall->hall_baseBuff[cur_sect];
-    USER_DEBUG_NORMAL("hall_get_initpos %d,%f\n",cur_sect,hall->offset);
+    hall->cairlbe_section = cur_sect;
+    // hall->cairlbe_angle = 
+    // hall->last_section = cur_sect;
+    hall->realcacle_angle = _normalize_angle(hall->hall_baseBuff[cur_sect] + 0.523f);
+    // hall->offset = hall->hall_baseBuff[cur_sect];
+    // USER_DEBUG_NORMAL("hall_get_initpos %d,%f\n",cur_sect,hall->offset);
 }
 void hall_set_calib_points(void *pthis)
 {
+    return;
     hall_sensor_t *hall;
     hall = (hall_sensor_t*)pthis;
     uint8_t cur_sect = hall->getsection();
@@ -321,6 +352,35 @@ void hall_init(void *this)
         hall->hall_baseBuff[1] = SCETION_1_BASEANGLE;
         hall->hall_baseBuff[3] = SCETION_3_BASEANGLE;
         hall->hall_baseBuff[2] = SCETION_2_BASEANGLE;
+
+        hall->positive_sect[6].angle = 2.770f;
+        hall->positive_sect[4].angle = 3.847f;
+        hall->positive_sect[5].angle = 4.920f;
+        hall->positive_sect[1].angle = 5.960f;
+        hall->positive_sect[3].angle = 0.680f;
+        hall->positive_sect[2].angle = 1.730f;
+        
+        hall->positive_sect[6].diff = 1.040f;
+        hall->positive_sect[4].diff = 1.077f;
+        hall->positive_sect[5].diff = 1.073f;
+        hall->positive_sect[1].diff = 1.040f;
+        hall->positive_sect[3].diff = 1.003f;
+        hall->positive_sect[2].diff = 1.050f;
+
+        hall->negative_sect[6].angle = 3.238f;
+        hall->negative_sect[4].angle = 4.270f; 
+        hall->negative_sect[5].angle = 5.252f;
+        hall->negative_sect[1].angle = 0.008f;
+        hall->negative_sect[3].angle = 1.133f;
+        hall->negative_sect[2].angle = 2.168f;  
+
+        hall->negative_sect[6].diff = -0.982f;
+        hall->negative_sect[4].diff = -1.031f;
+        hall->negative_sect[5].diff = -1.125f;
+        hall->negative_sect[1].diff = -1.027f; 
+        hall->negative_sect[3].diff = -1.070f;
+        hall->negative_sect[2].diff = -0.987f;        
+
     }
 #if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
     for (uint8_t i = 0; i < 7; i++)

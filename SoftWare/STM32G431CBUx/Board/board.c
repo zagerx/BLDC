@@ -67,7 +67,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
     if (htim->Instance == TIM4)
     {
         HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1);
-        motorctrl_encoder_update(Motor1Fsm.pdata);
+        // motorctrl_encoder_update(Motor1Fsm.pdata);
     }
 }
 
