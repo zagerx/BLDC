@@ -2,14 +2,14 @@
 #define __BOARD__H
 
 #define OPENLOOP_DEBUG_STEP_THETA            (0.0003f)
-#define OPENLOOP_DEBUG_TOTAL_Te              (0.08f)
+#define OPENLOOP_DEBUG_TOTAL_Te              (-0.08f)
 #define MOTOR_PAIRS                          (2.0f)//电机极对数
 #define CURRMENT_PERIOD                      (0.0001f)//电流环周期
 
 #define MOTOR_DEBUG_SELF_MODE              (0)
 #define MOTOR_DEBUG_ENCODERMODE            (1)
 #define MOTOR_CLOSELOOP_ERMODE             (2)
-#define MOTOR_WORK_MODE                    MOTOR_DEBUG_ENCODERMODE
+#define MOTOR_WORK_MODE                    (MOTOR_DEBUG_ENCODERMODE)
 
 #define ENCODER_TYPE_SENSORLESS              (0)
 #define ENCODER_TYPE_ABS                     (1)
@@ -20,9 +20,10 @@
 #if (ENCODER_TYPE == ENCODER_TYPE_ABS)
 
 #elif (ENCODER_TYPE == ENCODER_TYPE_HALL)
+    // #define HALL_ENABLE_CAIRLBE             (1)
     #define HALL_UPDATE_PERIOD              (0.0001f)
-    #define HALL_POSITIVE_OFFSET            (0.0)
-    #define HALL_NEGATIVE_OFFSET            (0.0f)
+    #define HALL_POSITIVE_OFFSET            (-0.02)
+    #define HALL_NEGATIVE_OFFSET            (-0.1f)
     #define MEC_ANGLE_OFFSET                (0.0F)//(-0.809f)
     #define PLL_KP                          (80.50f)
     #define PLL_KI                          (1.2f)
@@ -34,12 +35,19 @@
     // #define SCETION_1_BASEANGLE            (0.312f)
     // #define SCETION_3_BASEANGLE            (1.428f)
     // #define SCETION_2_BASEANGLE            (2.424f)
-    #define SCETION_6_BASEANGLE            (2.9086f)
-    #define SCETION_4_BASEANGLE            (3.9781f)
-    #define SCETION_5_BASEANGLE            (4.9991f)
-    #define SCETION_1_BASEANGLE            (6.0460f)
-    #define SCETION_3_BASEANGLE            (0.8203f)
-    #define SCETION_2_BASEANGLE            (1.8650f)    
+    #define SCETION_6_BASEANGLE            (2.770f)
+    #define SCETION_4_BASEANGLE            (3.847f)
+    #define SCETION_5_BASEANGLE            (4.920f)
+    #define SCETION_1_BASEANGLE            (5.960f)
+    #define SCETION_3_BASEANGLE            (0.680f)
+    #define SCETION_2_BASEANGLE            (1.730f)
+
+    #define SCETION_6_ANGLEDIFF            (1.040f)
+    #define SCETION_4_ANGLEDIFF            (1.077f)
+    #define SCETION_5_ANGLEDIFF            (1.073f)
+    #define SCETION_1_ANGLEDIFF            (1.040f)
+    #define SCETION_3_ANGLEDIFF            (1.003f)
+    #define SCETION_2_ANGLEDIFF            (1.050f)
 #endif
 
 

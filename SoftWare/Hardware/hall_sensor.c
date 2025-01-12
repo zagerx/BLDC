@@ -5,6 +5,8 @@
 #include "math.h"
 #include "string.h"
 #include <stdarg.h>
+#include "mc_focmath.h"//提供角度归一化函数 TODO
+
 /*==========================================================================================
  * @brief 
  * @FuncName     _cacle_baseangle_speed
@@ -24,7 +26,6 @@ static void _cacle_baseangle_speed(void *obj,uint8_t cur_sect)
     }
     hall->realcacle_angle = psect[cur_sect].angle;//更新基准角度
     hall->realcacle_speed = psect[cur_sect].diff/(HALL_UPDATE_PERIOD * hall->count);
-    // hall->realcacle_speed = 1.047f/(HALL_UPDATE_PERIOD * hall->count);
     hall->count = 0;
     hall->last_section = cur_sect;    
 }
@@ -40,10 +41,10 @@ static void _cacle_baseangle_speed(void *obj,uint8_t cur_sect)
 static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
 {
     float delta, real_calc_speed;
-#if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
+#ifdef HALL_ENABLE_CAIRLBE 
     float test_temp[7];
     float temp_self = hall->self_angle;
-    test_temp[cur_sect] = temp_self;//lowfilter_cale(&(hall->lfilter[cur_sect]), temp_self);
+    test_temp[cur_sect] = lowfilter_cale(&(hall->lfilter[cur_sect]), temp_self);
     static float temp_curbase,temp_base_buf;
     static uint8_t temp_cursect;
     temp_curbase = test_temp[cur_sect];
@@ -53,39 +54,13 @@ static void _update_base_dir_angle(hall_sensor_t *hall,uint8_t cur_sect)
 #endif
 
 #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))
-    #ifdef MCB_V06
-        // 使用霍尔进行校准
-        if (cur_sect == 6)
-        {
-            hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
-        }
-    #else
-        // if (cur_sect == 6)
-        {
-            hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
-        }
-    #endif
-#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
-    // hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
-
-    // //Cacle speed
-    // delta = hall->hall_baseBuff[cur_sect] - hall->hall_baseBuff[hall->last_section];
-    // if (hall->dir > 0) {
-    //     if (delta < 0.0f) {
-    //         delta += 6.283185f;
-    //     }
-    // } else {
-    //     if (delta > 0.0f) {
-    //         delta -= 6.283185f;
-    //     }
-    // }
-    // // real_calc_speed = 1 * (delta / (HALL_UPDATE_PERIOD * hall->count));
-    // hall->realcacle_speed = lowfilter_cale(&(hall->speedfilter), real_calc_speed); 
-
-    _cacle_baseangle_speed(hall,cur_sect);
-#endif
+    hall->realcacle_angle = hall->hall_baseBuff[cur_sect] + (hall->dir > 0 ? HALL_POSITIVE_OFFSET : HALL_NEGATIVE_OFFSET);
     hall->count = 0;
     hall->last_section = cur_sect;
+#elif(ENCODER_TYPE == ENCODER_TYPE_HALL)
+    _cacle_baseangle_speed(hall,cur_sect);
+#endif
+
 }
 /*==========================================================================================
  * @brief        更新HALL扇区和方向
@@ -228,64 +203,71 @@ void hall_cale(void *pthis)
         hall->speed = hall->realcacle_speed;
        
     #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)//HALL类传感器
-        hall->realcacle_angle += hall->realcacle_speed * HALL_UPDATE_PERIOD;
-        if (hall->realcacle_angle > 6.2831852f)
-        {
-            hall->realcacle_angle -= 6.2831852f;
-        }
-        if (hall->realcacle_angle < 0.0f)
-        {
-            hall->realcacle_angle += 6.2831852f;
-        }
-
-        //PLL
-        float delt_theta;
-        delt_theta = sinf(hall->realcacle_angle)*cosf(hall->hat_angle) - cosf(hall->realcacle_angle)*sinf(hall->hat_angle);
-        hall->pll_sum += delt_theta;
-        float omega;
-        omega =  PLL_KP*delt_theta + PLL_KI*hall->pll_sum;
-        hall->hat_angle += (omega*OMEGTOTHETA);
-        if (hall->hat_angle > 6.2831852f)
-        {
-            hall->hat_angle -= 6.2831852f;
-        }
-        if (hall->hat_angle < 0.0f)
-        {
-            hall->hat_angle += 6.2831852f;
-        }
-        hall->hat_speed = omega;
         
+        hall->realcacle_angle += hall->realcacle_speed * HALL_UPDATE_PERIOD;
+        hall->realcacle_angle = _normalize_angle(hall->realcacle_angle);
         //update angle&speed to sensor
         hall->angle = hall->realcacle_angle;
         hall->speed = hall->realcacle_speed;
+
+
+        #ifdef HALL_ENABLE_PLL//是否启用PLL功能
+            //PLL
+            float delt_theta;
+            delt_theta = sinf(hall->realcacle_angle)*cosf(hall->hat_angle) - cosf(hall->realcacle_angle)*sinf(hall->hat_angle);
+            hall->pll_sum += delt_theta;
+            float omega;
+            omega =  PLL_KP*delt_theta + PLL_KI*hall->pll_sum;
+            hall->hat_angle += (omega*OMEGTOTHETA);
+            if (hall->hat_angle > 6.2831852f)
+            {
+                hall->hat_angle -= 6.2831852f;
+            }
+            if (hall->hat_angle < 0.0f)
+            {
+                hall->hat_angle += 6.2831852f;
+            }
+            hall->hat_speed = omega;
+        #endif
     #endif
 }
-#include "mc_focmath.h"
+/*==========================================================================================
+ * @brief 
+ * @FuncName     hall_get_initpos
+ * @param        pthis 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 void hall_get_initpos(void *pthis)
 {
     hall_sensor_t *hall;
     hall = (hall_sensor_t*)pthis;
-
     uint8_t cur_sect = hall->getsection();
-    hall->cairlbe_section = cur_sect;
-    // hall->cairlbe_angle = 
-    // hall->last_section = cur_sect;
-    hall->realcacle_angle = _normalize_angle(hall->hall_baseBuff[cur_sect] + 0.523f);
-    // hall->offset = hall->hall_baseBuff[cur_sect];
-    // USER_DEBUG_NORMAL("hall_get_initpos %d,%f\n",cur_sect,hall->offset);
+    #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))//ABZ+HALL类传感器
+        hall->cairlbe_section = cur_sect;
+        hall->last_section = cur_sect;
+        hall->realcacle_angle = _normalize_angle(hall->hall_baseBuff[cur_sect] + 0.523f);
+        hall->offset = hall->hall_baseBuff[cur_sect];
+        USER_DEBUG_NORMAL("hall_get_initpos %d,%f\n",cur_sect,hall->offset);
+    #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)//HALL类传感器
+        hall->realcacle_angle = _normalize_angle(hall->negative_sect[cur_sect].angle + 0.523f);
+    #endif    
 }
+/*==========================================================================================
+ * @brief 
+ * @FuncName     hall_get_initpos
+ * @param        pthis 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
 void hall_set_calib_points(void *pthis)
 {
-    return;
     hall_sensor_t *hall;
     hall = (hall_sensor_t*)pthis;
     uint8_t cur_sect = hall->getsection();
     #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))//ABZ+HALL类传感器
         hall->cairlbe_angle = 0.0f;
+        hall->cairlbe_section = cur_sect;
     #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)//HALL类传感器
-        hall->cairlbe_angle = hall->hall_baseBuff[cur_sect] + 1.0471f;
     #endif
-    hall->cairlbe_section = cur_sect;
     USER_DEBUG_NORMAL("hall_set_calib_points  %d  %f\n",cur_sect,hall->cairlbe_angle);
 }
 
@@ -332,11 +314,6 @@ void hall_init(void *this)
     USER_DEBUG_NORMAL("hall init\n");
     hall_sensor_t *hall;
     hall = (hall_sensor_t*)this;
-    #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
-    {
-      hall->set_abzcount(ABZ_ENCODER_LINES_HALF);
-    }
-    #endif
     hall->realcacle_speed = 0.0f;
     hall->count = 0.0f;
     hall->hallerr_count = 0;
@@ -344,44 +321,46 @@ void hall_init(void *this)
     hall->cairlbe_angle = 0.0f;
     hall->offset = 0.0f;
     hall->realcacle_angle = 0.0f;
-    hall->hall_baseBuff[0] = 0.0000f;
-    {
-        hall->hall_baseBuff[6] = SCETION_6_BASEANGLE;
-        hall->hall_baseBuff[4] = SCETION_4_BASEANGLE;
-        hall->hall_baseBuff[5] = SCETION_5_BASEANGLE;
-        hall->hall_baseBuff[1] = SCETION_1_BASEANGLE;
-        hall->hall_baseBuff[3] = SCETION_3_BASEANGLE;
-        hall->hall_baseBuff[2] = SCETION_2_BASEANGLE;
 
-        hall->positive_sect[6].angle = 2.770f;
-        hall->positive_sect[4].angle = 3.847f;
-        hall->positive_sect[5].angle = 4.920f;
-        hall->positive_sect[1].angle = 5.960f;
-        hall->positive_sect[3].angle = 0.680f;
-        hall->positive_sect[2].angle = 1.730f;
-        
-        hall->positive_sect[6].diff = 1.040f;
-        hall->positive_sect[4].diff = 1.077f;
-        hall->positive_sect[5].diff = 1.073f;
-        hall->positive_sect[1].diff = 1.040f;
-        hall->positive_sect[3].diff = 1.003f;
-        hall->positive_sect[2].diff = 1.050f;
+    {//================================初始化基准角度=======================================//
+        #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))//ABZ+HALL类传感器
+            hall->set_abzcount(ABZ_ENCODER_LINES_HALF);
+            hall->hall_baseBuff[0] = 0.0000f;
+            hall->hall_baseBuff[6] = SCETION_6_BASEANGLE;
+            hall->hall_baseBuff[4] = SCETION_4_BASEANGLE;
+            hall->hall_baseBuff[5] = SCETION_5_BASEANGLE;
+            hall->hall_baseBuff[1] = SCETION_1_BASEANGLE;
+            hall->hall_baseBuff[3] = SCETION_3_BASEANGLE;
+            hall->hall_baseBuff[2] = SCETION_2_BASEANGLE;
+        #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)//HALL类传感器
+            hall->positive_sect[6].angle = SCETION_6_BASEANGLE + HALL_POSITIVE_OFFSET;
+            hall->positive_sect[4].angle = SCETION_4_BASEANGLE + HALL_POSITIVE_OFFSET;
+            hall->positive_sect[5].angle = SCETION_5_BASEANGLE + HALL_POSITIVE_OFFSET;
+            hall->positive_sect[1].angle = SCETION_1_BASEANGLE + HALL_POSITIVE_OFFSET;
+            hall->positive_sect[3].angle = SCETION_3_BASEANGLE + HALL_POSITIVE_OFFSET;
+            hall->positive_sect[2].angle = SCETION_2_BASEANGLE + HALL_POSITIVE_OFFSET;
+            hall->positive_sect[6].diff = SCETION_6_ANGLEDIFF;
+            hall->positive_sect[4].diff = SCETION_4_ANGLEDIFF;
+            hall->positive_sect[5].diff = SCETION_5_ANGLEDIFF;
+            hall->positive_sect[1].diff = SCETION_1_ANGLEDIFF;
+            hall->positive_sect[3].diff = SCETION_3_ANGLEDIFF;
+            hall->positive_sect[2].diff = SCETION_2_ANGLEDIFF;
 
-        hall->negative_sect[6].angle = 3.238f;
-        hall->negative_sect[4].angle = 4.270f; 
-        hall->negative_sect[5].angle = 5.252f;
-        hall->negative_sect[1].angle = 0.008f;
-        hall->negative_sect[3].angle = 1.133f;
-        hall->negative_sect[2].angle = 2.168f;  
-
-        hall->negative_sect[6].diff = -0.982f;
-        hall->negative_sect[4].diff = -1.031f;
-        hall->negative_sect[5].diff = -1.125f;
-        hall->negative_sect[1].diff = -1.027f; 
-        hall->negative_sect[3].diff = -1.070f;
-        hall->negative_sect[2].diff = -0.987f;        
-
+            hall->negative_sect[6].angle = hall->positive_sect[4].angle + HALL_NEGATIVE_OFFSET;
+            hall->negative_sect[4].angle = hall->positive_sect[5].angle + HALL_NEGATIVE_OFFSET;
+            hall->negative_sect[5].angle = hall->positive_sect[1].angle + HALL_NEGATIVE_OFFSET;
+            hall->negative_sect[1].angle = hall->positive_sect[3].angle + HALL_NEGATIVE_OFFSET;
+            hall->negative_sect[3].angle = hall->positive_sect[2].angle + HALL_NEGATIVE_OFFSET;
+            hall->negative_sect[2].angle = hall->positive_sect[6].angle + HALL_NEGATIVE_OFFSET;
+            hall->negative_sect[6].diff = -hall->positive_sect[5].diff;
+            hall->negative_sect[4].diff = -hall->positive_sect[1].diff;
+            hall->negative_sect[5].diff = -hall->positive_sect[3].diff;
+            hall->negative_sect[1].diff = -hall->positive_sect[2].diff; 
+            hall->negative_sect[3].diff = -hall->positive_sect[6].diff;
+            hall->negative_sect[2].diff = -hall->positive_sect[4].diff;
+        #endif
     }
+
 #if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
     for (uint8_t i = 0; i < 7; i++)
     {
@@ -413,11 +392,14 @@ void hall_deinit(void *this)
     sensor->realcacle_angle = 0.0f;
     sensor->realcacle_speed = 0.0f;
     sensor->self_angle = 0.0f;
-  
+
+#ifdef HALL_ENABLE_PLL
     sensor->hat_angle = 0.0f;
     sensor->hat_speed = 0.0f;
     sensor->pll_sum = 0.0f;
- 
+#endif
+
+
 #ifdef MOTOR_OPENLOOP
     for (int i = 0; i < 7; i++) {
         memset(&(sensor->lfilter[i]), 0, sizeof(lowfilter_t)); 
