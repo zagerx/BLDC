@@ -1,67 +1,50 @@
 #ifndef __BOARD__H
 #define __BOARD__H
-
-/*--------------------电控软件---------------------*/
-#define MOTOR_DEBUG_SELF_MODE              (0)
-#define MOTOR_DEBUG_ENCODERMODE            (1)
-#define MOTOR_CLOSELOOP_ERMODE             (2)
-#define MOTOR_WORK_MODE                    MOTOR_CLOSELOOP_ERMODE
-//开环部分
-#define OPENLOOP_DEBUG_TOTAL_Te             (0.04f)
-#define OPENLOOP_DEBUG_STEP_THETA           (0.0004f)
-//闭环部分
-#define CURRMENT_PERIOD                     (0.0001f)//电流环周期
-#define SPEED_UPDATE_PERIOD                 (0.002f)//速度更新周期
-#define CURRMENTLOOP_KP             (0.01f)
-#define CURRMENTLOOP_KI             (0.0004f)
-#define SPEEDLOOP_KP                (0.18f)
-#define SPEEDLOOP_KI                (0.008f)
-#define POSLOOP_KP                  (0.1f)
-#define POSLOOP_KI                  (0.1f)
-
-/*---------------------电机本体+编码器(超龙电机)----------------------- */
-#define MOTOR_PAIRS                          (5.0f)//电机极对数
-#define ABZ_ENCODER_LINES_HALF               (2500)
-#define ABZ_ENCODER_LINES                    (5000)
-#define ABZ_ENCODER_RESOLUTION               (0.00628f)// 2*pi/5000
-
-
-#define ENCODER_TYPE_SENSORLESS              (0)
-#define ENCODER_TYPE_ABS                     (1)
-#define ENCODER_TYPE_HALL                    (2)
-#define ENCODER_TYPE_HALL_ABZ                (3)
-#define ENCODER_TYPE                         ENCODER_TYPE_HALL_ABZ
-#if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
-    #define HALL_UPDATE_PERIOD   (0.0001f)
-    #define HALL_POSITIVE_OFFSET (+0.0f+1.0f)
-    #define HALL_NEGATIVE_OFFSET (3.18f-1.0f)
-    #define PLL_KP               (80.0f)
-    #define PLL_KI               (0.02f)
-    #define OMEGTOTHETA          (CURRMENT_PERIOD)         
-
-    /*HALL基准角度 D轴强拖 0.1f*/
-    #define SCETION_6_BASEANGLE   (3.610f)
-    #define SCETION_4_BASEANGLE   (4.703f)
-    #define SCETION_5_BASEANGLE   (5.763f)
-    #define SCETION_1_BASEANGLE   (0.473f)
-    #define SCETION_3_BASEANGLE   (1.564f)
-    #define SCETION_2_BASEANGLE   (2.617f)     
+/**************************************************************************************************
+                                        电机选择
+**************************************************************************************************/
+#if 1
+    #include "borado_motor.h"
+#else
+    #include "super_motor.h"
 #endif
 
-/*----------------------硬件相关----------------------*/
-#define AMPLIFICATION_FACTOR (5.36f)  // 假设放大倍数为10  
-#define SAMPLING_RESISTANCE  (0.005)  // 假设采样电阻为5mR欧姆
-#define CIRCLE_MAX_VAL       (24.0f)
-#define VOLATAGE_BUS         (48.0f) 
-#define D_MAX_VAL            (12.0f)
-#define D_MIN_VAL            -D_MAX_VAL
-#define Q_MAX_VAL            D_MAX_VAL
-#define Q_MIN_VAL            -Q_MAX_VAL
-#define CIRCLE_OUT_MAX      (12.0f) //电流环输出最大值
-#define CIRCLE_OUT_MIN      (-12.0f)
-#define SPEED_OUT_MAX       (12.0f) //速度环输出最大值
-#define SPEED_OUT_MIN       (-12.0f)
+/**************************************************************************************************
+                                        电机控制模块相关参数
+**************************************************************************************************/
+#define MOTOR_DEBUG_SELF_MODE               (0)
+#define MOTOR_DEBUG_ENCODERMODE             (1)
+#define MOTOR_CLOSELOOP_ERMODE              (2)
+#define MOTOR_WORK_MODE                     (MOTOR_CLOSELOOP_ERMODE)  //电机工作模式
+
+#define OPENLOOP_DEBUG_TOTAL_Te             (0.04f)                   //电机自开环力矩
+#define OPENLOOP_DEBUG_STEP_THETA           (0.0004f)                 //电机自开环自给角度
+
+#define CURRMENT_PERIOD                     (0.0001f)                 //电流环周期
+#define SPEED_UPDATE_PERIOD                 (0.002f)                  //速度更新周期
+
+#define CURRMENTLOOP_KP                     (0.01f)                   //电流环 PI参数
+#define CURRMENTLOOP_KI                     (0.0004f)
+#define SPEEDLOOP_KP                        (0.18f)
+#define SPEEDLOOP_KI                        (0.008f)
+#define POSLOOP_KP                          (0.1f)
+#define POSLOOP_KI                          (0.1f)
+
+/**************************************************************************************************
+                                        PCBA板级相关
+**************************************************************************************************/
+#define AMPLIFICATION_FACTOR                (5.36f)  // 假设放大倍数为10  
+#define SAMPLING_RESISTANCE                 (0.005)  // 假设采样电阻为5mR欧姆
+#define CIRCLE_MAX_VAL                      (24.0f)
+#define VOLATAGE_BUS                        (48.0f) 
+#define D_MAX_VAL                           (12.0f)
+#define D_MIN_VAL                           -D_MAX_VAL
+#define Q_MAX_VAL                           D_MAX_VAL
+#define Q_MIN_VAL                           -Q_MAX_VAL
+#define CIRCLE_OUT_MAX                      (12.0f) //电流环输出最大值
+#define CIRCLE_OUT_MIN                      (-12.0f)
+#define SPEED_OUT_MAX                       (12.0f) //速度环输出最大值
+#define SPEED_OUT_MIN                       (-12.0f)
 
 void user_board_init(void);
-
 #endif

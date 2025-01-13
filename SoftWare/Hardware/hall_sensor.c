@@ -361,7 +361,7 @@ void hall_init(void *this)
         #endif
     }
 
-#if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
+#ifdef HALL_ENABLE_CAIRLBE
     for (uint8_t i = 0; i < 7; i++)
     {
         lowfilter_init(&(hall->lfilter[i]), 5.0F);
@@ -400,7 +400,7 @@ void hall_deinit(void *this)
 #endif
 
 
-#ifdef MOTOR_OPENLOOP
+#ifdef HALL_ENABLE_CAIRLBE
     for (int i = 0; i < 7; i++) {
         memset(&(sensor->lfilter[i]), 0, sizeof(lowfilter_t)); 
     }

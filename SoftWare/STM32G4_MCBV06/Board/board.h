@@ -33,7 +33,7 @@
     #define PLL_KP               (10.0f)
     #define PLL_KI               (0.02f)
     #define OMEGTOTHETA          (CURRMENT_PERIOD)         
-
+    #define MEC_ANGLE_OFFSET                     (0.0F)//编码器偏移
     /*HALL基准角度 D轴强拖 0.1f*/
     // #define SCETION_6_BASEANGLE   (5.840f)
     // #define SCETION_4_BASEANGLE   (0.642f)
