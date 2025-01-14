@@ -88,7 +88,7 @@ void mc_self_openlooptest(float *iabc,motor_t* motor)
         motor->setpwm(duty[0], duty[1], duty[2]);
         // 延时等待一段时间
         static unsigned short cnt = 0;
-        if (cnt++ > 16000)
+        if (cnt++ > 30000)
         {
             cnt = 0;
             state = RUNING;

@@ -22,33 +22,39 @@ extern "C"{
 /**************************************************************************************************
                                         电机编码器参数
 **************************************************************************************************/
-#define ABZ_ENCODER_LINES_HALF               (2500)
-#define ABZ_ENCODER_LINES                    (5000)
-#define ABZ_ENCODER_RESOLUTION               (0.00628f)// 2*pi/5000
-
 #define ENCODER_TYPE_SENSORLESS              (0)
 #define ENCODER_TYPE_ABS                     (1)
 #define ENCODER_TYPE_HALL                    (2)
 #define ENCODER_TYPE_HALL_ABZ                (3)
 #define ENCODER_TYPE                         ENCODER_TYPE_HALL_ABZ//编码器类型
 
-#define MEC_ANGLE_OFFSET                     (0.0F)//编码器偏移
-
-
 #if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
-    #define HALL_UPDATE_PERIOD              (0.0001f)
-    #define HALL_POSITIVE_OFFSET            (+0.0f+1.0f)
-    #define HALL_NEGATIVE_OFFSET            (3.18f-1.0f)
+    #define MEC_ANGLE_OFFSET                (0.0F)//编码器偏移(适配ABS编码器，防止编译报错)TODO
+
+    #define ABZ_ENCODER_LINES_HALF          (2500)
+    #define ABZ_ENCODER_LINES               (5000)//编码器线数
+    #define ABZ_ENCODER_RESOLUTION          (0.00628f)//编码器分辨率 2*pi/5000
+
+    #define HALL_UPDATE_PERIOD              (0.0001f)//编码器更新周期
+    #define HALL_POSITIVE_OFFSET            (0.0f)
+    #define HALL_NEGATIVE_OFFSET            (0.0f)
     #define PLL_KP                          (80.0f)
     #define PLL_KI                          (0.02f)
-    #define OMEGTOTHETA                     (0.0001f)         
+    #define OMEGTOTHETA                     (0.0001f)//TODO
     /*HALL基准角度 D轴强拖 0.1f*/
-    #define SCETION_6_BASEANGLE             (3.610f)
-    #define SCETION_4_BASEANGLE             (4.703f)
-    #define SCETION_5_BASEANGLE             (5.763f)
-    #define SCETION_1_BASEANGLE             (0.473f)
-    #define SCETION_3_BASEANGLE             (1.564f)
-    #define SCETION_2_BASEANGLE             (2.617f)     
+    #define SCETION_6_BASEANGLE             (3.520f)
+    #define SCETION_4_BASEANGLE             (4.569f)
+    #define SCETION_5_BASEANGLE             (5.635f)
+    #define SCETION_1_BASEANGLE             (0.374f)
+    #define SCETION_3_BASEANGLE             (1.426f)
+    #define SCETION_2_BASEANGLE             (2.401f)
+
+    #define SCETION_6_ANGLEDIFF             (1.040f)//待计算
+    #define SCETION_4_ANGLEDIFF             (1.077f)
+    #define SCETION_5_ANGLEDIFF             (1.073f)
+    #define SCETION_1_ANGLEDIFF             (1.040f)
+    #define SCETION_3_ANGLEDIFF             (1.003f)
+    #define SCETION_2_ANGLEDIFF             (1.050f)
 #endif
 
 #ifdef __cplusplus

@@ -3,7 +3,7 @@
 /**************************************************************************************************
                                         电机选择
 **************************************************************************************************/
-#if 1
+#if 0
     #include "borado_motor.h"
 #else
     #include "super_motor.h"
@@ -15,7 +15,8 @@
 #define MOTOR_DEBUG_SELF_MODE               (0)
 #define MOTOR_DEBUG_ENCODERMODE             (1)
 #define MOTOR_CLOSELOOP_ERMODE              (2)
-#define MOTOR_WORK_MODE                     (MOTOR_CLOSELOOP_ERMODE)  //电机工作模式
+#define MOTOR_WORK_MODE                     (MOTOR_DEBUG_ENCODERMODE)  //电机工作模式
+// #define HALL_ENABLE_CAIRLBE                 //使能基准值打印功能
 
 #define OPENLOOP_DEBUG_TOTAL_Te             (0.04f)                   //电机自开环力矩
 #define OPENLOOP_DEBUG_STEP_THETA           (0.0004f)                 //电机自开环自给角度

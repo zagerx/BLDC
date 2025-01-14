@@ -4,8 +4,8 @@
 #include "i2c_bus.h"
 typedef struct i2c_device
 {
-    // uint16_t device_addr;
-    // uint8_t reg_addr;
+    uint16_t device_addr;
+    uint8_t reg_addr;
     // uint8_t pdata;
     // uint16_t datalen;
 

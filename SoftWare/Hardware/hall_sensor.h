@@ -20,18 +20,15 @@ typedef struct hall_sensor
     uint8_t last_section;    // 上次扇区
     int8_t dir;              // 当前方向
     uint32_t count;          // Hall类传感器的计数器
-    float hall_baseBuff[7];  // 基本角度
     float cairlbe_angle;     // 校准角度
     uint8_t cairlbe_section; // 校准扇区
     uint16_t hallerr_count;
-    float offset;
     sect_t positive_sect[7];
     sect_t negative_sect[7];
 #ifdef HALL_ENABLE_CAIRLBE
+    float self_angle;
     lowfilter_t lfilter[7];
 #endif
-
-
 #ifdef HALL_ENABLE_PLL
     float hat_angle;
     float hat_speed;
@@ -43,7 +40,7 @@ typedef struct hall_sensor
 
     float speed;
     float angle;
-    float self_angle;
+    float odom;
     /*OUTPUT*/
     lowfilter_t speedfilter;
     lowfilter_t pll_speedfilter;

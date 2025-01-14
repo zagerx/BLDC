@@ -62,10 +62,6 @@ void abs_sensor_deinit(void *obj)
 void abs_sensor_get_firstpoint(void *obj)
 {
     abs_sensor_t *abs_sensor = (abs_sensor_t *)obj;
-    // uint32_t data = abs_sensor->get_rawdata();
-    // float mec_theta = data * ENCODER_CPR;
-    // abs_sensor->raw_data = data;
-    // abs_sensor->mec_theta = mec_theta;
 }
 /*==========================================================================================
  * @brief 
