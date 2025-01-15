@@ -21,16 +21,17 @@ void _forch_cmdmap(unsigned short cmd, unsigned char *pdata, unsigned short len)
 
         if (commend_map[i].pfunc != NULL)
         {
-            commend_map[i].pfunc((cmdmap_t *)&(commend_map[i]),pdata, len);
+            commend_map[i].pfunc((commend_map[i].pdata),pdata, len);
         }
     }
 }
 
-void protocol_cmd_register(unsigned short cmd,void *func)
+void protocol_cmd_register(unsigned short cmd,void *func,void *pdata)
 {
     static unsigned char count = 0;
     commend_map[count].cmd = cmd;
     commend_map[count].pfunc = func;
+    commend_map[count].pdata = pdata;
     count++;
 }
 

@@ -36,6 +36,8 @@ static i2c_device_t dev_tca9538 = {
 #include "tim.h"
 #include "stdarg.h"
 #include "fsm.h"
+#include "protocol_cmdmap.h"
+
 /*---------------------------TODO---------------------------*/
 void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 {
@@ -166,15 +168,16 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     }
 }
 
-#include "protocol_cmdmap.h"
-static void test_func(void *obj,unsigned char *pdata, unsigned short datalen);
+
+#include "mc_commend.h"
+// static void test_func(void *obj,unsigned char *pdata, unsigned short datalen);
 static void _cmd_motorstart(void *obj,unsigned char *pdata, unsigned short datalen);
 static void _cmd_motorstop(void *obj,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setMotorNormalModel(void *obj,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setMotorSpeedModel(void *obj,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setMotorEncoderModel(void *obj,unsigned char *pdata, unsigned short datalen);
 static void _cmd_setparam(void *obj,unsigned char *pdata, unsigned short datalen);
-static void _cmd_getinfo(void *obj,unsigned char *pdata, unsigned short datalen);
+// static void _cmd_getinfo(void *obj,unsigned char *pdata, unsigned short datalen);
 
 /*==========================================================================================
  * @brief        板子初始化
@@ -183,18 +186,14 @@ static void _cmd_getinfo(void *obj,unsigned char *pdata, unsigned short datalen)
 --------------------------------------------------------------------------------------------*/
 void user_board_init(void)
 {
-    protocol_cmd_register(M_SET_SPEED,              _cmd_setparam           );
-    protocol_cmd_register(M_SET_POS,                _cmd_setparam           );
-    protocol_cmd_register(M_SET_START,              _cmd_motorstart          );
-    protocol_cmd_register(M_SET_STOP,               _cmd_motorstop           );
-    protocol_cmd_register(M_SET_NormalM,            _cmd_setMotorNormalModel );
-    protocol_cmd_register(M_SET_SpeedM,             _cmd_setMotorSpeedModel  );
-    protocol_cmd_register(M_SET_EncoderLoopM,       _cmd_setMotorEncoderModel);
-    protocol_cmd_register(M_GET_MotorInfo,          test_func                );
-    protocol_cmd_register(M_GET_CtrlParaseInfo,     _cmd_getinfo             );
-    protocol_cmd_register(M_SET_PIDParam,           _cmd_setparam            );
-    protocol_cmd_register(M_SET_PIDTarge,           _cmd_setparam            );
-    
+    protocol_cmd_register(M_SET_START,              motor_get_motorstart          ,&motor1);
+    protocol_cmd_register(M_SET_STOP,               motor_get_motorstop           ,&motor1);
+    protocol_cmd_register(M_SET_NormalM,            motor_get_normolmode          ,&motor1);
+    protocol_cmd_register(M_SET_SpeedM,             motor_get_speedmode           ,&motor1);
+    protocol_cmd_register(M_SET_EncoderLoopM,       motor_get_encodermode         ,&motor1);
+    protocol_cmd_register(M_SET_PIDTarge,           _cmd_setparam                 ,&motor1);
+    protocol_cmd_register(M_SET_PIDTarge,           _cmd_setparam                 ,&motor1);
+
     i2c_bus1.init();
     // i2c_device_init(&ina226);
     // i2c_device_init(&dev_tca9538);
@@ -227,7 +226,7 @@ static void _cmd_motorstop(void *obj,unsigned char *pdata, unsigned short datale
 {
     cmdmap_t *pactor = (cmdmap_t*)obj;
     USER_DEBUG_NORMAL("Motor Stop CMD\n");
-    motor_get_motorstart(pactor->pdata,0,0);
+    motor_get_motorstop(pactor->pdata,0,0);
 }
 
 static void _cmd_setMotorNormalModel(void *obj,unsigned char *pdata, unsigned short datalen)

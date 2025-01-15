@@ -35,5 +35,5 @@ struct _cmdmap
 
 void mc_protocol_send(unsigned short cmd,unsigned char* pdata,unsigned short datalen,\
                       unsigned char time_count,unsigned short time_out);
-void protocol_cmd_register(unsigned short cmd,void *func);
+void protocol_cmd_register(unsigned short cmd,void *func,void *pdata);
 #endif
