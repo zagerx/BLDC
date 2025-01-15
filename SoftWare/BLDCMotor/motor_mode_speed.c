@@ -1,5 +1,4 @@
 #include "motor_mode_speed.h"
-#include "mc_protocol.h"
 #include "motorctrl_common.h"
 #include "string.h"
 #include "mc_encoder.h"
@@ -9,6 +8,8 @@
 #include "debuglog.h"
 #include "mc_smo.h"
 #include "math.h"
+#include "mc_commend.h"
+
 static void speed_ctrlparam_init(motor_t *motor);
 static void speed_ctrlparam_deinit(motor_t *motor);
 
@@ -33,7 +34,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         motor->encoder_handle.runflag = 0;
         pthis->chState = READY;
     case READY:
-        if (motor->curmode != M_SET_START)
+        if (motor->curmode != STATUS_START)
         {
             break;
         }
@@ -52,7 +53,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         }
         break;  
     case RUN:
-        if (motor->curmode == M_SET_STOP)
+        if (motor->curmode == STATUS_STOP)
         {
             motor->disable();
             mc_encoder_deinit(&(motor->encoder_handle));

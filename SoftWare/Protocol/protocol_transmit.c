@@ -5,6 +5,7 @@
 #include "debuglog.h"
 #include "string.h"
 #include "heap.h"
+#include "protocol_frame.h"
 
 CREAT_LIST_WITH_TYPE(msg, msg_node_t)
 // 创建任务链表
@@ -90,4 +91,49 @@ static fsm_rt_t msg_send(msg_node_t *msg)
     return RT_RUNING;
 }
 board_task(msglist_process)
+
+
+
+extern msg_list_t* msg_list;
+void mc_protocol_send(unsigned short cmd,unsigned char* pdata,unsigned short datalen,\
+                      unsigned char time_count,unsigned short time_out)
+{
+    frame_t frame;
+    frame.cmd = cmd;
+    frame.pdata = (unsigned char*)pdata;
+    frame.datalen = datalen;
+    unsigned char *p = 0;
+    p = _pack_proframe(&frame); 
+    msg_node_t* msg = (msg_node_t*)heap_malloc(sizeof(msg_node_t));
+    if (msg == NULL)
+    {
+        USER_DEBUG_NORMAL("msg_node_t malloc fail\n");
+        return;
+    }
+    msg->fsm_cblock.time_count = time_count;
+    msg->fsm_cblock.time_out = time_out;
+    msg->fsm_cblock._state = 0;
+    msg->pdata = p;
+    msg->datalen = frame.datalen + sizeof(frame_t) - 4;
+    insert_msg_list_tail(msg_list, msg);
+}
+
+void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen)
+{
+    frame_t frame;
+    frame.cmd = cmd;
+    frame.pdata = (unsigned char*)pdata;
+    frame.datalen = datalen;
+    unsigned char *p = 0;
+    p = _pack_proframe(&frame); 
+    uint16_t len = frame.datalen + sizeof(frame_t) - 4;
+    _bsp_protransmit(p,len);
+    heap_free(p);
+}
+
+
+
+
+
+
 

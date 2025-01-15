@@ -1,4 +1,3 @@
-#include "mc_protocol.h"
 #include "mc_loop.h"
 #include "mc_utils.h"
 #include "mc_encoder.h"
@@ -16,6 +15,9 @@
 #include "debuglog.h"
 #include "string.h"
 #include "stdarg.h"
+
+#include "mc_commend.h"
+
 /*==========================================================================================
  * @brief        注册电机控制状态机
  * @FuncName     
@@ -33,8 +35,8 @@ void motorfsm_register(void *obj,void *pdata)
 
     //TODO
     motor_t* motor = (motor_t*)(motorfsm->pdata);
-    motor->lastmode = M_SET_NormalM;
-    motor->curmode = M_SET_NormalM;
+    motor->lastmode = MODE_NORMAL;
+    motor->curmode = MODE_NORMAL;
 }
 /*==========================================================================================
  * @brief        执行当前状态机   
@@ -49,11 +51,11 @@ void motortctrl_process(void *obj)
     if (motor->curmode != motor->lastmode)
     {
         /* 状态机迁移 */
-        if (motor->curmode == M_SET_SpeedM)
+        if (motor->curmode == MODE_SPEED)
         {
             TRAN_STATE(fsm,motor_speedmode);
             motor->lastmode = motor->curmode;
-        }else if (motor->curmode == M_SET_EncoderLoopM)
+        }else if (motor->curmode == MODE_ENCODER)
         {
             TRAN_STATE(fsm,motor_encoder_ol_mode);
             motor->lastmode = motor->curmode;

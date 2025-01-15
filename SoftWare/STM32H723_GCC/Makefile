@@ -176,6 +176,8 @@ C_SOURCES += $(wildcard ../Common/method/trajectory_planning.c)
 C_SOURCES += $(wildcard ../Common/method/random.c)
 C_SOURCES += $(wildcard ../Common/method/pid.c)
 C_SOURCES += $(wildcard ../Common/method/filter.c)
+C_SOURCES += $(wildcard ../Common/method/datatypecovert.c)
+
 C_INCLUDES += -I../Common/flash
 C_SOURCES += $(wildcard ../Common/flash/*.c)
 C_INCLUDES += -I../Common/Fsm 

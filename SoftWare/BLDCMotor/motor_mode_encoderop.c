@@ -3,8 +3,8 @@
 #include "debuglog.h"
 #include "string.h"
 #include "motorctrl_common.h"
-#include "mc_protocol.h"
 #include "mc_encoder.h"
+#include "mc_commend.h"
 static void motor_paraminit(motor_t *motor);
 static void motor_paramdeinit(motor_t *motor);
 
@@ -27,7 +27,7 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
         motor_paraminit(motor);
         pthis->chState = READY;
     case READY:
-        if (motor->curmode != M_SET_START)
+        if (motor->curmode != STATUS_START)
         {
             break;
         }
@@ -58,7 +58,7 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
     case INIT:
         break;    
     case RUN:
-        if (motor->curmode == M_SET_STOP)
+        if (motor->curmode == STATUS_STOP)
         {
             pthis->chState = EXIT;
         }else{
