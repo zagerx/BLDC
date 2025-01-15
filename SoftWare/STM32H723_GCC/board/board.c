@@ -166,6 +166,15 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
     }
 }
 
+#include "protocol_cmdmap.h"
+static void test_func(void *obj,unsigned char *pdata, unsigned short datalen);
+static void _cmd_motorstart(void *obj,unsigned char *pdata, unsigned short datalen);
+static void _cmd_motorstop(void *obj,unsigned char *pdata, unsigned short datalen);
+static void _cmd_setMotorNormalModel(void *obj,unsigned char *pdata, unsigned short datalen);
+static void _cmd_setMotorSpeedModel(void *obj,unsigned char *pdata, unsigned short datalen);
+static void _cmd_setMotorEncoderModel(void *obj,unsigned char *pdata, unsigned short datalen);
+static void _cmd_setparam(void *obj,unsigned char *pdata, unsigned short datalen);
+static void _cmd_getinfo(void *obj,unsigned char *pdata, unsigned short datalen);
 
 /*==========================================================================================
  * @brief        板子初始化
@@ -174,6 +183,18 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 --------------------------------------------------------------------------------------------*/
 void user_board_init(void)
 {
+    protocol_cmd_register(M_SET_SPEED,              _cmd_setparam           );
+    protocol_cmd_register(M_SET_POS,                _cmd_setparam           );
+    protocol_cmd_register(M_SET_START,              _cmd_motorstart          );
+    protocol_cmd_register(M_SET_STOP,               _cmd_motorstop           );
+    protocol_cmd_register(M_SET_NormalM,            _cmd_setMotorNormalModel );
+    protocol_cmd_register(M_SET_SpeedM,             _cmd_setMotorSpeedModel  );
+    protocol_cmd_register(M_SET_EncoderLoopM,       _cmd_setMotorEncoderModel);
+    protocol_cmd_register(M_GET_MotorInfo,          test_func                );
+    protocol_cmd_register(M_GET_CtrlParaseInfo,     _cmd_getinfo             );
+    protocol_cmd_register(M_SET_PIDParam,           _cmd_setparam            );
+    protocol_cmd_register(M_SET_PIDTarge,           _cmd_setparam            );
+    
     i2c_bus1.init();
     // i2c_device_init(&ina226);
     // i2c_device_init(&dev_tca9538);
@@ -185,5 +206,63 @@ void board_deinit(void)
 {
 
 }
+
+
+
+
+
+static void test_func(void *obj,unsigned char *pdata, unsigned short datalen)
+{
+    USER_DEBUG_NORMAL("mc_protocl.c/test_func()\n");
+}
+
+static void _cmd_motorstart(void *obj,unsigned char *pdata, unsigned short datalen)
+{
+    cmdmap_t *pactor = (cmdmap_t*)obj;
+    USER_DEBUG_NORMAL("Motor Start CMD\n");
+    motor_get_motorstart(pactor->pdata,0,0);
+}
+
+static void _cmd_motorstop(void *obj,unsigned char *pdata, unsigned short datalen)
+{
+    cmdmap_t *pactor = (cmdmap_t*)obj;
+    USER_DEBUG_NORMAL("Motor Stop CMD\n");
+    motor_get_motorstart(pactor->pdata,0,0);
+}
+
+static void _cmd_setMotorNormalModel(void *obj,unsigned char *pdata, unsigned short datalen)
+{
+    cmdmap_t *pactor = (cmdmap_t*)obj;
+    motor_get_normolmode(pactor->pdata,0,0);
+}
+static void _cmd_setMotorSpeedModel(void *obj,unsigned char *pdata, unsigned short datalen)
+{
+    cmdmap_t *pactor = (cmdmap_t*)obj;
+    motor_get_speedmode(pactor->pdata,0,0);
+}
+
+static void _cmd_setMotorEncoderModel(void *obj,unsigned char *pdata, unsigned short datalen)
+{
+    cmdmap_t *pactor = (cmdmap_t*)obj;
+    motor_get_encodermode(pactor->pdata,0,0);
+}
+static void _cmd_setparam(void *obj,unsigned char *pdata, unsigned short datalen)
+{
+    cmdmap_t *pactor = (cmdmap_t*)obj;
+    if(pactor->cmd == M_SET_PIDParam)
+    {
+        motot_get_reset(pactor->pdata,0,0);
+    }else if(pactor->cmd == M_SET_PIDTarge){
+        motot_get_pidtarge(pactor->pdata,pdata,datalen);
+    }else if(pactor->cmd == M_SET_SPEED){
+    }else if(pactor->cmd == M_SET_POS){
+    }
+}
+
+static void _cmd_getinfo(void *obj,unsigned char *pdata, unsigned short datalen)
+{
+    cmdmap_t *pactor = (cmdmap_t*)obj;
+}
+
 
 board_task(motorctrl_task)
