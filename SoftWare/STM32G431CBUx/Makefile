@@ -164,6 +164,7 @@ C_INCLUDES += -I./Board
 C_INCLUDES += -I../Common/method 
 C_SOURCES += $(wildcard ../Common/method/trajectory_planning.c)
 C_SOURCES += $(wildcard ../Common/method/random.c)
+C_SOURCES += $(wildcard ../Common/method/datatypecovert.c)
 
 C_SOURCES += $(wildcard ../Common/method/pid.c)
 C_SOURCES += $(wildcard ../Common/method/filter.c)

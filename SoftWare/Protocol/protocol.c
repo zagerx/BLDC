@@ -4,7 +4,7 @@
 #include "initmodule.h"
 #include "taskmodule.h"
 #include "debuglog.h"
-
+#include "protocol_cmdmap.h"
 static unsigned char pro_recivefifo_buf[PRO_FIFO_SIZE];
 static byte_fifo_t pro_recivefifo;
 

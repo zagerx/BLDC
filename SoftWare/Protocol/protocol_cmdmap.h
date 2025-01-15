@@ -32,6 +32,7 @@ struct _cmdmap
     void *pdata;
 };
 
+void _forch_cmdmap(unsigned short cmd, unsigned char *pdata, unsigned short len);
 
 void mc_protocol_send(unsigned short cmd,unsigned char* pdata,unsigned short datalen,\
                       unsigned char time_count,unsigned short time_out);

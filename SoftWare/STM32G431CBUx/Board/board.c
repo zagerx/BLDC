@@ -3,12 +3,22 @@
 #include "taskmodule.h"
 #include "debuglog.h"
 #include "stm32g4xx_hal.h"
-
 #include "adc.h"
 #include "opamp.h"
-#include "voft.h"
-
 #include "tim.h"
+#include "usart.h"
+#include "string.h"
+#include "hall_sensor.h"
+#include "motorctrl.h"
+#include "fsm.h"
+#include "mc_commend.h"
+#include "motorctrl_common.h"
+#include "protocol_cmdmap.h"
+#include "flash.h"//TODO
+static fsm_cb_t Motor1Fsm;
+static motor_t motor1 = {0};
+static hall_sensor_t hall_sensor;
+
 static void motor_enable(void)
 {
     tim_pwm_enable();
@@ -16,7 +26,6 @@ static void motor_enable(void)
     adc_start();
     opamp_start();
     tim_hallmode_enable();
-
 }
 static void motor_disable(void)
 {
@@ -31,9 +40,12 @@ static void motor_set_pwm(float _a,float _b,float _c)
 
 static void user_softresetsystem(void)
 {
-	HAL_NVIC_SystemReset();
+	
 }
-#include "flash.h"
+void sys_softreset(void *obj,uint8_t* pdata,uint16_t datalen)
+{
+    HAL_NVIC_SystemReset();
+}
 void motor_write(void *pdata,uint16_t datalen)
 {
     user_flash_earse(PID_PARSE_ADDR,datalen);
@@ -43,8 +55,18 @@ void motor_read(void *pdata,uint16_t datalen)
 {
     user_flash_read(PID_PARSE_ADDR,(uint8_t *)pdata,datalen);
 }
-#include "usart.h"
-#include "string.h"
+static uint8_t get_section_numb(void)
+{
+    uint8_t u,v,w;
+    u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
+    v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
+    w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
+    return u | (w<<1) | (v<<2);
+}
+static uint32_t get_tick()
+{
+    return 0;
+}
 void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 {
     static unsigned char sg_uartsend_buf[125];
@@ -53,14 +75,6 @@ void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 }
 
 
-#include "hall_sensor.h"
-#include "motorctrl_common.h"
-#include "voft.h"
-#include "motorctrl.h"
-#include "fsm.h"
-static fsm_cb_t Motor1Fsm;
-motor_t motor1 = {0};
-static hall_sensor_t hall_sensor;
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
@@ -88,22 +102,8 @@ void  HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
   }
 }
 
-static uint8_t get_section_numb(void)
-{
-    uint8_t u,v,w;
-    u = HAL_GPIO_ReadPin(HALL_U1_GPIO_Port,HALL_U1_Pin);
-    v = HAL_GPIO_ReadPin(HALL_V1_GPIO_Port,HALL_V1_Pin);
-    w = HAL_GPIO_ReadPin(HALL_W1_GPIO_Port,HALL_W1_Pin);
-    return u | (w<<1) | (v<<2);
-}
-static uint32_t get_tick()
-{
-    return 0;
-}
 
-/**
- * 电机初始化
- */
+
 void motorctrl_init(void)
 {
 
@@ -131,24 +131,26 @@ void motorctrl_init(void)
                               motor_write,                        \
                               motor_read);
 }
+void Board_init(void)
+{
+    protocol_cmd_register(M_SET_START,              motor_get_motorstart          ,&motor1);
+    protocol_cmd_register(M_SET_STOP,               motor_get_motorstop           ,&motor1);
+    protocol_cmd_register(M_SET_NormalM,            motor_get_normolmode          ,&motor1);
+    protocol_cmd_register(M_SET_SpeedM,             motor_get_speedmode           ,&motor1);
+    protocol_cmd_register(M_SET_EncoderLoopM,       motor_get_encodermode         ,&motor1);
+    protocol_cmd_register(M_SET_PIDTarge,           motot_get_pidtarge            ,&motor1);
+    protocol_cmd_register(M_SET_PIDParam,           sys_softreset                 ,NULL);
+
+    motorctrl_init();
+}
 
 void motorctrl_task(void)
 {
     motortctrl_process(&Motor1Fsm);
 }
 
-
-void Board_init(void)
-{
-    // adc_start();
-    // opamp_start();
-    motorctrl_init();
-}
-
 void baord_process(void)
 {
-    float a;
-    // a = adc_getval()*(3.3f/4096);
 }
 
 board_task(motorctrl_task)
