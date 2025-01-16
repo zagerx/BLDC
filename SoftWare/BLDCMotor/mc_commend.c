@@ -50,7 +50,7 @@ void motor_get_normolmode(void *obj,uint8_t *pdata,uint16_t datalen)
 void motot_get_reset(void *obj,uint8_t *pdata,uint16_t datalen)
 {
     motor_t *motor = (motor_t*)obj;
-    motor->reset_system();
+    // motor->reset_system();
 }
 void motot_get_pidtarge(void *obj,uint8_t *pdata,uint16_t datalen)
 {

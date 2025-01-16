@@ -41,7 +41,7 @@ extern UART_HandleTypeDef huart1;
 void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-void uart2_process(void);
+void _bsp_protransmit(unsigned char* pdata,unsigned short len);
 
 /* USER CODE END Prototypes */
 

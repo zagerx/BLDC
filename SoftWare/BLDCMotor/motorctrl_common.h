@@ -148,10 +148,10 @@ typedef struct _motor
     void  (*enable)(void);
     void  (*disable)(void);
     void  (*setpwm)(float,float,float);
-    void  (*reset_system)(void);
-    void  (*bsptransmit)(uint8_t*,uint16_t);
-    void  (*read)(void*, uint16_t);
-    void  (*write)(void*, uint16_t);
+    // void  (*reset_system)(void);
+    // void  (*bsptransmit)(uint8_t*,uint16_t);
+    // void  (*read)(void*, uint16_t);
+    // void  (*write)(void*, uint16_t);
 }motor_t;
 
 #pragma pack(pop)

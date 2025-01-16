@@ -2,7 +2,7 @@
 #define __PROT_SEND__H
 #include "stdbool.h"
 #include "stdint.h"
-typedef struct fsm_cb
+typedef struct _fsm_cb
 {
     unsigned short time_out;
     unsigned short time_count;
@@ -14,7 +14,7 @@ typedef enum{
     RT_FINISH,
     RT_RUNING,
     RT_START,
-}fsm_rt_t;
+}_copy_fsm_rt_t;
 
 typedef struct msg_node {
     fsmcb_t fsm_cblock;

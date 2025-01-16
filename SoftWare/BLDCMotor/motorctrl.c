@@ -133,8 +133,5 @@ void motor_actor_register(void* obj,...)
     motor->enable = va_arg(args,void (*)(void));
     motor->disable = va_arg(args,void (*)(void));
     motor->setpwm = va_arg(args,void (*)(float,float,float));
-    motor->reset_system = va_arg(args,void (*)(void));
-    motor->write = va_arg(args,void (*)(void*,uint16_t));
-    motor->read = va_arg(args,void (*)(void*,uint16_t));;
     va_end(args);    
 }
