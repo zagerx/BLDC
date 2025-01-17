@@ -92,6 +92,10 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
             motorctrl_currment_update(&motor1,iabc);
         // }
     }
+    static uint16_t test_adc1_vale[3];
+    test_adc1_vale[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
+    test_adc1_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_2);
+    test_adc1_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_3);    
 }
 
 /*************************************************************************************************
@@ -167,6 +171,7 @@ static void motor_enable(void)
     adc_start();
 
     tim1_pwm_enable();
+    adc1_start();
 }
 static void motor_disable(void)
 {
@@ -176,6 +181,7 @@ static void motor_disable(void)
     // HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_RESET);
 
     tim1_pwm_disable();
+    adc1_stop();
 }
 static void motor_set_pwm(float _a,float _b,float _c)
 {

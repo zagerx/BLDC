@@ -44,20 +44,13 @@ extern "C"{
     #define PLL_KP                          (80.0f)
     #define PLL_KI                          (0.02f)
     #define OMEGTOTHETA                     (0.0001f)//TODO
-    /*HALL基准角度 D轴强拖 0.1f*/
-    #define SCETION_6_BASEANGLE             (3.520f)
-    #define SCETION_4_BASEANGLE             (4.569f)
-    #define SCETION_5_BASEANGLE             (5.635f)
-    #define SCETION_1_BASEANGLE             (0.374f)
-    #define SCETION_3_BASEANGLE             (1.426f)
-    #define SCETION_2_BASEANGLE             (2.401f)
-
-    #define SCETION_6_ANGLEDIFF             (1.040f)//待计算
-    #define SCETION_4_ANGLEDIFF             (1.077f)
-    #define SCETION_5_ANGLEDIFF             (1.073f)
-    #define SCETION_1_ANGLEDIFF             (1.040f)
-    #define SCETION_3_ANGLEDIFF             (1.003f)
-    #define SCETION_2_ANGLEDIFF             (1.050f)
+    /*HALL基准角度 D轴强拖 VBUS51.54f   0.01f 0.0002f*/
+    #define SCETION_6_BASEANGLE             (3.988f)
+    #define SCETION_4_BASEANGLE             (4.978f)
+    #define SCETION_5_BASEANGLE             (6.086f)
+    #define SCETION_1_BASEANGLE             (0.845f)
+    #define SCETION_3_BASEANGLE             (1.820f)
+    #define SCETION_2_BASEANGLE             (2.938f)
 #endif
 
 #ifdef __cplusplus
