@@ -32,6 +32,10 @@ extern "C"{
 #if (ENCODER_TYPE_HALL==ENCODER_TYPE_HALL || ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
     #define MEC_ANGLE_OFFSET                (0.0F)//编码器偏移(适配ABS编码器，防止编译报错)TODO
 
+    #define OPENLOOP_DEBUG_TOTAL_Te             (0.04f)                   //电机自开环力矩
+    #define OPENLOOP_DEBUG_STEP_THETA           (0.0004f)                 //电机自开环自给角度
+
+
     #define ABZ_ENCODER_LINES_HALF          (4096)
     #define ABZ_ENCODER_LINES               (8192)//编码器线数
     #define ABZ_ENCODER_RESOLUTION          (0.0038349f)//编码器分辨率 2*pi/5000

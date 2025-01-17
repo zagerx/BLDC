@@ -165,6 +165,8 @@ static void motor_enable(void)
     tim_pwm_enable();
     tim_tigger_adc();
     adc_start();
+
+    tim1_pwm_enable();
 }
 static void motor_disable(void)
 {
@@ -172,10 +174,13 @@ static void motor_disable(void)
     tim_pwm_disable();
     adc_stop();
     // HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_RESET);
+
+    tim1_pwm_disable();
 }
 static void motor_set_pwm(float _a,float _b,float _c)
 {
     tim_set_pwm(_a ,_b,_c);
+    tim1_set_pwm(_a ,_b,_c);
 }
 static uint8_t get_section_numb(void)
 {
