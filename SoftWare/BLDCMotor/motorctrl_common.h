@@ -97,6 +97,8 @@ struct mc_encoder
     float ele_theta; //电角度
     float total_realmectheta;
     float self_theta;//调试使用
+    float self_mec_theta;//调试使用
+    uint32_t self_theta_conut;//调试使用
     lowfilter_t speedfilter;
     float self_te;
     uint8_t runflag;
@@ -144,6 +146,7 @@ typedef struct _motor
     int16_t curmode;
     int16_t lastmode;
     int16_t curMotorstate;
+    int16_t openloopstate;
 
     void  (*enable)(void);
     void  (*disable)(void);

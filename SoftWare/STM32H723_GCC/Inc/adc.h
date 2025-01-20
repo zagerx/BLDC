@@ -44,9 +44,9 @@ void MX_ADC1_Init(void);
 void MX_ADC2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-void adc_pollvale(void);
-void adc_start(void);
-void adc_stop(void);
+void adc2_pollvale(void);
+void adc2_start(void);
+void adc2_stop(void);
 void adc1_start(void);
 void adc1_stop(void);
 

@@ -18,13 +18,13 @@ unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
     float duty[3] = {0};
     float i_ab[2];
     float i_dq[2];
-    static float theta = 0.0f;
+    // static float theta = 0.0f;
 
     /*读取编码器角度值*/
     mc_encoder_read(&(motor->encoder_handle)); 
     /*反PARK CLARK变换*/
     _3s_2s(iabc, i_ab);
-    _2s_2r(i_ab, theta, i_dq);
+    _2s_2r(i_ab, motor->encoder_handle.self_mec_theta, i_dq);
 
     /*强制拖动电机转动*/
     i_dq[0] = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
@@ -32,22 +32,22 @@ unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
 
     /*park变换*/
     float temp;
-    temp = fmodf(theta*MOTOR_PAIRS,6.28f);
+    temp = fmodf(motor->encoder_handle.self_mec_theta*MOTOR_PAIRS,6.28f);
     motor->encoder_handle.self_theta = temp;
     _2r_2s(i_dq, temp,i_ab);
     /*SVPWM*/
     SVM(i_ab[0], i_ab[1],duty);
     motor->setpwm(duty[0], duty[1], duty[2]);
 
-    theta += OPENLOOP_DEBUG_STEP_THETA;
-    if (theta > _2PI)
+    motor->encoder_handle.self_mec_theta += OPENLOOP_DEBUG_STEP_THETA;
+    if (motor->encoder_handle.self_mec_theta > _2PI)
     {
-        theta = 0.0f;
+        motor->encoder_handle.self_mec_theta = 0.0f;
         return 1;
     }
-    if (theta < 0.0f)
+    if (motor->encoder_handle.self_mec_theta < 0.0f)
     {
-        theta = _2PI;
+        motor->encoder_handle.self_mec_theta = _2PI;
         return 1;
     }
     
@@ -69,8 +69,8 @@ void mc_self_openlooptest(float *iabc,motor_t* motor)
         IDLE,
         STOP
     };
-    static unsigned short state = PREPOSITIONING;
-    switch (state)
+    // static unsigned short state = PREPOSITIONING;
+    switch (motor->openloopstate)
     {
     case PREPOSITIONING:
     {
@@ -88,10 +88,10 @@ void mc_self_openlooptest(float *iabc,motor_t* motor)
         motor->setpwm(duty[0], duty[1], duty[2]);
         // 延时等待一段时间
         static unsigned short cnt = 0;
-        if (cnt++ > 30000)
+        if (motor->encoder_handle.self_theta_conut++ > 30000)
         {
-            cnt = 0;
-            state = RUNING;
+            motor->encoder_handle.self_theta_conut = 0;
+            motor->openloopstate = RUNING;
             motor->encoder_handle.sensor->init((motor->encoder_handle.sensor));
             motor->encoder_handle.sensor->get_first_points((motor->encoder_handle.sensor));
             motor->encoder_handle.sensor->set_calib_points((motor->encoder_handle.sensor));
@@ -104,7 +104,7 @@ void mc_self_openlooptest(float *iabc,motor_t* motor)
         break;
 
     case STOP:
-        state = RUNING;
+        motor->openloopstate = RUNING;
         break;
     default:
         break;

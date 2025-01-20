@@ -104,7 +104,7 @@ void MX_ADC1_Init(void)
   sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
   sConfigInjected.AutoInjectedConv = DISABLE;
   sConfigInjected.QueueInjectedContext = DISABLE;
-  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_T8_CC4;
+  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_T1_CC4;
   sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
   sConfigInjected.InjecOversamplingMode = DISABLE;
   if (HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected) != HAL_OK)
@@ -385,12 +385,12 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-void adc_start(void)
+void adc2_start(void)
 {
   HAL_ADCEx_Calibration_Start(&hadc2,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
   HAL_ADCEx_InjectedStart_IT(&hadc2);
 }
-void adc_stop(void)
+void adc2_stop(void)
 {
   HAL_ADCEx_InjectedStop_IT(&hadc2);
 }
@@ -398,10 +398,10 @@ void adc_stop(void)
 void adc1_start(void)
 {
   HAL_ADCEx_Calibration_Start(&hadc1,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
-  HAL_ADCEx_InjectedStart(&hadc1);
+  HAL_ADCEx_InjectedStart_IT(&hadc1);
 }
 void adc1_stop(void)
 {
-  HAL_ADCEx_InjectedStop(&hadc1);
+  HAL_ADCEx_InjectedStop_IT(&hadc1);
 }
 /* USER CODE END 1 */

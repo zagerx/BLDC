@@ -19,7 +19,7 @@ static void _update_baseangle_speed_dir(hall_sensor_t *obj,uint8_t dir,uint8_t c
     hall_sensor_t *hall =( hall_sensor_t *)(obj);
     sect_t *psect;
 #ifdef HALL_ENABLE_CAIRLBE 
-    USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle));
+    // USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle));
 #endif
 
     //更新基准角度&方向
@@ -220,38 +220,6 @@ void hall_set_calib_points(void *obj)
     #endif
 }
 
-/*==========================================================================================
- * @brief 
- * @FuncName     
- * @param        hall 
- * @param        ... 
- * @version      0.1
---------------------------------------------------------------------------------------------*/
-void hall_register(hall_sensor_t *hall,...) 
-{
-    va_list args;
-    va_start(args, hall);
-    // 初始化 hall 结构体
-    memset(hall, 0, sizeof(hall_sensor_t));
-    hall->getsection = va_arg(args,uint8_t (*)(void));
-    hall->gettick = va_arg(args,uint32_t (*)(void));
- 
-    // 检查是否设置 ABZ 回调函数
-    #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
-    {
-        hall->get_abzcount = va_arg(args,uint32_t (*)(void));
-        hall->set_abzcount = va_arg(args,void (*)(uint32_t));
-    }
-    #endif
-    hall->cacle = va_arg(args,void (*)(void*));
-    hall->update_base = va_arg(args,uint8_t (*)(void*));
-    hall->init = va_arg(args,void (*)(void*));
-    hall->deinit = va_arg(args,void (*)(void*));
-    hall->get_first_points = va_arg(args,void (*)(void*));
-    hall->set_calib_points = va_arg(args,void (*)(void*));
-
-    va_end(args);
-}
  /*==========================================================================================
   * @brief 
   * @FuncName     
@@ -342,4 +310,36 @@ void hall_deinit(void *obj)
 #endif
     memset(&(sensor->speedfilter), 0, sizeof(lowfilter_t));
     memset(&(sensor->pll_speedfilter), 0, sizeof(lowfilter_t));
+}
+
+/*==========================================================================================
+ * @brief 
+ * @FuncName     
+ * @param        hall 
+ * @param        ... 
+ * @version      0.1
+--------------------------------------------------------------------------------------------*/
+void hall_register(hall_sensor_t *hall,...) 
+{
+    va_list args;
+    va_start(args, hall);
+    // 初始化 hall 结构体
+    memset(hall, 0, sizeof(hall_sensor_t));
+    hall->getsection = va_arg(args,uint8_t (*)(void));
+    hall->gettick = va_arg(args,uint32_t (*)(void));
+ 
+    // 检查是否设置 ABZ 回调函数
+    #if (ENCODER_TYPE == ENCODER_TYPE_HALL_ABZ)
+    {
+        hall->get_abzcount = va_arg(args,uint32_t (*)(void));
+        hall->set_abzcount = va_arg(args,void (*)(uint32_t));
+    }
+    #endif
+    va_end(args);
+    hall->cacle = hall_cale;
+    hall->update_base = hall_update;
+    hall->init = hall_init;
+    hall->deinit = hall_deinit;
+    hall->get_first_points = hall_get_initpos;
+    hall->set_calib_points = hall_set_calib_points;
 }
