@@ -4,7 +4,8 @@
                                         电机选择
 **************************************************************************************************/
 #if 1
-    #include "borado_motor.h"
+    // #include "borado_motor.h"
+    #include "borapa_motor400w.h"
 #else
     #include "super_motor.h"
 #endif

@@ -17,22 +17,31 @@
     \end{array}
     \right.
     \]
+
     - 根据三角形正弦定理可知:
     \[
     \frac{V_{\text{ref}}}{\sin(60^\circ)} = \frac{V'_6}{\sin(\theta)} = \frac{V'_4}{\sin(60^\circ - \theta)} \quad \text{式1}
     \]
+
     - 对其进行化简:
     \[\frac{V_{ref}}{sin(60^\circ)}=\frac{{V'_4}}{sin(60^\circ-\theta)}\]
+    
     其中:     
     \[\frac{V_{ref}}{sin(60^\circ)}sin(60^\circ-\theta)=V'_4\\
     V'_4代表合成参考矢量的其中一路矢量,V'_4 = \frac{T_4}{T_S}V_4\]
+    
     - 将其代入:
     \[\frac{V_{ref}}{sin(60^\circ)}sin(60^\circ-\theta)= \frac{T_4}{T_S}V_4\]
+    
     - 化简后:
     \[\frac{T_S\frac{V_{ref}}{sin(60^\circ)}sin(60^\circ-\theta)}{V_4}= T_4 \quad \quad (V_4=\frac{2U_{DC}}{3})\\
     T_4 = \frac{\sqrt{3}V_{ref}}{U_{DC}}T_Ssin(60^\circ-\theta)\]
+    
     - 同理可得:
-    \[T_6\]
+    \[
+        T_6 = \sqrt3\frac{V_{ref}}{V_{DC}}T_ssin(\theta)\\T_0=T_7=\frac{1}{2}(T_s-T_4-T_6)
+    \]
+
 ## 开关分配
 以第一扇区为例，两个基矢量分别为\(V_4(1,0,0),V_6(1,1,0)\)。其作用顺序如下:
     <img src="./imags/SVPWM错误的分配方式.png" alt="SVPWM错误的分配方式" width="480">
@@ -40,6 +49,36 @@
 合理的方式如下:
 
 
+### 扇区内相邻两个非零向量和零向量的作用时间
+\[
+    \begin{align}
+    \frac{T_s}{T_s}U_{\alpha} &= \frac{T_4}{T_s}V_4+\frac{T_6}{T_s}V_6cos(60)\\
+    \frac{T_s}{T_s}U_{\beta} &= \frac{T_6}{T_s}V_6sin(60)
+    \end{align}
+\]
+由(1)(2)联立得:
+\[
+    \begin{align}
+    \frac{U_{\beta}}{sin(60)} &= \frac{T_6}{T_s}V_6\\
+    \frac{T_s}{T_s}U_{\alpha} &= \frac{T_4}{T_s}V_4+\frac{U_{\beta}}{sin(60)}cos(60)\\
+    \frac{T_s}{T_s}U_{\alpha} &= \frac{T_4}{T_s}V_4+\frac{\sqrt3}{3}U_{\beta}\\
+    U_{\alpha}-\frac{\sqrt3}{3}U_{\beta} &= \frac{T_4}{T_s}V_4\\
+    (U_{\alpha}-\frac{\sqrt3}{3}U_{\beta}){T_s} &= {T_4}V_4\\
+    (U_{\alpha}-\frac{\sqrt3}{3}U_{\beta})\frac{{T_s}}{V_4} &= {T_4}\\
+    V_4 &= \frac{2}{3}U_{DC}\\
+    T_4 &= \frac{\sqrt3T_s}{2U_{DC}}(\sqrt3U_{\alpha}-U_{\beta})\\
+    T_6 &= \frac{\sqrt3T_s}{U_{DC}}U_{\beta}\\
+    T_0 &= T_s-T_4-T_6
+    \end{align}
+    \]
+| 扇区 | 列2标题 |
+|--------|--------|
+| \(I\) | \[\begin{align}T_4 &= \frac{\sqrt3T_s}{2U_{DC}}(\sqrt3U_{\alpha}-U_{\beta})\notag \\T_6 &= \frac{\sqrt3T_s}{U_{DC}}U_{\beta}\notag\\T_0 &= \frac{\sqrt3T_s}{U_{DC}}U_{\beta}\notag\end{align}\] |
+| \(II\) | \[ssss\\sss\] | 
+| \(III\) | 单元格8 |
+| \(IV\) | 单元格2 |
+| \(V\) | 单元格5 |
+| \(VI\) | 单元格8 |
 
 ## C语言代码编写
 伪代码如下:

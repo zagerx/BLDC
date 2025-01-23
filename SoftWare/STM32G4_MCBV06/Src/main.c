@@ -59,6 +59,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+extern void svpwm_testfunc(void);
 
 /* USER CODE END 0 */
 
@@ -100,14 +101,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_Delay(800);
   USER_DEBUG_NORMAL("Hello world\n");
-  user_board_init();
+  // user_board_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    do_taskcalls();
+    // do_taskcalls();
     HAL_GPIO_TogglePin(SF_DOG_GPIO_Port,SF_DOG_Pin);
     static unsigned short count;
     if (count++>200)
@@ -116,7 +117,7 @@ int main(void)
       HAL_GPIO_TogglePin(LED01_GPIO_Port,LED01_Pin);
       USER_DEBUG_NORMAL(".\n");
     }
-    
+    svpwm_testfunc();
     HAL_Delay(1);
     /* USER CODE END WHILE */
 

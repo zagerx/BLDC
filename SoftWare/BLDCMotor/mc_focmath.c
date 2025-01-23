@@ -12,7 +12,7 @@
 #include "debuglog.h"
 #include "mc_utils.h"
 
-#if 1
+#if 0
 /*==========================================================================================
  * @brief        svpwm函数
  * @FuncName     SVM
@@ -142,69 +142,75 @@ void SVM(float alpha, float beta,float *duty)
 }
 
 #else
-
-duty_t SVM(float ualpha,float ubeta)
+#define PWM_TS (1.0f) 
+#define T_UDC (1.0f)
+void SVM(float alpha, float beta,float *duty)
 {
-    unsigned char sector;    
+    //判断扇区
+    unsigned char sector;
     sector = 0;
     /*-------------------------------*/
-    if(ubeta > 0.0F) {
+    if(beta*(1<<15) > 0) {
         sector = 1;
     }
-    if((sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
+    if(((sqrt3 * alpha - beta)/2.0F*(1<<15)) > 0) {
         sector += 2;
     }
-    if((-sqrt3 * ualpha - ubeta) / 2.0F > 0.0F) {
+    if(((-sqrt3 * alpha - beta) / 2.0F)*(1<<15) > 0) {
         sector += 4;
     }
-    /*----------------------------------------------------*/
+    //计算对应扇区的换相时间
+    float X,Y,Z;
+    X = (sqrt3 * beta * T_UDC);
+    Y = (1.5F * alpha + sqrt3/2.0f * beta) * T_UDC;
+    Z = (-1.5F * alpha + sqrt3/2.0f * beta) * T_UDC;
+
     float s_vector = 0.0f,m_vector = 0.0f;
     switch (sector) {
         case 1:
-            m_vector = (-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
-            s_vector = (1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
+            m_vector = Z;
+            s_vector = Y;
         break;
 
         case 2:
-            m_vector = (1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
-            s_vector = -(sqrt3 * ubeta * T_UDC);
+            m_vector = Y;
+            s_vector = -X;
         break;
 
         case 3:
-            m_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
-            s_vector = sqrt3 * ubeta * T_UDC;
+            m_vector = -Z;
+            s_vector = X;
         break;
 
         case 4:
-            m_vector = -(sqrt3 * ubeta * T_UDC);
-            s_vector = (-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC;
+            m_vector = -X;
+            s_vector = Z;
         break;
 
         case 5:
-            m_vector = sqrt3 * ubeta * T_UDC;
-            s_vector = -((1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
+            m_vector = X;
+            s_vector = -Y;
         break;
 
         default:
-            m_vector = -((1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
-            s_vector = -((-1.5F * ualpha + sqrt3/2.0f * ubeta) * T_UDC);
+            m_vector = -Y;
+            s_vector = -Z;
         break;
     }
-
-    /*------------------------------------------------------------*/
-    if (m_vector + s_vector > T_PWM) 
+    /*--------------------限制矢量圆----------------------*/
+    if (m_vector + s_vector > PWM_TS) 
     {
-        m_vector /= (m_vector + s_vector);
-        s_vector /= m_vector + s_vector;
+        float sum;
+        sum = m_vector+s_vector;
+        m_vector = (m_vector/(sum)*PWM_TS);
+        s_vector = (s_vector/(sum)*PWM_TS);
     }
-
     /*---------------------------------------------------*/
     float Ta,Tb,Tc;
-    Ta = (T_PWM - (m_vector + s_vector)) / 4.0F;  
+    Ta = (PWM_TS - (m_vector + s_vector)) / 4.0F;  
     Tb = Ta + m_vector/2.0f;
     Tc = Tb + s_vector/2.0f;
-
-    /*------------------------换相点-------------------------------------*/
+    /*------------------------换相点---------------------*/
     float Tcmp1 = 0.0f;
     float Tcmp2 = 0.0f;
     float Tcmp3 = 0.0f;
@@ -217,17 +223,9 @@ duty_t SVM(float ualpha,float ubeta)
         case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
     }
     /*-------------------------占空比---------------------------*/
-    float duty_a,duty_b,duty_c;
-    duty_a =(T_PWM - Tcmp1*2.0f )/T_PWM;
-    duty_b =(T_PWM - Tcmp2*2.0f )/T_PWM;
-    duty_c =(T_PWM - Tcmp3*2.0f )/T_PWM;
-
-    static duty_t sg_duty;
-    sg_duty._a = duty_a;
-    sg_duty._b = duty_b;
-    sg_duty._c = duty_c;
-
-    return sg_duty;
+    duty[0] =(PWM_TS - Tcmp1*2.0f )/PWM_TS;
+    duty[1] =(PWM_TS - Tcmp2*2.0f )/PWM_TS;
+    duty[2] =(PWM_TS - Tcmp3*2.0f )/PWM_TS;
 }
 #endif
 
@@ -310,3 +308,109 @@ void _limit_vector_circle(float *dq,float *limit_dq)
     limit_dq[1] = dq[1];
 }
 
+static float test_theta = 0.0f;
+static float test_cursect = 0.0f;
+// #define PWM_TS (0.0001f) 
+// #define T_UDC (PWM_TS/(24.0f))
+
+void _svpwm(float alp,float beta,float *duty)
+{
+    // //判断扇区
+    // unsigned char sector;
+    // sector = 0;
+    // /*-------------------------------*/
+    // if(beta*(1<<15) > 0) {
+    //     sector = 1;
+    // }
+    // if(((sqrt3 * alp - beta)/2.0F*(1<<15)) > 0) {
+    //     sector += 2;
+    // }
+    // if(((-sqrt3 * alp - beta) / 2.0F)*(1<<15) > 0) {
+    //     sector += 4;
+    // }
+    // //计算对应扇区的换相时间
+    // float X,Y,Z;
+    // X = (sqrt3 * beta * T_UDC);
+    // Y = (1.5F * alp + sqrt3/2.0f * beta) * T_UDC;
+    // Z = (-1.5F * alp + sqrt3/2.0f * beta) * T_UDC;
+
+    // float s_vector = 0.0f,m_vector = 0.0f;
+    // switch (sector) {
+    //     case 1:
+    //         m_vector = Z;
+    //         s_vector = Y;
+    //     break;
+
+    //     case 2:
+    //         m_vector = Y;
+    //         s_vector = -X;
+    //     break;
+
+    //     case 3:
+    //         m_vector = -Z;
+    //         s_vector = X;
+    //     break;
+
+    //     case 4:
+    //         m_vector = -X;
+    //         s_vector = Z;
+    //     break;
+
+    //     case 5:
+    //         m_vector = X;
+    //         s_vector = -Y;
+    //     break;
+
+    //     default:
+    //         m_vector = -Y;
+    //         s_vector = -Z;
+    //     break;
+    // }
+    // /*--------------------限制矢量圆----------------------*/
+    // if (m_vector + s_vector > PWM_TS) 
+    // {
+    //     float sum;
+    //     sum = m_vector+s_vector;
+    //     m_vector = (m_vector/(sum)*PWM_TS);
+    //     s_vector = (s_vector/(sum)*PWM_TS);
+    // }
+    // /*---------------------------------------------------*/
+    // float Ta,Tb,Tc;
+    // Ta = (PWM_TS - (m_vector + s_vector)) / 4.0F;  
+    // Tb = Ta + m_vector/2.0f;
+    // Tc = Tb + s_vector/2.0f;
+    // /*------------------------换相点---------------------*/
+    // float Tcmp1 = 0.0f;
+    // float Tcmp2 = 0.0f;
+    // float Tcmp3 = 0.0f;
+    // switch (sector) {
+    //     case 1:Tcmp1 = Tb;Tcmp2 = Ta;Tcmp3 = Tc;break;
+    //     case 2:Tcmp1 = Ta;Tcmp2 = Tc;Tcmp3 = Tb;break;
+    //     case 3:Tcmp1 = Ta;Tcmp2 = Tb;Tcmp3 = Tc;break;
+    //     case 4:Tcmp1 = Tc;Tcmp2 = Tb;Tcmp3 = Ta;break;
+    //     case 5:Tcmp1 = Tc;Tcmp2 = Ta;Tcmp3 = Tb;break;
+    //     case 6:Tcmp1 = Tb;Tcmp2 = Tc;Tcmp3 = Ta;break;
+    // }
+    // /*-------------------------占空比---------------------------*/
+    // float duty_a,duty_b,duty_c;
+    // duty_a =(PWM_TS - Tcmp1*2.0f )/PWM_TS;
+    // duty_b =(PWM_TS - Tcmp2*2.0f )/PWM_TS;
+    // duty_c =(PWM_TS - Tcmp3*2.0f )/PWM_TS;
+
+    // static int32_t sg_duty[3];
+    // sg_duty[0] = duty_a*(3000);
+    // sg_duty[1] = duty_b*(3000);
+    // sg_duty[2] = duty_c*(3000);
+}
+
+void svpwm_testfunc(void)
+{
+    // float dq[2],alpbet[2],duty[3];
+    // dq[0] = 0.0f;
+    // dq[1] = 1.0f*sqrt3/3.0f+0.02F;
+    // _2r_2s(dq,test_theta,alpbet);
+    // _svpwm(alpbet[0],alpbet[1],duty);
+
+    // test_theta += 0.01f;
+    // test_theta = _normalize_angle(test_theta);
+}

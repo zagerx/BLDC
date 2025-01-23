@@ -2,6 +2,16 @@
 #define __BOARD__H
 
 /*--------------------电控软件---------------------*/
+
+#define MOTOR_DEBUG_SELF_MODE               (0)
+#define MOTOR_DEBUG_ENCODERMODE             (1)
+#define MOTOR_CLOSELOOP_ERMODE              (2)
+#define MOTOR_WORK_MODE                     (MOTOR_DEBUG_ENCODERMODE)  //电机工作模式
+
+#if (MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
+    #define HALL_ENABLE_CAIRLBE                 (1)//使能基准值打印功能
+#endif
+
 //开环部分
 #define OPENLOOP_DEBUG_TOTAL_Te             (0.1f)
 #define OPENLOOP_DEBUG_STEP_THETA           (0.00008f)
