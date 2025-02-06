@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -58,7 +60,11 @@ int main(void)
 {
   HAL_Init();
   SystemClock_Config();
+  MX_DMA_Init();
   MX_GPIO_Init();
+  MX_USART1_UART_Init();
+  printf("hello world\r\n");
+
   while (1)
   {
     HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
