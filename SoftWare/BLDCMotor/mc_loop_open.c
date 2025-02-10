@@ -25,7 +25,9 @@ unsigned char mc_self_openloop_VF(float *iabc,motor_t* motor)
     /*反PARK CLARK变换*/
     _3s_2s(iabc, i_ab);
     _2s_2r(i_ab, motor->encoder_handle.self_mec_theta, i_dq);
-
+    motor->currment_handle.i_abc[0] = iabc[0];
+    motor->currment_handle.i_abc[1] = iabc[1];
+    motor->currment_handle.i_abc[2] = iabc[2];
     /*强制拖动电机转动*/
     i_dq[0] = OPENLOOP_DEBUG_TOTAL_Te; // D轴强拖。注意:应和预定位阶段保持一致
     i_dq[1] = 0.00f; 

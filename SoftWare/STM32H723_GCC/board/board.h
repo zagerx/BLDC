@@ -16,7 +16,7 @@
 #define MOTOR_DEBUG_SELF_MODE               (0)
 #define MOTOR_DEBUG_ENCODERMODE             (1)
 #define MOTOR_CLOSELOOP_ERMODE              (2)
-#define MOTOR_WORK_MODE                     (MOTOR_DEBUG_ENCODERMODE)  //电机工作模式
+#define MOTOR_WORK_MODE                     (MOTOR_DEBUG_SELF_MODE)  //电机工作模式
 
 #if (MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
     #define HALL_ENABLE_CAIRLBE                 (1)//使能基准值打印功能

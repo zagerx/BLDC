@@ -70,6 +70,8 @@ void tim4_abzencoder_enable(void);
 uint32_t tim4_abzencoder_getcount(void);    
 void tim4_abzencoder_setcount(uint32_t cnt);
 void tim4_abzencoder_disable(void);  
+void timx_enable(void);
+void timx_disable(void);
 
 /* USER CODE END Prototypes */
 

@@ -65,6 +65,7 @@ void PeriphCommonClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 unsigned short count = 0;
+#include "adc.h"
 /* USER CODE END 0 */
 
 /**
@@ -77,6 +78,11 @@ int main(void)
   /* USER CODE BEGIN 1 */
   do_initcalls();
   /* USER CODE END 1 */
+
+  /* Enable the CPU Cache */
+
+  /* Enable I-Cache---------------------------------------------------------*/
+  SCB_EnableICache();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -112,7 +118,6 @@ int main(void)
   HAL_Delay(100);
   USER_DEBUG_NORMAL("H7 hello word\r\n");
   user_board_init();
-
   /* USER CODE END 2 */
 
   /* Infinite loop */

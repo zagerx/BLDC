@@ -65,15 +65,15 @@ void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_OC4REF;
   sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 800;
+  sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_LOW;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
@@ -531,7 +531,7 @@ void tim8_set_pwm(float _a,float _b,float _c)
   __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,b);
   __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,c);
 
-  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,_ARR-30);
+  // __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,800);
 }
 #include "debuglog.h"
 void tim8_pwm_enable(void)
@@ -545,8 +545,8 @@ void tim8_pwm_enable(void)
     HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Start(&htim8,TIM_CHANNEL_3); 
   
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,30);
-    HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_4);
+    // __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,800);
+    // HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_4);
 
 }
 void tim8_pwm_disable(void)
@@ -563,7 +563,8 @@ void tim8_pwm_disable(void)
 
 void tim8_tigger_adc(void)
 {
-  HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_4);
+    __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,_ARR/2-30);
+    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
 
 
@@ -602,7 +603,7 @@ void tim1_set_pwm(float _a,float _b,float _c)
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,a);
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,b);
   __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,c);
-  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,30);
+  // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,_ARR/2-300);
 
 }
 #include "debuglog.h"
@@ -617,8 +618,8 @@ void tim1_pwm_enable(void)
     HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
     HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_3); 
     
-    __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_4,30);    
-    HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
+    // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,200);    
+    // HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 
 }
 void tim1_pwm_disable(void)
@@ -634,6 +635,22 @@ void tim1_pwm_disable(void)
 void tim1_tigger_adc(void)
 {
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
+}
+
+/*************************************************************************************************
+                                xxxxxxx                                                           
+*************************************************************************************************/
+void timx_enable(void)
+{
+  HAL_TIM_Base_Start(&htim1);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,_ARR/2);
+  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
+}
+void timx_disable(void)
+{
+  HAL_TIM_Base_Stop(&htim1);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,0);
+  HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_4);
 }
 
 void tim4_abzencoder_enable(void)

@@ -104,6 +104,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
+    USER_DEBUG_NORMAL("x");
     unsigned short adc_vale[3];
     static uint16_t test_adc1_vale[3];
     float iabc[3];
@@ -127,6 +128,30 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
             motorctrl_currment_update(&motor2,iabc);
         // }
     }    
+}
+extern __attribute__((section(".D2_Area"))) __attribute__((aligned(4))) uint32_t adc_buffer[3];
+  uint16_t adc1_data[3],adc2_data[3];
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+  HAL_GPIO_TogglePin(TEST_IO_GPIO_Port,TEST_IO_Pin);
+    // HAL_GPIO_WritePin(TEST_IO_GPIO_Port,TEST_IO_Pin,GPIO_PIN_RESET);
+  if (hadc == &hadc1){
+    for (int i = 0; i < 3; i++) 
+    {
+      adc1_data[i] = (adc_buffer[i] >> 16);  // 提取ADC1数据（高16位中的低12位）
+      adc2_data[i] = adc_buffer[i];          // 提取ADC2数据（低16位中的低12位）
+    }
+    float iabc[3];
+    _convert_current((uint16_t*)adc1_data,iabc);
+    motorctrl_currment_update(&motor1,iabc);
+    _convert_current((uint16_t*)adc2_data,iabc);
+    motorctrl_currment_update(&motor2,iabc);
+
+    HAL_ADCEx_MultiModeStart_DMA(&hadc1,adc_buffer,3);
+  }
+    // HAL_GPIO_WritePin(TEST_IO_GPIO_Port,TEST_IO_Pin,GPIO_PIN_SET);
+
 }
 
 /*************************************************************************************************
@@ -158,16 +183,13 @@ void motorctrl_init(void)
                               motor2_set_pwm                       \
                               );
     //读取电机相关参数 TODO   
+    timx_enable();
+    adc1_start();
+
 }
 
 void user_board_init(void)
 {
-    // protocol_cmd_register(M_SET_START,              motor_get_motorstart          ,&motor1);
-    // protocol_cmd_register(M_SET_STOP,               motor_get_motorstop           ,&motor1);
-    // protocol_cmd_register(M_SET_NormalM,            motor_get_normolmode          ,&motor1);
-    // protocol_cmd_register(M_SET_SpeedM,             motor_get_speedmode           ,&motor1);
-    // protocol_cmd_register(M_SET_EncoderLoopM,       motor_get_encodermode         ,&motor1);
-    // protocol_cmd_register(M_SET_PIDTarge,           motot_get_pidtarge            ,&motor1);
     protocol_cmd_register(M_SET_START,              pro_motorstart                ,NULL);
     protocol_cmd_register(M_SET_STOP,               pro_motorstop                 ,NULL);
     protocol_cmd_register(M_SET_NormalM,            pro_motorsetnormolmode        ,NULL);
@@ -227,8 +249,8 @@ static void motor1_enable(void)
     gpio_setencoder_power();
     tim4_abzencoder_enable();
     tim1_pwm_enable();
-    tim1_tigger_adc();
-    adc1_start();
+    // tim1_tigger_adc();
+    // adc1_start();
 }
 static void motor1_disable(void)
 {
@@ -257,8 +279,8 @@ static void motor2_enable(void)
     gpio_setencoder_power();
     tim3_abzencoder_enable();
     tim8_pwm_enable();
-    tim8_tigger_adc();
-    adc2_start();
+    // tim8_tigger_adc();
+    // adc2_start();
 }
 static void motor2_disable(void)
 {
