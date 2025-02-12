@@ -142,7 +142,7 @@ HALL_ERROR:
 --------------------------------------------------------------------------------------------*/
 void hall_cale(void *obj)
 {
-    static volatile int32_t  delt_cnt;
+    int32_t  delt_cnt;
     uint32_t cur_cnt;
     hall_sensor_t *hall;
     hall = (hall_sensor_t *)obj;

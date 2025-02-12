@@ -31,6 +31,7 @@ static fsm_cb_t Motor2Fsm;
 static motor_t motor2 = {0};
 static hall_sensor_t hall_sensor_2;
 
+extern __attribute__((section(".D2_Area"))) __attribute__((aligned(4))) uint32_t adc_buffer[3];
 static __attribute__((section(".D2_Area"))) uint8_t sg_uartreceive_buff[125];
 static i2c_bus_t i2c_bus1 = {
     .init = i2c_bus1_init,
@@ -102,40 +103,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         motorctrl_encoder_update(Motor2Fsm.pdata);
     }    
 }
-void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-    USER_DEBUG_NORMAL("x");
-    unsigned short adc_vale[3];
-    static uint16_t test_adc1_vale[3];
-    float iabc[3];
-    if(hadc->Instance == ADC1)
-    {
-        test_adc1_vale[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_1);
-        test_adc1_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_2);
-        test_adc1_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc1,ADC_INJECTED_RANK_3);  
-        _convert_current((uint16_t*)test_adc1_vale,iabc);
-        motorctrl_currment_update(&motor1,iabc);
-    }
-
-
-    if(hadc->Instance == ADC2)
-    {
-        adc_vale[0] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-        adc_vale[1] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
-        adc_vale[2] = (uint16_t)HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3);
-        _convert_current((uint16_t*)adc_vale,iabc);
-        // __cycleof__("mc_hightfreq_task") {
-            motorctrl_currment_update(&motor2,iabc);
-        // }
-    }    
-}
-extern __attribute__((section(".D2_Area"))) __attribute__((aligned(4))) uint32_t adc_buffer[3];
-  uint16_t adc1_data[3],adc2_data[3];
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
   HAL_GPIO_TogglePin(TEST_IO_GPIO_Port,TEST_IO_Pin);
-    // HAL_GPIO_WritePin(TEST_IO_GPIO_Port,TEST_IO_Pin,GPIO_PIN_RESET);
+  uint16_t adc1_data[3],adc2_data[3];
   if (hadc == &hadc1){
     for (int i = 0; i < 3; i++) 
     {
@@ -145,13 +117,12 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
     float iabc[3];
     _convert_current((uint16_t*)adc1_data,iabc);
     motorctrl_currment_update(&motor1,iabc);
+
     _convert_current((uint16_t*)adc2_data,iabc);
     motorctrl_currment_update(&motor2,iabc);
 
     HAL_ADCEx_MultiModeStart_DMA(&hadc1,adc_buffer,3);
   }
-    // HAL_GPIO_WritePin(TEST_IO_GPIO_Port,TEST_IO_Pin,GPIO_PIN_SET);
-
 }
 
 /*************************************************************************************************
@@ -213,8 +184,7 @@ void user_board_init(void)
                                         _2_get_section_numb,\
                                         get_tick,\
                                         tim3_abzencoder_getcount,\
-                                        tim3_abzencoder_setcount);                                        
-    
+                                        tim3_abzencoder_setcount);    
     motorctrl_init();
 }
 
@@ -224,15 +194,8 @@ void board_deinit(void)
 }
 void baord_process(void)
 {
-    static uint8_t flag = 1;
-    if (flag)
-    {
-        flag  = 0;
-        motortctrl_process(&Motor1Fsm);
-    }else{
-        flag = 1;
-        motortctrl_process(&Motor2Fsm);
-    }
+    motortctrl_process(&Motor1Fsm);
+    motortctrl_process(&Motor2Fsm);
 }
 /*************************************************************************************************
                                 本地函数实现                                                           
@@ -256,7 +219,7 @@ static void motor1_disable(void)
 {
     tim4_abzencoder_disable();
     tim1_pwm_disable();
-    adc1_stop();
+    // adc1_stop();
 }
 static void motor1_set_pwm(float _a,float _b,float _c)
 {
@@ -279,14 +242,11 @@ static void motor2_enable(void)
     gpio_setencoder_power();
     tim3_abzencoder_enable();
     tim8_pwm_enable();
-    // tim8_tigger_adc();
-    // adc2_start();
 }
 static void motor2_disable(void)
 {
     tim3_abzencoder_disable();
     tim8_pwm_disable();
-    adc2_stop();
     // HAL_GPIO_WritePin(EBAKE_PWM_EN_GPIO_Port,EBAKE_PWM_EN_Pin,GPIO_PIN_RESET);    
 }
 static void motor2_set_pwm(float _a,float _b,float _c)
