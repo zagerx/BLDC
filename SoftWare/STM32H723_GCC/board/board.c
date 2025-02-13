@@ -106,7 +106,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-  HAL_GPIO_TogglePin(TEST_IO_GPIO_Port,TEST_IO_Pin);
+//   HAL_GPIO_TogglePin(TEST_IO_GPIO_Port,TEST_IO_Pin);
+  HAL_GPIO_WritePin(TEST_IO_GPIO_Port,TEST_IO_Pin,GPIO_PIN_SET);
   uint16_t adc1_data[3],adc2_data[3];
   if (hadc == &hadc1){
     for (int i = 0; i < 3; i++) 
@@ -123,6 +124,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 
     HAL_ADCEx_MultiModeStart_DMA(&hadc1,adc_buffer,3);
   }
+  HAL_GPIO_WritePin(TEST_IO_GPIO_Port,TEST_IO_Pin,GPIO_PIN_RESET);
 }
 
 /*************************************************************************************************

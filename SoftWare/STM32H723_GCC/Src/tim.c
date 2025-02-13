@@ -397,10 +397,9 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
     PE11     ------> TIM1_CH2
     PE12     ------> TIM1_CH3N
     PE13     ------> TIM1_CH3
-    PE14     ------> TIM1_CH4
     */
     GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11
-                          |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14;
+                          |GPIO_PIN_12|GPIO_PIN_13;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -526,6 +525,18 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* tim_encoderHandle)
 }
 
 /* USER CODE BEGIN 1 */
+static void user_TIM_CCxNChannelCmd(TIM_TypeDef *TIMx, uint32_t Channel, uint32_t ChannelNState)
+{
+  uint32_t tmp;
+
+  tmp = TIM_CCER_CC1NE << (Channel & 0xFU); /* 0xFU = 15 bits max shift */
+
+  /* Reset the CCxNE Bit */
+  TIMx->CCER &=  ~tmp;
+
+  /* Set or reset the CCxNE Bit */
+  TIMx->CCER |= (uint32_t)(ChannelNState << (Channel & 0xFU)); /* 0xFU = 15 bits max shift */
+}
 
 void tim8_set_pwm(float _a,float _b,float _c)
 {
@@ -549,22 +560,16 @@ void tim8_pwm_enable(void)
 }
 void tim8_pwm_disable(void)
 {
-    HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_1);
-    HAL_TIMEx_PWMN_Stop(&htim8,TIM_CHANNEL_1);
-    HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_2);
-    HAL_TIMEx_PWMN_Stop(&htim8,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_3);
-    HAL_TIMEx_PWMN_Stop(&htim8,TIM_CHANNEL_3); 
-
-    HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_4);      
+  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1,0);
+  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2,0);
+  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,0);     
+  TIM_CCxChannelCmd(&htim8,TIM_CHANNEL_1,TIM_CCx_DISABLE);
+  user_TIM_CCxNChannelCmd(&htim8,TIM_CHANNEL_1,TIM_CCxN_DISABLE);
+  TIM_CCxChannelCmd(&htim8,TIM_CHANNEL_2,TIM_CCx_DISABLE);
+  user_TIM_CCxNChannelCmd(&htim8,TIM_CHANNEL_2,TIM_CCxN_DISABLE);
+  TIM_CCxChannelCmd(&htim8,TIM_CHANNEL_3,TIM_CCx_DISABLE);
+  user_TIM_CCxNChannelCmd(&htim8,TIM_CHANNEL_3,TIM_CCxN_DISABLE);        
 }
-
-void tim8_tigger_adc(void)
-{
-    // __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,_ARR/2-30);
-    // HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
-}
-
 
 void tim3_abzencoder_enable(void)
 {
@@ -612,26 +617,23 @@ void tim1_pwm_enable(void)
 }
 void tim1_pwm_disable(void)
 {
-    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_1);
-    HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_1);
-    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_2);
-    HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_2);
-    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_3);
-    HAL_TIMEx_PWMN_Stop(&htim1,TIM_CHANNEL_3); 
-    HAL_TIM_PWM_Stop(&htim1,TIM_CHANNEL_4);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,0);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_2,0);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_3,0);  
+  TIM_CCxChannelCmd(&htim1,TIM_CHANNEL_1,TIM_CCx_DISABLE);
+  user_TIM_CCxNChannelCmd(&htim1,TIM_CHANNEL_1,TIM_CCxN_DISABLE);
+  TIM_CCxChannelCmd(&htim1,TIM_CHANNEL_2,TIM_CCx_DISABLE);
+  user_TIM_CCxNChannelCmd(&htim1,TIM_CHANNEL_2,TIM_CCxN_DISABLE);
+  TIM_CCxChannelCmd(&htim1,TIM_CHANNEL_3,TIM_CCx_DISABLE);
+  user_TIM_CCxNChannelCmd(&htim1,TIM_CHANNEL_3,TIM_CCxN_DISABLE);     
 }
-void tim1_tigger_adc(void)
-{
-  // HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
-}
-
 /*************************************************************************************************
                                 xxxxxxx                                                           
 *************************************************************************************************/
 void timx_enable(void)
 {
   HAL_TIM_Base_Start(&htim1);
-  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,_ARR/2-300);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,_ARR-30);
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
 void timx_disable(void)
