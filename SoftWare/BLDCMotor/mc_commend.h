@@ -17,11 +17,15 @@ extern "C"{
 #include "stdint.h"
 
 enum{
-    MODE_NORMAL = 0,
+    MODE_SELFOPENLOOP  = 0,
+    MODE_NORMAL,
     MODE_SPEED,
     MODE_ENCODER,
+    CMD_START,
+    CMD_STOP,
     STATUS_START,
     STATUS_STOP,
+    STATUS_RUN,
     STATUS_RESET,
     SET_PIDTARGE
 };

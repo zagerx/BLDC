@@ -10,13 +10,6 @@ static void motor_paramdeinit(motor_t *motor);
 
 fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
 {
-    enum{
-        READY = USER,
-        CALIBRATE,
-        IDLE,
-        RUN,
-        INIT,
-    };
     motor_t *motor;
     motor = (motor_t*)pthis->pdata;    
     switch (pthis->chState) 
@@ -25,45 +18,43 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
         USER_DEBUG_NORMAL("entry encoer openloop mode\n");
         mc_encoder_init(&(motor->encoder_handle));//编码器初始化
         motor_paraminit(motor);
-        pthis->chState = READY;
-    case READY:
-        if (motor->curmode != STATUS_START)
+        pthis->chState = MOTOR_STATUS_READY;
+        motor->curMotorstate = pthis->chState;
+    case MOTOR_STATUS_READY:
+        if (motor->curCmd != CMD_START)
         {
             break;
         }
         motor->enable();
-        #if(MOTOR_WORK_MODE == MOTOR_DEBUG_ENCODERMODE)
-            pthis->chState = CALIBRATE;
-        #elif(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
-            motor->encoder_handle.runflag = 1;
-            pthis->chState = RUN;
-        #else            
-        #endif
-        
+        pthis->chState = MOTOR_STATUS_CALIBRATE;
+        motor->curMotorstate = pthis->chState;      
         break;
 
-    case CALIBRATE:
+    case MOTOR_STATUS_CALIBRATE:
         {
-            if (  motor->debug.pid_debug_target != 0.0f)
+            if (motor->debug.pid_debug_target != 0.0f)
             {
                 motor->encoder_handle.self_te = motor->debug.pid_debug_target;
                 mc_encoder_calibrate(&motor->encoder_handle);
-                pthis->chState = RUN;
+                pthis->chState = MOTOR_STATUS_RUN;
+                motor->curMotorstate = pthis->chState;
             }
         }
         break;
-    
-    case IDLE:
-        break;
-    case INIT:
-        break;    
-    case RUN:
-        if (motor->curmode == STATUS_STOP)
+       
+    case MOTOR_STATUS_RUN:
+        if (motor->curCmd == CMD_STOP)
         {
-            pthis->chState = EXIT;
+            pthis->chState = MOTOR_STATUS_STOP;
+            motor->curMotorstate = pthis->chState;
         }else{
             motor->encoder_handle.self_te = motor->debug.pid_debug_target;
         }
+        break;
+    case MOTOR_STATUS_STOP:
+        motor->disable();
+        pthis->chState = MOTOR_STATUS_READY;
+        motor->curMotorstate = pthis->chState;
         break;
     case EXIT:
         USER_DEBUG_NORMAL("exit encoder openloop mode\n");

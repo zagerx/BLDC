@@ -9,7 +9,6 @@ All rights reserved.
 #include "motorctrl_common.h"
 #include "debuglog.h"
 #include "datatypecovert.h"
-extern motor_t motor1;
 /*==========================================================================================
  * @brief 
  * @FuncName     
@@ -21,12 +20,12 @@ extern motor_t motor1;
 void motor_get_motorstop(void *obj,uint8_t *pdata,uint16_t datalen)
 {
     motor_t *motor = (motor_t*)obj;
-    motor->curmode = STATUS_STOP;
+    motor->curCmd = CMD_STOP;
 }
 void motor_get_motorstart(void *obj,uint8_t *pdata,uint16_t datalen)
 {
     motor_t *motor = (motor_t*)obj;
-    motor->curmode = STATUS_START;
+    motor->curCmd = CMD_START;
 }
 
 void motor_get_speedmode(void *obj,uint8_t *pdata,uint16_t datalen)

@@ -28,15 +28,15 @@
 void motorfsm_register(void *obj,void *pdata)
 {
     fsm_cb_t* motorfsm = (fsm_cb_t*)obj;
-    motorfsm->fsm = (fsm_t *)motor_normalmode;    
+    motorfsm->fsm = (fsm_t *)selfopenloop_mode;    
     motorfsm->count = 0;
     motorfsm->chState = ENTER;
     motorfsm->pdata = pdata;
 
     //TODO
     motor_t* motor = (motor_t*)(motorfsm->pdata);
-    motor->lastmode = MODE_NORMAL;
-    motor->curmode = MODE_NORMAL;
+    motor->lastmode = MODE_SELFOPENLOOP;
+    motor->curmode = MODE_SELFOPENLOOP;
 }
 /*==========================================================================================
  * @brief        执行当前状态机   
@@ -60,7 +60,7 @@ void motortctrl_process(void *obj)
             TRAN_STATE(fsm,motor_encoder_ol_mode);
             motor->lastmode = motor->curmode;
         }else{
-        }         
+        }
     }
     /* 状态机执行 */
     DISPATCH_FSM(fsm);
@@ -86,20 +86,21 @@ void motorctrl_encoder_update(void *obj)
 void motorctrl_currment_update(void *obj,float *iabc)
 {
     motor_t* motor = (motor_t*)obj;
+    if (motor->curMotorstate != MOTOR_STATUS_RUN)
+    {
+        return;
+    }
 #if(MOTOR_WORK_MODE == MOTOR_DEBUG_SELF_MODE)
-    mc_self_openlooptest(iabc,motor);
+    mc_self_openloop_VF(motor,iabc);
 #else
     float duty[3] = {0};
     /*获取角度 速度*/
     mc_encoder_read(&(motor->encoder_handle));
-
     motor->currment_handle.i_abc[0] = iabc[0];
     motor->currment_handle.i_abc[1] = iabc[1];
     motor->currment_handle.i_abc[2] = iabc[2];
-
     currment_loop(motor,duty);
     motor->setpwm(duty[0],duty[1],duty[2]);
-          
 #endif
 }
 

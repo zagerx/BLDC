@@ -19,7 +19,7 @@ static void _update_baseangle_speed_dir(hall_sensor_t *obj,uint8_t dir,uint8_t c
     hall_sensor_t *hall =( hall_sensor_t *)(obj);
     sect_t *psect;
 #ifdef HALL_ENABLE_CAIRLBE 
-    // USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle));
+    USER_DEBUG_NORMAL("%d----->%f\n", cur_sect, lowfilter_cale(&(hall->lfilter[cur_sect]), hall->self_angle));
 #endif
 
     //更新基准角度&方向

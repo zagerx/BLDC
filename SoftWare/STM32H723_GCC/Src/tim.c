@@ -631,7 +631,7 @@ void tim1_tigger_adc(void)
 void timx_enable(void)
 {
   HAL_TIM_Base_Start(&htim1);
-  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,_ARR/2-500);
+  __HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,_ARR/2-300);
   HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 }
 void timx_disable(void)

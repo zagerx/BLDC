@@ -36,7 +36,7 @@ extern "C"{
 
     #define ABZ_ENCODER_LINES_HALF          (4096)
     #define ABZ_ENCODER_LINES               (8192)//编码器线数
-    #define ABZ_ENCODER_RESOLUTION          (0.0038349f)//编码器分辨率 2*pi/5000
+    #define ABZ_ENCODER_RESOLUTION          (0.003067f)//编码器分辨率 2*pi/ABZ_ENCODER_LINES*MOTOR_PAIRS
 
     #define HALL_UPDATE_PERIOD              (0.0001f)//编码器更新周期
     #define HALL_POSITIVE_OFFSET            (0.0f)
@@ -46,12 +46,12 @@ extern "C"{
     #define OMEGTOTHETA                     (0.0001f)//TODO
     /*HALL基准角度 D轴强拖 VBUS51.54f   0.01f 0.0002f*/
     /*基准角度待测试*/
-    #define SCETION_6_BASEANGLE             (3.988f)
-    #define SCETION_4_BASEANGLE             (4.978f)
-    #define SCETION_5_BASEANGLE             (6.086f)
-    #define SCETION_1_BASEANGLE             (0.845f)
-    #define SCETION_3_BASEANGLE             (1.820f)
-    #define SCETION_2_BASEANGLE             (2.938f)
+    #define SCETION_6_BASEANGLE             (0.582f)
+    #define SCETION_4_BASEANGLE             (1.610f)
+    #define SCETION_5_BASEANGLE             (2.643f)
+    #define SCETION_1_BASEANGLE             (3.695f)
+    #define SCETION_3_BASEANGLE             (4.690f)
+    #define SCETION_2_BASEANGLE             (5.799f)
 #endif
 
 #ifdef __cplusplus

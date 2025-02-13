@@ -156,7 +156,6 @@ void motorctrl_init(void)
     //读取电机相关参数 TODO   
     timx_enable();
     adc1_start();
-
 }
 
 void user_board_init(void)
@@ -212,14 +211,11 @@ static void motor1_enable(void)
     gpio_setencoder_power();
     tim4_abzencoder_enable();
     tim1_pwm_enable();
-    // tim1_tigger_adc();
-    // adc1_start();
 }
 static void motor1_disable(void)
 {
     tim4_abzencoder_disable();
     tim1_pwm_disable();
-    // adc1_stop();
 }
 static void motor1_set_pwm(float _a,float _b,float _c)
 {

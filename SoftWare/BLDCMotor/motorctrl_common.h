@@ -146,6 +146,7 @@ typedef struct _motor
     int16_t curmode;
     int16_t lastmode;
     int16_t curMotorstate;
+    int16_t curCmd;
     int16_t openloopstate;
 
     void  (*enable)(void);
@@ -159,6 +160,13 @@ typedef struct _motor
 
 #pragma pack(pop)
 
-
+#include "fsm.h"
+enum{
+    MOTOR_STATUS_IDLE = USER,
+    MOTOR_STATUS_READY,
+    MOTOR_STATUS_CALIBRATE,
+    MOTOR_STATUS_RUN,
+    MOTOR_STATUS_STOP,
+};
 
 #endif
