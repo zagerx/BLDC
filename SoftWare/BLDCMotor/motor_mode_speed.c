@@ -43,14 +43,6 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
         pthis->chState = CALIBRATE;
         break;    
     case CALIBRATE:
-        {
-            if (  motor->debug.pid_debug_target != 0.0f)
-            {
-                motor->encoder_handle.self_te = motor->debug.pid_debug_target;
-                mc_encoder_calibrate(&motor->encoder_handle);
-                pthis->chState = RUN;
-            }
-        }
         break;  
     case RUN:
         if (motor->curmode == STATUS_STOP)
@@ -61,7 +53,7 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
             pthis->chState = ENTER;
         }else{
             motor->currment_handle.id_tar = 0.0f;
-            motor->currment_handle.iq_tar = motor->debug.pid_debug_target;
+            // motor->currment_handle.iq_tar = motor->debug.pid_debug_target;
         }
         break;
     case EXIT:
@@ -78,7 +70,6 @@ fsm_rt_t motor_speedmode(fsm_cb_t *pthis)
 
 static void speed_ctrlparam_init(motor_t *motor)
 {
-    motor->debug.pid_debug_target = 0.0f;
     pid_init(&(motor->currment_handle.d_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);
     pid_init(&(motor->currment_handle.q_pid),CURRMENTLOOP_KP,CURRMENTLOOP_KI,1.0,CIRCLE_OUT_MAX,CIRCLE_OUT_MIN);  
     pid_init(&(motor->speed_handle.pid),SPEEDLOOP_KP,SPEEDLOOP_KI,1.0,SPEED_OUT_MAX,SPEED_OUT_MIN);    
@@ -97,7 +88,6 @@ static void speed_ctrlparam_deinit(motor_t *motor)
 #ifdef ENABLE_LINEAR_IN
     linear_interpolation_deinit(&(motor->speed_handle.linear));
 #endif
-    motor->debug.pid_debug_target = 0.0f;
     pid_reset(&(motor->currment_handle.d_pid));
     pid_reset(&(motor->currment_handle.q_pid));  
     pid_reset(&(motor->speed_handle.pid)); 

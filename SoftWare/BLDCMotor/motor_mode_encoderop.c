@@ -32,13 +32,9 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
 
     case MOTOR_STATUS_CALIBRATE:
         {
-            if (motor->debug.pid_debug_target != 0.0f)
-            {
-                motor->encoder_handle.self_te = motor->debug.pid_debug_target;
-                mc_encoder_calibrate(&motor->encoder_handle);
-                pthis->chState = MOTOR_STATUS_RUN;
-                motor->curMotorstate = pthis->chState;
-            }
+            mc_encoder_calibrate(&motor->encoder_handle);
+            pthis->chState = MOTOR_STATUS_RUN;
+            motor->curMotorstate = pthis->chState;
         }
         break;
        
@@ -47,8 +43,6 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
         {
             pthis->chState = MOTOR_STATUS_STOP;
             motor->curMotorstate = pthis->chState;
-        }else{
-            motor->encoder_handle.self_te = motor->debug.pid_debug_target;
         }
         break;
     case MOTOR_STATUS_STOP:
@@ -61,7 +55,6 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
         motor->disable();
         mc_encoder_deinit(&(motor->encoder_handle));
         motor_paramdeinit(motor);
-        pthis->chState = ENTER;
         break;
     default:
         break;
@@ -71,12 +64,12 @@ fsm_rt_t motor_encoder_ol_mode(fsm_cb_t *pthis)
 
 static void motor_paraminit(motor_t *motor)
 {
-    motor->debug.pid_debug_target = 0.0f;
+    motor->encoder_handle.self_te = 0.0f;
 }
 
 
 
 static void motor_paramdeinit(motor_t *motor)
 {
-    motor->debug.pid_debug_target = 0.0f;
+    motor->encoder_handle.self_te = 0.0f;
 }

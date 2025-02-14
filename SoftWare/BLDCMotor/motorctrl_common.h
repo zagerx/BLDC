@@ -110,38 +110,12 @@ struct mc_encoder
 #endif    
 };
 
-typedef struct
-{
-    float ia_real;
-    float ib_real;
-    float ic_real;
-
-    float id_real;
-    float id_targe;
-
-    float iq_real;
-    float iq_targe;
-
-    float speed_targe;
-    float speed_real;
-
-    float pos_targe;
-    float pos_real;
-
-    float ele_angle;
-    float self_ele_theta;
-
-    float pid_debug_target;
-}mc_debug_t;
-
-
 typedef struct _motor
 {
     mc_pos_t pos_handle;
     mc_speed_t  speed_handle;
     mc_currment_t currment_handle;
     mc_encoder_t encoder_handle;
-    mc_debug_t debug;
 
     int16_t curmode;
     int16_t lastmode;
@@ -152,10 +126,6 @@ typedef struct _motor
     void  (*enable)(void);
     void  (*disable)(void);
     void  (*setpwm)(float,float,float);
-    // void  (*reset_system)(void);
-    // void  (*bsptransmit)(uint8_t*,uint16_t);
-    // void  (*read)(void*, uint16_t);
-    // void  (*write)(void*, uint16_t);
 }motor_t;
 
 #pragma pack(pop)

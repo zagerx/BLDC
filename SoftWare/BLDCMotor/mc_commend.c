@@ -56,7 +56,7 @@ void motot_get_pidtarge(void *obj,uint8_t *pdata,uint16_t datalen)
     motor_t *motor = (motor_t*)obj;
     float temp;
     convert_floats(pdata,datalen,&(temp));   
-    motor->debug.pid_debug_target = temp;
+    motor->encoder_handle.self_te = temp;
     USER_DEBUG_NORMAL("PID Targe update = %.02f\n",temp);    
 }
 

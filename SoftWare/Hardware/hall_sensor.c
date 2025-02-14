@@ -199,10 +199,11 @@ void hall_get_initpos(void *obj)
     hall = (hall_sensor_t*)obj;
     uint8_t cur_sect = hall->getsection();
     #if ((ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ))//ABZ+HALL类传感器
-        hall->realcacle_angle = _normalize_angle(hall->negative_sect[cur_sect].angle + 0.523f);
+        hall->realcacle_angle = _normalize_angle(hall->negative_sect[cur_sect].angle - 0.523f);
     #elif(ENCODER_TYPE == ENCODER_TYPE_HALL)//HALL类传感器
         hall->realcacle_angle = _normalize_angle(hall->negative_sect[cur_sect].angle + 0.523f);
-    #endif    
+    #endif
+    hall->angle = hall->realcacle_angle;
 }
 /*==========================================================================================
  * @brief 

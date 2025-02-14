@@ -81,6 +81,9 @@ void mc_encoder_update(mc_encoder_t *encoder)
 void mc_encoder_calibrate(mc_encoder_t *encoder)
 {
 	encoder->sensor->get_first_points(encoder->sensor);
+	#if (ENCODER_TYPE == ENCODER_TYPE_HALL || ENCODER_TYPE==ENCODER_TYPE_HALL_ABZ)
+		encoder->ele_theta =  encoder->sensor->angle;
+	#endif
 	encoder->sensor->set_calib_points(encoder->sensor);
 	encoder->runflag = 1;
 }
