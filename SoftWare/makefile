@@ -1,7 +1,7 @@
 # Makefile3 in SoftWare directory
 
 # Define the subdirectories containing Makefiles
-SUBDIRS := STM32G431CBUx STM32H723_GCC STM32G4_MCBV06 STM32G431_GCC
+SUBDIRS := STM32G431CBUx STM32H723_GCC STM32G4_MCBV06 STM32G431_GCC STM32F103C8_Fire
 
 # The default target is 'all'
 all: $(SUBDIRS)
