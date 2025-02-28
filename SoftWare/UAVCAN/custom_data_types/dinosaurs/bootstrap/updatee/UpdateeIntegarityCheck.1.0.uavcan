@@ -1,0 +1,26 @@
+#
+# UpdateeIntegarityCheck.1.0.uavcan
+#
+
+uint8 index
+
+@sealed
+
+---
+
+uint8 NONE       = 0
+uint8 CHECK_SUM  = 1
+uint8 CHECK_XOR  = 2
+uint8 CRC_8      = 3
+uint8 CRC_16     = 4
+uint8 CRC_32     = 5
+uint8 CRC_64     = 6
+uint8 MD5_SUM    = 7
+uint8 SHA256_SUM = 8
+uint8 SHA512_SUM = 9
+
+Error.1.0 error
+uint8 algorithm
+uint8 [<=256] data
+
+@sealed

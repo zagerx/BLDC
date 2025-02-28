@@ -24,8 +24,15 @@ DEBUG = 1
 # optimization
 OPT = -Og
 
-JLINKEXE := JLink.exe 
-JLINKGDBSERVER := JLinkGDBServer.exe
+# 根据操作系统自动选择可执行文件名
+ifeq ($(OS),Windows_NT)  # 检测 Windows 系统‌:ml-citation{ref="1,3" data="citationList"}
+    JLINKEXE := JLink.exe
+    JLINKGDBSERVER := JLinkGDBServer.exe
+else  # 默认处理 Linux/Unix 系统（如 Ubuntu 22.04）‌:ml-citation{ref="1,2" data="citationList"}
+    JLINKEXE := JLinkExe
+    JLINKGDBSERVER := JLinkGDBServerExe
+endif
+
 CHIP := STM32H723VG
 GDB := arm-none-eabi-gdb.exe
 
@@ -164,8 +171,8 @@ C_SOURCES += $(wildcard ../Hardware/tca9539pwr.c)
 C_SOURCES += $(wildcard ../Hardware/ian226.c)
 C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
 
-C_INCLUDES += -I./Board
-C_SOURCES += $(wildcard ./Board/Board.c)
+C_INCLUDES += -I./board
+C_SOURCES += $(wildcard ./board/board.c)
 
 C_INCLUDES += -I../Protocol
 C_SOURCES += $(wildcard ../Protocol/*.c)

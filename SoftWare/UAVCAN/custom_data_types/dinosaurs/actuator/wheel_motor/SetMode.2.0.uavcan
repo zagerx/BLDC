@@ -1,0 +1,20 @@
+# Set motor driver work mode
+
+uint8 DYNAMIC_MODE = 1
+uint8 CURRENT_MODE = 2
+uint8 SPEED_MODE = 3
+uint8 POSITION_MODE = 4
+uint8 mode
+uavcan.si.unit.velocity.Scalar.1.0 max_velocity
+uavcan.si.unit.acceleration.Scalar.1.0 acceleration
+uavcan.si.unit.acceleration.Scalar.1.0 deceleration
+@sealed
+
+---
+int32 SET_SUCCESS = 0
+int32 FAILED = 1
+int32 PARAMETER_NOT_INIT = 2
+
+int32 status
+@sealed
+

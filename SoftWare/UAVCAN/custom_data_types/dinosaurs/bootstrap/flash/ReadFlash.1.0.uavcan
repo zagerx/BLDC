@@ -1,0 +1,27 @@
+#
+# Read Flash
+# this interface just use to debug, don't use in the release image
+#
+# index:  partition index
+# offset: offset of partition address
+# len:    read length
+#
+# result: pass or out of range
+# data: read data
+#
+
+uint8 index
+
+uint32 offset
+
+uint8 len
+
+@sealed
+
+---
+
+int8 result
+
+uint8 [<=255] data
+
+@extent 448 * 8

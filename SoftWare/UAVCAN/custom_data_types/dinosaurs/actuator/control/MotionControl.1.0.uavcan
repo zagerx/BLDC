@@ -1,0 +1,42 @@
+# MotionControl
+
+@union
+
+dinosaurs.actuator.control.DifferentialDriveMotionControl.1.0 ddmc
+uint32 dummy
+
+@extent 128 * 8
+
+---
+
+# base range 0..-15
+int8 SUCCESS = 0           # execute success.
+int8 NO_CONFIG_MODEL = -1  # not config motion model parameter.
+int8 REFUSE = -2           # in danger status refuse execute.
+int8 EMERGENCY_STOP = -3   # emergency stop.
+int8 EMERGENCY_PAUSE = -4  # emergency pause.
+int8 LOW_POWER = -4        # low power.
+int8 REMOTE_CONTROL = -5   # remote control mode.
+int8 ACCIDENT = -6         # accident stop.
+int8 MODEL_NO_SUPPORT = -7 # model not support
+
+# fault range -16..-31
+int8 SENSOR_FAULT = -16     # sensor fault.
+int8 SOFTWARE_FAULT = -17   # software deadly fault.
+int8 HARDWARE_FAULT = -18   # hardware deadly fault.
+int8 MECHANICAL_FAULT = -19 # mechaincal fault.
+
+# over range -32..-47
+int8 OVER_LOAD = -32        # actuator over load.
+int8 OVER_TEMPERATURE = -33 # actuator over temperature.
+int8 OVER_CURRENT = -34     # actuator over current.
+int8 OVER_VOLTAGE = -35     # actuator over voltage.
+int8 OVERSPEED = -36        # overspeed, execute max speed set.
+
+# low range -48..-63
+int8 LOW_TEMPERATURE = -48  # low temperature
+int8 LOW_VOLTAGE = -49      # low voltage
+
+int8 result
+
+@sealed

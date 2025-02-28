@@ -1,0 +1,23 @@
+# MemoryCommand
+# device_name: eeprom0,eeprom1
+# command: 0:read, 1:write
+# address: memory address
+# length: read or write data length
+# data: write data, NULL if read
+
+uint8[<=32] device_name
+uint8 command
+uint16 address
+uint16 length
+uint8[<=256] data
+
+@sealed
+---
+# response
+# result: 0 sucess, otherwise fail
+# value: read out data. NULL if write
+
+uint8 result
+uint8[<=256] value
+
+@sealed
