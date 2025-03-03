@@ -1,0 +1,23 @@
+#
+# MCU Notify shutdown event to system.
+#
+
+uint8 TRIGGER_SHUTDOWN = 0
+uint8 REBOOT = 1
+uint8 SLEEP = 2
+uint8 FORCE_SHUTDOWN = 3
+
+uint8 command
+uint8[<=80] params
+
+@sealed
+---
+
+# device operate method result
+uint8 SUCCESS = 0 # execute sucess
+uint8 EINVAL = 22 # Invalid argument
+
+uint8 result
+uint8[<=80] message
+
+@sealed

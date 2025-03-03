@@ -1,0 +1,44 @@
+# Global Health
+
+# error_source "left_wheel"
+# error_source "laser_1"
+# error_source "left_front_light"
+uavcan.primitive.String.1.0 error_source
+
+## Sensor
+uint16 ACCELEROMETER = 1
+uint16 GYROSCOPE = 2
+uint16 IMU = 3
+uint16 IR = 4
+uint16 LIDAR = 5
+uint16 BAROMETER = 6
+uint16 SONAR = 7
+uint16 THERMOMETER = 8
+uint16 ENCODER = 9
+
+## actuator
+uint16 LINEAR_MOTOR = 21
+uint16 ORDINARY_MOTOR = 22
+uint16 WHEELMOTOR = 23
+
+## indicator
+uint16 BEEPER = 31
+uint16 LIGHT = 32
+
+## power
+uint16 BATTERY = 41
+uint16 CHARGER = 42
+
+uint16 device_type
+
+uavcan.node.Health.1.0 health
+# WARRING is the Top level error
+# WARNING > CAUTION > ADVISORY
+
+uint8[<=32] error_code
+# "v phase mos is over temp"
+# "w phase mos is over voltage"
+# "w phase mos is over voltage, v phase mos is over temp"
+uavcan.primitive.String.1.0 error_message
+
+@extent 1024 * 8

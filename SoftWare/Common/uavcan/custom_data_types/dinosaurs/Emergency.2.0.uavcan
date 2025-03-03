@@ -1,0 +1,16 @@
+# Emergency
+
+# when emergency_status si STATUS_EMERGENCY transmit 100hz
+uavcan.time.SynchronizedTimestamp.1.0 timestamp
+
+# NAME_FOR_PDB = "emergency"
+# NAME_FOR_MCB = "emergency_0"
+uavcan.primitive.String.1.0 name
+
+
+uint8 emergency_status
+uint8 STATUS_EMERGENCY = 0
+uint8 BRAKING    = 1
+uint8 BRAKING_COMPELETED = 2
+
+@sealed

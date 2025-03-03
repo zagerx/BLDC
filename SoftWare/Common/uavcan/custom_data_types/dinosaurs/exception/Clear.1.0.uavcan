@@ -1,0 +1,32 @@
+#
+# server message, call to remote node id
+#
+
+# node id for board
+uint16 PDB_BUZZARD = 27
+uint16 PDB_VULTURE = 23
+uint16 MCB = 25
+uint16 NSB = 11
+uint16 DCB = 24
+uint16 IBB = 5
+uint16 CCB = 38
+uint16 JCB = 16
+uint16 PHB = 41
+
+# clear type
+uint8 HANDLED = 0
+uint8 DISAPPEARED = 1
+uint8 IGNORE = 2
+uint8 PENDING = 3
+
+uint8 clear_type
+uint64[<=4] table
+
+@sealed
+---
+# response
+# result: 0 sucess, otherwise fail
+
+uint8 result
+
+@sealed

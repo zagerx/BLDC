@@ -1,0 +1,17 @@
+
+# RFID publish
+
+uavcan.time.SynchronizedTimestamp.1.0 timestamp
+uavcan.primitive.String.1.0 name
+
+# RFID module status
+uint16 status_code
+uint16 STATE_OPERATE_SUCCESS = 0x0000
+uint16 STATE_START_FAILURE   = 0x0001
+uint16 STATE_OPERATE_TIMEOUT = 0x0010
+uint16 STATE_NO_TAGS_FOUND   = 0x0400
+
+# Tags to be reported, when the status_code is not 0, the tags is empty.
+RfidTag.1.0[<=10] tags
+
+@sealed

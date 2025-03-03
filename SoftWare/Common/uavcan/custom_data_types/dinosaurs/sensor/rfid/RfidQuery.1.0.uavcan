@@ -1,0 +1,81 @@
+# RFID query
+
+uint8 rfid_id
+
+@sealed
+
+---
+
+int32 status
+int32 STATUS_OK = 0
+# int32 status |= -0x01, module_serial_number query failure
+# int32 status |= -0x02, transmit_power query failure
+# int32 status |= -0x04, frequency_band query failure
+# int32 status |= -0x08, channel_list query failure
+# int32 status |= -0x10, module_version query failure
+
+uint8[<=15] bootloader_version
+uint8[<=15] hardware_version
+uint8[<=15] firmware_version
+uint8[<=30] serial_number
+
+uint8 mode
+uint8 MODE_DISABLE_RFID = 0
+uint8 MODE_ENABLE_RFID = 1
+uint8 MODE_MULTI_TAG_READ = 2
+uint8 MODE_SINGLE_TAG_READ = 3
+
+uint16 transmit_power
+uint16 min_transmit_power
+uint16 max_transmit_power
+
+uint8 frequency_band
+
+uint8 FRE_NORTH_AMERICA = 0x01
+# NORTH_AMERICA (902-928)
+
+uint8 FRE_CHINA_1 = 0x06
+# CHINA_1 (920-925)
+
+uint8 FRE_EUROPE = 0x08
+# EUROPE (865-867)
+
+uint8 FRE_CHINA_2 = 0x0a
+# CHINA_2 (840-845)
+
+uint8 FRE_FULL = 0xff
+# FULL_BAND (840-960)
+
+uint32[<=50] channel_list
+#
+# There are 50 channels in the North American frequency band, each with a bandwidth of 0.5MHz
+# NAfrelist[50] = {
+#        902750,903250,903750,904250,904750,905250,905750,906250,906750,907250,
+#        907750,908250,908750,909250,909750,910250,910750,911250,911750,912250,
+#        912750,913250,913750,914250,914750,915250,915750,916250,916750,917250,
+#        917750,918250,918750,919250,919750,920250,921750,920750,921250,922250,
+#        922750,923250,923750,924250,924750,925250,925750,926250,926750,927250
+# };
+#
+# There are 16 channels in the China_1 frequency band, each with a bandwidth of 0.25MHZ
+# Chinafrelist1[16] = {
+#        920625,920875,921125,921375,921625,921875,922125,922375,
+#        922625,922875,923125,923375,923625,923875,924125,924375
+# };
+#
+# There are 4 channels in the Europe frequency band, each with a bandwidth of 0.9MHZ
+# Eu3frelist[4]= { 865700,866300,866900,867500 };
+#
+# There are 16 channels in the China_1 frequency band, each with a bandwidth of 0.25MHZ
+# Chinafrelist2[16] = {
+#        840625,840875,841125,841375,841625,841875,842125,842375,
+#        842625,842875,843125,843375,843625,843875,844125,844375,
+# };
+#
+# There are 13 channels in the full frequency band, each with a bandwidth of 1MHZ
+# Allfrelist[13] = {
+#        840000,850000,860000,870000,880000,890000,900000,
+#        910000,920000,930000,940000,950000,960000
+# };
+
+@sealed

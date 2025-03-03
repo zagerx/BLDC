@@ -1,0 +1,63 @@
+# Set Parameters
+float32 current_kp
+float32 current_ki
+float32 current_kd
+
+float32 position_kp
+float32 position_ki
+float32 position_kd
+
+float32 voltage_kp
+float32 voltage_ki
+float32 voltage_kd
+
+float32 velocity_kp
+float32 velocity_ki
+float32 velocity_kd
+
+uint16 overcurrent_trigger_time_ms # time of trigger overcurent state, scaled si unit is microsecond
+uint16 overload_trigger_time_ms # time of trigger overload state, scaled si unit is microsecond
+uint16 overvoltage_trigger_time_ms # time of trigger overvoltage state, scaled si unit is microsecond
+uint16 communicate_timeout_trigger_time_ms # time of trigger communicate timeout state, scaled si unit is microsecond
+
+# status data publish duration
+uavcan.si.unit.duration.Scalar.1.0 data_update_duration
+
+# the maximum value of velocity
+uavcan.si.unit.velocity.Scalar.1.0 max_velocity
+
+# the maximum value of velocity in the position mode
+uavcan.si.unit.velocity.Scalar.1.0 max_velocity_positon_mode
+
+# the maximum value of acceleration when the absolute value of the speed increase
+uavcan.si.unit.acceleration.Scalar.1.0 acceleration
+
+# the maximum value of acceleration when the absolute value of the speed decrease
+uavcan.si.unit.acceleration.Scalar.1.0 deceleration
+
+
+bool[<=16] odometry_polarity # true: Positive counterclockwise,false: Positive clockwise
+bool[<=16] motor_polarity # true: Positive counterclockwise,false: Positive clockwise
+bool emergency_io_active # true: high activc,false: low active
+void7
+
+# the maximum value of current
+uavcan.si.unit.electric_current.Scalar.1.0 overload_current
+
+# the radius of wheel
+uavcan.si.unit.length.Scalar.1.0[<=16] radius
+
+@assert _offset_ % 8 == {0}
+#TODO
+#this file is missing a lot of fields, I will complete before the official use
+
+@extent 256 * 8
+
+---
+
+int32 SET_SUCCESS = 0
+int32 PARAMETERS_EXCEPTION = 1
+
+int32 status
+
+@sealed

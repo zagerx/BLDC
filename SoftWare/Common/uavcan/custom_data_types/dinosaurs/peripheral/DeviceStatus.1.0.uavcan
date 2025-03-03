@@ -1,0 +1,19 @@
+# uint8[<=80] device_name: current device name
+# uint8[<=80] mother_name: current device mother board name
+# uint8 status_code: current device self test result
+# uint8[<=256] status_string: human readable self test result string
+
+uavcan.time.SynchronizedTimestamp.1.0 timestamp
+uint8[<=80] device_name
+uint8[<=80] mother_name
+
+# device status code
+uint8 NORMAL = 0
+uint8 ABNORMAL = 1
+uint8 OFFLINE = 2
+
+uint8 status_code
+
+uint8[<=256] status_string
+
+@sealed

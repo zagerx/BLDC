@@ -1,0 +1,21 @@
+# StandbyState
+
+# when receive this message, software should comfirm current state is equal to enable_standby.
+# Otherwise do action according to device index.
+
+uavcan.time.SynchronizedTimestamp.1.0 timestamp
+
+uint8 device_index
+uint8 robot = 0
+uint8 only_tablet = 1
+uint8 only_system = 2
+uint8 only_mcu = 3
+uint8 only_actuator = 4
+uint8 only_sensor = 5
+uint8 only_navgation_sensor = 6
+
+bool enable_standby
+uint8 EXPECT_STANDBY = 0
+uint8 EXPECT_WAKEUP = 1
+
+@sealed

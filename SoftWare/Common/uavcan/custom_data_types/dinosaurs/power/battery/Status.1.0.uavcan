@@ -1,0 +1,16 @@
+# This low-rate battery status should be published at least once per second.
+
+uavcan.si.unit.temperature.Scalar.1.0[2] temperature_min_max
+uavcan.si.unit.electric_charge.Scalar.1.0 available_charge
+
+uint8 state_of_health_pct  # [percent]
+uint8 state_of_charge_pct
+float32 current
+float32 voltage
+
+uint8 NOT_CHARGING = 0
+uint8 CHARGING = 1
+uint8 FULL = 2
+uint8 charge_status
+
+@extent 1024 * 8
