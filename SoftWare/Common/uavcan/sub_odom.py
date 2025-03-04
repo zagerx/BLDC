@@ -1,51 +1,82 @@
-#!/usr/bin/env python3
-"""
-订阅CAN总线上的节点心跳包（uavcan.node.Heartbeat）
-需要先运行 compile_dsdl.py 生成DSDL定义
-"""
-
 import sys
 import pathlib
-sys.path.insert(0, str(pathlib.Path(".dsdl_generated").resolve()))
+sys.path.append(str(pathlib.Path(".dsdl_generated").resolve()))
+import asyncio
 import pycyphal
+import time
 from pycyphal.application import make_node, NodeInfo
 from pycyphal.transport.can import CANTransport
 from pycyphal.transport.can.media.socketcan import SocketCANMedia
-from uavcan.node import Heartbeat_1_0, Version_1_0
+from uavcan.node import Version_1_0
 from dinosaurs.actuator.wheel_motor import OdometryAndVelocityPublish_1_0
-# 确保DSDL生成路径正确
-import asyncio
 
-def optimized_print(msg, transfer):
-    """结构化数据提取打印"""
-    # 时间戳数值提取
-    timestamp = f"({msg.timestamp.microsecond})"
-    # 速度值格式化（处理列表结构）
-    speed_str = ' '.join(
-        f"(meter_per_second={v.meter_per_second})" 
-        for v in msg.current_velocity
-    )
-    # 里程计数值格式化 
-    odom_str = ' '.join(
-        f"(meter={l.meter})" 
-        for l in msg.odometry
-    )
-    # 结构化输出
-    print(f"\n心跳包来自节点 {transfer.source_node_id}:")
-    print(f"- 时间戳: {timestamp}")
-    print(f"- 速度: [{speed_str}]")
-    print(f"- 里程计: [{odom_str}]")
-def ori_print(msg, transfer):
-    print(f"\n心跳包来自节点 {transfer.source_node_id}:")
-    print(f"- 时间戳: {msg.timestamp}")
-    print(f"- 速 度: {msg.current_velocity}")
-    print(f"- 里程计: {msg.odometry}秒")
+# 性能优化参数
+BUFFER_SIZE = 100  # 缓存100条数据后批量写入
+WRITE_TIMEOUT = 1.0  # 最大写入间隔(秒)
 
-async def sub_odom_process() -> None:
-    # 初始化 CAN 接口和传输层
+class DataLogger:
+    def __init__(self):
+        self.buffer = []
+        self.start_time = time.monotonic()
+        self.last_write = time.monotonic()
+        self.prev_odometry = None  # 存储前一时刻的里程计数据
+
+    def log(self, msg, transfer):
+        ts = int((time.monotonic() - self.start_time) * 1000)
+
+        # 提取数据
+        l_vel = msg.current_velocity[0].meter_per_second  # 左轮速度
+        r_vel = msg.current_velocity[1].meter_per_second  # 右轮速度
+        l_odom = msg.odometry[0].meter                    # 左轮里程计
+        r_odom = msg.odometry[1].meter                    # 右轮里程计
+
+        # 保存当前数据
+        current_odom = {
+            "ts": ts,
+            "l_odom": l_odom,
+            "r_odom": r_odom
+        }
+
+        # 如果有前一时刻的数据，进行增量判断
+        if self.prev_odometry is not None:
+            # 计算增量
+            delta_l = l_odom - self.prev_odometry["l_odom"]
+            delta_r = r_odom - self.prev_odometry["r_odom"]
+
+            # 判断增量是否超过阈值
+            threshold = 0.05
+            if abs(delta_l) > threshold or abs(delta_r) > threshold:
+                # 打印信息
+                print(f"Time: {ts}ms")
+                print(f"Left Odom: current={l_odom:.3f}, previous={self.prev_odometry['l_odom']:.3f}, delta={delta_l:.3f}")
+                print(f"Right Odom: current={r_odom:.3f}, previous={self.prev_odometry['r_odom']:.3f}, delta={delta_r:.3f}")
+                print("-"*50)
+
+        # 更新前一时刻的数据
+        self.prev_odometry = current_odom
+
+        # 避免前5次数据记录前一时刻
+        if len(self.buffer) >= 5:
+            self.prev_odometry = current_odom
+
+        # 准备写入CSV的数据
+        self.buffer.append(f"{ts},{l_vel:.3f},{r_vel:.3f},{l_odom:.3f},{r_odom:.3f}\n")
+        
+        # 数据缓冲区逻辑
+        if len(self.buffer) >= BUFFER_SIZE or (time.monotonic() - self.last_write) > WRITE_TIMEOUT:
+            self.flush()
+
+    def flush(self):
+        with open("odom_data.csv", "a", buffering=8192, encoding='utf-8') as f:
+            f.writelines(self.buffer)
+        self.buffer.clear()
+        self.last_write = time.monotonic()  
+
+async def sub_odom_process():
+    logger = DataLogger()
     media = SocketCANMedia("can1", mtu=8)
     transport = CANTransport(media, local_node_id=28)
-    # 创建节点（显式启动）
+    
     node = make_node(
         transport=transport,
         info=NodeInfo(
@@ -54,27 +85,26 @@ async def sub_odom_process() -> None:
             unique_id=bytes.fromhex("DEADBEEFCAFEBABE12345678ABCDEF01")
         )
     )
-    node.start()  # 必须显式启动
-    async def message_handler(msg: OdometryAndVelocityPublish_1_0, transfer: pycyphal.transport.TransferFrom) -> None:
-        optimized_print(msg, transfer)
-    # 创建订阅者
-    sub = node.make_subscriber(OdometryAndVelocityPublish_1_0,1100)
-    sub.receive_in_background(message_handler)
-    print("正在监听CAN总线上的心跳包... (Ctrl+C退出)")
+    node.start()
+
+    async def handler(msg, transfer):
+        logger.log(msg, transfer)  
+
+    sub = node.make_subscriber(OdometryAndVelocityPublish_1_0, 1100)
+    sub.receive_in_background(handler)
+    
     try:
         while True:
-            # 接收消息（带超时）
-            result = await sub.receive(monotonic_deadline=asyncio.get_event_loop().time() + 1.0)
-            if result is not None:
-                msg, transfer = result
-    except KeyboardInterrupt:
-        pass
+            await asyncio.sleep(WRITE_TIMEOUT)
+            logger.flush()  
     finally:
-        # 显式关闭所有资源（关键！）
-        sub.close()  # 先关闭订阅者
-        node.close()  # 同步关闭节点
+        logger.flush()
+        sub.close()
+        node.close()
         transport.close()
-        media.close()
 
 if __name__ == "__main__":
+    # 初始化CSV文件头
+    with open("odom_data.csv", "w", encoding='utf-8') as f:
+        f.write("timestamp(ms),left_vel,right_vel,left_odom,right_odom\n")
     asyncio.run(sub_odom_process())
