@@ -20,6 +20,7 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "fdcan.h"
 #include "i2c.h"
 #include "memorymap.h"
 #include "rng.h"
@@ -114,6 +115,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM8_Init();//为保证定时器同步
   MX_ADC1_Init();
+  MX_FDCAN1_Init();
   /* USER CODE BEGIN 2 */
   HAL_Delay(100);
   USER_DEBUG_NORMAL("H7 hello word\r\n");
@@ -126,11 +128,11 @@ int main(void)
   {
     do_taskcalls();
     HAL_GPIO_TogglePin(WATCH_DOG_IN_GPIO_Port,WATCH_DOG_IN_Pin);
-    // if (count++ > 500)
-    // {
-    //   USER_DEBUG_NORMAL(".\r\n");    
-    //   count = 0;
-    // }
+    if (count++ > 500)
+    {
+      USER_DEBUG_NORMAL(".\r\n");    
+      count = 0;
+    }
     HAL_Delay(1);
     /* USER CODE END WHILE */
 
@@ -209,15 +211,16 @@ void PeriphCommonClock_Config(void)
 
   /** Initializes the peripherals clock
   */
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_FDCAN;
   PeriphClkInitStruct.PLL2.PLL2M = 4;
   PeriphClkInitStruct.PLL2.PLL2N = 12;
   PeriphClkInitStruct.PLL2.PLL2P = 3;
-  PeriphClkInitStruct.PLL2.PLL2Q = 2;
+  PeriphClkInitStruct.PLL2.PLL2Q = 8;
   PeriphClkInitStruct.PLL2.PLL2R = 2;
   PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3;
   PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
   PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+  PeriphClkInitStruct.FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL2;
   PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {

@@ -82,7 +82,9 @@ Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c \
 Src/dma.c \
 Src/rng.c \
 Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rng.c \
-Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rng_ex.c 
+Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rng_ex.c \
+Src/fdcan.c \
+Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_fdcan.c 
 # ASM sources
 ASM_SOURCES =  \
 startup_stm32h723xx.s
@@ -152,7 +154,7 @@ C_SOURCES += $(wildcard ../Common/debuglog/*.c)
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
 C_INCLUDES += -I../Common/debuglog 
-C_DEFS += -DDEBUG_MODE_UART
+# C_DEFS += -DDEBUG_MODE_UART
 
 C_INCLUDES += -I../Common/systemmodule
 C_SOURCES += $(wildcard ../Common/systemmodule/*.c)

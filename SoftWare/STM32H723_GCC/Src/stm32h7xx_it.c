@@ -57,6 +57,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc1;
+extern FDCAN_HandleTypeDef hfdcan1;
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 // #include "_common.h"
@@ -89,7 +90,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-  // USER_DEBUG_NORMAL("HardFault\r\n");
+  USER_DEBUG_NORMAL("HardFault\r\n");
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -254,6 +255,20 @@ void DMA1_Stream2_IRQHandler(void)
   HAL_DMA_IRQHandler(&hdma_adc1);
   /* USER CODE BEGIN DMA1_Stream2_IRQn 1 */
   /* USER CODE END DMA1_Stream2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles FDCAN1 interrupt 0.
+  */
+void FDCAN1_IT0_IRQHandler(void)
+{
+  /* USER CODE BEGIN FDCAN1_IT0_IRQn 0 */
+
+  /* USER CODE END FDCAN1_IT0_IRQn 0 */
+  HAL_FDCAN_IRQHandler(&hfdcan1);
+  /* USER CODE BEGIN FDCAN1_IT0_IRQn 1 */
+
+  /* USER CODE END FDCAN1_IT0_IRQn 1 */
 }
 
 /**
