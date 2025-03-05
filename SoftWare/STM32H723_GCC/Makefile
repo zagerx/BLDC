@@ -174,10 +174,13 @@ C_SOURCES += $(wildcard ../Hardware/ian226.c)
 C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
 
 C_INCLUDES += -I./board
-C_SOURCES += $(wildcard ./board/board.c)
+C_SOURCES += $(wildcard ./board/board.c board_protocolInterface.c)
+C_SOURCES += $(wildcard ./board/board_protocolInterface.c)
 
 C_INCLUDES += -I../Protocol
 C_SOURCES += $(wildcard ../Protocol/*.c)
+C_INCLUDES += -I../ProtocolV3/uavcan/libcanard
+C_SOURCES += $(wildcard ../ProtocolV3/uavcan/libcanard/*.c)
 
 C_INCLUDES += -I../Common/method 
 C_SOURCES += $(wildcard ../Common/method/trajectory_planning.c)

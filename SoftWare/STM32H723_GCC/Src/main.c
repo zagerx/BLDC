@@ -67,6 +67,7 @@ void PeriphCommonClock_Config(void);
 /* USER CODE BEGIN 0 */
 unsigned short count = 0;
 #include "adc.h"
+#include "board_protocolInterface.h"
 /* USER CODE END 0 */
 
 /**
@@ -120,6 +121,8 @@ int main(void)
   HAL_Delay(100);
   USER_DEBUG_NORMAL("H7 hello word\r\n");
   user_board_init();
+  slave_comm_init();
+  subscribe_enable();
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -155,35 +155,8 @@ void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* fdcanHandle)
      {
        Error_Handler();
      }
-
-    //  HAL_FDCAN_ConfigGlobalFilter(&hfdcan1,  
-    //   FDCAN_ACCEPT_IN_RX_FIFO0, 
-    //   FDCAN_ACCEPT_IN_RX_FIFO1, 
-    //   DISABLE,       
-    //   DISABLE); 
     HAL_FDCAN_ActivateNotification(&hfdcan1,FDCAN_IT_RX_FIFO0_NEW_MESSAGE,0);
     HAL_FDCAN_Start(&hfdcan1);              
  
- }
- 
- void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
- {
-   
-     uint8_t i=0;
-     uint8_t rxdata[8];
-     FDCAN_RxHeaderTypeDef FDCAN1_RxHeader;
-     USER_DEBUG_NORMAL("callback\r\n");
-     if((RxFifo0ITs&FDCAN_IT_RX_FIFO0_NEW_MESSAGE)!=RESET) 
-     {
-         HAL_FDCAN_GetRxMessage(hfdcan,FDCAN_RX_FIFO0,&FDCAN1_RxHeader,rxdata);
- 
-         USER_DEBUG_NORMAL("id:%#x\r\n",FDCAN1_RxHeader.Identifier);
-         USER_DEBUG_NORMAL("len:%d\r\n",FDCAN1_RxHeader.DataLength);
-         for(i=0; i<(FDCAN1_RxHeader.DataLength); i++)
-         {
-             USER_DEBUG_NORMAL("rxdata[%d]:%d\r\n",i,rxdata[i]);
-         }
-     }
- }
- 
+}
 /* USER CODE END 1 */
