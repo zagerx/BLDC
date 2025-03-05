@@ -2,6 +2,7 @@
 #include "heap.h"
 #include "main.h"
 #include "debuglog.h"
+#include "Enable_1_0.h"
 static void* mem_allocate(CanardInstance* const canard, const size_t amount)
 {
     (void) canard;
@@ -50,6 +51,65 @@ void process_received_transfer(const uint8_t index, CanardRxTransfer* const tran
     }
 }
 
+// 发送响应函数
+void send_response(CanardNodeID remote_node_id, const void* payload, size_t payload_size) {
+    CanardTransferMetadata transfer_metadata = {
+        .priority = CanardPriorityNominal,
+        .transfer_kind = CanardTransferKindResponse,
+        .port_id = 113, // 主题 ID
+        .remote_node_id = remote_node_id,
+        .transfer_id = 0
+    };
+
+    int32_t result = canardTxPush(
+        &txQueue,
+        &canard,
+        HAL_GetTick() * 1000, // 时间戳
+        &transfer_metadata,
+        payload_size,
+        payload
+    );
+
+    if (result < 0) {
+        // 处理错误
+        USER_DEBUG_NORMAL("Error sending response\n");
+    }
+}
+// 发送帧函数
+void send_frames(FDCAN_HandleTypeDef *hfdcan) {
+    CanardTxQueueItem *item = NULL;
+    while ((item = canardTxPeek(&txQueue)) != NULL) {
+        FDCAN_TxHeaderTypeDef txHeader;
+        uint8_t txData[8];
+
+        // 填充 FDCAN_TxHeaderTypeDef 结构
+        txHeader.Identifier = item->frame.extended_can_id;
+        txHeader.IdType = FDCAN_STANDARD_ID; // 标准 ID
+        txHeader.TxFrameType = FDCAN_DATA_FRAME; // 数据帧
+        txHeader.DataLength = item->frame.payload_size; // 数据长度
+        txHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE; // 错误状态指示器
+        txHeader.BitRateSwitch = FDCAN_BRS_ON; // 波特率切换
+        txHeader.FDFormat = FDCAN_FD_CAN; // CAN FD 格式
+        txHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS; // 不使用发送事件 FIFO
+        txHeader.MessageMarker = 0; // 消息标记
+
+        // 填充发送数据
+        for (size_t i = 0; i < item->frame.payload_size; i++) {
+            txData[i] = ((uint8_t *)item->frame.payload)[i];
+        }
+
+        // 发送帧
+        if (HAL_FDCAN_AddMessageToTxFifoQ(hfdcan, &txHeader, txData) != HAL_OK) {
+            // 处理发送错误
+            USER_DEBUG_NORMAL("Error sending frame\n");
+            break;
+        }
+
+        // 从队列中移除帧
+        canardTxPop(&txQueue, item);
+    }
+}
+
 // 在接收中断中调用
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs) {
     uint8_t i = 0;
@@ -82,6 +142,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
             // 处理接收到的传输
             process_received_transfer(0, &transfer);
             canard.memory_free(&canard, transfer.payload);
+            send_frames(hfdcan);
         }
     }
 }

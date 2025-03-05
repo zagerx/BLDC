@@ -181,6 +181,8 @@ C_INCLUDES += -I../Protocol
 C_SOURCES += $(wildcard ../Protocol/*.c)
 C_INCLUDES += -I../ProtocolV3/uavcan/libcanard
 C_SOURCES += $(wildcard ../ProtocolV3/uavcan/libcanard/*.c)
+C_INCLUDES += -I../ProtocolV3/uavcan/dsdl/dinosaurs/actuator/wheel_motor
+C_INCLUDES += -I../ProtocolV3/uavcan/dsdl
 
 C_INCLUDES += -I../Common/method 
 C_SOURCES += $(wildcard ../Common/method/trajectory_planning.c)
