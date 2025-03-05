@@ -3,56 +3,38 @@
 #include "main.h"
 #include "debuglog.h"
 #include "Enable_1_0.h"
-static void* mem_allocate(CanardInstance* const canard, const size_t amount)
-{
+CanardInstance canard;
+CanardTxQueue txQueue;
+CanardRxSubscription subscription_enablehandle;
+static void* mem_allocate(CanardInstance* const canard, const size_t amount) {
     (void) canard;
     return heap_malloc(amount);
 }
-
-static void mem_free(CanardInstance* const canard, void* const pointer)
-{
+static void mem_free(CanardInstance* const canard, void* const pointer) {
     (void) canard;
     heap_free(pointer);
 }
-CanardInstance canard;
-CanardTxQueue txQueue;
-
-void slave_comm_init()
+void slave_comm_init() 
 {
     canard = canardInit(&mem_allocate, &mem_free);
     canard.node_id = 28; // 设置本机节点 ID
     txQueue = canardTxInit(100, CANARD_MTU_CAN_CLASSIC); // 初始化发送队列
 }
-CanardRxSubscription heartbeat_subscription;
 
 void subscribe_enable(void) 
 {
     canardRxSubscribe(
         &canard,
         CanardTransferKindRequest,
-        113, // 
-        1, // 
+        113, // 主题 ID
+        1, // 范围
         CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC,
-        &heartbeat_subscription
+        &subscription_enablehandle
     );
 }
-
-// 定义接收传输的回调函数
-void process_received_transfer(const uint8_t index, CanardRxTransfer* const transfer) {
-    if (transfer->metadata.transfer_kind == CanardTransferKindRequest) 
-    {
-        // 处理接收到的消息
-        USER_DEBUG_NORMAL("Received message from node %u\n", transfer->metadata.remote_node_id);
-        USER_DEBUG_NORMAL("Payload: ");
-        for (size_t i = 0; i < transfer->payload_size; i++) {
-            USER_DEBUG_NORMAL("%02x ", ((uint8_t*)transfer->payload)[i]);
-        }
-        USER_DEBUG_NORMAL("\n");
-    }
-}
-
 // 发送响应函数
-void send_response(CanardNodeID remote_node_id, const void* payload, size_t payload_size) {
+void send_response(CanardNodeID remote_node_id, const void* payload, size_t payload_size) 
+{
     CanardTransferMetadata transfer_metadata = {
         .priority = CanardPriorityNominal,
         .transfer_kind = CanardTransferKindResponse,
@@ -75,10 +57,52 @@ void send_response(CanardNodeID remote_node_id, const void* payload, size_t payl
         USER_DEBUG_NORMAL("Error sending response\n");
     }
 }
+// 定义接收传输的回调函数
+void process_received_transfer(const uint8_t index, CanardRxTransfer* const transfer) 
+{
+    if (transfer->metadata.transfer_kind == CanardTransferKindRequest) {
+        // 处理接收到的消息
+        USER_DEBUG_NORMAL("Received message from node %u\n", transfer->metadata.remote_node_id);
+        USER_DEBUG_NORMAL("Payload: ");
+        for (size_t i = 0; i < transfer->payload_size; i++) {
+            USER_DEBUG_NORMAL("%02x ", ((uint8_t*)transfer->payload)[i]);
+        }
+        USER_DEBUG_NORMAL("\n");
+
+        // 反序列化接收到的数据
+        custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Request_1_0 request;
+        int8_t result = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Request_1_0_deserialize_(&request, transfer->payload, &transfer->payload_size);
+        if (result < 0) {
+            USER_DEBUG_NORMAL("Error deserializing request\n");
+            return;
+        }
+
+        // 处理请求
+        USER_DEBUG_NORMAL("Received request: enable_state = %u\n", request.enable_state);
+
+        // 创建响应
+        custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0 response;
+        response.status = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_SET_SUCCESS;
+
+        // 序列化响应
+        uint8_t buffer[custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_];
+        size_t buffer_size = sizeof(buffer);
+        result = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_serialize_(&response, buffer, &buffer_size);
+        if (result < 0) {
+            USER_DEBUG_NORMAL("Error serializing response\n");
+            return;
+        }
+
+        // 发送响应
+        send_response(transfer->metadata.remote_node_id, buffer, buffer_size);
+    }
+}
 // 发送帧函数
-void send_frames(FDCAN_HandleTypeDef *hfdcan) {
+void send_frames(FDCAN_HandleTypeDef *hfdcan) 
+{
     CanardTxQueueItem *item = NULL;
-    while ((item = canardTxPeek(&txQueue)) != NULL) {
+    while ((item = canardTxPeek(&txQueue)) != NULL) 
+    {
         FDCAN_TxHeaderTypeDef txHeader;
         uint8_t txData[8];
 
@@ -109,7 +133,6 @@ void send_frames(FDCAN_HandleTypeDef *hfdcan) {
         canardTxPop(&txQueue, item);
     }
 }
-
 // 在接收中断中调用
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs) {
     uint8_t i = 0;
@@ -142,9 +165,6 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
             // 处理接收到的传输
             process_received_transfer(0, &transfer);
             canard.memory_free(&canard, transfer.payload);
-            send_frames(hfdcan);
         }
     }
 }
-
-

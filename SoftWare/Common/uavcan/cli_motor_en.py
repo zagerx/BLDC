@@ -23,7 +23,7 @@ async def client_motorenable_process():
         )
     )
     client = node.make_client(Enable_1_0, server_node_id=28, port_name=113)
-    client.response_timeout = 0.1  # 100ms超时
+    client.response_timeout = 0.2  # 100ms超时
 
     # ================== 简化后的控制逻辑 ==================
     try:
@@ -33,7 +33,7 @@ async def client_motorenable_process():
                 print(f"[响应] 完整结果: {response}")
             except asyncio.TimeoutError:
                 print("[超时] 100ms内无应答")
-            await asyncio.sleep(1)  # 1000秒间隔
+            await asyncio.sleep(2)  # 1000秒间隔
     finally:
         await client.close()
         await node.close()

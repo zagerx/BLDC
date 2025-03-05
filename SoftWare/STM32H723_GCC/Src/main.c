@@ -68,6 +68,9 @@ void PeriphCommonClock_Config(void);
 unsigned short count = 0;
 #include "adc.h"
 #include "board_protocolInterface.h"
+extern FDCAN_HandleTypeDef hfdcan1;
+extern void send_frames(FDCAN_HandleTypeDef *hfdcan);
+
 /* USER CODE END 0 */
 
 /**
@@ -136,6 +139,7 @@ int main(void)
       USER_DEBUG_NORMAL(".\r\n");    
       count = 0;
     }
+    send_frames(&hfdcan1);
     HAL_Delay(1);
     /* USER CODE END WHILE */
 
