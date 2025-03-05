@@ -1,0 +1,25 @@
+# Set motor driver external parameters
+
+# config broadcast frequency
+uint4 BROADCAST_TYPE_ODOMETRY =0
+uint4 BROADCAST_TYPE_STATUS =1
+uint4 BROADCAST_TYPE_ERROR =3
+uavcan.si.unit.frequency.Scalar.1.0[<=16] broadcast_frequency
+
+# config emergency io polarity  true: high activc,false: low active
+bool emergency_io_active
+
+# config wheel radius and distance between two wheels
+uavcan.si.unit.length.Scalar.1.0 wheel_radius
+uavcan.si.unit.length.Scalar.1.0 wheel_spacing
+
+#@union
+#uint8[2048] parameters # TBD
+@sealed
+---
+
+int32 SET_SUCCESS = 0
+int32 FAILED = 1
+int32 PARAMETER_NOT_INIT = 2
+int32 status
+@sealed
