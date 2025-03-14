@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "protocol_cmdmap.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,6 +51,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+extern void mc_protocol_nowsend(unsigned short cmd,unsigned char* pdata,unsigned short datalen);
 
 /* USER CODE END PFP */
 
@@ -64,9 +65,10 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   printf("hello world\r\n");
-
+  uint8_t buf[20];
   while (1)
   {
+    mc_protocol_nowsend(S_HeartP,buf,0);
     HAL_GPIO_TogglePin(LED_01_GPIO_Port,LED_01_Pin);
     HAL_Delay(500);
   }

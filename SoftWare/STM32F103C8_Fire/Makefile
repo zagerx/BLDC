@@ -132,9 +132,13 @@ C_DEFS += -DDEBUG_MODE_UART
 C_INCLUDES += -I../Common/systemmodule
 C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
 
-# C_INCLUDES += -I../Common/data_structures
-# C_SOURCES += $(wildcard ../Common/data_structures/heap.c)
-# C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
+C_INCLUDES += -I../Common/method 
+C_INCLUDES += -I../Common/data_structures
+C_SOURCES += $(wildcard ../Common/data_structures/heap.c)
+C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
+C_INCLUDES += -I../Protocol
+C_SOURCES += $(wildcard ../Protocol/*.c)
+
 
 C_INCLUDES += -I./Board
 C_SOURCES += $(wildcard ./Board/Board.c)

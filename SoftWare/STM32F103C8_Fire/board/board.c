@@ -8,11 +8,11 @@ All rights reserved.
 #include "board.h"
 #include "debuglog.h"
 #include "usart.h"
+#include "string.h"
 static uint8_t sg_uartreceive_buff[125];
 
 void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
-  	uint32_t tmp;
     if(USART1 == huart->Instance)                                   
     {
         if(RESET != __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE))   

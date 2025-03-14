@@ -166,4 +166,12 @@ int _write(int file, char *data, int len)
     HAL_StatusTypeDef status = HAL_UART_Transmit(&huart1, (uint8_t*)data, len, 1000);
     return (status == HAL_OK ? len : 0);
 }
+
+void _bsp_protransmit(unsigned char* pdata,unsigned short len)
+{
+  static unsigned char sg_uartsend_buf[64];
+  memcpy(sg_uartsend_buf,pdata,len);
+  HAL_UART_Transmit(&huart1,sg_uartsend_buf,len,0xff);
+}
+
 /* USER CODE END 1 */
