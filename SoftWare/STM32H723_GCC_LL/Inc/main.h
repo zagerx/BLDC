@@ -27,7 +27,23 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32h7xx_hal.h"
+
+#include "stm32h7xx_ll_dma.h"
+#include "stm32h7xx_ll_rcc.h"
+#include "stm32h7xx_ll_crs.h"
+#include "stm32h7xx_ll_bus.h"
+#include "stm32h7xx_ll_system.h"
+#include "stm32h7xx_ll_exti.h"
+#include "stm32h7xx_ll_cortex.h"
+#include "stm32h7xx_ll_utils.h"
+#include "stm32h7xx_ll_pwr.h"
+#include "stm32h7xx_ll_tim.h"
+#include "stm32h7xx_ll_usart.h"
+#include "stm32h7xx_ll_gpio.h"
+
+#if defined(USE_FULL_ASSERT)
+#include "stm32_assert.h"
+#endif /* USE_FULL_ASSERT */
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -59,38 +75,26 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define _ENCODERLINS 2500
 #define _ARR 13750
-#define LED_01_Pin GPIO_PIN_3
-#define LED_01_GPIO_Port GPIOE
-#define HALL_U1_Pin GPIO_PIN_14
-#define HALL_U1_GPIO_Port GPIOC
-#define HALL_U1_EXTI_IRQn EXTI15_10_IRQn
-#define HALL_V1_Pin GPIO_PIN_15
-#define HALL_V1_GPIO_Port GPIOC
-#define HALL_V1_EXTI_IRQn EXTI15_10_IRQn
-#define HALL_V2_Pin GPIO_PIN_2
-#define HALL_V2_GPIO_Port GPIOB
-#define HALL_V2_EXTI_IRQn EXTI2_IRQn
-#define WATCH_DOG_IN_Pin GPIO_PIN_7
-#define WATCH_DOG_IN_GPIO_Port GPIOE
-#define VCC3V3_OUT_EN_Pin GPIO_PIN_15
+#define VCC3V3_OUT_EN_Pin LL_GPIO_PIN_15
 #define VCC3V3_OUT_EN_GPIO_Port GPIOE
-#define HALL_W1_Pin GPIO_PIN_12
-#define HALL_W1_GPIO_Port GPIOB
-#define HALL_W1_EXTI_IRQn EXTI15_10_IRQn
-#define MAIN_POWER_OFF_Pin GPIO_PIN_11
-#define MAIN_POWER_OFF_GPIO_Port GPIOD
-#define HALL_W2_Pin GPIO_PIN_0
-#define HALL_W2_GPIO_Port GPIOD
-#define HALL_W2_EXTI_IRQn EXTI0_IRQn
-#define HALL_U2_Pin GPIO_PIN_1
-#define HALL_U2_GPIO_Port GPIOD
-#define HALL_U2_EXTI_IRQn EXTI1_IRQn
-#define VCC5V_OUT_EN_Pin GPIO_PIN_3
+#define VCC5V_OUT_EN_Pin LL_GPIO_PIN_3
 #define VCC5V_OUT_EN_GPIO_Port GPIOD
-#define EBAKE_PWM_EN_Pin GPIO_PIN_3
+#define EBAKE_PWM_EN_Pin LL_GPIO_PIN_3
 #define EBAKE_PWM_EN_GPIO_Port GPIOB
-#define TEST_IO_Pin GPIO_PIN_1
+#define TEST_IO_Pin LL_GPIO_PIN_1
 #define TEST_IO_GPIO_Port GPIOE
+#ifndef NVIC_PRIORITYGROUP_0
+#define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
+                                                                 4 bits for subpriority */
+#define NVIC_PRIORITYGROUP_1         ((uint32_t)0x00000006) /*!< 1 bit  for pre-emption priority,
+                                                                 3 bits for subpriority */
+#define NVIC_PRIORITYGROUP_2         ((uint32_t)0x00000005) /*!< 2 bits for pre-emption priority,
+                                                                 2 bits for subpriority */
+#define NVIC_PRIORITYGROUP_3         ((uint32_t)0x00000004) /*!< 3 bits for pre-emption priority,
+                                                                 1 bit  for subpriority */
+#define NVIC_PRIORITYGROUP_4         ((uint32_t)0x00000003) /*!< 4 bits for pre-emption priority,
+                                                                 0 bit  for subpriority */
+#endif
 
 /* USER CODE BEGIN Private defines */
 
