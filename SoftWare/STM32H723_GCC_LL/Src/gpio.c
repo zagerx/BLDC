@@ -38,7 +38,6 @@
         * Output
         * EVENT_OUT
         * EXTI
-     PA7   ------> TIM8_CH1N
 */
 void MX_GPIO_Init(void)
 {
@@ -48,9 +47,10 @@ void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOH);
   LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOA);
-  LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOE);
-  LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOD);
   LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOB);
+  LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOE);
+  LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOC);
+  LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOD);
 
   /**/
   LL_GPIO_ResetOutputPin(GPIOE, VCC3V3_OUT_EN_Pin|TEST_IO_Pin);
@@ -60,15 +60,6 @@ void MX_GPIO_Init(void)
 
   /**/
   LL_GPIO_ResetOutputPin(EBAKE_PWM_EN_GPIO_Port, EBAKE_PWM_EN_Pin);
-
-  /**/
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_7;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_3;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /**/
   GPIO_InitStruct.Pin = VCC3V3_OUT_EN_Pin|TEST_IO_Pin;
