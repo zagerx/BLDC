@@ -134,10 +134,11 @@ int main(void)
   {
     do_taskcalls();
     HAL_GPIO_TogglePin(WATCH_DOG_IN_GPIO_Port,WATCH_DOG_IN_Pin);
-    if (count++ > 500)
+    if (count++ > 1000)
     {
       USER_DEBUG_NORMAL(".\r\n");    
       count = 0;
+      send_heartpack();
     }
     send_frames(&hfdcan1);
     HAL_Delay(1);

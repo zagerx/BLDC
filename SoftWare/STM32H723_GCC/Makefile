@@ -154,7 +154,7 @@ C_SOURCES += $(wildcard ../Common/debuglog/*.c)
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
 C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
 C_INCLUDES += -I../Common/debuglog 
-# C_DEFS += -DDEBUG_MODE_UART
+C_DEFS += -DDEBUG_MODE_UART
 
 C_INCLUDES += -I../Common/systemmodule
 C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
@@ -182,6 +182,7 @@ C_SOURCES += $(wildcard ../Protocol/*.c)
 C_INCLUDES += -I../ProtocolV3/uavcan/libcanard
 C_SOURCES += $(wildcard ../ProtocolV3/uavcan/libcanard/*.c)
 C_INCLUDES += -I../ProtocolV3/uavcan/dsdl/dinosaurs/actuator/wheel_motor
+C_INCLUDES += -I../ProtocolV3/uavcan/dsdl/uavcan/node
 C_INCLUDES += -I../ProtocolV3/uavcan/dsdl
 
 C_INCLUDES += -I../Common/method 
@@ -287,7 +288,7 @@ dapdown:
 
 
 stlinkdown:
-	openocd -f stlink.cfg -f stm32h7x.cfg -c "init" -c "reset halt" -c \
+	openocd -f stlink.cfg -f stm32h7x_linux.cfg -c "init" -c "reset halt" -c \
 	"flash write_image erase $(BUILD_DIR)/$(TARGET).hex" -c reset -c shutdown
 
 jlinkdown:
