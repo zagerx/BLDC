@@ -62,6 +62,9 @@ void PeriphCommonClock_Config(void);
 /* USER CODE BEGIN 0 */
 void tim1_set_pwm(float _a, float _b, float _c);
 void tim1_enable(void);
+void adc1_start(void);
+
+volatile  uint32_t  i = 3800000;
 
 /* USER CODE END 0 */
 
@@ -84,13 +87,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  LL_APB4_GRP1_EnableClock(LL_APB4_GRP1_PERIPH_SYSCFG);
-
-  /* System interrupt init*/
-  NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-
-  /* SysTick_IRQn interrupt configuration */
-  NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),15, 0));
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -116,10 +113,9 @@ int main(void)
   MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   printf("ll hello \r\n");
-  // timx_enable();
   tim1_enable();
-
   tim1_set_pwm(0.5f,0.5f,0.5f);
+  adc1_start();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -131,8 +127,8 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     // printf("ll hello world\r\n");
-    // i = 800000;
     // while(i--);
+    // i = 8000000;
   }
   /* USER CODE END 3 */
 }
@@ -196,10 +192,13 @@ void SystemClock_Config(void)
   LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_2);
   LL_RCC_SetAPB3Prescaler(LL_RCC_APB3_DIV_2);
   LL_RCC_SetAPB4Prescaler(LL_RCC_APB4_DIV_2);
-
-  LL_Init1msTick(550000000);
-
   LL_SetSystemCoreClock(550000000);
+
+   /* Update the time base */
+  if (HAL_InitTick (TICK_INT_PRIORITY) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 /**

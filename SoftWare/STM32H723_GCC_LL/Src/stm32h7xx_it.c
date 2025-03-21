@@ -22,6 +22,7 @@
 #include "stm32h7xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,8 +56,10 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern DMA_HandleTypeDef hdma_adc1;
 /* USER CODE BEGIN EV */
+extern __attribute__((section(".D2_Area"))) __attribute__((aligned(4))) uint32_t adc_buffer[3];
+extern ADC_HandleTypeDef hadc1;
 
 /* USER CODE END EV */
 
@@ -185,7 +188,7 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
 
   /* USER CODE END SysTick_IRQn 0 */
-
+  HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */
@@ -204,11 +207,9 @@ void SysTick_Handler(void)
 void DMA1_Stream2_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Stream2_IRQn 0 */
-
   /* USER CODE END DMA1_Stream2_IRQn 0 */
-
+  HAL_DMA_IRQHandler(&hdma_adc1);
   /* USER CODE BEGIN DMA1_Stream2_IRQn 1 */
-
   /* USER CODE END DMA1_Stream2_IRQn 1 */
 }
 

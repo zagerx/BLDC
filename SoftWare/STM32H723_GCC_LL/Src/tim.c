@@ -95,9 +95,10 @@ void MX_TIM1_Init(void)
     PE11     ------> TIM1_CH2
     PE12     ------> TIM1_CH3N
     PE13     ------> TIM1_CH3
+    PE14     ------> TIM1_CH4
     */
   GPIO_InitStruct.Pin = LL_GPIO_PIN_8|LL_GPIO_PIN_9|LL_GPIO_PIN_10|LL_GPIO_PIN_11
-                          |LL_GPIO_PIN_12|LL_GPIO_PIN_13;
+                          |LL_GPIO_PIN_12|LL_GPIO_PIN_13|LL_GPIO_PIN_14;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
@@ -214,7 +215,7 @@ void tim1_enable(void)
   LL_TIM_EnableAllOutputs(TIM1);
   LL_TIM_EnableCounter(TIM1);
   LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH1 | LL_TIM_CHANNEL_CH2 | LL_TIM_CHANNEL_CH3);  
-
+  LL_TIM_CC_EnableChannel(TIM1,LL_TIM_CHANNEL_CH4);
   LL_TIM_EnableAllOutputs(TIM8);
   // LL_TIM_EnableCounter(TIM8);
   LL_TIM_CC_EnableChannel(TIM8, LL_TIM_CHANNEL_CH1 | LL_TIM_CHANNEL_CH2 | LL_TIM_CHANNEL_CH3);  
@@ -225,6 +226,8 @@ void tim1_set_pwm(float _a, float _b, float _c)
     LL_TIM_OC_SetCompareCH1(TIM1, (uint32_t)(_a * arr));
     LL_TIM_OC_SetCompareCH2(TIM1, (uint32_t)(_b * arr));
     LL_TIM_OC_SetCompareCH3(TIM1, (uint32_t)(_c * arr));
+    LL_TIM_OC_SetCompareCH4(TIM1, (uint32_t)(_c * arr));
+
     LL_TIM_OC_SetCompareCH1(TIM8, (uint32_t)(_a * arr));
     LL_TIM_OC_SetCompareCH2(TIM8, (uint32_t)(_b * arr));
     LL_TIM_OC_SetCompareCH3(TIM8, (uint32_t)(_c * arr));    
