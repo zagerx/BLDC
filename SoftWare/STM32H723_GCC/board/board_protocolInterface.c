@@ -3,17 +3,47 @@
 #include "main.h"
 #include "debuglog.h"
 #include "Enable_1_0.h"
+#include "Heartbeat_1_0.h"
+#include "uavcan/node/Health_1_0.h"
+#include "uavcan/node/Mode_1_0.h"
+#include <stdint.h>
+
 CanardInstance canard;
 CanardTxQueue txQueue;
 CanardRxSubscription subscription_enablehandle;
+
+/**
+ * @brief 内存分配函数
+ * 
+ * @param canard 指向 CANard 实例的指针
+ * @param amount 需要分配的内存大小
+ * @return void* 分配的内存块指针
+ * 
+ * 该函数用于为 CANard 实例分配内存。
+ */
 static void* mem_allocate(CanardInstance* const canard, const size_t amount) {
     (void) canard;
     return malloc(amount);
 }
+
+/**
+ * @brief 内存释放函数
+ * 
+ * @param canard 指向 CANard 实例的指针
+ * @param pointer 需要释放的内存块指针
+ * 
+ * 该函数用于释放之前分配的内存块。
+ */
 static void mem_free(CanardInstance* const canard, void* const pointer) {
     (void) canard;
     free(pointer);
 }
+
+/**
+ * @brief 初始化从机通信
+ * 
+ * 该函数用于初始化 UAVCAN 通信相关的数据结构和参数，包括 CANard 实例、发送队列等。
+ */
 void slave_comm_init() 
 {
     canard = canardInit(&mem_allocate, &mem_free);
@@ -21,6 +51,11 @@ void slave_comm_init()
     txQueue = canardTxInit(100, CANARD_MTU_CAN_CLASSIC); // 初始化发送队列
 }
 
+/**
+ * @brief 订阅启用消息
+ * 
+ * 该函数用于订阅特定主题 ID 的启用消息，以便接收来自其他节点的启用请求。
+ */
 void subscribe_enable(void) 
 {
     canardRxSubscribe(
@@ -32,7 +67,16 @@ void subscribe_enable(void)
         &subscription_enablehandle
     );
 }
-// 发送响应函数
+
+/**
+ * @brief 发送响应消息
+ * 
+ * @param remote_node_id 目标节点 ID
+ * @param payload 消息负载数据
+ * @param payload_size 负载数据大小
+ * 
+ * 该函数用于将响应消息推入发送队列，以便通过 UAVCAN 协议发送给指定的目标节点。
+ */
 void send_response(CanardNodeID remote_node_id, const void* payload, size_t payload_size) 
 {
     CanardTransferMetadata transfer_metadata = {
@@ -57,7 +101,15 @@ void send_response(CanardNodeID remote_node_id, const void* payload, size_t payl
         USER_DEBUG_NORMAL("Error sending response\n");
     }
 }
-// 定义接收传输的回调函数
+
+/**
+ * @brief 处理接收到的传输
+ * 
+ * @param index 接收到的传输索引
+ * @param transfer 指向接收到的传输数据结构的指针
+ * 
+ * 该函数用于处理接收到的 UAVCAN 传输数据，包括反序列化请求、处理请求以及发送响应。
+ */
 void process_received_transfer(const uint8_t index, CanardRxTransfer* const transfer) 
 {
     if (transfer->metadata.transfer_kind == CanardTransferKindRequest) {
@@ -97,7 +149,14 @@ void process_received_transfer(const uint8_t index, CanardRxTransfer* const tran
         send_response(transfer->metadata.remote_node_id, buffer, buffer_size);
     }
 }
-// 发送帧函数
+
+/**
+ * @brief 发送帧
+ * 
+ * @param hfdcan 指向 FDCAN 外设句柄的指针
+ * 
+ * 该函数用于将发送队列中的帧通过 FDCAN 外设发送出去。
+ */
 void send_frames(FDCAN_HandleTypeDef *hfdcan) 
 {
     CanardTxQueueItem *item = NULL;
@@ -134,17 +193,14 @@ void send_frames(FDCAN_HandleTypeDef *hfdcan)
     }
 }
 
-#include "canard.h"
-#include "board_protocolInterface.h"
-#include "Heartbeat_1_0.h"
-#include "uavcan/node/Health_1_0.h"
-#include "uavcan/node/Mode_1_0.h"
-
-// 静态变量用于存储 transfer_id，确保每次调用时递增
-static uint8_t transfer_id = 0;
-
+/**
+ * @brief 发送心跳包
+ * 
+ * 该函数用于创建并发送 UAVCAN 心跳包，以向网络中的其他节点报告本机的状态。
+ */
 void send_heartpack() 
 {
+    static int16_t transfer_id = 0;
     // 获取当前时间（以微秒为单位）
     uint64_t current_time_us = HAL_GetTick() * 1000ULL;
 
@@ -195,7 +251,15 @@ void send_heartpack()
     // 递增 transfer_id，溢出时自动从 0 开始
     transfer_id = (transfer_id + 1) % (CANARD_TRANSFER_ID_MAX + 1);
 }
-// 在接收中断中调用
+
+/**
+ * @brief FDCAN 接收中断回调函数
+ * 
+ * @param hfdcan 指向 FDCAN 外设句柄的指针
+ * @param RxFifo0ITs 接收 FIFO 0 中断标志
+ * 
+ * 该函数用于处理 FDCAN 接收中断，将接收到的帧传递给 CANard 进行处理。
+ */
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs) {
     uint8_t i = 0;
     uint8_t rxdata[8];
