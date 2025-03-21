@@ -176,8 +176,8 @@ void MX_TIM8_Init(void)
   LL_AHB4_GRP1_EnableClock(LL_AHB4_GRP1_PERIPH_GPIOC);
     /**TIM8 GPIO Configuration
     PA7     ------> TIM8_CH1N
-    PB0     ------> TIM8_CH2N
-    PB1     ------> TIM8_CH3N
+    PB14     ------> TIM8_CH2N
+    PB15     ------> TIM8_CH3N
     PC6     ------> TIM8_CH1
     PC7     ------> TIM8_CH2
     PC8     ------> TIM8_CH3
@@ -190,7 +190,7 @@ void MX_TIM8_Init(void)
   GPIO_InitStruct.Alternate = LL_GPIO_AF_3;
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_0|LL_GPIO_PIN_1;
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_14|LL_GPIO_PIN_15;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
