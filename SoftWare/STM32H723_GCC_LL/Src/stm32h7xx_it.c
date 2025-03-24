@@ -56,11 +56,9 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern DMA_HandleTypeDef hdma_adc1;
-/* USER CODE BEGIN EV */
-extern __attribute__((section(".D2_Area"))) __attribute__((aligned(4))) uint32_t adc_buffer[3];
-extern ADC_HandleTypeDef hadc1;
 
+/* USER CODE BEGIN EV */
+uint16_t adc_inj_data[6];
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -188,7 +186,7 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
 
   /* USER CODE END SysTick_IRQn 0 */
-  HAL_IncTick();
+
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */
@@ -202,15 +200,34 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles DMA1 stream2 global interrupt.
+  * @brief This function handles ADC1 and ADC2 global interrupts.
   */
-void DMA1_Stream2_IRQHandler(void)
+void ADC_IRQHandler(void)
 {
-  /* USER CODE BEGIN DMA1_Stream2_IRQn 0 */
-  /* USER CODE END DMA1_Stream2_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_adc1);
-  /* USER CODE BEGIN DMA1_Stream2_IRQn 1 */
-  /* USER CODE END DMA1_Stream2_IRQn 1 */
+  /* USER CODE BEGIN ADC_IRQn 0 */
+  LL_GPIO_TogglePin(TEST_IO_GPIO_Port,TEST_IO_Pin);
+
+
+  if (LL_ADC_IsActiveFlag_JEOS(ADC1)) 
+  {    
+    LL_ADC_ClearFlag_JEOS(ADC1);
+    adc_inj_data[0] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_1);
+    adc_inj_data[1] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
+    adc_inj_data[2] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
+
+  }
+  if (LL_ADC_IsActiveFlag_JEOS(ADC2)) {
+    LL_ADC_ClearFlag_JEOS(ADC2);
+
+    adc_inj_data[3] = LL_ADC_INJ_ReadConversionData12(ADC2, LL_ADC_INJ_RANK_1);
+    adc_inj_data[4] = LL_ADC_INJ_ReadConversionData12(ADC2, LL_ADC_INJ_RANK_2);
+    adc_inj_data[5] = LL_ADC_INJ_ReadConversionData12(ADC2, LL_ADC_INJ_RANK_3);
+  }
+  /* USER CODE END ADC_IRQn 0 */
+
+  /* USER CODE BEGIN ADC_IRQn 1 */
+  
+  /* USER CODE END ADC_IRQn 1 */
 }
 
 /**
