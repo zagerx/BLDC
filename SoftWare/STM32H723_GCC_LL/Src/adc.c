@@ -394,50 +394,26 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 /* USER CODE BEGIN 1 */
 void adc1_start(void)
 {
-  // LL_ADC_Disable(ADC1);
-  // LL_ADC_StartCalibration(ADC1,LL_ADC_CALIB_OFFSET,LL_ADC_SINGLE_ENDED);
-  // while (LL_ADC_IsCalibrationOnGoing(ADC1));
-  // LL_ADC_Disable(ADC2);
-  // LL_ADC_StartCalibration(ADC2,LL_ADC_CALIB_OFFSET,LL_ADC_SINGLE_ENDED);
-  // while (LL_ADC_IsCalibrationOnGoing(ADC2));
+  LL_ADC_Disable(ADC1);
+  LL_ADC_StartCalibration(ADC1,LL_ADC_CALIB_OFFSET,LL_ADC_SINGLE_ENDED);
+  while (LL_ADC_IsCalibrationOnGoing(ADC1));
+  LL_ADC_Disable(ADC2);
+  LL_ADC_StartCalibration(ADC2,LL_ADC_CALIB_OFFSET,LL_ADC_SINGLE_ENDED);
+  while (LL_ADC_IsCalibrationOnGoing(ADC2));
 
-  // NVIC_SetPriority(ADC_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
-  // NVIC_EnableIRQ(ADC_IRQn);
+  NVIC_SetPriority(ADC_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
+  NVIC_EnableIRQ(ADC_IRQn);
 
-  // LL_ADC_Enable(ADC1);
-  // LL_ADC_Enable(ADC2);
-  // while (LL_ADC_IsActiveFlag_ADRDY(ADC1) == 0);
-  // while (LL_ADC_IsActiveFlag_ADRDY(ADC2) == 0);
-
-  // LL_ADC_EnableIT_JEOS(ADC1);
-  // LL_ADC_DisableIT_JEOS(ADC2);
-
-  // LL_ADC_INJ_StartConversion(ADC1);
-  // printf("adc init finish\r\n");
-
-  HAL_ADCEx_Calibration_Start(&hadc1,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
-  HAL_ADCEx_Calibration_Start(&hadc2,ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
-  HAL_ADCEx_InjectedStart_IT(&hadc1);
-  HAL_ADCEx_InjectedStart(&hadc2);
+  LL_ADC_Enable(ADC1);
   LL_ADC_Enable(ADC2);
+  while (LL_ADC_IsActiveFlag_ADRDY(ADC1) == 0);
+  while (LL_ADC_IsActiveFlag_ADRDY(ADC2) == 0);
+
+  LL_ADC_EnableIT_JEOS(ADC1);
+  LL_ADC_DisableIT_JEOS(ADC2);
+
+  LL_ADC_INJ_StartConversion(ADC1);
+  printf("adc init finish\r\n");
 
 }
-uint32_t a_buf[6];
-void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-  if (hadc == &hadc1) {
-    a_buf[0] = HAL_ADCEx_InjectedGetValue(hadc,ADC_INJECTED_RANK_1);
-    a_buf[1] = HAL_ADCEx_InjectedGetValue(hadc,ADC_INJECTED_RANK_2);
-    a_buf[2] = HAL_ADCEx_InjectedGetValue(hadc,ADC_INJECTED_RANK_3);
-
-    LL_GPIO_TogglePin(TEST_IO_GPIO_Port,TEST_IO_Pin);
-
-    a_buf[3] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_1);
-    a_buf[4] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_2);
-    a_buf[5] = HAL_ADCEx_InjectedGetValue(&hadc2,ADC_INJECTED_RANK_3); 
-  }
-}
-
-
-
 /* USER CODE END 1 */

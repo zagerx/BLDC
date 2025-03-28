@@ -72,13 +72,13 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define _ENCODERLINS 2500
 #define _ARR 13750
-#define VCC3V3_OUT_EN_Pin LL_GPIO_PIN_15
+#define VCC3V3_OUT_EN_Pin GPIO_PIN_15
 #define VCC3V3_OUT_EN_GPIO_Port GPIOE
-#define VCC5V_OUT_EN_Pin LL_GPIO_PIN_3
+#define VCC5V_OUT_EN_Pin GPIO_PIN_3
 #define VCC5V_OUT_EN_GPIO_Port GPIOD
-#define EBAKE_PWM_EN_Pin LL_GPIO_PIN_3
+#define EBAKE_PWM_EN_Pin GPIO_PIN_3
 #define EBAKE_PWM_EN_GPIO_Port GPIOB
-#define TEST_IO_Pin LL_GPIO_PIN_1
+#define TEST_IO_Pin GPIO_PIN_1
 #define TEST_IO_GPIO_Port GPIOE
 
 /* USER CODE BEGIN Private defines */
