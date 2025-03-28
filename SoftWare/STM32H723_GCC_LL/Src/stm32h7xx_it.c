@@ -56,8 +56,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern ADC_HandleTypeDef hadc1;
-extern ADC_HandleTypeDef hadc2;
+
 /* USER CODE BEGIN EV */
 uint32_t adc_inj_data[6];
 /* USER CODE END EV */
@@ -223,8 +222,7 @@ void ADC_IRQHandler(void)
   }
 
   /* USER CODE END ADC_IRQn 0 */
-  HAL_ADC_IRQHandler(&hadc1);
-  HAL_ADC_IRQHandler(&hadc2);
+
   /* USER CODE BEGIN ADC_IRQn 1 */
   
   /* USER CODE END ADC_IRQn 1 */
