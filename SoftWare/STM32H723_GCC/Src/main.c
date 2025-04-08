@@ -70,7 +70,7 @@ unsigned short count = 0;
 #include "board_protocolInterface.h"
 extern FDCAN_HandleTypeDef hfdcan1;
 extern void send_frames(FDCAN_HandleTypeDef *hfdcan);
-
+extern void send_odom_vect(void);
 /* USER CODE END 0 */
 
 /**
@@ -138,8 +138,10 @@ int main(void)
     {
       USER_DEBUG_NORMAL(".\r\n");    
       count = 0;
-      send_heartpack();
+      // send_heartpack();
+    send_odom_vect();
     }
+
     send_frames(&hfdcan1);
     HAL_Delay(1);
     /* USER CODE END WHILE */

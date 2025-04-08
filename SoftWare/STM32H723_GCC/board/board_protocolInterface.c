@@ -6,6 +6,9 @@
 #include "Heartbeat_1_0.h"
 #include "uavcan/node/Health_1_0.h"
 #include "uavcan/node/Mode_1_0.h"
+#include "dinosaurs/actuator/wheel_motor/OdometryAndVelocityPublish_1_0.h"
+#include "dinosaurs/PortId_1_0.h"
+
 #include <stdint.h>
 
 CanardInstance canard;
@@ -187,7 +190,6 @@ void send_frames(FDCAN_HandleTypeDef *hfdcan)
             USER_DEBUG_NORMAL("Error sending frame\n");
             break;
         }
-        USER_DEBUG_NORMAL("send can fram\r\n");
         // 从队列中移除帧
         canardTxPop(&txQueue, item);
     }
@@ -245,13 +247,69 @@ void send_heartpack()
         // 处理发送错误
         USER_DEBUG_NORMAL("Error sending heartbeat message\n");
     } else {
-        USER_DEBUG_NORMAL("Heartbeat message sent successfully\n");
+        // USER_DEBUG_NORMAL("Heartbeat message sent successfully\n");
     }
 
     // 递增 transfer_id，溢出时自动从 0 开始
     transfer_id = (transfer_id + 1) % (CANARD_TRANSFER_ID_MAX + 1);
 }
+void send_odom_vect(void)
+{
+    static int16_t transfer_id = 0;
+    // 获取当前时间（以微秒为单位）
+    uint64_t current_time_us = HAL_GetTick() * 1000ULL;
 
+    // 创建心跳包数据结构
+    custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0 odom_vect;
+    odom_vect.timestamp.microsecond = (uint32_t)(current_time_us / 1000000ULL);
+    odom_vect.current_velocity.elements[0].meter_per_second = 0.1f;
+    odom_vect.current_velocity.elements[1].meter_per_second = 0.2f;
+    odom_vect.current_velocity.count = 2;
+    odom_vect.odometry.elements[0].meter = 0.1f;
+    odom_vect.odometry.elements[1].meter = 0.2f;
+    odom_vect.odometry.count = 2;
+
+
+    // 准备缓冲区
+    uint8_t buffer[custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_];
+    size_t buffer_size = sizeof(buffer);
+
+    // 序列化心跳包数据
+    int8_t result = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0_serialize_(&odom_vect, buffer, &buffer_size);
+    if (result < 0) {
+        USER_DEBUG_NORMAL("Error serializing odom message\n");
+        return;
+    }
+
+    // 准备传输元数据
+    CanardTransferMetadata transfer_metadata = {
+        .priority = CanardPriorityNominal,
+        .transfer_kind = CanardTransferKindMessage,
+        .port_id = custom_data_types_dsdl_dinosaurs_PortId_1_0_actuator_wheel_motor_OdometryAndVelocityPublish_1_0_ID, // 心跳包主题 ID
+        .remote_node_id = CANARD_NODE_ID_UNSET, // 广播
+        .transfer_id = transfer_id // 使用当前 transfer_id
+    };
+
+    // 将心跳包推入发送队列
+    int32_t send_result = canardTxPush(
+        &txQueue,
+        &canard,
+        current_time_us, // 时间戳
+        &transfer_metadata,
+        buffer_size,
+        buffer
+    );
+
+    if (send_result < 0) {
+        // 处理发送错误
+        USER_DEBUG_NORMAL("Error sending heartbeat message\n");
+    } else {
+        // USER_DEBUG_NORMAL("Heartbeat message sent successfully\n");
+    }
+
+    // 递增 transfer_id，溢出时自动从 0 开始
+    transfer_id = (transfer_id + 1) % (CANARD_TRANSFER_ID_MAX + 1);    
+}
 /**
  * @brief FDCAN 接收中断回调函数
  * 
