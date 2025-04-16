@@ -1,3 +1,64 @@
+/*
+libcan.c/.h
+
+1、实现static void* mem_allocate(CanardInstance* const canard, const size_t amount)) 
+2、实现static void mem_free(CanardInstance* const canard, void* const pointer)) 
+3、作为服务器，需要向libcan.c/.h注册可提供哪些服务
+// 参数说明：
+int8_t canardRxSubscribe(
+    CanardInstance* const ins,                     // [in]  Canard 实例指针，管理所有订阅和会话状态
+    const CanardTransferKind transfer_kind,       // [in]  传输类型：消息(Message)/请求(Request)/响应(Response)
+    const CanardPortID port_id,                   // [in]  端口ID (Subject-ID 或 Service-ID)
+    const size_t extent,                         // [in]  接收缓冲区大小（需大于最大预期负载大小）
+    const CanardMicrosecond transfer_id_timeout_usec, // [in] 传输ID超时时间（微秒）
+    CanardRxSubscription* const out_subscription  // [out] 输出参数，存储创建的订阅对象
+);
+// 关键行为：
+1. 订阅管理：
+   - 如果已存在相同(transfer_kind, port_id)的订阅，会先调用 canardRxUnsubscribe() 移除旧订阅
+   - 然后创建新订阅并插入到 CAVL 树中
+
+2. 内存管理：
+   - 不分配新内存（会话对象将在首次收到匹配帧时按需创建）
+   - 初始化订阅对象的各字段（包括清空会话指针数组）
+
+3. 返回值：
+   - 1: 成功创建新订阅
+   - 0: 替换了现有订阅
+   - 负值: 参数错误（CANARD_ERROR_INVALID_ARGUMENT）
+
+// 参数详细说明：
+1. ins: 
+   - 指向 Canard 库实例的指针，包含所有订阅和会话状态
+   - 必须非 NULL 且已初始化
+
+2. transfer_kind: 
+   - 枚举值，指定传输类型：
+     * CANARD_TRANSFER_KIND_MESSAGE   (广播消息)
+     * CANARD_TRANSFER_KIND_REQUEST   (服务请求)  
+     * CANARD_TRANSFER_KIND_RESPONSE  (服务响应)
+
+3. port_id: 
+   - 对于消息传输：Subject-ID (0-8191)
+   - 对于服务传输：Service-ID (0-511)
+   - 决定哪些帧会被传递给该订阅
+
+4. extent: 
+   - 接收缓冲区大小（字节）
+   - 应大于预期最大负载大小（考虑未来协议扩展）
+   - 超出的负载会被截断但CRC仍会验证
+
+5. transfer_id_timeout_usec:
+   - 传输ID超时时间（微秒）
+   - 推荐使用 CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC
+   - 用于检测丢失帧和会话超时
+
+6. out_subscription:
+   - 输出参数，接收初始化后的订阅对象
+   - 必须由调用方分配内存并保持有效直到调用 canardRxUnsubscribe()
+
+*/
+
 #include "canard.h"
 #include "heap.h"
 #include "main.h"
@@ -8,45 +69,27 @@
 #include "uavcan/node/Mode_1_0.h"
 #include "dinosaurs/actuator/wheel_motor/OdometryAndVelocityPublish_1_0.h"
 #include "dinosaurs/PortId_1_0.h"
+#include "dinosaurs/actuator/wheel_motor/SetTargetValue_2_0.h"
 
+// #include <cstdint>
 #include <stdint.h>
 
 CanardInstance canard;
 CanardTxQueue txQueue;
-CanardRxSubscription subscription_enablehandle;
+static CanardRxSubscription sub_enable;
+static CanardRxSubscription sub_setTar;
 
-/**
- * @brief 内存分配函数
- * 
- * @param canard 指向 CANard 实例的指针
- * @param amount 需要分配的内存大小
- * @return void* 分配的内存块指针
- * 
- * 该函数用于为 CANard 实例分配内存。
- */
+
 static void* mem_allocate(CanardInstance* const canard, const size_t amount) {
     (void) canard;
     return malloc(amount);
 }
 
-/**
- * @brief 内存释放函数
- * 
- * @param canard 指向 CANard 实例的指针
- * @param pointer 需要释放的内存块指针
- * 
- * 该函数用于释放之前分配的内存块。
- */
 static void mem_free(CanardInstance* const canard, void* const pointer) {
     (void) canard;
     free(pointer);
 }
 
-/**
- * @brief 初始化从机通信
- * 
- * 该函数用于初始化 UAVCAN 通信相关的数据结构和参数，包括 CANard 实例、发送队列等。
- */
 void slave_comm_init() 
 {
     canard = canardInit(&mem_allocate, &mem_free);
@@ -54,38 +97,12 @@ void slave_comm_init()
     txQueue = canardTxInit(100, CANARD_MTU_CAN_CLASSIC); // 初始化发送队列
 }
 
-/**
- * @brief 订阅启用消息
- * 
- * 该函数用于订阅特定主题 ID 的启用消息，以便接收来自其他节点的启用请求。
- */
-void subscribe_enable(void) 
-{
-    canardRxSubscribe(
-        &canard,
-        CanardTransferKindRequest,
-        113, // 主题 ID
-        1, // 范围
-        CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC,
-        &subscription_enablehandle
-    );
-}
-
-/**
- * @brief 发送响应消息
- * 
- * @param remote_node_id 目标节点 ID
- * @param payload 消息负载数据
- * @param payload_size 负载数据大小
- * 
- * 该函数用于将响应消息推入发送队列，以便通过 UAVCAN 协议发送给指定的目标节点。
- */
-void send_response(CanardNodeID remote_node_id, const void* payload, size_t payload_size) 
+void send_response(CanardNodeID remote_node_id, CanardPortID port_id,const void* payload, size_t payload_size) 
 {
     CanardTransferMetadata transfer_metadata = {
         .priority = CanardPriorityNominal,
         .transfer_kind = CanardTransferKindResponse,
-        .port_id = 113, // 主题 ID
+        .port_id = port_id, // 主题 ID
         .remote_node_id = remote_node_id,
         .transfer_id = 0
     };
@@ -105,61 +122,6 @@ void send_response(CanardNodeID remote_node_id, const void* payload, size_t payl
     }
 }
 
-/**
- * @brief 处理接收到的传输
- * 
- * @param index 接收到的传输索引
- * @param transfer 指向接收到的传输数据结构的指针
- * 
- * 该函数用于处理接收到的 UAVCAN 传输数据，包括反序列化请求、处理请求以及发送响应。
- */
-void process_received_transfer(const uint8_t index, CanardRxTransfer* const transfer) 
-{
-    if (transfer->metadata.transfer_kind == CanardTransferKindRequest) {
-        // 处理接收到的消息
-        USER_DEBUG_NORMAL("Received message from node %u\n", transfer->metadata.remote_node_id);
-        USER_DEBUG_NORMAL("Payload: ");
-        for (size_t i = 0; i < transfer->payload_size; i++) {
-            USER_DEBUG_NORMAL("%02x ", ((uint8_t*)transfer->payload)[i]);
-        }
-        USER_DEBUG_NORMAL("\n");
-
-        // 反序列化接收到的数据
-        custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Request_1_0 request;
-        int8_t result = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Request_1_0_deserialize_(&request, transfer->payload, &transfer->payload_size);
-        if (result < 0) {
-            USER_DEBUG_NORMAL("Error deserializing request\n");
-            return;
-        }
-
-        // 处理请求
-        USER_DEBUG_NORMAL("Received request: enable_state = %u\n", request.enable_state);
-
-        // 创建响应
-        custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0 response;
-        response.status = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_SET_SUCCESS;
-
-        // 序列化响应
-        uint8_t buffer[custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_];
-        size_t buffer_size = sizeof(buffer);
-        result = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_serialize_(&response, buffer, &buffer_size);
-        if (result < 0) {
-            USER_DEBUG_NORMAL("Error serializing response\n");
-            return;
-        }
-
-        // 发送响应
-        send_response(transfer->metadata.remote_node_id, buffer, buffer_size);
-    }
-}
-
-/**
- * @brief 发送帧
- * 
- * @param hfdcan 指向 FDCAN 外设句柄的指针
- * 
- * 该函数用于将发送队列中的帧通过 FDCAN 外设发送出去。
- */
 void send_frames(FDCAN_HandleTypeDef *hfdcan) 
 {
     CanardTxQueueItem *item = NULL;
@@ -195,11 +157,6 @@ void send_frames(FDCAN_HandleTypeDef *hfdcan)
     }
 }
 
-/**
- * @brief 发送心跳包
- * 
- * 该函数用于创建并发送 UAVCAN 心跳包，以向网络中的其他节点报告本机的状态。
- */
 void send_heartpack() 
 {
     static int16_t transfer_id = 0;
@@ -262,13 +219,12 @@ void send_odom_vect(void)
     // 创建心跳包数据结构
     custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0 odom_vect;
     odom_vect.timestamp.microsecond = (uint32_t)(current_time_us / 1000000ULL);
-    odom_vect.current_velocity.elements[0].meter_per_second = 0.1f;
-    odom_vect.current_velocity.elements[1].meter_per_second = 0.2f;
+    odom_vect.current_velocity.elements[0].meter_per_second = sinf(transfer_id*(6.28f/255));
+    odom_vect.current_velocity.elements[1].meter_per_second = cosf(transfer_id*(6.28f/255));
     odom_vect.current_velocity.count = 2;
-    odom_vect.odometry.elements[0].meter = 0.1f;
-    odom_vect.odometry.elements[1].meter = 0.2f;
+    odom_vect.odometry.elements[0].meter = cosf(transfer_id*(6.28f/255));
+    odom_vect.odometry.elements[1].meter = sinf(transfer_id*(6.28f/255));
     odom_vect.odometry.count = 2;
-
 
     // 准备缓冲区
     uint8_t buffer[custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_];
@@ -310,45 +266,116 @@ void send_odom_vect(void)
     // 递增 transfer_id，溢出时自动从 0 开始
     transfer_id = (transfer_id + 1) % (CANARD_TRANSFER_ID_MAX + 1);    
 }
-/**
- * @brief FDCAN 接收中断回调函数
- * 
- * @param hfdcan 指向 FDCAN 外设句柄的指针
- * @param RxFifo0ITs 接收 FIFO 0 中断标志
- * 
- * 该函数用于处理 FDCAN 接收中断，将接收到的帧传递给 CANard 进行处理。
- */
-void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs) {
-    uint8_t i = 0;
-    uint8_t rxdata[8];
-    FDCAN_RxHeaderTypeDef FDCAN1_RxHeader;
-    CanardRxTransfer transfer;
-    CanardFrame canard_frame;
-    if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != RESET) {
-        HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &FDCAN1_RxHeader, rxdata);
 
-        // 填充 CanardFrame 结构
-        canard_frame.extended_can_id = FDCAN1_RxHeader.Identifier;
-        canard_frame.payload_size = FDCAN1_RxHeader.DataLength;
-        canard_frame.payload = rxdata;
+typedef void (*MessageHandler)(CanardRxTransfer* transfer);
+static void handle_motor_enable(CanardRxTransfer* transfer)
+{
+    const uint8_t* data; size_t len; CanardNodeID sender_id;CanardPortID port_id;
+    data = transfer->payload;
+    sender_id = transfer->metadata.remote_node_id;
+    port_id = transfer->metadata.port_id;
+    len = transfer->payload_size;
+    custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Request_1_0 req;
+    size_t inout_size = len;
+    if (custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Request_1_0_deserialize_(&req, data, &inout_size) >= 0) {
+        USER_DEBUG_NORMAL("Node %u set enable: %u", sender_id, req.enable_state);
 
-        // 处理接收到的帧
-        int8_t result = canardRxAccept(
-            &canard,
-            HAL_GetTick() * 1000, // 时间戳
-            &canard_frame,
-            0, // 冗余接口索引
-            &transfer,
-            NULL
-        );
+        // 创建响应
+        custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0 response;
+        response.status = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_SET_SUCCESS;
 
+        // 序列化响应
+        uint8_t buffer[custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_];
+        size_t buffer_size = sizeof(buffer);
+        uint8_t result = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_serialize_(&response, buffer, &buffer_size);
         if (result < 0) {
-            // 处理错误
-            USER_DEBUG_NORMAL("Error processing frame\n");
-        } else if (result == 1) {
-            // 处理接收到的传输
-            process_received_transfer(0, &transfer);
-            canard.memory_free(&canard, transfer.payload);
+            USER_DEBUG_NORMAL("Error serializing response\n");
+            return;
         }
+        // 发送响应
+        send_response(sender_id, port_id,buffer, buffer_size);
+    }
+}
+static void handle_set_targe(CanardRxTransfer* transfer)
+{
+    const uint8_t* data; size_t len; CanardNodeID sender_id;CanardPortID port_id;
+    data = transfer->payload;
+    sender_id = transfer->metadata.remote_node_id;
+    len = transfer->payload_size;
+    port_id = transfer->metadata.port_id;
+    custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Request_2_0 req;
+    size_t inout_size = len;
+    if (custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Request_2_0_deserialize_(&req, data, &inout_size) >= 0) {
+        USER_DEBUG_NORMAL("Node %u set targe: %f  %f", sender_id, req.velocity.elements[0],req.velocity.elements[1]);
+        USER_DEBUG_NORMAL("Node %u set targe: %f  %f", sender_id, req._torque.elements[0],req.velocity.elements[1]);
+
+        // 创建响应
+        custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Response_2_0 response;
+        response.status = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Response_2_0_PARAMETER_NOT_INIT;
+
+        // 序列化响应
+        uint8_t buffer[custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Response_2_0_EXTENT_BYTES_];
+        size_t buffer_size = sizeof(buffer);
+        uint8_t result = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Request_2_0_serialize_(&response, buffer, &buffer_size);
+        if (result < 0) {
+            USER_DEBUG_NORMAL("Error serializing response\n");
+            return;
+        }
+        // 发送响应
+        send_response(sender_id, port_id,buffer, buffer_size);
+    }
+}
+
+void subscribe_enable(void) 
+{
+    
+    // 使能服务订阅
+    sub_enable.user_reference = handle_motor_enable;
+    canardRxSubscribe(&canard, CanardTransferKindRequest, 113, 1, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_enable);
+    sub_setTar.user_reference = handle_set_targe;
+    canardRxSubscribe(&canard, CanardTransferKindRequest, 114, 16, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_setTar);   
+}
+
+static void process_transfer(void *ctx,CanardRxTransfer* transfer) 
+{
+    if (transfer->metadata.transfer_kind != CanardTransferKindRequest) {
+        return;
+    }
+    USER_DEBUG_NORMAL("Received request from node %u, port %u, size %u",
+                   transfer->metadata.remote_node_id,
+                   transfer->metadata.port_id,
+                   transfer->payload_size);
+    USER_DEBUG_NORMAL("\r\n");
+    MessageHandler handler = (MessageHandler)ctx;
+    if (handler) {
+        USER_DEBUG_NORMAL("handler\r\n");
+        handler(transfer);
+    } 
+
+}
+void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs) {
+    if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) == 0) return;
+
+    uint8_t rx_data[64];
+    FDCAN_RxHeaderTypeDef rx_header;
+    HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &rx_header, rx_data);
+
+    CanardFrame frame = {
+        .extended_can_id = rx_header.Identifier,
+        .payload_size = rx_header.DataLength,
+        .payload = rx_data
+    };
+
+    CanardRxTransfer transfer;
+    CanardRxSubscription *sub = NULL;
+    const int8_t result = canardRxAccept(&canard, HAL_GetTick()*1000,&frame,0,&transfer,&sub);
+    /* 正确处理逻辑 */
+    if (result == 1) {
+        // 完整传输 - 处理并释放内存
+        if(sub != NULL)
+        {
+            process_transfer(sub->user_reference,&transfer);
+        }    
+        canard.memory_free(&canard, transfer.payload);
     }
 }
