@@ -70,14 +70,13 @@ int8_t canardRxSubscribe(
 #include "dinosaurs/actuator/wheel_motor/OdometryAndVelocityPublish_1_0.h"
 #include "dinosaurs/PortId_1_0.h"
 #include "dinosaurs/actuator/wheel_motor/SetTargetValue_2_0.h"
+#include "uavcan/time/Synchronization_1_0.h"
 
 // #include <cstdint>
 #include <stdint.h>
 
 CanardInstance canard;
 CanardTxQueue txQueue;
-static CanardRxSubscription sub_enable;
-static CanardRxSubscription sub_setTar;
 
 
 static void* mem_allocate(CanardInstance* const canard, const size_t amount) {
@@ -325,32 +324,61 @@ static void handle_set_targe(CanardRxTransfer* transfer)
         send_response(sender_id, port_id,buffer, buffer_size);
     }
 }
+static void handle_time(CanardRxTransfer* transfer)
+{
+    uavcan_time_Synchronization_1_0 sync_msg;
+    size_t buffer_size = transfer->payload_size;
+    
+    // 反序列化消息
+    int8_t result = uavcan_time_Synchronization_1_0_deserialize_(
+        &sync_msg, 
+        (const uint8_t*)transfer->payload, 
+        &buffer_size
+    );
 
+    if (result >= 0) {
+        // 成功解析
+        // 正确提取56位时间戳（使用掩码确保只取56位）
+        uint64_t timestamp_us = sync_msg.previous_transmission_timestamp_microsecond & 0x00FFFFFFFFFFFFFFULL;
+        
+        // 兼容STM32平台的打印方式（分32位打印）
+        USER_DEBUG_NORMAL("[TimeSync] Timestamp: %lu.%06lu s (raw: %lu%06lu us)\r\n",
+                        (uint32_t)(timestamp_us / 1000000ULL),
+                        (uint32_t)(timestamp_us % 1000000ULL),
+                        (uint32_t)(timestamp_us / 1000000ULL),
+                        (uint32_t)(timestamp_us % 1000000ULL));
+    } else {
+        USER_DEBUG_NORMAL("[TimeSync] Error deserializing timestamp (code: %d)\r\n", result);
+    }
+}
 void subscribe_enable(void) 
 {
-    
+    static CanardRxSubscription sub_enable;
+    static CanardRxSubscription sub_setTar;
+    static CanardRxSubscription sub_time;
+        
     // 使能服务订阅
     sub_enable.user_reference = handle_motor_enable;
     canardRxSubscribe(&canard, CanardTransferKindRequest, 113, 1, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_enable);
     sub_setTar.user_reference = handle_set_targe;
     canardRxSubscribe(&canard, CanardTransferKindRequest, 114, 16, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_setTar);   
+    sub_time.user_reference = handle_time;
+    canardRxSubscribe(&canard, CanardTransferKindMessage, 7168, 16, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_time);   
 }
 
 static void process_transfer(void *ctx,CanardRxTransfer* transfer) 
 {
-    if (transfer->metadata.transfer_kind != CanardTransferKindRequest) {
-        return;
+    if ((transfer->metadata.transfer_kind == CanardTransferKindRequest) || transfer->metadata.transfer_kind == CanardTransferKindMessage ) {
+        USER_DEBUG_NORMAL("Received request from node %u, port %u, size %u",
+                    transfer->metadata.remote_node_id,
+                    transfer->metadata.port_id,
+                    transfer->payload_size);
+        USER_DEBUG_NORMAL("\r\n");
+        MessageHandler handler = (MessageHandler)ctx;
+        if (handler) {
+            handler(transfer);
+        } 
     }
-    USER_DEBUG_NORMAL("Received request from node %u, port %u, size %u",
-                   transfer->metadata.remote_node_id,
-                   transfer->metadata.port_id,
-                   transfer->payload_size);
-    USER_DEBUG_NORMAL("\r\n");
-    MessageHandler handler = (MessageHandler)ctx;
-    if (handler) {
-        USER_DEBUG_NORMAL("handler\r\n");
-        handler(transfer);
-    } 
 
 }
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs) {
@@ -365,7 +393,6 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
         .payload_size = rx_header.DataLength,
         .payload = rx_data
     };
-
     CanardRxTransfer transfer;
     CanardRxSubscription *sub = NULL;
     const int8_t result = canardRxAccept(&canard, HAL_GetTick()*1000,&frame,0,&transfer,&sub);
