@@ -179,11 +179,13 @@ C_SOURCES += $(wildcard ./board/board_protocolInterface.c)
 
 C_INCLUDES += -I../Protocol
 C_SOURCES += $(wildcard ../Protocol/*.c)
-C_INCLUDES += -I../ProtocolV3/uavcan/libcanard
-C_SOURCES += $(wildcard ../ProtocolV3/uavcan/libcanard/*.c)
-C_INCLUDES += -I../ProtocolV3/uavcan/dsdl/dinosaurs/actuator/wheel_motor
-C_INCLUDES += -I../ProtocolV3/uavcan/dsdl/uavcan/node
-C_INCLUDES += -I../ProtocolV3/uavcan/dsdl
+C_INCLUDES += -I../ProtocolV4/uavcan/libcanard/libcanard
+C_SOURCES += $(wildcard ../ProtocolV4/uavcan/libcanard/libcanard/*.c)
+C_INCLUDES += -I../ProtocolV4/uavcan/.cFolder/custom_data_types/dinosaurs/actuator/wheel_motor
+C_INCLUDES += -I../ProtocolV4/uavcan/.cFolder/custom_data_types/uavcan/node
+C_INCLUDES += -I../ProtocolV4/uavcan/.cFolder/custom_data_types/
+C_INCLUDES += -I../ProtocolV4/uavcan/.cFolder/uavcan/node
+C_INCLUDES += -I../ProtocolV4/uavcan/.cFolder/
 
 C_INCLUDES += -I../Common/method 
 C_SOURCES += $(wildcard ../Common/method/trajectory_planning.c)

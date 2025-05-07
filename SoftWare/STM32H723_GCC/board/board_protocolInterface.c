@@ -70,6 +70,9 @@ int8_t canardRxSubscribe(
 #include "dinosaurs/actuator/wheel_motor/OdometryAndVelocityPublish_1_0.h"
 #include "dinosaurs/PortId_1_0.h"
 #include "dinosaurs/actuator/wheel_motor/SetTargetValue_2_0.h"
+#include "dinosaurs/peripheral/OperateRemoteDevice_1_0.h"
+#include "dinosaurs/actuator/SoftwareEmergencyStop_1_0.h"
+
 #include "uavcan/time/Synchronization_1_0.h"
 
 // #include <cstdint>
@@ -216,7 +219,7 @@ void send_odom_vect(void)
     uint64_t current_time_us = HAL_GetTick() * 1000ULL;
 
     // 创建心跳包数据结构
-    custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0 odom_vect;
+    custom_data_types_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0 odom_vect;
     odom_vect.timestamp.microsecond = (uint32_t)(current_time_us / 1000000ULL);
     odom_vect.current_velocity.elements[0].meter_per_second = sinf(transfer_id*(6.28f/255));
     odom_vect.current_velocity.elements[1].meter_per_second = cosf(transfer_id*(6.28f/255));
@@ -226,11 +229,11 @@ void send_odom_vect(void)
     odom_vect.odometry.count = 2;
 
     // 准备缓冲区
-    uint8_t buffer[custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_];
+    uint8_t buffer[custom_data_types_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_];
     size_t buffer_size = sizeof(buffer);
 
     // 序列化心跳包数据
-    int8_t result = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0_serialize_(&odom_vect, buffer, &buffer_size);
+    int8_t result = custom_data_types_dinosaurs_actuator_wheel_motor_OdometryAndVelocityPublish_1_0_serialize_(&odom_vect, buffer, &buffer_size);
     if (result < 0) {
         USER_DEBUG_NORMAL("Error serializing odom message\n");
         return;
@@ -240,7 +243,7 @@ void send_odom_vect(void)
     CanardTransferMetadata transfer_metadata = {
         .priority = CanardPriorityNominal,
         .transfer_kind = CanardTransferKindMessage,
-        .port_id = custom_data_types_dsdl_dinosaurs_PortId_1_0_actuator_wheel_motor_OdometryAndVelocityPublish_1_0_ID, // 心跳包主题 ID
+        .port_id = custom_data_types_dinosaurs_PortId_1_0_actuator_wheel_motor_OdometryAndVelocityPublish_1_0_ID, // 心跳包主题 ID
         .remote_node_id = CANARD_NODE_ID_UNSET, // 广播
         .transfer_id = transfer_id // 使用当前 transfer_id
     };
@@ -274,19 +277,19 @@ static void handle_motor_enable(CanardRxTransfer* transfer)
     sender_id = transfer->metadata.remote_node_id;
     port_id = transfer->metadata.port_id;
     len = transfer->payload_size;
-    custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Request_1_0 req;
+    custom_data_types_dinosaurs_actuator_wheel_motor_Enable_Request_1_0 req;
     size_t inout_size = len;
-    if (custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Request_1_0_deserialize_(&req, data, &inout_size) >= 0) {
+    if (custom_data_types_dinosaurs_actuator_wheel_motor_Enable_Request_1_0_deserialize_(&req, data, &inout_size) >= 0) {
         USER_DEBUG_NORMAL("Node %u set enable: %u", sender_id, req.enable_state);
 
         // 创建响应
-        custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0 response;
-        response.status = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_SET_SUCCESS;
+        custom_data_types_dinosaurs_actuator_wheel_motor_Enable_Response_1_0 response;
+        response.status = custom_data_types_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_SET_SUCCESS;
 
         // 序列化响应
-        uint8_t buffer[custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_];
+        uint8_t buffer[custom_data_types_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_];
         size_t buffer_size = sizeof(buffer);
-        uint8_t result = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_serialize_(&response, buffer, &buffer_size);
+        uint8_t result = custom_data_types_dinosaurs_actuator_wheel_motor_Enable_Response_1_0_serialize_(&response, buffer, &buffer_size);
         if (result < 0) {
             USER_DEBUG_NORMAL("Error serializing response\n");
             return;
@@ -295,6 +298,48 @@ static void handle_motor_enable(CanardRxTransfer* transfer)
         send_response(sender_id, port_id,buffer, buffer_size);
     }
 }
+
+static void handle_device(CanardRxTransfer* transfer)
+{
+    USER_DEBUG_NORMAL("handle_dev\r\n");
+    const uint8_t* data; size_t len; CanardNodeID sender_id;
+    CanardPortID port_id;
+    data = transfer->payload;
+    sender_id = transfer->metadata.remote_node_id;
+    len = transfer->payload_size;
+    port_id = transfer->metadata.port_id;
+    custom_data_types_dinosaurs_peripheral_OperateRemoteDevice_Request_1_0 req;
+    size_t inout_size = len;
+    if (custom_data_types_dinosaurs_peripheral_OperateRemoteDevice_Request_1_0_deserialize_(&req, data, &inout_size) >= 0) {
+
+        USER_DEBUG_NORMAL("Received from node %u:\n", sender_id);
+        USER_DEBUG_NORMAL("- Method: %u (%s)\n", req.method, 
+            req.method == custom_data_types_dinosaurs_peripheral_OperateRemoteDevice_Request_1_0_OPEN ? "OPEN" :
+            req.method == custom_data_types_dinosaurs_peripheral_OperateRemoteDevice_Request_1_0_CLOSE ? "CLOSE" :
+            req.method == custom_data_types_dinosaurs_peripheral_OperateRemoteDevice_Request_1_0_ONE_SHOT ? "ONE_SHOT" : "UNKNOWN");
+        
+        USER_DEBUG_NORMAL("- Device name: %.*s\n", (int)req.name.count, req.name.elements);
+        USER_DEBUG_NORMAL("- Parameters: %.*s\n", (int)req.param.count, req.param.elements);
+
+        // 创建响应
+        custom_data_types_dinosaurs_peripheral_OperateRemoteDevice_Response_1_0 response;
+        response.result = custom_data_types_dinosaurs_peripheral_OperateRemoteDevice_Response_1_0_SUCESS;
+        // 设置返回值（示例）
+        const char* resp_value = "operation_completed";
+        response.value.count = strlen(resp_value);
+        memcpy(response.value.elements, resp_value, response.value.count);
+        // 序列化响应
+        uint8_t buffer[custom_data_types_dinosaurs_peripheral_OperateRemoteDevice_Response_1_0_EXTENT_BYTES_];
+        size_t buffer_size = sizeof(buffer);
+        uint8_t result = custom_data_types_dinosaurs_peripheral_OperateRemoteDevice_Response_1_0_serialize_(&response, buffer, &buffer_size);
+        if (result < 0) {
+            USER_DEBUG_NORMAL("Error serializing response\n");
+            return;
+        }
+        // 发送响应
+        send_response(sender_id, port_id,buffer, buffer_size);
+    } 
+}
 static void handle_set_targe(CanardRxTransfer* transfer)
 {
     const uint8_t* data; size_t len; CanardNodeID sender_id;CanardPortID port_id;
@@ -302,20 +347,20 @@ static void handle_set_targe(CanardRxTransfer* transfer)
     sender_id = transfer->metadata.remote_node_id;
     len = transfer->payload_size;
     port_id = transfer->metadata.port_id;
-    custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Request_2_0 req;
+    custom_data_types_dinosaurs_actuator_wheel_motor_SetTargetValue_Request_2_0 req;
     size_t inout_size = len;
-    if (custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Request_2_0_deserialize_(&req, data, &inout_size) >= 0) {
-        USER_DEBUG_NORMAL("Node %u set targe: %f  %f", sender_id, req.velocity.elements[0],req.velocity.elements[1]);
-        USER_DEBUG_NORMAL("Node %u set targe: %f  %f", sender_id, req._torque.elements[0],req.velocity.elements[1]);
+    if (custom_data_types_dinosaurs_actuator_wheel_motor_SetTargetValue_Request_2_0_deserialize_(&req, data, &inout_size) >= 0) {
+        USER_DEBUG_NORMAL("Node %u set targe: %f  %f", sender_id, req.velocity.elements[0].meter_per_second,\
+            req.velocity.elements[1].meter_per_second);
 
         // 创建响应
-        custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Response_2_0 response;
-        response.status = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Response_2_0_PARAMETER_NOT_INIT;
+        custom_data_types_dinosaurs_actuator_wheel_motor_SetTargetValue_Response_2_0 response;
+        response.status = custom_data_types_dinosaurs_actuator_wheel_motor_SetTargetValue_Response_2_0_PARAMETER_NOT_INIT;
 
         // 序列化响应
-        uint8_t buffer[custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Response_2_0_EXTENT_BYTES_];
+        uint8_t buffer[custom_data_types_dinosaurs_actuator_wheel_motor_SetTargetValue_Response_2_0_EXTENT_BYTES_];
         size_t buffer_size = sizeof(buffer);
-        uint8_t result = custom_data_types_dsdl_dinosaurs_actuator_wheel_motor_SetTargetValue_Request_2_0_serialize_(&response, buffer, &buffer_size);
+        uint8_t result = custom_data_types_dinosaurs_actuator_wheel_motor_SetTargetValue_Request_2_0_serialize_(&response, buffer, &buffer_size);
         if (result < 0) {
             USER_DEBUG_NORMAL("Error serializing response\n");
             return;
@@ -351,17 +396,62 @@ static void handle_time(CanardRxTransfer* transfer)
         USER_DEBUG_NORMAL("[TimeSync] Error deserializing timestamp (code: %d)\r\n", result);
     }
 }
+static void handle_softstop(CanardRxTransfer* transfer)
+{
+    USER_DEBUG_NORMAL("softstop_dev\r\n");
+    
+    // 解析接收数据
+    const uint8_t* data = transfer->payload;
+    const CanardNodeID sender_id = transfer->metadata.remote_node_id;
+    const size_t len = transfer->payload_size;
+    const CanardPortID port_id = transfer->metadata.port_id;
+
+    custom_data_types_dinosaurs_actuator_SoftwareEmergencyStop_Request_1_0 req;
+    size_t inout_size = len;
+
+    if (custom_data_types_dinosaurs_actuator_SoftwareEmergencyStop_Request_1_0_deserialize_(&req, data, &inout_size) >= 0) 
+    {
+        // 打印接收到的紧急停止状态
+        USER_DEBUG_NORMAL("Received emergency stop from node %u: %s\n", 
+            sender_id,
+            req.emergency_status ? "ACTIVATED" : "DEACTIVATED");
+
+        // 创建响应
+        custom_data_types_dinosaurs_actuator_SoftwareEmergencyStop_Response_1_0 response;
+        response.status = custom_data_types_dinosaurs_actuator_SoftwareEmergencyStop_Response_1_0_SET_SUCCESS;
+
+        // 序列化响应
+        uint8_t buffer[custom_data_types_dinosaurs_actuator_SoftwareEmergencyStop_Response_1_0_EXTENT_BYTES_];
+        size_t buffer_size = sizeof(buffer);
+        
+        if (custom_data_types_dinosaurs_actuator_SoftwareEmergencyStop_Response_1_0_serialize_(&response, buffer, &buffer_size) >= 0) 
+        {
+            USER_DEBUG_NORMAL("Sending response: status=%d\n", response.status);
+            send_response(sender_id, port_id, buffer, buffer_size);
+        }
+    }
+}
 void subscribe_enable(void) 
 {
     static CanardRxSubscription sub_enable;
     static CanardRxSubscription sub_setTar;
     static CanardRxSubscription sub_time;
-        
+    static CanardRxSubscription sub_device;
+    static CanardRxSubscription sub_softstop;
+    
     // 使能服务订阅
     sub_enable.user_reference = handle_motor_enable;
     canardRxSubscribe(&canard, CanardTransferKindRequest, 113, 1, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_enable);
+
     sub_setTar.user_reference = handle_set_targe;
-    canardRxSubscribe(&canard, CanardTransferKindRequest, 114, 16, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_setTar);   
+    canardRxSubscribe(&canard, CanardTransferKindRequest, 117, 16, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_setTar);
+
+    sub_device.user_reference = handle_device;
+    canardRxSubscribe(&canard, CanardTransferKindRequest, 121, 256, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_device);
+
+    sub_softstop.user_reference = handle_softstop;
+    canardRxSubscribe(&canard, CanardTransferKindRequest, 116, 8, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_softstop);
+
     sub_time.user_reference = handle_time;
     canardRxSubscribe(&canard, CanardTransferKindMessage, 7168, 16, CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC, &sub_time);   
 }
@@ -369,11 +459,11 @@ void subscribe_enable(void)
 static void process_transfer(void *ctx,CanardRxTransfer* transfer) 
 {
     if ((transfer->metadata.transfer_kind == CanardTransferKindRequest) || transfer->metadata.transfer_kind == CanardTransferKindMessage ) {
-        USER_DEBUG_NORMAL("Received request from node %u, port %u, size %u",
-                    transfer->metadata.remote_node_id,
-                    transfer->metadata.port_id,
-                    transfer->payload_size);
-        USER_DEBUG_NORMAL("\r\n");
+        // USER_DEBUG_NORMAL("Received request from node %u, port %u, size %u",
+        //             transfer->metadata.remote_node_id,
+        //             transfer->metadata.port_id,
+        //             transfer->payload_size);
+        // USER_DEBUG_NORMAL("\r\n");
         MessageHandler handler = (MessageHandler)ctx;
         if (handler) {
             handler(transfer);
