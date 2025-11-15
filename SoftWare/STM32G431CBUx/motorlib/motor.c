@@ -1,10 +1,10 @@
 #include "motor.h"
-#include "coord_transform/coord_transform.h"
+#include "coord_transform.h"
 #include "currsmp.h"
 #include "device.h"
 #include "feedback.h"
 #include "inverter.h"
-#include "svpwm/svpwm.h"
+#include "svpwm.h"
 
 #include "motor_mode.h"
 #include "statemachine.h"
@@ -19,27 +19,26 @@ void foc_curr_regulator(void) {
   struct device *currsmp = m_cfg->currsmp;
   struct device *inverer = m_cfg->inverter;
 
-  // feedback_update_angle_vec(feedback);
+  feedback_update_angle_vec(feedback);
   // currsmp_updata(currsmp);
 
-  static float self_theta = 360.0f;
-  self_theta -= 0.001f;
-  if (self_theta < 0.0f) {
-    self_theta = 360.0f;
-  }
+  // static float self_theta = 360.0f;
+  // self_theta -= 0.002f;
+  // if (self_theta < 0.0f) {
+  //   self_theta = 360.0f;
+  // }
 
-  float sin_val, cos_val;
-  sin_cos_f32(self_theta, &sin_val, &cos_val);
+  // float sin_val, cos_val;
+  // sin_cos_f32(self_theta, &sin_val, &cos_val);
 
-  float ud, uq;
-  float ualpha, ubeta;
-  ud = 0.0f;
-  uq = 0.02f;
-  inv_park_f32(ud, uq, &ualpha, &ubeta, sin_val, cos_val);
-  float duty[3];
-  svm_set(ualpha, ubeta, duty);
-
-  inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);
+  // float ud, uq;
+  // float ualpha, ubeta;
+  // ud = 0.0f;
+  // uq = 0.02f;
+  // inv_park_f32(ud, uq, &ualpha, &ubeta, sin_val, cos_val);
+  // float duty[3];
+  // svm_set(ualpha, ubeta, duty);
+  // inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);
 }
 void motor_init(struct device *motor) {
   struct motor_data *m_data = motor->data;

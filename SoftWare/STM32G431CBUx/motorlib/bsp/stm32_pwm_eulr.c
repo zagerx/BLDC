@@ -25,7 +25,12 @@ void tim1_pwm_stop(void) {
 
 void tim1_pwm_set(float a, float b, float c) {
   uint16_t _a, _b, _c;
-
+  static uint32_t cout;
+  if (cout++ > 800) {
+    /* code */
+    cout = 0;
+    HAL_GPIO_TogglePin(LED02_GPIO_Port, LED02_Pin);
+  }
   _a = (uint16_t)((a) * (M_TIM_ARR));
   _b = (uint16_t)((b) * (M_TIM_ARR));
   _c = (uint16_t)((c) * (M_TIM_ARR));

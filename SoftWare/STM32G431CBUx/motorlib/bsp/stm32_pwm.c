@@ -56,4 +56,3 @@ void tim1_pwm_set(float a, float b, float c) {
   set_dtc_b((uint16_t)(b * PWM_ARR)); // 设置通道2的占空比
   set_dtc_c((uint16_t)(c * PWM_ARR)); // 设置通道3的占空比
 }
-ddd

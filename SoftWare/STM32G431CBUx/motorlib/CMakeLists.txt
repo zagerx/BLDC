@@ -14,6 +14,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     motor_cfg.c
     motor_mode.c
     motor_state.c
+    motor_pp_ident.c
     ${_driver_src}
     ${_foc_src}
     ${_sm_src}
