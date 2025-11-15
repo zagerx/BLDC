@@ -10,8 +10,14 @@
 #   2015-07-22 - first version
 # ------------------------------------------------
 
-JLINKEXE := JLink.exe 
-JLINKGDBSERVER := JLinkGDBServer.exe
+ifeq ($(OS),Windows_NT)  # 检测 Windows 系统‌:ml-citation{ref="1,3" data="citationList"}
+    JLINKEXE := JLink.exe
+    JLINKGDBSERVER := JLinkGDBServer.exe
+else  # 默认处理 Linux/Unix 系统（如 Ubuntu 22.04）‌:ml-citation{ref="1,2" data="citationList"}
+    JLINKEXE := JLinkExe
+    JLINKGDBSERVER := JLinkGDBServerExe
+endif
+
 CHIP := STM32G431CB
 GDB := arm-none-eabi-gdb.exe
 
@@ -141,50 +147,12 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Device/ST/STM32G4xx/Include \
 -IDrivers/CMSIS/Include
 
-
-
-C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
-C_SOURCES += $(wildcard ../Common/debuglog/*.c)
-C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
-C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
-C_INCLUDES += -I../Common/debuglog 
-C_DEFS += -DDEBUG_MODE_UART
-
-C_INCLUDES += -I../Common/systemmodule
-C_SOURCES += $(wildcard ../Common/systemmodule/*.c)
-
-C_INCLUDES += -I../Common/data_structures
-C_SOURCES += $(wildcard ../Common/data_structures/heap.c)
-C_SOURCES += $(wildcard ../Common/data_structures/fifo.c)
-C_INCLUDES += -I../Protocol
-C_SOURCES += $(wildcard ../Protocol/*.c)
-
-C_SOURCES += $(wildcard ./Board/*.c)
-C_INCLUDES += -I./Board
-C_INCLUDES += -I../Common/method 
-C_SOURCES += $(wildcard ../Common/method/trajectory_planning.c)
-C_SOURCES += $(wildcard ../Common/method/random.c)
-C_SOURCES += $(wildcard ../Common/method/datatypecovert.c)
-
-C_SOURCES += $(wildcard ../Common/method/pid.c)
-C_SOURCES += $(wildcard ../Common/method/filter.c)
-C_INCLUDES += -I../Common/flash
-C_SOURCES += $(wildcard ../Common/flash/*.c)
-
-C_SOURCES += $(wildcard ../Hardware/hall_sensor.c)
-C_INCLUDES += -I../Hardware 
-
-
-# C_DEFS += -DVOTF_SOFTWARE
-C_INCLUDES += -I../Common/Fsm 
-C_INCLUDES += -I../BLDCMotor 
-C_SOURCES += $(wildcard ../BLDCMotor/*.c)
-# C_DEFS += -DMOTOR_OPENLOOP 
-# C_DEFS += -DMOTOR_OPENLOOP_ENCODER 
-# C_DEFS += -DMOTOR_CURMENLOOP_DEBUG 
-# C_DEFS += -DMOTOR_CURMENLOOP_TEST
-# C_DEFS += -DMOTOR_SPEEDLOOP_DEBUG
-
+# C_SOURCES += $(wildcard ../Common/debuglog/SEGGER_RTT_V792h/RTT/*.c)
+# C_SOURCES += $(wildcard ../Common/debuglog/*.c)
+# C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/Config 
+# C_INCLUDES += -I../Common/debuglog/SEGGER_RTT_V792h/RTT 
+# C_INCLUDES += -I../Common/debuglog 
+# C_DEFS += -DDEBUG_MODE_UART
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
@@ -261,7 +229,7 @@ clean:
 -include $(wildcard $(BUILD_DIR)/*.d)
 
 # *** EOF ***
-stlinkdown:
+down:
 	openocd -f stlink.cfg -f stm32g4x.cfg -c "init" -c "reset halt" -c \
 	"flash write_image erase $(BUILD_DIR)/$(TARGET).hex" -c reset -c shutdown
 
