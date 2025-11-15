@@ -52,6 +52,7 @@ void SystemClock_Config(void);
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 /* USER CODE END PFP */
 
@@ -79,7 +80,7 @@ int main(void) {
   /* USER CODE BEGIN WHILE */
   while (1) {
     static uint8_t cout;
-    if (cout++ > 200) {
+    if (cout++ > 20) {
       /* code */
       cout = 0;
       HAL_GPIO_TogglePin(LED01_GPIO_Port, LED01_Pin);
@@ -91,7 +92,7 @@ int main(void) {
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
-};
+}
 
 /* USER CODE END 0 */
 
@@ -101,7 +102,7 @@ int main(void) {
  */
 
 /**
- *; @brief System Clock Configuration
+ * @brief System Clock Configuration
  * @retval None
  */
 void SystemClock_Config(void) {
