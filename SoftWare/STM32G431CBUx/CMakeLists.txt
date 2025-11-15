@@ -40,6 +40,23 @@ add_executable(${CMAKE_PROJECT_NAME})
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
+
+# =========================================
+# Add motorlib module
+# =========================================
+add_subdirectory(motorlib)
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/motorlib  
+)
+# target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+#     ${MOTORLIB_SOURCES}
+# )
+
+# target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+#     ${MOTORLIB_INCLUDES}
+# )
+
+
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths

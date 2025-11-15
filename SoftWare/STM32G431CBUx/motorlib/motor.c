@@ -1,18 +1,17 @@
 #include "motor.h"
-#include "device.h"
+#include "coord_transform/coord_transform.h"
 #include "currsmp.h"
+#include "device.h"
 #include "feedback.h"
 #include "inverter.h"
-#include "svpwm.h"
-#include "coord_transform.h"
+#include "svpwm/svpwm.h"
 
-#include "statemachine.h"
 #include "motor_mode.h"
+#include "statemachine.h"
 
 extern struct device motor1;
 
-void foc_curr_regulator(void)
-{
+void foc_curr_regulator(void) {
   // struct device *motor = (struct device *)ctx;
   struct device *motor = &motor1;
   struct motor_config *m_cfg = motor->config;
@@ -25,11 +24,10 @@ void foc_curr_regulator(void)
 
   static float self_theta = 360.0f;
   self_theta -= 0.001f;
-  if (self_theta < 0.0f)
-  {
+  if (self_theta < 0.0f) {
     self_theta = 360.0f;
   }
-  
+
   float sin_val, cos_val;
   sin_cos_f32(self_theta, &sin_val, &cos_val);
 
@@ -43,30 +41,21 @@ void foc_curr_regulator(void)
 
   inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);
 }
-void motor_init(struct device *motor)
-{
+void motor_init(struct device *motor) {
   struct motor_data *m_data = motor->data;
   fsm_cb_t *fsm = m_data->fsm_mode;
-  if (!fsm->p1)
-  {
+  if (!fsm->p1) {
     fsm->p1 = (void *)motor;
   }
-
 }
-void motor_task(struct device *motor)
-{
+void motor_task(struct device *motor) {
   struct motor_data *m_data = motor->data;
-  if(m_data->flag == PARAM_NEVER_LOADED)
-  {
-    TRAN_STATE(m_data->fsm_mode,motor_calibration_mode);
-  }else{
-
+  if (m_data->flag == PARAM_NEVER_LOADED) {
+    TRAN_STATE(m_data->fsm_mode, motor_calibration_mode);
+  } else {
   }
 
-  for(;;)
-  {
+  for (;;) {
     DISPATCH_FSM(m_data->fsm_mode);
   }
 }
-
-
