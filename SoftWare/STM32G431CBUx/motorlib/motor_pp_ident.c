@@ -40,120 +40,152 @@ void pp_ident_start(struct device *motor)
 	struct motor_config *mc = (struct motor_config *)motor->config;
 	struct feedback_config *fb_cfg = mc->feedback->config;
 
-	struct device *ppdev = mc->pp_ident;
-	struct pp_ident_data *pp = ppdev->data;
-	struct pp_ident_config *cfg = ppdev->config;
+	struct device *pp = mc->pp_ident;
+	struct pp_ident_data *pp_data = pp->data;
+	struct pp_ident_config *cfg = pp->config;
 
 	if (!cfg) {
-		pp->running = false;
-		pp->done = true;
-		pp->pole_pairs = 0;
+		// pp_data->running = false;
+		pp_data->done = true;
+		pp_data->pole_pairs = 0;
 		return;
 	}
 
-	pp->done = false;
-	pp->running = true;
-	pp->time_acc = 0.0f;
-	pp->elec_angle = 0.0f;
+	pp_data->done = false;
+	pp_data->time_acc = 0.0f;
+	pp_data->elec_angle = 0.0f;
 
 	// 初始化编码器 unwrap 累积变量
-	pp->raw_start = (int32_t)fb_cfg->get_raw();
-	pp->raw_prev = pp->raw_start;
-	pp->raw_delta_acc = 0;
+	pp_data->raw_start = (int32_t)fb_cfg->get_raw();
+	pp_data->raw_prev = pp_data->raw_start;
+	pp_data->raw_delta_acc = 0;
 }
 
 /* ---------------------------------------------------------
  * 主更新周期
  * --------------------------------------------------------- */
+#include "main.h"
 void pp_ident_update(struct device *motor, float dt)
 {
 	struct motor_config *mc = (struct motor_config *)motor->config;
-	struct feedback_config *fb_cfg = mc->feedback->config;
+	struct device *fb = mc->feedback;
 	struct device *inv = mc->inverter;
-	struct device *ppdev = mc->pp_ident;
+	struct device *pp = mc->pp_ident;
 
-	struct pp_ident_data *pp = ppdev->data;
-	struct pp_ident_config *cfg = ppdev->config;
+	struct feedback_config *fb_cfg = fb->config;
+	struct pp_ident_data *pp_data = pp->data;
+	struct pp_ident_config *cfg = pp->config;
 
-	if (!pp->running || !cfg) {
+	if (!cfg) {
 		return;
 	}
-
-	/* -----------------------------------------------------
-	 * Step 1: 累加电角度
-	 * ----------------------------------------------------- */
-	pp->time_acc += dt;
-	pp->elec_angle += cfg->openloop_speed * dt;
-	if (pp->elec_angle > MAX_ELEC_ANGLE) {
-		pp->elec_angle -= MAX_ELEC_ANGLE;
+	if (pp_data->done) {
+		static uint32_t cout;
+		if (cout++ > 800) {
+			cout = 0;
+			HAL_GPIO_TogglePin(LED02_GPIO_Port, LED02_Pin);
+		}
 	}
 
-	float angle = pp->elec_angle;
+	switch (pp_data->calibra_state) {
+	case CALIB_STATE_ALIGN: {
+		static uint16_t count = 0;
+		if (count++ < 20000) {
+			float abc[3];
+			svm_set(cfg->openloop_voltage * 1.0f, cfg->openloop_voltage * 0.0f, abc);
+			inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
+		} else {
+			count = 0;
+			pp_data->raw_start = (int32_t)fb_cfg->get_raw();
+			pp_data->raw_prev = pp_data->raw_start;
+			pp_data->calibra_state = CALIB_STATE_CCW_CALIBRATION;
+		}
+	} break;
+	case CALIB_STATE_CCW_CALIBRATION: {
+		if (pp_data->time_acc > cfg->duration) {
+			pp_data->calibra_state = CALIB_STATE_DATA_PROCESSING;
+			break;
+		} else {
+			/* -----------------------------------------------------
+			 * Step 1: 累加电角度
+			 * ----------------------------------------------------- */
+			pp_data->time_acc += dt;
+			pp_data->elec_angle += cfg->openloop_speed * dt;
+			if (pp_data->elec_angle > MAX_ELEC_ANGLE) {
+				pp_data->elec_angle -= MAX_ELEC_ANGLE;
+			}
 
-	/* -----------------------------------------------------
-	 * Step 2：生成 αβ 电压
-	 * ----------------------------------------------------- */
-	float v_mag = cfg->openloop_voltage;
-	if (v_mag > 0.577f) {
-		v_mag = 0.577f;
+			float angle = pp_data->elec_angle * (180.0f / M_PI);
+			/* -----------------------------------------------------
+			 * Step 2：生成 αβ 电压
+			 * ----------------------------------------------------- */
+			float v_mag = cfg->openloop_voltage;
+			if (v_mag > 0.577f) {
+				v_mag = 0.577f;
+			}
+
+			float sinv, cosv;
+			sin_cos_f32(angle, &sinv, &cosv);
+			float ualpha = v_mag * cosv;
+			float ubeta = v_mag * sinv;
+
+			float abc[3];
+			svm_set(ualpha, ubeta, abc);
+			inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
+
+			/* -----------------------------------------------------
+			 * Step 3：实时 unwrap 累积机械角度
+			 * ----------------------------------------------------- */
+			int32_t raw = (int32_t)fb_cfg->get_raw();
+			int32_t delta =
+				unwrap_raw(raw, &pp_data->raw_prev, (int32_t)cfg->encoder_max);
+			pp_data->raw_delta_acc += delta;
+		}
+	} break;
+
+	case CALIB_STATE_DATA_PROCESSING: {
+		/* -----------------------------------------------------
+		 * Step 5：机械角圈数
+		 * ----------------------------------------------------- */
+		int32_t raw = (int32_t)fb_cfg->get_raw();
+		pp_data->raw_end = raw; // 保留最终值
+		pp_data->mech_rounds = (float)pp_data->raw_delta_acc / (float)cfg->encoder_max;
+
+		if (fabsf(pp_data->mech_rounds) < MIN_MECH_ROT) {
+			pp_data->calibra_state = CALIB_STATE_ERROR;
+			break;
+			;
+		}
+
+		/* -----------------------------------------------------
+		 * Step 6：电角度圈数
+		 * ----------------------------------------------------- */
+		pp_data->electrical_rounds = pp_data->elec_angle / (2.0f * M_PI);
+		if (fabsf(pp_data->electrical_rounds) < MIN_ELEC_ROT) {
+			pp_data->calibra_state = CALIB_STATE_ERROR;
+			break;
+		}
+
+		/* -----------------------------------------------------
+		 * Step 7：极对数计算
+		 * ----------------------------------------------------- */
+		float pp_calc = fabsf(pp_data->electrical_rounds / pp_data->mech_rounds);
+		pp_data->pole_pairs = (uint16_t)(roundf(pp_calc));
+		pp_data->calibra_state = CALIB_STATE_COMPLETE;
+	} break;
+	case CALIB_STATE_COMPLETE: {
+		/* -----------------------------------------------------
+		 * Step 8：结束
+		 * ----------------------------------------------------- */
+		pp_data->done = true;
+		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
+	} break;
+	case CALIB_STATE_ERROR: {
+		pp_data->pole_pairs = 0;
+		pp_data->done = true;
+		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
+	} break;
+	default:
+		break;
 	}
-
-	float sinv, cosv;
-	sin_cos_f32(angle, &sinv, &cosv);
-	float ualpha = v_mag * cosv;
-	float ubeta = v_mag * sinv;
-
-	float abc[3];
-	svm_set(ualpha, ubeta, abc);
-	inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
-
-	/* -----------------------------------------------------
-	 * Step 3：实时 unwrap 累积机械角度
-	 * ----------------------------------------------------- */
-	int32_t raw = (int32_t)fb_cfg->get_raw();
-	int32_t delta = unwrap_raw(raw, &pp->raw_prev, (int32_t)cfg->encoder_max);
-	pp->raw_delta_acc += delta;
-
-	/* -----------------------------------------------------
-	 * Step 4：检查时间是否结束
-	 * ----------------------------------------------------- */
-	if (pp->time_acc < cfg->duration) {
-		return;
-	}
-
-	/* -----------------------------------------------------
-	 * Step 5：机械角圈数
-	 * ----------------------------------------------------- */
-	pp->raw_end = raw; // 保留最终值
-	pp->mech_rounds = (float)pp->raw_delta_acc / (float)cfg->encoder_max;
-
-	if (fabsf(pp->mech_rounds) < MIN_MECH_ROT) {
-		pp->pole_pairs = 0;
-		pp->done = true;
-		pp->running = false;
-		return;
-	}
-
-	/* -----------------------------------------------------
-	 * Step 6：电角度圈数
-	 * ----------------------------------------------------- */
-	pp->electrical_rounds = pp->elec_angle / (2.0f * M_PI);
-	if (fabsf(pp->electrical_rounds) < MIN_ELEC_ROT) {
-		pp->pole_pairs = 0;
-		pp->done = true;
-		pp->running = false;
-		return;
-	}
-
-	/* -----------------------------------------------------
-	 * Step 7：极对数计算
-	 * ----------------------------------------------------- */
-	float pp_calc = fabsf(pp->electrical_rounds / pp->mech_rounds);
-	pp->pole_pairs = (uint16_t)(roundf(pp_calc));
-
-	/* -----------------------------------------------------
-	 * Step 8：结束
-	 * ----------------------------------------------------- */
-	pp->done = true;
-	pp->running = false;
 }

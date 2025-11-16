@@ -26,6 +26,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include <stdint.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -33,7 +34,9 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#include "device.h"
+extern struct device motor1;
+extern void motor_init(struct device *motor);
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -58,6 +61,7 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
+extern uint16_t as5047_read_raw(void);
 /* USER CODE BEGIN 0 */
 
 int main(void)
@@ -75,18 +79,19 @@ int main(void)
 	MX_OPAMP3_Init();
 	MX_TIM1_Init();
 	MX_RNG_Init();
+	MX_SPI1_Init();
 	/* USER CODE BEGIN 2 */
 
 	tim_pwm_enable();
 	adc_start();
 	opamp_start();
+	motor_init(&motor1);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1) {
-		// as5047_read_raw();
-		HAL_Delay(1);
+		HAL_Delay(5);
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */

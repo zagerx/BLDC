@@ -2,6 +2,5 @@
 
 uint16_t mt6816_get_raw(void)
 {
-    return 0;
+	return 0;
 }
-

@@ -1,20 +1,18 @@
 #include "feedback.h"
 
 #include "device.h"
+#include <stdint.h>
 
 void feedback_update_angle_vec(struct device *dev)
 {
-    struct feedback_config *cfg=dev->config;
-    
-    uint16_t raw = cfg->get_raw();
+	struct feedback_config *cfg = dev->config;
 
-    //calce
+	uint16_t raw = cfg->get_raw();
 
-    struct feedback_data *data = dev->data;
+	// calce
 
-    data->e_angle = raw/1.0f;
+	struct feedback_data *data = dev->data;
+	data->raw = raw;
+	data->e_angle = raw / 1.0f;
+	return;
 }
-
-
-
-

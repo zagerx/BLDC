@@ -231,6 +231,13 @@ clean:
 down:
 	openocd -f stlink.cfg -f stm32g4x.cfg -c "init" -c "reset halt" -c \
 	"flash write_image erase $(BUILD_DIR)/$(TARGET).hex" -c reset -c shutdown
+ifeq ($(OS),Windows_NT)  # 检测 Windows 系统‌:ml-citation{ref="1,3" data="citationList"}
+    JLINKEXE := JLink.exe
+    JLINKGDBSERVER := JLinkGDBServer.exe
+else  # 默认处理 Linux/Unix 系统（如 Ubuntu 22.04）‌:ml-citation{ref="1,2" data="citationList"}
+    JLINKEXE := JLinkExe
+    JLINKGDBSERVER := JLinkGDBServerExe
+endif
 
 jlinkdown:
 	$(Q)echo "h" >> jlink.jlink

@@ -9,6 +9,8 @@
 #include "motor_mode.h"
 #include "statemachine.h"
 
+#include "motor_cfg.h"
+#include "motor_pp_ident.h"
 extern struct device motor1;
 
 void foc_curr_regulator(void)
@@ -19,8 +21,8 @@ void foc_curr_regulator(void)
 	struct device *feedback = m_cfg->feedback;
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
-
-	feedback_update_angle_vec(feedback);
+	pp_ident_update(motor, PWM_CYCLE);
+	// feedback_update_angle_vec(feedback);
 	// currsmp_updata(currsmp);
 
 	// static float self_theta = 360.0f;
@@ -48,6 +50,9 @@ void motor_init(struct device *motor)
 	if (!fsm->p1) {
 		fsm->p1 = (void *)motor;
 	}
+	// struct motor_config *m_cfg = motor->config;
+	// struct device *pp = m_cfg->pp_ident;
+	pp_ident_start(motor);
 }
 void motor_task(struct device *motor)
 {
