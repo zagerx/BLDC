@@ -39,7 +39,7 @@ struct motor_config {
   struct device *inverter;
   struct device *feedback;
 
-  struct pp_ident *pole_pairs_ident;
+  struct device *pp_ident;
 };
 struct motor_parameters {
   float phase_resistance;   // 相电阻 (Ω)

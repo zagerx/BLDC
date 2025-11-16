@@ -58,6 +58,8 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define M_TIM_ARR 8000
+#define AS5047_CS_Pin GPIO_PIN_4
+#define AS5047_CS_GPIO_Port GPIOA
 #define LED01_Pin GPIO_PIN_4
 #define LED01_GPIO_Port GPIOC
 #define LED02_Pin GPIO_PIN_6
