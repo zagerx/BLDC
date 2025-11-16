@@ -11,12 +11,14 @@ struct pp_ident_config {
 	float duration;
 
 	// 编码器最大值，例如 AS5047 = 16384
-	uint16_t encoder_max;
+	uint32_t encoder_max;
+
+	float openloop_voltage;
 };
 
 struct pp_ident_data {
-	uint16_t raw_start; // 开始时 encoder raw
-	uint16_t raw_end;   // 结束时 encoder raw
+	uint32_t raw_start; // 开始时 encoder raw
+	uint32_t raw_end;   // 结束时 encoder raw
 
 	int32_t raw_delta; // 机械角度变化（未归一化）
 	float mech_rounds; // 机械角度圈数（可能>1或<1）
@@ -26,8 +28,10 @@ struct pp_ident_data {
 
 	bool done; // 是否识别完成
 
-	float time_acc;   // 累计时间
-	float elec_angle; // 我们在内部人工产生的电角度指令
+	float time_acc;        // 累计时间
+	float elec_angle;      // 我们在内部人工产生的电角度指令
+	int32_t raw_prev;      // 上一周期 raw
+	int32_t raw_delta_acc; // 累积机械角变化
 	bool running;
 };
 
