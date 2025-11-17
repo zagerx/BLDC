@@ -4,6 +4,7 @@
 #include "inverter.h"
 #include "motor.h"
 #include "motor_pp_ident.h"
+#include "motor_currment_carible.h"
 #include "statemachine.h"
 #include "motor_mode.h"
 #include "motor_state.h"
@@ -51,16 +52,11 @@ static struct pp_ident_config pp_cfg = {
 	.openloop_voltage = 0.03f,
 	.duration = 6.0f,
 };
-static struct pp_ident_data pp_data = {0};
-static struct device pp1 = {
-	.config = &pp_cfg,
-	.data = &pp_data,
-};
+
 static struct motor_config m1_cfg = {
 	.currsmp = &currsmp1,
 	.feedback = &feedback1,
 	.inverter = &inverter1,
-	.pp_ident = &pp1,
 };
 
 static fsm_cb_t m1_state_statemachine = {
@@ -75,11 +71,26 @@ static fsm_cb_t m1_mode_statemachine = {
 	.p1 = &motor1,
 };
 
+static struct pp_ident_data pp_data = {0};
+static struct device pp1 = {
+	.config = &pp_cfg,
+	.data = &pp_data,
+};
+static struct curr_calib_data curr_calib_data1 = {0};
+static struct device curr_calib = {
+	.data = &curr_calib_data1,
+};
+static struct motor_calibration_modules m1_calib_modul = {
+	.pp_ident = &pp1,
+	.current_calibration = &curr_calib,
+};
+
 static struct motor_data m1_data = {
 	.statue = MOTOR_STATE_IDLE,
 	.mode = MOTOR_MODE_IDLE,
 	.faultcode = MOTOR_FAULTCODE_NOERR,
 	.fsm_mode = &m1_mode_statemachine,
+	.calib = &m1_calib_modul,
 };
 
 struct device motor1 = {

@@ -11,9 +11,12 @@
 
 #include "motor_cfg.h"
 #include "motor_pp_ident.h"
+#include <stdint.h>
+
+#include "motor_currment_carible.h"
 extern struct device motor1;
 
-void foc_curr_regulator(void)
+void foc_curr_regulator(uint32_t *adc_raw)
 {
 	// struct device *motor = (struct device *)ctx;
 	struct device *motor = &motor1;
@@ -21,7 +24,12 @@ void foc_curr_regulator(void)
 	struct device *feedback = m_cfg->feedback;
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
-	pp_ident_update(motor, PWM_CYCLE);
+	curr_calib_update(motor, adc_raw);
+	// pp_ident_update(motor, PWM_CYCLE);
+	// struct currsmp_data *c_data = currsmp->data;
+	// c_data->channle_raw_a = adc_raw[0];
+	// c_data->channle_raw_c = adc_raw[2];
+	// currsmp_update_calibration(currsmp);
 	// feedback_update_angle_vec(feedback);
 	// currsmp_updata(currsmp);
 
@@ -53,6 +61,7 @@ void motor_init(struct device *motor)
 	// struct motor_config *m_cfg = motor->config;
 	// struct device *pp = m_cfg->pp_ident;
 	pp_ident_start(motor);
+	curr_calib_start(motor, 10000);
 }
 void motor_task(struct device *motor)
 {

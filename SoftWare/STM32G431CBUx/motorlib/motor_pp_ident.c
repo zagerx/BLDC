@@ -38,9 +38,11 @@ static inline int32_t unwrap_raw(int32_t current, int32_t *prev, int32_t max)
 void pp_ident_start(struct device *motor)
 {
 	struct motor_config *mc = (struct motor_config *)motor->config;
+	struct motor_data *m_data = (struct motor_data *)motor->data;
+
 	struct feedback_config *fb_cfg = mc->feedback->config;
 
-	struct device *pp = mc->pp_ident;
+	struct device *pp = m_data->calib->pp_ident;
 	struct pp_ident_data *pp_data = pp->data;
 	struct pp_ident_config *cfg = pp->config;
 
@@ -64,13 +66,13 @@ void pp_ident_start(struct device *motor)
 /* ---------------------------------------------------------
  * 主更新周期
  * --------------------------------------------------------- */
-#include "main.h"
 void pp_ident_update(struct device *motor, float dt)
 {
 	struct motor_config *mc = (struct motor_config *)motor->config;
+	struct motor_data *m_data = (struct motor_data *)motor->data;
 	struct device *fb = mc->feedback;
 	struct device *inv = mc->inverter;
-	struct device *pp = mc->pp_ident;
+	struct device *pp = m_data->calib->pp_ident;
 
 	struct feedback_config *fb_cfg = fb->config;
 	struct pp_ident_data *pp_data = pp->data;
@@ -78,13 +80,6 @@ void pp_ident_update(struct device *motor, float dt)
 
 	if (!cfg) {
 		return;
-	}
-	if (pp_data->done) {
-		static uint32_t cout;
-		if (cout++ > 800) {
-			cout = 0;
-			HAL_GPIO_TogglePin(LED02_GPIO_Port, LED02_Pin);
-		}
 	}
 
 	switch (pp_data->calibra_state) {

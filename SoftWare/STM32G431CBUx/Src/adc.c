@@ -365,19 +365,19 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	// static float iabc[3];
 	if (hadc->Instance == ADC1) {
-		// iabc[0] = -((int16_t)(hadc->Instance->JDR1) - 1970) * 0.02197f;
-		// iabc[2] = -((int16_t)(hadc->Instance->JDR2) - 1980) * 0.02197f;
+		uint32_t raw_uvw[3];
+		raw_uvw[0] = (int16_t)(hadc->Instance->JDR1);
+		raw_uvw[2] = (int16_t)(hadc->Instance->JDR2);
 		// motorctrl_currment_update(&motor1, iabc);
 		// votf_sendf(iabc,3);
 
 		static uint32_t cout;
 		if (cout++ > 800) {
-			/* code */
 			cout = 0;
 			HAL_GPIO_TogglePin(LED01_GPIO_Port, LED01_Pin);
 		}
 
-		foc_curr_regulator();
+		foc_curr_regulator(raw_uvw);
 	}
 	if (hadc->Instance == ADC2) {
 		// iabc[1] = -((int16_t)((&hadc2)->Instance->JDR1 - 2040)) * 0.02197f;
