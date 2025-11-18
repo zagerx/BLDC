@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 
+option(MOTOR_TYPE_HMT "使用华马台电机" ON)
+option(MOTOR_TYPE_EULRE "使用欧拉2802电机" OFF)
+option(DRIVER_TYPE_HMT "华马台驱动器" OFF)
+option(DRIVER_TYPE_EULRE "欧拉驱动器" OFF)
+
 add_subdirectory(bsp)
 
 file(GLOB _driver_src CONFIGURE_DEPENDS
@@ -9,9 +14,20 @@ file(GLOB _foc_src CONFIGURE_DEPENDS
 file(GLOB _sm_src CONFIGURE_DEPENDS
      "${CMAKE_CURRENT_SOURCE_DIR}/statemachine/*.c")
 
+set(MODE_SRCS "")
+if(MOTOR_TYPE_HMT)
+    list(APPEND MODE_SRCS
+        motor_cfg_hmt.c
+    )
+else()
+    list(APPEND MODE_SRCS
+        motor_cfg.c
+    )
+endif()
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MODE_SRCS})
+
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     motor.c
-    motor_cfg.c
     motor_mode.c
     motor_state.c
     motor_pp_ident.c

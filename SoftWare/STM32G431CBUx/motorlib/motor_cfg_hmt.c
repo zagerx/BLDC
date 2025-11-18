@@ -36,7 +36,7 @@ static struct device currsmp1 = {
 };
 
 static struct feedback_config feedback1_cfg = {
-	.get_raw = as5047_read_raw,
+	.get_raw = mt6816_get_raw,
 };
 
 static struct feedback_data feedback1_data = {0};
@@ -53,7 +53,7 @@ static struct motor_config m1_cfg = {
 
 static fsm_cb_t m1_statemachine = {
 	.current_state = motor_init_state,
-	.sub_state_machine =&NULL,
+	.sub_state_machine =NULL,
 	.p1 = &motor1,
 };
 
@@ -61,8 +61,9 @@ static struct pp_ident_config pp_cfg = {
 	.encoder_max = 16383,
 	.openloop_speed = 5.0f,
 	.openloop_voltage = 0.03f,
-	.duration = 6.0f,
+	.duration = 2.0f,
 };
+
 static struct pp_ident_data pp_data = {0};
 static struct device pp1 = {
 	.config = &pp_cfg,
