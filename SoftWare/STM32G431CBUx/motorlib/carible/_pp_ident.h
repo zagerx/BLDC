@@ -1,27 +1,27 @@
-#ifndef MOTOR_PP_IDENT_H
-#define MOTOR_PP_IDENT_H
+#ifndef _PP_IDENT_H
+#define _PP_IDENT_H
 
 #include <stdbool.h>
 #include <stdint.h>
 #include "device.h"
-enum calibration_state {
+enum pp_carible_state {
 	// 对齐阶段 - 将电机定位到已知起始位置
-	CALIB_STATE_ALIGN = 0,
+	PP_CALIB_STATE_ALIGN = 0,
 
 	// 正向校准 - 顺时针方向旋转并采集数据
-	CALIB_STATE_CW_CALIBRATION,
+	PP_CALIB_STATE_CW_CALIBRATION,
 
 	// 反向校准 - 逆时针方向旋转并采集数据
-	CALIB_STATE_CCW_CALIBRATION,
+	PP_CALIB_STATE_CCW_CALIBRATION,
 
 	// 数据计算 - 处理采集的数据并计算结果
-	CALIB_STATE_DATA_PROCESSING,
+	PP_CALIB_STATE_DATA_PROCESSING,
 
 	// 校准结束 - 完成校准并保存结果
-	CALIB_STATE_COMPLETE,
+	PP_CALIB_STATE_COMPLETE,
 
 	// 错误状态 - 校准过程中出现错误
-	CALIB_STATE_ERROR
+	PP_CALIB_STATE_ERROR
 };
 struct pp_ident_config {
 	// 施加的开环电角速度(rad/s) 或者 固定步进值(你可任选)
@@ -52,9 +52,10 @@ struct pp_ident_data {
 	float elec_angle;      // 我们在内部人工产生的电角度指令
 	int32_t raw_prev;      // 上一周期 raw
 	int32_t raw_delta_acc; // 累积机械角变化
-	enum calibration_state calibra_state;
+	enum pp_carible_state calibra_state;
 };
 void pp_ident_start(struct device *motor);
 void pp_ident_update(struct device *motor, float dt);
+enum pp_carible_state pp_ident_get_pp_state(struct device *motor);
 
 #endif

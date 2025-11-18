@@ -1,7 +1,8 @@
 #include "currsmp.h"
 #include "inverter.h"
 #include "motor.h"
-#include "motor_currment_carible.h"
+#include "_currment_carible.h"
+#include "motor_carible.h"
 #include "device.h"
 #include "inverter.h"
 #include "feedback.h"
@@ -119,13 +120,12 @@ void curr_calib_update(struct device *motor)
 	}
 }
 
-
-enum curr_calib_state curr_calib_get_state(struct device* motor)
+enum curr_calib_state curr_calib_get_state(struct device *motor)
 {
 	struct motor_data *m_data = (struct motor_data *)motor->data;
 
 	struct device *cc = m_data->calib->current_calibration;
 
-	struct curr_calib_data *cd = cc->data;	
+	struct curr_calib_data *cd = cc->data;
 	return cd->state;
 }

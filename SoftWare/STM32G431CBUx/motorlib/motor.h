@@ -2,9 +2,9 @@
 #define MOTOR_H
 #include "device.h"
 #include "foc_pid.h"
-#include "motor_pp_ident.h"
 #include "statemachine.h"
 #include "stdint.h"
+#include "stdbool.h"
 /**
  * @brief FOC电机控制状态枚举
  */
@@ -94,12 +94,6 @@ enum motor_flag {
 	PARAM_LOAD_PENDING,     /* 其它任务正在读 FLASH，数据尚未就绪   */
 	PARAM_UPD_YES           /* 参数已成功更新，当前可用             */
 };
-struct motor_calibration_modules {
-	struct device *pp_ident;
-	struct device *current_calibration;
-	struct device *rl_ident;
-	bool done;//整个模块校准完成
-};
 
 struct motor_data {
 	struct motor_parameters model_paramters;
@@ -113,4 +107,5 @@ struct motor_data {
 	fsm_cb_t *state_machine;
 };
 void foc_curr_regulator(uint32_t *adc_raw);
+void motor_debug_info(struct device *motor);
 #endif

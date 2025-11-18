@@ -1,5 +1,5 @@
-#ifndef MOTOR_CURRENT_CALIB_H
-#define MOTOR_CURRENT_CALIB_H
+#ifndef _CURRENT_CALIB_H
+#define _CURRENT_CALIB_H
 #include "device.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -35,5 +35,5 @@ struct curr_calib_data {
 
 void curr_calib_start(struct device *motor, uint16_t ample_count);
 void curr_calib_update(struct device *motor);
-enum curr_calib_state curr_calib_get_state(struct device* motor);
+enum curr_calib_state curr_calib_get_state(struct device *motor);
 #endif

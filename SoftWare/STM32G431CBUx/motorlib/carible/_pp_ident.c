@@ -1,4 +1,5 @@
-#include "motor_pp_ident.h"
+#include "_pp_ident.h"
+#include "motor_carible.h"
 #include "device.h"
 #include "feedback.h"
 #include "inverter.h"
@@ -83,7 +84,7 @@ void pp_ident_update(struct device *motor, float dt)
 	}
 
 	switch (pp_data->calibra_state) {
-	case CALIB_STATE_ALIGN: {
+	case PP_CALIB_STATE_ALIGN: {
 		static uint16_t count = 0;
 		if (count++ < 20000) {
 			float abc[3];
@@ -93,12 +94,12 @@ void pp_ident_update(struct device *motor, float dt)
 			count = 0;
 			pp_data->raw_start = (int32_t)fb_cfg->get_raw();
 			pp_data->raw_prev = pp_data->raw_start;
-			pp_data->calibra_state = CALIB_STATE_CCW_CALIBRATION;
+			pp_data->calibra_state = PP_CALIB_STATE_CCW_CALIBRATION;
 		}
 	} break;
-	case CALIB_STATE_CCW_CALIBRATION: {
+	case PP_CALIB_STATE_CCW_CALIBRATION: {
 		if (pp_data->time_acc > cfg->duration) {
-			pp_data->calibra_state = CALIB_STATE_DATA_PROCESSING;
+			pp_data->calibra_state = PP_CALIB_STATE_DATA_PROCESSING;
 			break;
 		} else {
 			/* -----------------------------------------------------
@@ -138,7 +139,7 @@ void pp_ident_update(struct device *motor, float dt)
 		}
 	} break;
 
-	case CALIB_STATE_DATA_PROCESSING: {
+	case PP_CALIB_STATE_DATA_PROCESSING: {
 		/* -----------------------------------------------------
 		 * Step 5：机械角圈数
 		 * ----------------------------------------------------- */
@@ -147,7 +148,7 @@ void pp_ident_update(struct device *motor, float dt)
 		pp_data->mech_rounds = (float)pp_data->raw_delta_acc / (float)cfg->encoder_max;
 
 		if (fabsf(pp_data->mech_rounds) < MIN_MECH_ROT) {
-			pp_data->calibra_state = CALIB_STATE_ERROR;
+			pp_data->calibra_state = PP_CALIB_STATE_ERROR;
 			break;
 			;
 		}
@@ -157,7 +158,7 @@ void pp_ident_update(struct device *motor, float dt)
 		 * ----------------------------------------------------- */
 		pp_data->electrical_rounds = pp_data->elec_angle / (2.0f * M_PI);
 		if (fabsf(pp_data->electrical_rounds) < MIN_ELEC_ROT) {
-			pp_data->calibra_state = CALIB_STATE_ERROR;
+			pp_data->calibra_state = PP_CALIB_STATE_ERROR;
 			break;
 		}
 
@@ -166,16 +167,16 @@ void pp_ident_update(struct device *motor, float dt)
 		 * ----------------------------------------------------- */
 		float pp_calc = fabsf(pp_data->electrical_rounds / pp_data->mech_rounds);
 		pp_data->pole_pairs = (uint16_t)(roundf(pp_calc));
-		pp_data->calibra_state = CALIB_STATE_COMPLETE;
+		pp_data->calibra_state = PP_CALIB_STATE_COMPLETE;
 	} break;
-	case CALIB_STATE_COMPLETE: {
+	case PP_CALIB_STATE_COMPLETE: {
 		/* -----------------------------------------------------
 		 * Step 8：结束
 		 * ----------------------------------------------------- */
-		pp_data->done = true;
 		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
+
 	} break;
-	case CALIB_STATE_ERROR: {
+	case PP_CALIB_STATE_ERROR: {
 		pp_data->pole_pairs = 0;
 		pp_data->done = true;
 		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
@@ -183,4 +184,11 @@ void pp_ident_update(struct device *motor, float dt)
 	default:
 		break;
 	}
+}
+enum pp_carible_state pp_ident_get_pp_state(struct device *motor)
+{
+	struct motor_data *m_data = (struct motor_data *)motor->data;
+	struct device *pp = m_data->calib->pp_ident;
+	struct pp_ident_data *pp_data = pp->data;
+	return pp_data->calibra_state;
 }

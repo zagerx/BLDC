@@ -23,6 +23,7 @@
 #include "opamp.h"
 #include "rng.h"
 #include "spi.h"
+#include "stm32g4xx_hal.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -35,6 +36,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 #include "device.h"
+#include "stdio.h"
 extern struct device motor1;
 extern void motor_init(struct device *motor);
 /* USER CODE END PTD */
@@ -61,7 +63,8 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
-extern uint16_t as5047_read_raw(void);
+extern struct device motor1;
+extern void motor_task(struct device *motor);
 /* USER CODE BEGIN 0 */
 
 int main(void)
@@ -86,12 +89,16 @@ int main(void)
 	adc_start();
 	opamp_start();
 	motor_init(&motor1);
+	HAL_Delay(1000);
+	printf("hello world\r\n");
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1) {
-		HAL_Delay(5);
+		motor_task(&motor1);
+		// motor_debug_info(&motor1);
+		HAL_Delay(1);
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */

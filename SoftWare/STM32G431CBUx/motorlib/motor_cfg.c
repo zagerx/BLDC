@@ -3,8 +3,9 @@
 #include "device.h"
 #include "inverter.h"
 #include "motor.h"
-#include "motor_pp_ident.h"
-#include "motor_currment_carible.h"
+#include "_pp_ident.h"
+#include "_currment_carible.h"
+#include "motor_carible.h"
 #include "statemachine.h"
 #include "motor_mode.h"
 #include "motor_state.h"
@@ -17,7 +18,6 @@
 #include "stm32_mt6816.h"
 #include "stm32_as5047.h"
 
-#include "motor_pp_ident.h"
 extern struct device motor1;
 
 static struct inverter_config inverter1_cfg = {
@@ -53,8 +53,9 @@ static struct motor_config m1_cfg = {
 };
 
 static fsm_cb_t m1_statemachine = {
-	.current_state = motor_init_state,
-	.sub_state_machine =NULL,
+	.current_state = motor_idle_state,
+	.previous_state = motor_idle_state,
+	.sub_state_machine = NULL,
 	.p1 = &motor1,
 };
 

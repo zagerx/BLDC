@@ -10,7 +10,7 @@
 #include "statemachine.h"
 
 #include "motor_cfg.h"
-#include "motor_pp_ident.h"
+#include "_pp_ident.h"
 #include <stdint.h>
 #include "motor_state.h"
 extern struct device motor1;
@@ -24,7 +24,7 @@ void foc_curr_regulator(uint32_t *adc_raw)
 	struct device *feedback = m_cfg->feedback;
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
-	currsmp_update_raw(currsmp,adc_raw);
+	currsmp_update_raw(currsmp, adc_raw);
 
 	/*
 		//电机状态调度
@@ -44,7 +44,7 @@ void foc_curr_regulator(uint32_t *adc_raw)
 			1、电流闭环 速度闭环 速度规划
 		7、位置模式
 			1、电流闭环 速度闭环 位置闭环 位置规划
-	*/	
+	*/
 	DISPATCH_FSM(m_data->state_machine);
 	// pp_ident_update(motor, PWM_CYCLE);
 	// struct currsmp_data *c_data = currsmp->data;
@@ -85,8 +85,31 @@ void motor_init(struct device *motor)
 void motor_task(struct device *motor)
 {
 	struct motor_data *m_data = motor->data;
-	if (m_data->flag == PARAM_NEVER_LOADED) {
+	// if (m_data->flag == PARAM_NEVER_LOADED) {
+
+	// } else {
+	// }
+	static int16_t state = 0;
+	switch (state) {
+	case 0:
 		TRAN_STATE(m_data->state_machine, motor_carible_state);
-	} else {
+		state = 1;
+		break;
+	case 1:
+		break;
+	}
+}
+#include "stdio.h"
+void motor_debug_info(struct device *motor)
+{
+	// struct device *motor = &motor1;
+	struct motor_data *m_data = motor->data;
+	fsm_cb_t *fsm = m_data->state_machine;
+	if (fsm->current_state != fsm->previous_state) {
+		if (fsm->current_state == motor_carible_state) {
+			printf("current state:   motor_carible_state\r\n");
+		} else if (fsm->current_state == motor_idle_state) {
+			printf("current state:   motor_idle_state\r\n");
+		}
 	}
 }
