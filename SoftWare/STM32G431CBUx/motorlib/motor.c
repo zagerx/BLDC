@@ -12,19 +12,40 @@
 #include "motor_cfg.h"
 #include "motor_pp_ident.h"
 #include <stdint.h>
-
-#include "motor_currment_carible.h"
+#include "motor_state.h"
 extern struct device motor1;
 
 void foc_curr_regulator(uint32_t *adc_raw)
 {
 	// struct device *motor = (struct device *)ctx;
 	struct device *motor = &motor1;
+	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
 	struct device *feedback = m_cfg->feedback;
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
-	curr_calib_update(motor, adc_raw);
+	currsmp_update_raw(currsmp,adc_raw);
+
+	/*
+		//电机状态调度
+		0、校准功能
+			1、电流偏置校准 2、极对数辨别，编码器校准(偏移量) 3、R/L参数识别
+		1、编码器开环调试：
+			1、运行编码器状态
+		2、电流开环调试
+			1、运行电流开环状态
+		3、速度开环调试
+			1、电流环闭环，不使用速度规划
+		4、位置调试
+			1、电流环闭环，速度闭环，不使用位置规划
+		5、力矩模式
+			1、电流闭环
+		6、速度模式
+			1、电流闭环 速度闭环 速度规划
+		7、位置模式
+			1、电流闭环 速度闭环 位置闭环 位置规划
+	*/	
+	DISPATCH_FSM(m_data->state_machine);
 	// pp_ident_update(motor, PWM_CYCLE);
 	// struct currsmp_data *c_data = currsmp->data;
 	// c_data->channle_raw_a = adc_raw[0];
@@ -51,27 +72,21 @@ void foc_curr_regulator(uint32_t *adc_raw)
 	// svm_set(ualpha, ubeta, duty);
 	// inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);
 }
+
 void motor_init(struct device *motor)
 {
 	struct motor_data *m_data = motor->data;
-	fsm_cb_t *fsm = m_data->fsm_mode;
+	fsm_cb_t *fsm = m_data->state_machine;
 	if (!fsm->p1) {
 		fsm->p1 = (void *)motor;
 	}
-	// struct motor_config *m_cfg = motor->config;
-	// struct device *pp = m_cfg->pp_ident;
-	pp_ident_start(motor);
-	curr_calib_start(motor, 10000);
 }
+
 void motor_task(struct device *motor)
 {
 	struct motor_data *m_data = motor->data;
 	if (m_data->flag == PARAM_NEVER_LOADED) {
-		TRAN_STATE(m_data->fsm_mode, motor_calibration_mode);
+		TRAN_STATE(m_data->state_machine, motor_carible_state);
 	} else {
-	}
-
-	for (;;) {
-		DISPATCH_FSM(m_data->fsm_mode);
 	}
 }

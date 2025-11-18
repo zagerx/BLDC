@@ -1,7 +1,9 @@
 #include <stddef.h>
 #include "motor.h"
 #include <statemachine.h>
-
+#include "motor_currment_carible.h"
+#include "motor_pp_ident.h"
+#include "motor_cfg.h"
 fsm_rt_t motor_init_state(fsm_cb_t *obj)
 {
 	enum {
@@ -89,22 +91,11 @@ fsm_rt_t motor_runing_state(fsm_cb_t *obj)
 	enum {
 		RUNING = USER_STATUS,
 	};
-	const struct device *motor = obj->p1;
-	// const struct device *foc = ((const struct motor_data *)motor->data)->foc_dev;
-	struct motor_data *m_data = motor->data;
 
 	switch (obj->chState) {
 	case ENTER:
-		m_data->statue = MOTOR_STATE_CLOSED_LOOP;
+		break;
 	case RUNING:
-		if (m_data->mode == MOTOR_MODE_POSI) {
-			// posloop(foc);
-		} else if (m_data->mode == MOTOR_MODE_SPEED) {
-			// speedloop(foc);
-		} else if (m_data->mode == MOTOR_MODE_TORQUE) {
-			// foc_currloop(foc);
-		}
-
 		break;
 	case EXIT:
 		break;
@@ -120,15 +111,11 @@ fsm_rt_t motor_stop_state(fsm_cb_t *obj)
 		RUNING = USER_STATUS,
 	};
 	const struct device *motor = obj->p1;
-	// const struct device *foc = ((const struct motor_data *)motor->data)->foc_dev;
-	// const struct device *svpwm = ((const struct motor_config *)motor->config)->pwm;
 	struct motor_data *m_data = motor->data;
 
 	switch (obj->chState) {
 	case ENTER:
 		m_data->statue = MOTOR_STATE_STOP;
-		// posloop_deinit(foc);
-		// svpwm_disable_threephase_channle(svpwm);
 		break;
 	case RUNING:
 		break;
@@ -146,15 +133,11 @@ fsm_rt_t motor_falut_state(fsm_cb_t *obj)
 		RUNING = USER_STATUS,
 	};
 	const struct device *motor = obj->p1;
-	// const struct device *foc = ((const struct motor_data *)motor->data)->foc_dev;
-	// const struct device *svpwm = ((const struct motor_config *)motor->config)->pwm;
 	struct motor_data *m_data = motor->data;
 
 	switch (obj->chState) {
 	case ENTER:
 		m_data->statue = MOTOR_STATE_FAULT;
-		// posloop_deinit(foc);
-		// svpwm_disable_threephase_channle(svpwm);
 		break;
 	case RUNING:
 		break;
@@ -188,8 +171,48 @@ fsm_rt_t motor_idle_state(fsm_cb_t *obj)
 	return 0;
 }
 
-void motor_encoder_carible(struct device *motor)
+fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 {
-		
-}
+	enum {
+		RUNING = USER_STATUS,
+		CURR_CALIB_DONE,
+		PP_CALIB_START,
+		PP_CALIB_RUNING,
+		CALIB_DONE
+	};
+	struct device *motor = obj->p1;
+	struct motor_data *m_data = motor->data;
+	switch (obj->chState) {
+	case ENTER:
+		m_data->statue = MOTOR_STATE_CALIBRATION;
+		curr_calib_start(motor, 10000);
+		obj->chState = RUNING;
+		break;
+	case RUNING:
+		if (curr_calib_get_state(motor) != CURR_CALIB_STATE_DONE) {
+			curr_calib_update(motor);
+		} else if (curr_calib_get_state(motor) == CURR_CALIB_STATE_DONE) {
+			obj->chState = CURR_CALIB_DONE;
+		}
+		break;
+	case CURR_CALIB_DONE:
+		pp_ident_start(motor);
+		obj->chState = PP_CALIB_RUNING;
+		break;
+	case PP_CALIB_RUNING:
+		pp_ident_update(motor, PWM_CYCLE);
+		// if (condition)
+		// {
+		// 	obj->chState = CALIB_DONE;
+		// }
+		break;
+	case CALIB_DONE:
+		break;
+	case EXIT:
+		break;
+	default:
+		break;
+	}
 
+	return 0;
+}

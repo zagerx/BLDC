@@ -22,7 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "string.h"
-static uint8_t sg_uartreceive_buff[125];
+// static uint8_t sg_uartreceive_buff[125];
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart3;
@@ -185,12 +185,12 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
-#include "stdio.h"
-int _write(int file, char *data, int len) {
-  HAL_StatusTypeDef status =
-      HAL_UART_Transmit(&huart3, (uint8_t *)data, len, 1000);
-  return (status == HAL_OK ? len : 0);
-}
+// #include "stdio.h"
+// int _write(int file, char *data, int len) {
+//   HAL_StatusTypeDef status =
+//       HAL_UART_Transmit(&huart3, (uint8_t *)data, len, 1000);
+//   return (status == HAL_OK ? len : 0);
+// }
 // void _bsp_protransmit(unsigned char* pdata,unsigned short len)
 // {
 //     static unsigned char sg_uartsend_buf[125];

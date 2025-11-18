@@ -25,5 +25,6 @@ struct currsmp_data {
 
 void currsmp_updata(struct device *dev);
 void currsmp_caribe_offset(struct device *dev);
+void currsmp_update_raw(struct device *currsmp,uint32_t *adc_raw);
 
 #endif

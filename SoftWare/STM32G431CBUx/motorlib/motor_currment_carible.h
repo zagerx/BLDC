@@ -34,6 +34,6 @@ struct curr_calib_data {
 };
 
 void curr_calib_start(struct device *motor, uint16_t ample_count);
-void curr_calib_update(struct device *motor, uint32_t *adc_raw);
+void curr_calib_update(struct device *motor);
 
 #endif

@@ -31,7 +31,7 @@ void curr_calib_start(struct device *motor, uint16_t ample_count)
 /* ---------------------------------------------------------
  * 主更新
  * --------------------------------------------------------- */
-void curr_calib_update(struct device *motor, uint32_t *adc_raw)
+void curr_calib_update(struct device *motor)
 {
 	struct motor_config *mc = (struct motor_config *)motor->config;
 	struct motor_data *m_data = (struct motor_data *)motor->data;
@@ -71,9 +71,9 @@ void curr_calib_update(struct device *motor, uint32_t *adc_raw)
 			break;
 		}
 
-		cd->offset_a_acc += adc_raw[0];
-		cd->offset_b_acc += adc_raw[1];
-		cd->offset_c_acc += adc_raw[2];
+		cd->offset_a_acc += currsmp_data->channle_raw_a;
+		cd->offset_b_acc += currsmp_data->channle_raw_b;
+		cd->offset_c_acc += currsmp_data->channle_raw_c;
 
 		cd->sample_index++;
 	} break;
@@ -117,4 +117,15 @@ void curr_calib_update(struct device *motor, uint32_t *adc_raw)
 	default:
 		break;
 	}
+}
+
+
+enum curr_calib_state curr_calib_get_state(struct device* motor)
+{
+	struct motor_data *m_data = (struct motor_data *)motor->data;
+
+	struct device *cc = m_data->calib->current_calibration;
+
+	struct curr_calib_data *cd = cc->data;	
+	return cd->state;
 }

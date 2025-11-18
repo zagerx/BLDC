@@ -144,35 +144,4 @@ fsm_rt_t motor_position_control_mode(fsm_cb_t *obj)
 	return fsm_rt_cpl;
 }
 
-fsm_rt_t motor_calibration_mode(fsm_cb_t *obj)
-{
-	enum {
-		CALIBRATE_CURRMENT = USER_STATUS,
-		CALIBRATE_RL,
-	};
-	const struct device *motor = obj->p1;
-	struct motor_data *m_data = motor->data;
-	switch (obj->chState) {
-	case ENTER:
-		break;
-	case CALIBRATE_CURRMENT:
-		{
-			
-		}
-		break;
-
-	case CALIBRATE_RL:
-		{
-			
-		}
-		break;
-
-	case EXIT:
-		break;
-
-	default:
-		break;
-	}
-	return fsm_rt_cpl;
-}
 

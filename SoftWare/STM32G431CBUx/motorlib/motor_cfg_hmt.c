@@ -15,7 +15,6 @@
 
 #include "feedback.h"
 #include "stm32_mt6816.h"
-#include "stm32_as5047.h"
 
 #include "motor_pp_ident.h"
 extern struct device motor1;
@@ -54,7 +53,7 @@ static struct motor_config m1_cfg = {
 
 static fsm_cb_t m1_statemachine = {
 	.current_state = motor_init_state,
-	.sub_state_machine =NULL,
+	.sub_state_machine =&NULL,
 	.p1 = &motor1,
 };
 

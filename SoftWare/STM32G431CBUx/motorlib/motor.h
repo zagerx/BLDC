@@ -98,6 +98,7 @@ struct motor_calibration_modules {
 	struct device *pp_ident;
 	struct device *current_calibration;
 	struct device *rl_ident;
+	bool done;//整个模块校准完成
 };
 
 struct motor_data {
@@ -109,7 +110,7 @@ struct motor_data {
 	enum motor_mode mode;
 	enum motor_state statue;
 	enum motor_fault_code faultcode;
-	fsm_cb_t *fsm_mode;
+	fsm_cb_t *state_machine;
 };
 void foc_curr_regulator(uint32_t *adc_raw);
 #endif
