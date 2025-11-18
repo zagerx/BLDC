@@ -173,6 +173,7 @@ void pp_ident_update(struct device *motor, float dt)
 		/* -----------------------------------------------------
 		 * Step 8：结束
 		 * ----------------------------------------------------- */
+		pp_data->done = true;
 		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
 
 	} break;

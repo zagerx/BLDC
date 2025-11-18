@@ -1,5 +1,6 @@
 #include <stddef.h>
 
+#include "_encoder_carible.h"
 #include "device.h"
 #include "inverter.h"
 #include "motor.h"
@@ -74,9 +75,22 @@ static struct curr_calib_data curr_calib_data1 = {0};
 static struct device curr_calib = {
 	.data = &curr_calib_data1,
 };
+static struct encoder_calib_config ec_carb_cfg1 = {
+	.encoder_max = 16383,
+	.openloop_speed = 5.0f,
+	.openloop_voltage = 0.03f,
+	.align_voltage = 0.03f,
+	.duration = 6.0f,
+};
+static struct encoder_calib_data ec_carb_data1 = {0};
+static struct device encoder1_calib = {
+	.config = &ec_carb_cfg1,
+	.data = &ec_carb_data1,
+};
 static struct motor_calibration_modules m1_calib_modul = {
 	.pp_ident = &pp1,
 	.current_calibration = &curr_calib,
+	.encoder_calibration = &encoder1_calib,
 };
 
 static struct motor_data m1_data = {

@@ -72,7 +72,7 @@ void encoder_calib_start(struct device *motor)
 	ed->zero_offset = 0;
 	ed->polarity = 1; /* 1: unknown/assume +1 until measured */
 }
-
+#include "stdio.h"
 /* ---------------------------------------------------------
  * 主更新周期（每个控制周期调用）
  * --------------------------------------------------------- */
@@ -91,6 +91,7 @@ void encoder_calib_update(struct device *motor, float dt)
 	if (!cfg) {
 		ed->state = ENC_CALIB_STATE_ERROR;
 		ed->done = true;
+		printf(".\r\n");
 		return;
 	}
 
@@ -141,7 +142,7 @@ void encoder_calib_update(struct device *motor, float dt)
 			ed->elec_angle -= 2.0f * M_PI;
 		}
 
-		float angle = ed->elec_angle;
+		float angle = ed->elec_angle * (180.0f / M_PI);
 		float v_mag = cfg->openloop_voltage;
 		if (v_mag > 0.577f) {
 			v_mag = 0.577f;

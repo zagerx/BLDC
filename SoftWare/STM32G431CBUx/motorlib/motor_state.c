@@ -5,6 +5,7 @@
 #include "_pp_ident.h"
 #include "motor_cfg.h"
 #include "motor_carible.h"
+#include "_encoder_carible.h"
 fsm_rt_t motor_idle_state(fsm_cb_t *obj)
 {
 	enum {
@@ -140,11 +141,23 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 		break;
 	case M_CARIBLE_PP_RUNING:
 		if (pp_ident_get_pp_state(motor) == PP_CALIB_STATE_COMPLETE) {
-			obj->chState = M_ALL_CALIB_DONE;
+			obj->chState = M_CARIBLE_PP_DONE;
 		} else if (pp_ident_get_pp_state(motor) == PP_CALIB_STATE_ERROR) {
 			obj->chState = M_CARIBLE_ERR;
 		}
 		pp_ident_update(motor, PWM_CYCLE); // 必须放在最后
+		break;
+	case M_CARIBLE_PP_DONE:
+		encoder_calib_start(motor);
+		obj->chState = M_CARIBLE_ENCODER_RUNING;
+		break;
+	case M_CARIBLE_ENCODER_RUNING:
+		if (encoder_calib_get_state(motor) == ENC_CALIB_STATE_COMPLETE) {
+			obj->chState = M_ALL_CALIB_DONE;
+		} else if (encoder_calib_get_state(motor) == ENC_CALIB_STATE_ERROR) {
+			obj->chState = M_CARIBLE_ERR;
+		}
+		encoder_calib_update(motor, PWM_CYCLE);
 		break;
 	case M_ALL_CALIB_DONE:
 		break;
