@@ -48,13 +48,13 @@ add_subdirectory(motorlib)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/motorlib  
 )
-# target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-#     ${MOTORLIB_SOURCES}
-# )
-
-# target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-#     ${MOTORLIB_INCLUDES}
-# )
+# =========================================
+# Add hmt_log module
+# =========================================
+add_subdirectory(hmt_log)
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/hmt_log
+)
 
 
 # Link directories setup
