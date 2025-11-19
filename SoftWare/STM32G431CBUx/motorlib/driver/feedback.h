@@ -19,7 +19,7 @@ struct feedback_api
     float (*calce_angle)(struct device*);
 };
 
-void feedback_update_angle_vec(struct device *dev);
+void feedback_update_angle_vec(struct device *dev,float dt);
 
 
 #endif

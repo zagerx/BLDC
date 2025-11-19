@@ -3,7 +3,7 @@
 #include "device.h"
 #include <stdint.h>
 
-void feedback_update_angle_vec(struct device *dev)
+void feedback_update_angle_vec(struct device *dev,float dt)
 {
 	struct feedback_config *cfg = dev->config;
 

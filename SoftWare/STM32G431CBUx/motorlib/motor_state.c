@@ -6,6 +6,12 @@
 #include "motor_cfg.h"
 #include "motor_carible.h"
 #include "_encoder_carible.h"
+#include "coord_transform.h"
+#include "currsmp.h"
+#include "feedback.h"
+#include "inverter.h"
+#include "svpwm.h"
+#include "arm_math.h"
 fsm_rt_t motor_idle_state(fsm_cb_t *obj)
 {
 	enum {
@@ -189,10 +195,18 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		break;
 	case RUNING:
 		{
-			feedback_update_angle_vec(feedback);
+			feedback_update_angle_vec(feedback,PWM_CYCLE);
 			currsmp_updata(currsmp);
 			float sin_val, cos_val;
 			// sin_cos_f32(self_theta, &sin_val, &cos_val);			
+			float ud, uq;
+			float ualpha, ubeta;
+			ud = 0.0f;
+			uq = 0.02f;
+			inv_park_f32(ud, uq, &ualpha, &ubeta, sin_val, cos_val);
+			float duty[3];
+			svm_set(ualpha, ubeta, duty);
+			inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);			
 		}
 		break;
 	case EXIT:

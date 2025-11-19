@@ -40,7 +40,10 @@ add_executable(${CMAKE_PROJECT_NAME})
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
-
+# 将隐式函数声明警告视为错误
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE 
+    -Werror=implicit-function-declaration
+)
 # =========================================
 # Add motorlib module
 # =========================================
