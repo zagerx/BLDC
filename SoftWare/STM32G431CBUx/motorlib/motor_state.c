@@ -125,8 +125,6 @@ fsm_rt_t motor_falut_state(fsm_cb_t *obj)
 fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 {
 	struct device *motor = obj->p1;
-	// struct motor_config *m_cfg = motor->config;
-	// struct device *fb = m_cfg->feedback;
 	struct motor_data *m_data = motor->data;
 	struct device *pp_ident = m_data->calib->pp_ident;
 	struct device *encoder_carib = m_data->calib->encoder_calibration;
@@ -164,7 +162,7 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 		break;
 	case M_CARIBLE_ENCODER_RUNING:
 		if (encoder_calib_get_state(encoder_carib) == ENC_CALIB_STATE_COMPLETE) {
-			motor_set_calibstate(encoder_carib,M_ALL_CALIB_DONE);
+			motor_set_calibstate(motor, M_ALL_CALIB_DONE);
 			obj->chState = M_ALL_CALIB_DONE;
 		} else if (encoder_calib_get_state(encoder_carib) == ENC_CALIB_STATE_ERROR) {
 			obj->chState = M_CARIBLE_ERR;
@@ -193,27 +191,27 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 	struct motor_config *m_cfg = motor->config;
 	struct device *feedback = m_cfg->feedback;
 	struct feedback_data *fb_data = feedback->data;
-	struct device *currsmp = m_cfg->currsmp;
+	// struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
 	switch (obj->chState) {
 	case ENTER:
+		// feedback_init(feedback);
+		obj->chState = RUNING;
 		break;
-	case RUNING:
-		{
-			feedback_update_angle_vel(feedback,PWM_CYCLE);
-			currsmp_updata(currsmp);
-			float sin_val, cos_val;
-			sin_cos_f32(fb_data->elec_angle, &sin_val, &cos_val);			
-			float ud, uq;
-			float ualpha, ubeta;
-			ud = 0.0f;
-			uq = 0.02f;
-			inv_park_f32(ud, uq, &ualpha, &ubeta, sin_val, cos_val);
-			float duty[3];
-			svm_set(ualpha, ubeta, duty);
-			inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);			
-		}
-		break;
+	case RUNING: {
+		feedback_update_angle_vel(feedback, PWM_CYCLE);
+		// currsmp_updata(currsmp);
+		float sin_val, cos_val;
+		sin_cos_f32(fb_data->elec_angle * (180.0f / M_PI), &sin_val, &cos_val);
+		float ud, uq;
+		float ualpha, ubeta;
+		ud = 0.0f;
+		uq = -0.04f;
+		inv_park_f32(ud, uq, &ualpha, &ubeta, sin_val, cos_val);
+		float duty[3];
+		svm_set(ualpha, ubeta, duty);
+		inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);
+	} break;
 	case EXIT:
 		break;
 	default:
@@ -222,4 +220,3 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 
 	return 0;
 }
-
