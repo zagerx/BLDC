@@ -167,6 +167,7 @@ void pp_ident_update(struct device *motor, float dt)
 		 * ----------------------------------------------------- */
 		float pp_calc = fabsf(pp_data->electrical_rounds / pp_data->mech_rounds);
 		pp_data->pole_pairs = (uint16_t)(roundf(pp_calc));
+		feedback_set_pole_pairs(fb,pp_data->pole_pairs);
 		pp_data->calibra_state = PP_CALIB_STATE_COMPLETE;
 	} break;
 	case PP_CALIB_STATE_COMPLETE: {

@@ -125,6 +125,8 @@ fsm_rt_t motor_falut_state(fsm_cb_t *obj)
 fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 {
 	struct device *motor = obj->p1;
+	struct motor_config *m_cfg = motor->config;
+	struct device *fb = m_cfg->feedback;
 	struct motor_data *m_data = motor->data;
 	switch (obj->chState) {
 	case ENTER:
@@ -185,9 +187,9 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		RUNING = USER_STATUS,
 	};
 	const struct device *motor = obj->p1;
-	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
 	struct device *feedback = m_cfg->feedback;
+	struct feedback_data *fb_data = feedback->data;
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
 	switch (obj->chState) {
@@ -195,10 +197,10 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		break;
 	case RUNING:
 		{
-			feedback_update_angle_vec(feedback,PWM_CYCLE);
+			feedback_update_angle_vel(feedback,PWM_CYCLE);
 			currsmp_updata(currsmp);
 			float sin_val, cos_val;
-			// sin_cos_f32(self_theta, &sin_val, &cos_val);			
+			sin_cos_f32(fb_data->elec_angle, &sin_val, &cos_val);			
 			float ud, uq;
 			float ualpha, ubeta;
 			ud = 0.0f;

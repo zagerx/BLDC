@@ -187,7 +187,7 @@ void encoder_calib_update(struct device *motor, float dt)
 			} else {
 				ed->polarity = -1;
 			}
-
+			feedback_set_direction(fb,ed->polarity);
 			/* 进入处理阶段 */
 			ed->state = ENC_CALIB_STATE_PROCESSING;
 		}
@@ -204,6 +204,7 @@ void encoder_calib_update(struct device *motor, float dt)
 
 		/* 保存结果 */
 		ed->zero_offset = ed->raw_start; /* encoder 原始值对应电角度 0 */
+		feedback_set_offset(fb,ed->zero_offset);
 		ed->done = true;
 
 		/* 停止输出 */
