@@ -128,6 +128,7 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 	struct motor_config *m_cfg = motor->config;
 	struct device *fb = m_cfg->feedback;
 	struct motor_data *m_data = motor->data;
+	struct device *pp_ident = m_data->calib->pp_ident;
 	switch (obj->chState) {
 	case ENTER:
 		m_data->statue = MOTOR_STATE_CALIBRATION;
@@ -144,16 +145,16 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 		}
 		break;
 	case M_CARIBLE_CURR_DONE:
-		pp_ident_start(motor);
+		pp_ident_start(pp_ident);
 		obj->chState = M_CARIBLE_PP_RUNING;
 		break;
 	case M_CARIBLE_PP_RUNING:
-		if (pp_ident_get_pp_state(motor) == PP_CALIB_STATE_COMPLETE) {
+		if (pp_ident_get_pp_state(pp_ident) == PP_CALIB_STATE_COMPLETE) {
 			obj->chState = M_CARIBLE_PP_DONE;
-		} else if (pp_ident_get_pp_state(motor) == PP_CALIB_STATE_ERROR) {
+		} else if (pp_ident_get_pp_state(pp_ident) == PP_CALIB_STATE_ERROR) {
 			obj->chState = M_CARIBLE_ERR;
 		}
-		pp_ident_update(motor, PWM_CYCLE); // 必须放在最后
+		pp_ident_update(pp_ident, PWM_CYCLE); // 必须放在最后
 		break;
 	case M_CARIBLE_PP_DONE:
 		encoder_calib_start(motor);

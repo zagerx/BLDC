@@ -61,6 +61,8 @@ static fsm_cb_t m1_statemachine = {
 };
 
 static struct pp_ident_config pp_cfg = {
+	.feedback = &feedback1,
+	.inverter = &inverter1,
 	.encoder_max = 16383,
 	.openloop_speed = 5.0f,
 	.openloop_voltage = 0.03f,

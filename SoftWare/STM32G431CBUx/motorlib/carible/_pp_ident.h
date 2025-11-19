@@ -24,6 +24,8 @@ enum pp_carible_state {
 	PP_CALIB_STATE_ERROR
 };
 struct pp_ident_config {
+	struct device *feedback;
+	struct device *inverter;
 	// 施加的开环电角速度(rad/s) 或者 固定步进值(你可任选)
 	float openloop_speed;
 
@@ -54,8 +56,8 @@ struct pp_ident_data {
 	int32_t raw_delta_acc; // 累积机械角变化
 	enum pp_carible_state calibra_state;
 };
-void pp_ident_start(struct device *motor);
-void pp_ident_update(struct device *motor, float dt);
-enum pp_carible_state pp_ident_get_pp_state(struct device *motor);
+void pp_ident_update(struct device *pp, float dt);
+void pp_ident_start(struct device *pp);
+enum pp_carible_state pp_ident_get_pp_state(struct device *pp);
 
 #endif

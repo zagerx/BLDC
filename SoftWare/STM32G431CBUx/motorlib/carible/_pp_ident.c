@@ -1,13 +1,12 @@
+#include <stdint.h>
+#include <math.h>
+
 #include "_pp_ident.h"
-#include "motor_carible.h"
 #include "device.h"
 #include "feedback.h"
 #include "inverter.h"
-#include "math.h"
-#include "motor.h"
 #include "coord_transform.h"
 #include "svpwm.h"
-#include <stdint.h>
 
 #undef M_PI
 #define M_PI 3.1415926f
@@ -36,19 +35,13 @@ static inline int32_t unwrap_raw(int32_t current, int32_t *prev, int32_t max)
 /* ---------------------------------------------------------
  * 启动：初始化运行状态和累积变量
  * --------------------------------------------------------- */
-void pp_ident_start(struct device *motor)
+void pp_ident_start(struct device *pp)
 {
-	struct motor_config *mc = (struct motor_config *)motor->config;
-	struct motor_data *m_data = (struct motor_data *)motor->data;
-
-	struct feedback_config *fb_cfg = mc->feedback->config;
-
-	struct device *pp = m_data->calib->pp_ident;
 	struct pp_ident_data *pp_data = pp->data;
 	struct pp_ident_config *cfg = pp->config;
-
+	struct device *feeedback = cfg->feedback;
+	struct feedback_config *fb_cfg = feeedback->config;
 	if (!cfg) {
-		// pp_data->running = false;
 		pp_data->done = true;
 		pp_data->pole_pairs = 0;
 		return;
@@ -67,17 +60,13 @@ void pp_ident_start(struct device *motor)
 /* ---------------------------------------------------------
  * 主更新周期
  * --------------------------------------------------------- */
-void pp_ident_update(struct device *motor, float dt)
+void pp_ident_update(struct device *pp, float dt)
 {
-	struct motor_config *mc = (struct motor_config *)motor->config;
-	struct motor_data *m_data = (struct motor_data *)motor->data;
-	struct device *fb = mc->feedback;
-	struct device *inv = mc->inverter;
-	struct device *pp = m_data->calib->pp_ident;
-
+	struct pp_ident_config *cfg = pp->config; 
+	struct device *fb = cfg->feedback;
+	struct device *inv = cfg->inverter;
 	struct feedback_config *fb_cfg = fb->config;
 	struct pp_ident_data *pp_data = pp->data;
-	struct pp_ident_config *cfg = pp->config;
 
 	if (!cfg) {
 		return;
@@ -187,10 +176,8 @@ void pp_ident_update(struct device *motor, float dt)
 		break;
 	}
 }
-enum pp_carible_state pp_ident_get_pp_state(struct device *motor)
+enum pp_carible_state pp_ident_get_pp_state(struct device *pp)
 {
-	struct motor_data *m_data = (struct motor_data *)motor->data;
-	struct device *pp = m_data->calib->pp_ident;
 	struct pp_ident_data *pp_data = pp->data;
 	return pp_data->calibra_state;
 }
