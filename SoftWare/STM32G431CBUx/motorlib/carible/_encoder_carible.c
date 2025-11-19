@@ -1,17 +1,11 @@
+#include <stdint.h>
+#include <math.h>
 #include "_encoder_carible.h"
-/*
- * 编码器校准模块（风格与 pp_ident / curr_calib 保持一致）
- */
-
 #include "device.h"
 #include "feedback.h"
 #include "inverter.h"
-#include "motor.h"
 #include "coord_transform.h"
 #include "svpwm.h"
-#include <stdint.h>
-#include <math.h>
-#include "motor_carible.h"
 
 #undef M_PI
 #define M_PI 3.1415926f
@@ -40,16 +34,14 @@ static inline int32_t unwrap_raw(int32_t current, int32_t *prev, int32_t max)
 /* ---------------------------------------------------------
  * 启动：初始化状态
  * --------------------------------------------------------- */
-void encoder_calib_start(struct device *motor)
+void encoder_calib_start(struct device *encoder_calib)
 {
-	struct motor_config *mc = (struct motor_config *)motor->config;
-	struct motor_data *m_data = (struct motor_data *)motor->data;
 
-	struct device *enc_dev = m_data->calib->encoder_calibration;
+	struct device *enc_dev = encoder_calib;
 	struct encoder_calib_data *ed = enc_dev->data;
 	struct encoder_calib_config *cfg = enc_dev->config;
-
-	struct feedback_config *fb_cfg = mc->feedback->config;
+	struct device *fb = cfg->feedback;
+	struct feedback_config *fb_cfg = fb->config;
 	if (!cfg) {
 		/* 配置缺失，标记为完成且失败 */
 		ed->state = ENC_CALIB_STATE_ERROR;
@@ -76,16 +68,13 @@ void encoder_calib_start(struct device *motor)
 /* ---------------------------------------------------------
  * 主更新周期（每个控制周期调用）
  * --------------------------------------------------------- */
-void encoder_calib_update(struct device *motor, float dt)
+void encoder_calib_update(struct device *encoder_calib, float dt)
 {
-	struct motor_config *mc = (struct motor_config *)motor->config;
-	struct motor_data *m_data = (struct motor_data *)motor->data;
-
-	struct device *inv = mc->inverter;
-	struct device *fb = mc->feedback;
-	struct device *enc_dev = m_data->calib->encoder_calibration;
+	struct device *enc_dev = encoder_calib;
 	struct encoder_calib_data *ed = enc_dev->data;
 	struct encoder_calib_config *cfg = enc_dev->config;
+	struct device *inv = cfg->inverter;
+	struct device *fb = cfg->feedback;
 	struct feedback_config *fb_cfg = fb->config;
 
 	if (!cfg) {
@@ -238,10 +227,9 @@ void encoder_calib_update(struct device *motor, float dt)
 /* ---------------------------------------------------------
  * 查询状态
  * --------------------------------------------------------- */
-enum encoder_calib_state encoder_calib_get_state(struct device *motor)
+enum encoder_calib_state encoder_calib_get_state(struct device *encoder_calib)
 {
-	struct motor_data *m_data = (struct motor_data *)motor->data;
-	struct device *enc_dev = m_data->calib->encoder_calibration;
+	struct device *enc_dev = encoder_calib;
 	struct encoder_calib_data *ed = enc_dev->data;
 	return ed->state;
 }

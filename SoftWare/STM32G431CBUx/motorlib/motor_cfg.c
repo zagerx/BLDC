@@ -78,6 +78,8 @@ static struct device curr_calib = {
 	.data = &curr_calib_data1,
 };
 static struct encoder_calib_config ec_carb_cfg1 = {
+	.feedback = &feedback1,
+	.inverter = &inverter1,	
 	.encoder_max = 16383,
 	.openloop_speed = 5.0f,
 	.openloop_voltage = 0.03f,

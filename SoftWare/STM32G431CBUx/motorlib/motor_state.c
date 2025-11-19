@@ -125,10 +125,12 @@ fsm_rt_t motor_falut_state(fsm_cb_t *obj)
 fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 {
 	struct device *motor = obj->p1;
-	struct motor_config *m_cfg = motor->config;
-	struct device *fb = m_cfg->feedback;
+	// struct motor_config *m_cfg = motor->config;
+	// struct device *fb = m_cfg->feedback;
 	struct motor_data *m_data = motor->data;
 	struct device *pp_ident = m_data->calib->pp_ident;
+	struct device *encoder_carib = m_data->calib->encoder_calibration;
+
 	switch (obj->chState) {
 	case ENTER:
 		m_data->statue = MOTOR_STATE_CALIBRATION;
@@ -157,17 +159,17 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 		pp_ident_update(pp_ident, PWM_CYCLE); // 必须放在最后
 		break;
 	case M_CARIBLE_PP_DONE:
-		encoder_calib_start(motor);
+		encoder_calib_start(encoder_carib);
 		obj->chState = M_CARIBLE_ENCODER_RUNING;
 		break;
 	case M_CARIBLE_ENCODER_RUNING:
-		if (encoder_calib_get_state(motor) == ENC_CALIB_STATE_COMPLETE) {
-			motor_set_calibstate(motor,M_ALL_CALIB_DONE);
+		if (encoder_calib_get_state(encoder_carib) == ENC_CALIB_STATE_COMPLETE) {
+			motor_set_calibstate(encoder_carib,M_ALL_CALIB_DONE);
 			obj->chState = M_ALL_CALIB_DONE;
-		} else if (encoder_calib_get_state(motor) == ENC_CALIB_STATE_ERROR) {
+		} else if (encoder_calib_get_state(encoder_carib) == ENC_CALIB_STATE_ERROR) {
 			obj->chState = M_CARIBLE_ERR;
 		}
-		encoder_calib_update(motor, PWM_CYCLE);
+		encoder_calib_update(encoder_carib, PWM_CYCLE);
 		break;
 	case M_ALL_CALIB_DONE:
 		break;

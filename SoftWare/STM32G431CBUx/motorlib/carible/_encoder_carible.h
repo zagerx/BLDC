@@ -15,6 +15,9 @@ enum encoder_calib_state {
 };
 
 struct encoder_calib_config {
+
+	struct device *feedback;
+	struct device *inverter;
 	/* ALIGN 时用的电压幅值（0~0.577） */
 	float align_voltage;
 
@@ -55,8 +58,8 @@ struct encoder_calib_data {
 	enum encoder_calib_state state;
 };
 
-void encoder_calib_start(struct device *motor);
-void encoder_calib_update(struct device *motor, float dt);
-enum encoder_calib_state encoder_calib_get_state(struct device *motor);
+void encoder_calib_start(struct device *encoder_calib);
+void encoder_calib_update(struct device *encoder_calib, float dt);
+enum encoder_calib_state encoder_calib_get_state(struct device *encoder_calib);
 
 #endif
