@@ -13,6 +13,7 @@
 #include "_pp_ident.h"
 #include <stdint.h>
 #include "motor_state.h"
+#include "motor_carible.h"
 extern struct device motor1;
 
 void foc_curr_regulator(uint32_t *adc_raw)
@@ -96,6 +97,11 @@ void motor_task(struct device *motor)
 		state = 1;
 		break;
 	case 1:
+		if(motor_get_calibstate(motor) == M_ALL_CALIB_DONE)
+		{
+			TRAN_STATE(m_data->state_machine, motor_encoder_openloop_state);
+			state = 2;
+		}
 		break;
 	}
 }

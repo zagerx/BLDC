@@ -153,6 +153,7 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 		break;
 	case M_CARIBLE_ENCODER_RUNING:
 		if (encoder_calib_get_state(motor) == ENC_CALIB_STATE_COMPLETE) {
+			motor_set_calibstate(motor,M_ALL_CALIB_DONE);
 			obj->chState = M_ALL_CALIB_DONE;
 		} else if (encoder_calib_get_state(motor) == ENC_CALIB_STATE_ERROR) {
 			obj->chState = M_CARIBLE_ERR;
@@ -171,3 +172,35 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 
 	return 0;
 }
+
+fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
+{
+	enum {
+		RUNING = USER_STATUS,
+	};
+	const struct device *motor = obj->p1;
+	struct motor_data *m_data = motor->data;
+	struct motor_config *m_cfg = motor->config;
+	struct device *feedback = m_cfg->feedback;
+	struct device *currsmp = m_cfg->currsmp;
+	struct device *inverer = m_cfg->inverter;
+	switch (obj->chState) {
+	case ENTER:
+		break;
+	case RUNING:
+		{
+			feedback_update_angle_vec(feedback);
+			currsmp_updata(currsmp);
+			float sin_val, cos_val;
+			// sin_cos_f32(self_theta, &sin_val, &cos_val);			
+		}
+		break;
+	case EXIT:
+		break;
+	default:
+		break;
+	}
+
+	return 0;
+}
+

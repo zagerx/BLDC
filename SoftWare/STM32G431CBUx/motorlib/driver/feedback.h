@@ -10,6 +10,7 @@ struct feedback_config
 struct feedback_data
 {
     uint16_t raw;
+    uint32_t zero_offset;
     float e_angle;
 };
 

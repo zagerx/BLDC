@@ -38,7 +38,6 @@ void curr_calib_update(struct device *motor)
 	struct motor_data *m_data = (struct motor_data *)motor->data;
 
 	struct device *inv = mc->inverter;
-	// struct device *fb = mc->feedback;
 	struct device *cc = m_data->calib->current_calibration;
 
 	struct curr_calib_data *cd = cc->data;

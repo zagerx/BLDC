@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "device.h"
 #include "statemachine.h"
-enum {
+enum m_carible{
 	M_CARIBLE_CURR_RUNING = USER_STATUS,
 	M_CARIBLE_CURR_DONE,
 	M_CARIBLE_PP_CURR_START,
@@ -20,7 +20,11 @@ struct motor_calibration_modules {
 	struct device *encoder_calibration;
 	struct device *current_calibration;
 	struct device *rl_ident;
-	bool done; // 整个模块校准完成
+	enum m_carible state;
 };
+
+enum m_carible motor_get_calibstate(struct device *motor);
+void motor_set_calibstate(struct device *motor,enum m_carible state);
+
 
 #endif

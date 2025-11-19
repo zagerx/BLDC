@@ -91,7 +91,6 @@ void encoder_calib_update(struct device *motor, float dt)
 	if (!cfg) {
 		ed->state = ENC_CALIB_STATE_ERROR;
 		ed->done = true;
-		printf(".\r\n");
 		return;
 	}
 
