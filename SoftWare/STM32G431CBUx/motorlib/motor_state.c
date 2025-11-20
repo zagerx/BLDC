@@ -124,6 +124,9 @@ fsm_rt_t motor_falut_state(fsm_cb_t *obj)
 
 fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 {
+	enum{
+		RUNNING = USER_STATUS,
+	};
 	struct device *motor = obj->p1;
 	struct motor_data *m_data = motor->data;
 	struct device *pp_ident = m_data->calib->pp_ident;
@@ -131,47 +134,10 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 
 	switch (obj->chState) {
 	case ENTER:
-		m_data->statue = MOTOR_STATE_CALIBRATION;
-		curr_calib_start(motor, 10000);
-		obj->chState = M_CARIBLE_CURR_RUNING;
+		obj->chState = RUNNING;
 		break;
-	case M_CARIBLE_CURR_RUNING:
-		curr_calib_update(motor);
-		if (curr_calib_get_state(motor) == CURR_CALIB_STATE_DONE) {
-			obj->chState = M_CARIBLE_CURR_DONE;
-		} else if (curr_calib_get_state(motor) == CURR_CALIB_STATE_ERROR) {
-			obj->chState = M_CARIBLE_ERR;
-		} else {
-		}
-		break;
-	case M_CARIBLE_CURR_DONE:
-		pp_ident_start(pp_ident);
-		obj->chState = M_CARIBLE_PP_RUNING;
-		break;
-	case M_CARIBLE_PP_RUNING:
-		if (pp_ident_get_pp_state(pp_ident) == PP_CALIB_STATE_COMPLETE) {
-			obj->chState = M_CARIBLE_PP_DONE;
-		} else if (pp_ident_get_pp_state(pp_ident) == PP_CALIB_STATE_ERROR) {
-			obj->chState = M_CARIBLE_ERR;
-		}
-		pp_ident_update(pp_ident, PWM_CYCLE); // 必须放在最后
-		break;
-	case M_CARIBLE_PP_DONE:
-		encoder_calib_start(encoder_carib);
-		obj->chState = M_CARIBLE_ENCODER_RUNING;
-		break;
-	case M_CARIBLE_ENCODER_RUNING:
-		if (encoder_calib_get_state(encoder_carib) == ENC_CALIB_STATE_COMPLETE) {
-			motor_set_calibstate(motor, M_ALL_CALIB_DONE);
-			obj->chState = M_ALL_CALIB_DONE;
-		} else if (encoder_calib_get_state(encoder_carib) == ENC_CALIB_STATE_ERROR) {
-			obj->chState = M_CARIBLE_ERR;
-		}
-		encoder_calib_update(encoder_carib, PWM_CYCLE);
-		break;
-	case M_ALL_CALIB_DONE:
-		break;
-	case M_CARIBLE_ERR:
+	case RUNNING:
+		motor_calib_update(m_data->calib);
 		break;
 	case EXIT:
 		break;

@@ -97,7 +97,7 @@ void motor_task(struct device *motor)
 		state = 1;
 		break;
 	case 1:
-		if(motor_get_calibstate(motor) == M_ALL_CALIB_DONE)
+		if(motor_get_calibstate(m_data->calib) == M_ALL_CALIB_DONE)
 		{
 			TRAN_STATE(m_data->state_machine, motor_encoder_openloop_state);
 			state = 2;
