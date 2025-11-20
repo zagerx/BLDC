@@ -112,6 +112,7 @@ static struct motor_calibration_modules m1_calib_modul = {
 	.pp_ident = &pp1,
 	.current_calibration = &curr_calib,
 	.encoder_calibration = &encoder1_calib,
+	.state = M_CARIBLE_CURR_STATR,
 };
 
 static struct motor_data m1_data = {

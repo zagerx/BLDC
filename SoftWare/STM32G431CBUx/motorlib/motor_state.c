@@ -11,6 +11,9 @@
 #include "inverter.h"
 #include "svpwm.h"
 #include "arm_math.h"
+
+fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj);
+
 fsm_rt_t motor_idle_state(fsm_cb_t *obj)
 {
 	enum {
@@ -128,15 +131,15 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 	};
 	struct device *motor = obj->p1;
 	struct motor_data *m_data = motor->data;
-	struct device *pp_ident = m_data->calib->pp_ident;
-	struct device *encoder_carib = m_data->calib->encoder_calibration;
 
 	switch (obj->chState) {
 	case ENTER:
 		obj->chState = RUNNING;
 		break;
 	case RUNNING:
-		motor_calib_update(m_data->calib);
+		if (motor_calib_update(m_data->calib, PWM_CYCLE) == 1) {
+			TRAN_STATE(m_data->state_machine, motor_encoder_openloop_state);
+		}
 		break;
 	case EXIT:
 		break;

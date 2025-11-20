@@ -23,8 +23,5 @@ struct motor_calibration_modules {
 	enum m_carible state;
 };
 
-enum m_carible motor_get_calibstate(struct motor_calibration_modules *m_calib);
-void motor_set_calibstate(struct motor_calibration_modules *m_calib, enum m_carible state);
-void motor_calib_update(struct motor_calibration_modules *calib);
-
+int32_t motor_calib_update(struct motor_calibration_modules *calib, float dt);
 #endif

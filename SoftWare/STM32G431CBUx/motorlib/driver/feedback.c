@@ -101,28 +101,28 @@ void feedback_update_angle_vel(struct device *dev, float dt)
 	data->vel_elec = data->vel_estimate * (float)cfg->pole_pairs;
 
 	// 方法2: PLL速度估计 (基于电角度)
-	// if (cfg->pll_kp > 0 && dt > 1e-6f) {
-	// // 计算PLL误差
-	// float pll_error = angle_difference(data->elec_angle, data->pll_pos);
+	if (cfg->pll_kp > 0 && dt > 1e-6f) {
+		// 计算PLL误差
+		float pll_error = angle_difference(data->elec_angle, data->pll_pos);
 
-	// // 动态调整PLL增益（基于速度）
-	// float bandwidth = fminf(0.05f * fabsf(data->pll_vel) + 1.0f, 10.0f);
-	// float kp = cfg->pll_kp * bandwidth;
-	// float ki = cfg->pll_ki * bandwidth;
+		// 动态调整PLL增益（基于速度）
+		float bandwidth = fminf(0.05f * fabsf(data->pll_vel) + 1.0f, 10.0f);
+		float kp = cfg->pll_kp * bandwidth;
+		float ki = cfg->pll_ki * bandwidth;
 
-	// // 更新PLL速度
-	// data->pll_vel += ki * pll_error * dt;
+		// 更新PLL速度
+		data->pll_vel += ki * pll_error * dt;
 
-	// // 更新PLL位置
-	// data->pll_pos += data->pll_vel * dt + kp * pll_error;
-	// data->pll_pos = normalize_angle(data->pll_pos);
+		// 更新PLL位置
+		data->pll_pos += data->pll_vel * dt + kp * pll_error;
+		data->pll_pos = normalize_angle(data->pll_pos);
 
-	// // 使用PLL速度作为最终电速度估计
-	// data->vel_elec = data->pll_vel;
+		// 使用PLL速度作为最终电速度估计
+		data->vel_elec = data->pll_vel;
 
-	// // 根据电速度计算机械速度
-	// data->vel_estimate = data->vel_elec / (float)cfg->pole_pairs;
-	// }
+		// 根据电速度计算机械速度
+		data->vel_estimate = data->vel_elec / (float)cfg->pole_pairs;
+	}
 
 	// 位置估计（用于抗噪声）
 	data->pos_estimate = (1.0f - cfg->pos_estimate_weight) * data->pos_estimate +

@@ -22,9 +22,9 @@ void foc_curr_regulator(uint32_t *adc_raw)
 	struct device *motor = &motor1;
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
-	struct device *feedback = m_cfg->feedback;
+	// struct device *feedback = m_cfg->feedback;
 	struct device *currsmp = m_cfg->currsmp;
-	struct device *inverer = m_cfg->inverter;
+	// struct device *inverer = m_cfg->inverter;
 	currsmp_update_raw(currsmp, adc_raw);
 
 	/*
@@ -97,11 +97,10 @@ void motor_task(struct device *motor)
 		state = 1;
 		break;
 	case 1:
-		if(motor_get_calibstate(m_data->calib) == M_ALL_CALIB_DONE)
-		{
-			TRAN_STATE(m_data->state_machine, motor_encoder_openloop_state);
-			state = 2;
-		}
+		// if (motor_get_calibstate(m_data->calib) == M_ALL_CALIB_DONE) {
+		// 	TRAN_STATE(m_data->state_machine, motor_encoder_openloop_state);
+		// 	state = 2;
+		// }
 		break;
 	}
 }
