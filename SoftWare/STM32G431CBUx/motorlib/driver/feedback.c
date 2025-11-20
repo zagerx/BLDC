@@ -69,7 +69,7 @@ void feedback_update_angle_vel(struct device *dev, float dt)
 	data->raw = cfg->get_raw();
 
 	// 考虑编码器偏移量
-	int32_t adjusted_raw = (int32_t)data->raw - (int32_t)cfg->offset;
+	int32_t adjusted_raw = (int32_t)data->raw - (int32_t)data->zero_offset;
 	if (adjusted_raw < 0) {
 		adjusted_raw += cfg->cpr;
 	}
@@ -184,8 +184,8 @@ void feedback_reset(struct device *dev)
 // 设置编码器偏移量
 void feedback_set_offset(struct device *dev, uint16_t offset)
 {
-	struct feedback_config *cfg = dev->config;
-	cfg->offset = offset;
+	struct feedback_data *data = dev->data;
+	data->zero_offset = offset;
 }
 
 // 设置极对数
@@ -198,6 +198,9 @@ void feedback_set_pole_pairs(struct device *dev, uint8_t pole_pairs)
 // 设置编码器方向
 void feedback_set_direction(struct device *dev, int8_t direction)
 {
+	if (!direction) {
+		return;
+	}
 	struct feedback_config *cfg = dev->config;
 	cfg->direction = direction;
 }

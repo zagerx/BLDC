@@ -58,7 +58,7 @@ uint16_t AS5047_read(uint16_t add)
 	return data;
 }
 
-uint16_t as5047_read_raw(void)
+uint32_t as5047_read_raw(void)
 {
 
 	return AS5047_read(ANGLEUNC);

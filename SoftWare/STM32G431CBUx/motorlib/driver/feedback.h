@@ -11,21 +11,21 @@
 #define AS5047_CPR 16384 // AS5047是14位编码器，16384 CPR
 
 struct feedback_config {
-	uint16_t (*get_raw)(void);
-	uint16_t cpr;              // 编码器每转计数
+	uint32_t (*get_raw)(void);
+	uint32_t cpr;              // 编码器每转计数
 	uint8_t pole_pairs;        // 电机极对数
 	int8_t direction;          // 编码器方向: 1 或 -1
 	float pll_kp;              // PLL比例增益
 	float pll_ki;              // PLL积分增益
 	float pos_estimate_weight; // 位置估计权重
 	bool index_search_enabled; // 是否启用索引搜索
-	uint16_t offset;           // 编码器偏移量
+				   // uint16_t offset;           // 编码器偏移量
 };
 
 struct feedback_data {
 	// 原始数据
-	uint16_t raw;
-	uint16_t raw_prev;
+	uint32_t raw;
+	uint32_t raw_prev;
 	uint32_t zero_offset;
 
 	// 角度信息
