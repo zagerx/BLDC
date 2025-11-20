@@ -1,35 +1,32 @@
 #include "motor_carible.h"
-#include "_currment_carible.h"
+#include "_current_calib.h"
 #include "_pp_ident.h"
 #include "_encoder_carible.h"
+#include "device.h"
 #include "motor_cfg.h"
 enum m_carible motor_get_calibstate(struct motor_calibration_modules *m_calib)
 {
-    return m_calib->state;
+	return m_calib->state;
 }
-void motor_set_calibstate(struct motor_calibration_modules *m_calib,enum m_carible state)
+void motor_set_calibstate(struct motor_calibration_modules *m_calib, enum m_carible state)
 {
-    m_calib->state = state;
+	m_calib->state = state;
 }
 
 void motor_calib_update(struct motor_calibration_modules *calib)
 {
-    struct device *pp_ident = calib->pp_ident;
-    struct device *encoder_carib =calib->encoder_calibration;
-   switch (calib->state)
-   {
-    case M_CARIBLE_CURR_STATR:
-        // curr_calib_start(motor, 10000);
-        calib->state = M_CARIBLE_CURR_RUNING;
-        break;
+	struct device *curr_calib = calib->current_calibration;
+	struct device *pp_ident = calib->pp_ident;
+	struct device *encoder_carib = calib->encoder_calibration;
+	switch (calib->state) {
+	case M_CARIBLE_CURR_STATR:
+		curr_calib_start(curr_calib, 10000);
+		calib->state = M_CARIBLE_CURR_RUNING;
+		break;
 	case M_CARIBLE_CURR_RUNING:
-		// curr_calib_update(motor);
-		// if (curr_calib_get_state(motor) == CURR_CALIB_STATE_DONE) {
-		// 	calib->state = M_CARIBLE_CURR_DONE;
-		// } else if (curr_calib_get_state(motor) == CURR_CALIB_STATE_ERROR) {
-		// 	calib->state = M_CARIBLE_ERR;
-		// } else {
-		// }
+		if (curr_calib_update(curr_calib, PWM_CYCLE) == 1) {
+			calib->state = M_CARIBLE_CURR_DONE;
+		}
 		break;
 	case M_CARIBLE_CURR_DONE:
 		pp_ident_start(pp_ident);
@@ -60,8 +57,8 @@ void motor_calib_update(struct motor_calibration_modules *calib)
 		break;
 	case M_CARIBLE_ERR:
 		break;
-   
-   default:
-    break;
-   } 
+
+	default:
+		break;
+	}
 }

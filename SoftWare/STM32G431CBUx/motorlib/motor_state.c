@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include "motor.h"
 #include <statemachine.h>
-#include "_currment_carible.h"
+#include "_current_calib.h"
 #include "_pp_ident.h"
 #include "motor_cfg.h"
 #include "motor_carible.h"
@@ -124,7 +124,7 @@ fsm_rt_t motor_falut_state(fsm_cb_t *obj)
 
 fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 {
-	enum{
+	enum {
 		RUNNING = USER_STATUS,
 	};
 	struct device *motor = obj->p1;

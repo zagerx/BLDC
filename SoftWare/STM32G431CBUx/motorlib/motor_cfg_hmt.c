@@ -4,7 +4,7 @@
 #include "inverter.h"
 #include "motor.h"
 #include "motor_pp_ident.h"
-#include "motor_currment_carible.h"
+#include "motor_current_calib.h"
 #include "statemachine.h"
 #include "motor_mode.h"
 #include "motor_state.h"
@@ -53,7 +53,7 @@ static struct motor_config m1_cfg = {
 
 static fsm_cb_t m1_statemachine = {
 	.current_state = motor_init_state,
-	.sub_state_machine =NULL,
+	.sub_state_machine = NULL,
 	.p1 = &motor1,
 };
 

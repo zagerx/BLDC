@@ -5,7 +5,7 @@
 #include "inverter.h"
 #include "motor.h"
 #include "_pp_ident.h"
-#include "_currment_carible.h"
+#include "_current_calib.h"
 #include "motor_carible.h"
 #include "statemachine.h"
 #include "motor_mode.h"
@@ -79,8 +79,15 @@ static struct device pp1 = {
 	.config = &pp_cfg,
 	.data = &pp_data,
 };
+static struct curr_calib_config curr_calib_cfg1 = {
+	.currsmp = &currsmp1,
+	.inverter = &inverter1,
+	.align_duration = 1.0f,
+	.sample_count = 1000,
+};
 static struct curr_calib_data curr_calib_data1 = {0};
 static struct device curr_calib = {
+	.config = &curr_calib_cfg1,
 	.data = &curr_calib_data1,
 };
 static struct encoder_calib_config ec_carb_cfg1 = {

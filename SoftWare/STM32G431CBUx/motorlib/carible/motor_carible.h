@@ -5,7 +5,7 @@
 #include "device.h"
 #include "statemachine.h"
 enum m_carible {
-	M_CARIBLE_CURR_STATR = USER_STATUS,
+	M_CARIBLE_CURR_STATR,
 	M_CARIBLE_CURR_RUNING,
 	M_CARIBLE_CURR_DONE,
 	M_CARIBLE_PP_RUNING,
@@ -24,7 +24,7 @@ struct motor_calibration_modules {
 };
 
 enum m_carible motor_get_calibstate(struct motor_calibration_modules *m_calib);
-void motor_set_calibstate(struct motor_calibration_modules *m_calib,enum m_carible state);
+void motor_set_calibstate(struct motor_calibration_modules *m_calib, enum m_carible state);
 void motor_calib_update(struct motor_calibration_modules *calib);
 
 #endif
