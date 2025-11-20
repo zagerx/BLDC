@@ -1,6 +1,6 @@
 #include <stddef.h>
 
-#include "_encoder_carible.h"
+#include "_encoder_calib.h"
 #include "device.h"
 #include "inverter.h"
 #include "motor.h"
@@ -98,7 +98,10 @@ static struct encoder_calib_config ec_carb_cfg1 = {
 	.openloop_speed = 5.0f,
 	.openloop_voltage = 0.03f,
 	.align_voltage = 0.03f,
-	.duration = 6.0f,
+	.rotate_duration = 6.0f,
+	.min_rotation_frac = 0.05f,
+	.align_duration = 2.0f,
+
 };
 static struct encoder_calib_data ec_carb_data1 = {0};
 static struct device encoder1_calib = {

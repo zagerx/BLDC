@@ -1,7 +1,7 @@
 #include "motor_carible.h"
 #include "_current_calib.h"
 #include "_pp_ident.h"
-#include "_encoder_carible.h"
+#include "_encoder_calib.h"
 #include "device.h"
 #include "motor_cfg.h"
 enum m_carible motor_get_calibstate(struct motor_calibration_modules *m_calib)
@@ -42,13 +42,9 @@ void motor_calib_update(struct motor_calibration_modules *calib)
 		calib->state = M_CARIBLE_ENCODER_RUNING;
 		break;
 	case M_CARIBLE_ENCODER_RUNING:
-		if (encoder_calib_get_state(encoder_carib) == ENC_CALIB_STATE_COMPLETE) {
-			motor_set_calibstate(calib, M_ALL_CALIB_DONE);
+		if (encoder_calib_update(encoder_carib, PWM_CYCLE) == 1) {
 			calib->state = M_ALL_CALIB_DONE;
-		} else if (encoder_calib_get_state(encoder_carib) == ENC_CALIB_STATE_ERROR) {
-			calib->state = M_CARIBLE_ERR;
 		}
-		encoder_calib_update(encoder_carib, PWM_CYCLE);
 		break;
 	case M_ALL_CALIB_DONE:
 		break;

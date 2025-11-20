@@ -199,7 +199,7 @@ void feedback_set_pole_pairs(struct device *dev, uint8_t pole_pairs)
 void feedback_set_direction(struct device *dev, int8_t direction)
 {
 	struct feedback_config *cfg = dev->config;
-	cfg->direction = (direction >= 0) ? 1 : -1;
+	cfg->direction = direction;
 }
 
 // 获取机械角度

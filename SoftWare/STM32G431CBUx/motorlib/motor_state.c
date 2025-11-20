@@ -5,7 +5,6 @@
 #include "_pp_ident.h"
 #include "motor_cfg.h"
 #include "motor_carible.h"
-#include "_encoder_carible.h"
 #include "coord_transform.h"
 #include "currsmp.h"
 #include "feedback.h"
