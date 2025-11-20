@@ -72,7 +72,8 @@ static struct pp_ident_config pp_cfg = {
 	.encoder_max = 16383,
 	.openloop_speed = 5.0f,
 	.openloop_voltage = 0.03f,
-	.duration = 6.0f,
+	.rotate_duration = 6.0f,
+	.align_duration = 1.0f,
 };
 static struct pp_ident_data pp_data = {0};
 static struct device pp1 = {

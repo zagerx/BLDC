@@ -33,12 +33,9 @@ void motor_calib_update(struct motor_calibration_modules *calib)
 		calib->state = M_CARIBLE_PP_RUNING;
 		break;
 	case M_CARIBLE_PP_RUNING:
-		if (pp_ident_get_pp_state(pp_ident) == PP_CALIB_STATE_COMPLETE) {
+		if (pp_ident_update(pp_ident, PWM_CYCLE) == 1) {
 			calib->state = M_CARIBLE_PP_DONE;
-		} else if (pp_ident_get_pp_state(pp_ident) == PP_CALIB_STATE_ERROR) {
-			calib->state = M_CARIBLE_ERR;
 		}
-		pp_ident_update(pp_ident, PWM_CYCLE); // 必须放在最后
 		break;
 	case M_CARIBLE_PP_DONE:
 		encoder_calib_start(encoder_carib);
