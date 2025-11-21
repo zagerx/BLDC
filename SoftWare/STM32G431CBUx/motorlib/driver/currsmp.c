@@ -1,18 +1,30 @@
 #include "currsmp.h"
+#include "device.h"
 
-void currsmp_caribe_offset(struct device *dev)
+/**
+ * @brief 在设备初始化时计算电流转换增益
+ * @param cfg 设备配置指针
+ */
+void currsmp_init(struct device *currsmp)
 {
-	// struct currsmp_data *data = (struct currsmp_data *)dev->data;
-	// data->offset_a = 2048;
+	struct currsmp_config *cfg = currsmp->config;
+	// 确保分母非零
+	if (cfg->rs == 0.0f || cfg->opm == 0.0f || cfg->adc_rang == 0.0f) {
+		cfg->gain = 0.0f;
+		return;
+	}
+	// 核心修正：
+	// K = V_REF / (N_ADC * R_shunt * A_v)
+	cfg->gain = cfg->vol_ref / (cfg->adc_rang * cfg->rs * cfg->opm);
 }
-
-void currsmp_updata(struct device *dev)
+void currsmp_update_currents(struct device *dev)
 {
-	// struct currsmp_data *data = (struct currsmp_data *)dev->data;
+	struct currsmp_data *data = (struct currsmp_data *)dev->data;
+	struct currsmp_config *cfg = dev->config;
 
-	// uint32_t raw_a = (data->channle_raw_a - data->offset_a);
-
-	// data->ia = raw_a * data->factor;
+	data->ia = ((float)data->channle_raw_a - (float)data->offset_a) * cfg->gain;
+	data->ib = ((float)data->channle_raw_b - (float)data->offset_b) * cfg->gain;
+	data->ic = ((float)data->channle_raw_c - (float)data->offset_c) * cfg->gain;
 }
 
 void currsmp_update_raw(struct device *currsmp, uint32_t *adc_raw)

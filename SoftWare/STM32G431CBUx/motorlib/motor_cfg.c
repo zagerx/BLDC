@@ -31,9 +31,16 @@ static struct device inverter1 = {
 	.config = &inverter1_cfg,
 };
 
+static struct currsmp_config currsmp1_conf = {
+	.adc_rang = 4096,
+	.vol_ref = 3.3f,
+	.rs = 0.005f,
+	.opm = 7.33f,
+};
 static struct currsmp_data currsmp1_data = {0};
 
 static struct device currsmp1 = {
+	.config = &currsmp1_conf,
 	.data = &currsmp1_data,
 };
 

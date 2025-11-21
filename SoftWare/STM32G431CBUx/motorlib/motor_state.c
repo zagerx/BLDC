@@ -159,7 +159,7 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 	struct motor_config *m_cfg = motor->config;
 	struct device *feedback = m_cfg->feedback;
 	struct feedback_data *fb_data = feedback->data;
-	// struct device *currsmp = m_cfg->currsmp;
+	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
 	switch (obj->chState) {
 	case ENTER:
@@ -168,7 +168,7 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		break;
 	case RUNING: {
 		feedback_update_angle_vel(feedback, PWM_CYCLE);
-		// currsmp_updata(currsmp);
+		currsmp_update_currents(currsmp);
 		float sin_val, cos_val;
 		sin_cos_f32(fb_data->elec_angle * (180.0f / M_PI), &sin_val, &cos_val);
 		float ud, uq;

@@ -3,6 +3,13 @@
 
 #include "stdint.h"
 #include "device.h"
+struct currsmp_config {
+	float rs;
+	float opm;
+	float vol_ref;
+	float adc_rang;
+	float gain;
+};
 struct currsmp_data {
 	uint32_t channle_raw_a;
 	uint32_t channle_raw_b;
@@ -12,18 +19,12 @@ struct currsmp_data {
 	uint32_t offset_b;
 	uint32_t offset_c;
 
-	float factor;
-
 	float ia;
 	float ib;
 	float ic;
 };
-
-// struct currsmp_api
-// {
-// };
-
-void currsmp_updata(struct device *dev);
+void currsmp_init(struct device *currsmp);
+void currsmp_update_currents(struct device *dev);
 void currsmp_caribe_offset(struct device *dev);
 void currsmp_update_raw(struct device *currsmp, uint32_t *adc_raw);
 

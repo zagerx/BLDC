@@ -81,6 +81,10 @@ void motor_init(struct device *motor)
 	if (!fsm->p1) {
 		fsm->p1 = (void *)motor;
 	}
+
+	struct motor_config *m_cfg = motor->config;
+	struct device *currsmp = m_cfg->currsmp;
+	currsmp_init(currsmp);
 }
 
 void motor_task(struct device *motor)
