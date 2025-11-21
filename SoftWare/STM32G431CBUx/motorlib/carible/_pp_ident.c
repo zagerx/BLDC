@@ -20,7 +20,7 @@
 /* ---------------------------------------------------------
  * 内部辅助：处理编码器过零点 (Unwrap)
  * --------------------------------------------------------- */
-static inline int32_t unwrap_raw(int32_t current, int32_t *prev, int32_t max_count)
+static inline int32_t unwrap_raw(uint32_t current, uint32_t *prev, uint32_t max_count)
 {
 	int32_t diff = current - *prev;
 	int32_t half = max_count / 2;
@@ -71,7 +71,6 @@ int32_t pp_ident_update(struct device *pp, float dt)
 	struct pp_ident_data *pd = pp->data;
 	struct device *inv = cfg->inverter;
 	struct device *fb = cfg->feedback;
-	struct feedback_config *fb_cfg = fb->config;
 
 	switch (pd->state) {
 
@@ -88,7 +87,7 @@ int32_t pp_ident_update(struct device *pp, float dt)
 		if (pd->time_acc >= cfg->align_duration) {
 			pd->time_acc = 0.0f;
 			// 记录起始位置
-			pd->raw_prev = (int32_t)fb_cfg->get_raw();
+			pd->raw_prev = read_feedback_raw(fb);
 			pd->raw_delta_acc = 0;
 			pd->state = PP_CALIB_STATE_ROTATING;
 		}
@@ -135,9 +134,9 @@ int32_t pp_ident_update(struct device *pp, float dt)
 		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
 
 		// 累计机械角度
-		int32_t current_raw = (int32_t)fb_cfg->get_raw();
+		uint32_t current_raw = read_feedback_raw(fb);
 		pd->raw_delta_acc +=
-			unwrap_raw(current_raw, &pd->raw_prev, (int32_t)cfg->encoder_max);
+			unwrap_raw(current_raw, &pd->raw_prev, (uint32_t)cfg->encoder_max);
 
 	} break;
 
@@ -158,7 +157,17 @@ int32_t pp_ident_update(struct device *pp, float dt)
 
 		// 应用结果
 		feedback_set_pole_pairs(fb, pd->pole_pairs);
-
+		// **方向判断**
+		// 如果电角度和机械角度的累计方向一致，则方向正确（1），否则方向错误（-1）。
+		// 注意：total_elec_rad 的符号取决于 openloop_speed
+		if ((pd->total_elec_rad > 0 && pd->raw_delta_acc > 0) ||
+		    (pd->total_elec_rad < 0 && pd->raw_delta_acc < 0)) {
+			pd->mech_direction = 1; // 编码器方向与开环驱动方向一致
+		} else {
+			pd->mech_direction = -1; // 编码器方向与开环驱动方向相反，需要反转
+		}
+		write_feedback_direction(fb, pd->mech_direction);
+		write_feedback_cpr(fb, cfg->encoder_max);
 		pd->state = PP_CALIB_STATE_COMPLETE;
 	} break;
 

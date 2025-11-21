@@ -49,8 +49,10 @@ struct pp_ident_data {
 	float total_elec_rad; // 累计走过的总电角度
 
 	// 编码器相关
-	int32_t raw_prev;      // 上一次的编码器原始值
+	uint32_t raw_prev;     // 上一次的编码器原始值
 	int32_t raw_delta_acc; // 累计机械角度变化量
+
+	int16_t mech_direction;
 };
 
 /* ---------------------------------------------------------

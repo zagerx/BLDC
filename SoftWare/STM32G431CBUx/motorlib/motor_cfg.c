@@ -39,15 +39,9 @@ static struct device currsmp1 = {
 
 static struct feedback_config feedback1_cfg = {
 	.get_raw = as5047_read_raw,
-	.cpr = 16384,
-	.pll_kp = 100.0f,
-	.pll_ki = 1000.0f,
-	.pos_estimate_weight = 0.1f,
 };
 
-static struct feedback_data feedback1_data = {
-	.pll_kp_scale = 1.0f,
-};
+static struct feedback_data feedback1_data = {0};
 
 static struct device feedback1 = {
 	.config = &feedback1_cfg,
@@ -95,12 +89,14 @@ static struct encoder_calib_config ec_carb_cfg1 = {
 	.feedback = &feedback1,
 	.inverter = &inverter1,
 	.encoder_max = 16383,
-	.openloop_speed = 5.0f,
-	.openloop_voltage = 0.03f,
-	.align_voltage = 0.03f,
-	.rotate_duration = 6.0f,
-	.min_rotation_frac = 0.05f,
-	.align_duration = 2.0f,
+	// .openloop_speed = 5.0f,
+	// .openloop_voltage = 0.03f,
+	// .align_voltage = 0.03f,
+	// .rotate_duration = 6.0f,
+	// .min_rotation_frac = 0.05f,
+	// .align_duration = 2.0f,
+	.speed = 5.0f,
+	.voltage = 0.03f,
 
 };
 static struct encoder_calib_data ec_carb_data1 = {0};

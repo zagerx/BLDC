@@ -29,108 +29,119 @@ static float angle_difference(float current, float previous)
 void feedback_init(struct device *dev)
 {
 	struct feedback_config *cfg = dev->config;
+
+	if (cfg->cpr == 0 || cfg->direction == 0 || cfg->pole_pairs == 0) {
+		return;
+	}
+	cfg->pos_estimate_weight = 0.1f;
+
+#ifdef FEEDBACK_USE_PLL
+	/* PLL 参数默认 */
+	cfg->pll_kp = 100.0f; // 默认PLL参数
+	cfg->pll_ki = 1000.0f;
+	// data->pll_kp_scale 已删除 (冗余)
+
+	/* 初始化 PLL 状态 */
 	struct feedback_data *data = dev->data;
-
-	// 设置默认值
-	if (cfg->cpr == 0) {
-		cfg->cpr = AS5047_CPR;
-	}
-	if (cfg->direction == 0) {
-		cfg->direction = 1; // 默认正向
-	}
-	if (cfg->pole_pairs == 0) {
-		cfg->pole_pairs = 7; // 默认7极对数，根据实际电机调整
-	}
-	if (cfg->pll_kp == 0) {
-		cfg->pll_kp = 100.0f; // 默认PLL参数
-	}
-	if (cfg->pll_ki == 0) {
-		cfg->pll_ki = 1000.0f;
-	}
-	if (cfg->pos_estimate_weight == 0) {
-		cfg->pos_estimate_weight = 0.1f;
-	}
-
-	data->pll_kp_scale = 1.0f;
+	data->pll_pos = 0.0f;
+	data->pll_vel = 0.0f;
+#endif
 }
 
+// 角度/速度更新
 void feedback_update_angle_vel(struct device *dev, float dt)
 {
 	struct feedback_config *cfg = dev->config;
 	struct feedback_data *data = dev->data;
 
-	// 保存上一次的值
-	data->raw_prev = data->raw;
-	data->raw_angle_prev = data->raw_angle;
-	data->mech_angle_prev = data->mech_angle;
-	data->elec_angle_prev = data->elec_angle;
+	// --- 局部变量缓存配置和常用常量 ---
+	const float two_pi = 2.0f * M_PI;
+	const float cpr_f = (float)cfg->cpr;
+	const int32_t cpr_i = (int32_t)cfg->cpr;
+	const float pole_pairs_f = (float)cfg->pole_pairs;
+
+	// 保存上一次的角度值
+	float mech_angle_prev = data->mech_angle;
+	data->mech_angle_prev = mech_angle_prev;
+	// data->elec_angle_prev 已删除 (冗余)
 
 	// 获取原始编码器值
 	data->raw = cfg->get_raw();
 
-	// 考虑编码器偏移量
-	int32_t adjusted_raw = (int32_t)data->raw - (int32_t)data->zero_offset;
+	// 考虑编码器偏移量并转为调整后的原始值
+	int32_t adjusted_raw = (int32_t)data->raw - (int32_t)cfg->zero_offset;
 	if (adjusted_raw < 0) {
-		adjusted_raw += cfg->cpr;
+		adjusted_raw += cpr_i;
 	}
-	adjusted_raw %= cfg->cpr;
+	adjusted_raw %= cpr_i;
 
-	// 计算原始机械角度 (0 到 2PI)
-	data->phase = (float)adjusted_raw / (float)cfg->cpr;
-	data->raw_angle = 2.0f * M_PI * data->phase;
+	// 计算机械角度、电角度（新的计算结果）
+	float raw_angle = two_pi * (float)adjusted_raw / cpr_f;
+	float current_mech_angle = raw_angle * (float)cfg->direction;
+	float current_elec_angle = normalize_angle(current_mech_angle * pole_pairs_f);
 
-	// 应用编码器方向
-	data->mech_angle = data->raw_angle * (float)cfg->direction;
+	// 更新状态结构体中的角度值
+	data->mech_angle = current_mech_angle;
+	data->elec_angle = current_elec_angle;
 
-	// 计算电角度 = 机械角度 * 极对数
-	data->elec_angle = data->mech_angle * (float)cfg->pole_pairs;
-	data->elec_angle = normalize_angle(data->elec_angle);
+	/* ========== 编译期二选一：差分法（默认）或 PLL（若定义 FEEDBACK_USE_PLL） ========== */
+#ifdef FEEDBACK_USE_PLL
 
-	// 计算机械角度差（考虑方向）
-	float mech_angle_diff = angle_difference(data->mech_angle, data->mech_angle_prev);
-
-	// 计算电角度差
-	float elec_angle_diff = angle_difference(data->elec_angle, data->elec_angle_prev);
-
-	// 方法1: 直接差分计算机械速度
+	/* 仅使用 PLL 路径：基于电角度的 PLL 估计位置与速度 */
 	if (dt > 1e-6f) {
-		data->vel_estimate = mech_angle_diff / dt;
-	}
+		// --- 局部变量缓存/更新 PLL 状态 ---
+		float pll_pos = data->pll_pos;
+		float pll_vel = data->pll_vel;
 
-	// 计算电速度 = 机械速度 * 极对数
-	data->vel_elec = data->vel_estimate * (float)cfg->pole_pairs;
+		/* 计算 PLL 误差（电角度） */
+		float pll_error = angle_difference(current_elec_angle, pll_pos);
 
-	// 方法2: PLL速度估计 (基于电角度)
-	if (cfg->pll_kp > 0 && dt > 1e-6f) {
-		// 计算PLL误差
-		float pll_error = angle_difference(data->elec_angle, data->pll_pos);
-
-		// 动态调整PLL增益（基于速度）
-		float bandwidth = fminf(0.05f * fabsf(data->pll_vel) + 1.0f, 10.0f);
+		/* 动态增益 */
+		float bandwidth = fminf(0.05f * fabsf(pll_vel) + 1.0f, 10.0f);
 		float kp = cfg->pll_kp * bandwidth;
 		float ki = cfg->pll_ki * bandwidth;
 
-		// 更新PLL速度
-		data->pll_vel += ki * pll_error * dt;
+		/* 更新 PLL 积分项（速度）和位置 */
+		pll_vel += ki * pll_error * dt;
+		pll_pos += pll_vel * dt + kp * pll_error;
+		pll_pos = normalize_angle(pll_pos);
 
-		// 更新PLL位置
-		data->pll_pos += data->pll_vel * dt + kp * pll_error;
-		data->pll_pos = normalize_angle(data->pll_pos);
+		// --- 写回 PLL 状态 ---
+		data->pll_pos = pll_pos;
+		data->pll_vel = pll_vel;
 
-		// 使用PLL速度作为最终电速度估计
-		data->vel_elec = data->pll_vel;
-
-		// 根据电速度计算机械速度
-		data->vel_estimate = data->vel_elec / (float)cfg->pole_pairs;
+		/* 使用 PLL 输出作为电速度和机械速度估计 */
+		data->vel_elec = pll_vel;
+		if (cfg->pole_pairs != 0) {
+			data->vel_estimate = data->vel_elec / pole_pairs_f;
+		} else {
+			data->vel_estimate = 0.0f;
+		}
 	}
 
-	// 位置估计（用于抗噪声）
-	data->pos_estimate = (1.0f - cfg->pos_estimate_weight) * data->pos_estimate +
-			     cfg->pos_estimate_weight * data->mech_angle;
+#else
 
-	// 限制速度范围
-	const float max_mech_vel = 100.0f;                                // 最大机械速度 (rad/s)
-	const float max_elec_vel = max_mech_vel * (float)cfg->pole_pairs; // 最大电速度
+	/* 差分法路径：用机械角度差分估计速度（简单且轻量） */
+	float mech_angle_diff = angle_difference(current_mech_angle, mech_angle_prev);
+
+	if (dt > 1e-6f) {
+		data->vel_estimate = mech_angle_diff / dt;
+	} else {
+		data->vel_estimate = 0.0f;
+	}
+
+	/* 电速度 = 机械速度 * 极对数 */
+	data->vel_elec = data->vel_estimate * pole_pairs_f;
+
+#endif
+
+	/* 位置估计（用于抗噪声） */
+	data->pos_estimate = (1.0f - cfg->pos_estimate_weight) * data->pos_estimate +
+			     cfg->pos_estimate_weight * current_mech_angle;
+
+	/* 限制速度范围（对两种路径通用） */
+	const float max_mech_vel = 100.0f;
+	const float max_elec_vel = max_mech_vel * pole_pairs_f;
 
 	if (data->vel_estimate > max_mech_vel) {
 		data->vel_estimate = max_mech_vel;
@@ -145,58 +156,52 @@ void feedback_update_angle_vel(struct device *dev, float dt)
 	}
 }
 
-// 计算电角度
+/* 其余函数保持不变 */
 float feedback_calc_elec_angle(struct device *dev)
 {
 	struct feedback_data *data = dev->data;
 	return data->elec_angle;
 }
 
-// 计算机械速度
 float feedback_calc_velocity(struct device *dev)
 {
 	struct feedback_data *data = dev->data;
 	return data->vel_estimate;
 }
 
-// 计算电速度
 float feedback_calc_elec_velocity(struct device *dev)
 {
 	struct feedback_data *data = dev->data;
 	return data->vel_elec;
 }
 
-// 重置反馈状态
 void feedback_reset(struct device *dev)
 {
 	struct feedback_data *data = dev->data;
+#ifdef FEEDBACK_USE_PLL
 	data->pll_pos = 0;
 	data->pll_vel = 0;
+#endif
 	data->turns = 0;
 	data->vel_estimate = 0;
 	data->vel_elec = 0;
 	data->pos_estimate = 0;
-	data->raw_angle_prev = data->raw_angle;
 	data->mech_angle_prev = data->mech_angle;
-	data->elec_angle_prev = data->elec_angle;
 }
 
-// 设置编码器偏移量
-void feedback_set_offset(struct device *dev, uint16_t offset)
+void write_feedback_offset(struct device *dev, uint16_t offset)
 {
-	struct feedback_data *data = dev->data;
-	data->zero_offset = offset;
+	struct feedback_config *cfg = dev->data;
+	cfg->zero_offset = offset;
 }
 
-// 设置极对数
 void feedback_set_pole_pairs(struct device *dev, uint8_t pole_pairs)
 {
 	struct feedback_config *cfg = dev->config;
 	cfg->pole_pairs = pole_pairs;
 }
 
-// 设置编码器方向
-void feedback_set_direction(struct device *dev, int8_t direction)
+void write_feedback_direction(struct device *dev, int8_t direction)
 {
 	if (!direction) {
 		return;
@@ -205,16 +210,25 @@ void feedback_set_direction(struct device *dev, int8_t direction)
 	cfg->direction = direction;
 }
 
-// 获取机械角度
 float feedback_get_mech_angle(struct device *dev)
 {
 	struct feedback_data *data = dev->data;
 	return data->mech_angle;
 }
 
-// 获取连续机械角度（考虑圈数）
 float feedback_get_continuous_mech_angle(struct device *dev)
 {
 	struct feedback_data *data = dev->data;
 	return data->mech_angle + 2.0f * M_PI * data->turns;
+}
+uint32_t read_feedback_raw(struct device *feedback)
+{
+	struct feedback_config *fb_cfg = feedback->config;
+	return fb_cfg->get_raw();
+}
+
+void write_feedback_cpr(struct device *feedback, uint32_t cpr)
+{
+	struct feedback_config *fb_cfg = feedback->config;
+	fb_cfg->cpr = cpr;
 }

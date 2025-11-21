@@ -4,35 +4,39 @@
 #include "device.h"
 #include "feedback.h"
 #include "inverter.h"
-#include "coord_transform.h"
 #include "svpwm.h"
-#include <stddef.h>
+#include <stdlib.h> // for abs
+#include "coord_transform.h"
 
 #undef M_PI
 #define M_PI 3.14159265358979323846f
+
 #undef M_TWOPI
 #define M_TWOPI    (2.0f * M_PI)
 #define RAD_TO_DEG (180.0f / M_PI)
 
-/* unwrap_raw（处理编码器跨零点跳变） */
-static inline int32_t unwrap_raw(int32_t current, int32_t *prev, int32_t max)
+#define ALIGN_DURATION 2.0f // 对齐时间S
+
+// 扫描范围：从 -PI 转到 +PI，确保经过 0 点
+#define SCAN_RANGE_START (-M_PI)
+#define SCAN_RANGE_END   (M_PI)
+
+/* 辅助：unwrap 处理 */
+static inline int32_t unwrap_raw(uint32_t current, uint32_t *prev, uint32_t max)
 {
 	int32_t diff = current - *prev;
 	int32_t half = max / 2;
-
 	if (diff > half) {
 		diff -= max;
-	}
-	if (diff < -half) {
+	} else if (diff < -half) {
 		diff += max;
 	}
-
 	*prev = current;
 	return diff;
 }
 
 /* ---------------------------------------------------------
- * 启动：初始化状态
+ * 启动
  * --------------------------------------------------------- */
 void encoder_calib_start(struct device *encoder_calib)
 {
@@ -40,23 +44,20 @@ void encoder_calib_start(struct device *encoder_calib)
 		return;
 	}
 
-	struct device *enc_dev = encoder_calib;
-	struct encoder_calib_data *ed = enc_dev->data;
+	struct encoder_calib_data *ed = encoder_calib->data;
 
-	/* 初始化 */
-	ed->state = ENC_CALIB_STATE_ALIGN;
+	ed->state = ENC_CALIB_STATE_ALIGN_START;
+	ed->driver_elec_angle = SCAN_RANGE_START; // 起点设为 -PI
+	ed->fwd_captured = false;
+	ed->bwd_captured = false;
 	ed->time_acc = 0.0f;
-	ed->elec_angle = 0.0f;
-	ed->raw_delta_acc = 0;
 }
 
 /* ---------------------------------------------------------
- * 主更新周期（每个控制周期调用）
- * 返回值: 0=进行中, 1=完成, -1=错误
+ * 主更新
  * --------------------------------------------------------- */
 int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 {
-	// 【防御性检查】
 	if (!encoder_calib || !encoder_calib->data || !encoder_calib->config) {
 		return -1;
 	}
@@ -67,139 +68,153 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 	struct encoder_calib_config *cfg = enc_dev->config;
 	struct device *inv = cfg->inverter;
 	struct device *fb = cfg->feedback;
-	struct feedback_config *fb_cfg = fb->config;
+
+	// 电压限幅
+	float v_mag = cfg->voltage;
+	if (v_mag > 0.577f) {
+		v_mag = 0.577f;
+	}
+	if (v_mag < 0.01f) {
+		v_mag = 0.01f;
+	}
 
 	switch (ed->state) {
 
 	/* -----------------------------------------------------
-	 * ALIGN：施加固定电压/电流，使转子拉到已知电角度（电角度 0）
+	 * Step 1: 定位到扫描起点 (-PI)
 	 * ----------------------------------------------------- */
-	case ENC_CALIB_STATE_ALIGN: {
-		/* 施加一个固定电压向量（电角度 = 0）使转子对齐 */
-		float v_mag = cfg->align_voltage;
-		if (v_mag > 0.577f) {
-			v_mag = 0.577f;
-		}
-		if (v_mag < 0.01f) {
-			v_mag = 0.01f;
-		}
+	case ENC_CALIB_STATE_ALIGN_START: {
+		// 施加起始角度电压
+		float angle_deg = ed->driver_elec_angle * RAD_TO_DEG;
+		float s, c;
+		sin_cos_f32(angle_deg, &s, &c);
 
-		/* 电角度 0 -> alpha = v_mag, beta = 0 */
 		float abc[3];
-		svm_set(v_mag, 0.0f, abc);
+		svm_set(v_mag * c, v_mag * s, abc);
 		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
 
 		ed->time_acc += dt;
-
-		if (ed->time_acc >= cfg->align_duration) {
-			/* 记录对齐后编码器原始值作为候选零位 */
-			uint32_t raw_start_val = fb_cfg->get_raw();
-
-			// 将 raw_start 直接存入
-			feedback_set_offset(fb, raw_start_val);
-
-			ed->raw_prev = (int32_t)raw_start_val;
-			ed->raw_delta_acc = 0;
+		if (ed->time_acc > ALIGN_DURATION) { // 等待转子稳定在 -PI
 			ed->time_acc = 0.0f;
-			ed->elec_angle = 0.0f; // 确保开环从 0 角度开始
-
-			ed->state = ENC_CALIB_STATE_ROTATE_TEST;
+			ed->state = ENC_CALIB_STATE_SCAN_FWD;
 		}
 	} break;
 
 	/* -----------------------------------------------------
-	 * ROTATE_TEST：小幅开环旋转（单向），判断方向
+	 * Step 2: 正向扫描 (-PI -> +PI)
 	 * ----------------------------------------------------- */
-	case ENC_CALIB_STATE_ROTATE_TEST: {
-		if (ed->time_acc >= cfg->rotate_duration) {
-			ed->state = ENC_CALIB_STATE_PROCESSING;
-			// 停止输出
-			inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
-			break;
-		}
+	case ENC_CALIB_STATE_SCAN_FWD: {
+		float prev_angle = ed->driver_elec_angle;
 
-		ed->time_acc += dt;
+		// 1. 更新角度
+		ed->driver_elec_angle += cfg->speed * dt; // 正向旋转
 
-		/* 使用电压矢量以 openloop_speed 控制电角度 */
-		float angle_step = cfg->openloop_speed * dt;
-		ed->elec_angle += angle_step;
-
-		/* 限制 elec_angle 在 0~2PI 范围内 */
-		if (ed->elec_angle > M_TWOPI) {
-			ed->elec_angle -= M_TWOPI;
-		} else if (ed->elec_angle < 0.0f) {
-			ed->elec_angle += M_TWOPI;
-		}
-
-		float angle_deg = ed->elec_angle * RAD_TO_DEG;
-
-		float v_mag = cfg->openloop_voltage;
-		if (v_mag > 0.577f) {
-			v_mag = 0.577f;
-		}
-		if (v_mag < 0.01f) {
-			v_mag = 0.01f;
-		}
-
-		float sinv, cosv;
-		sin_cos_f32(angle_deg, &sinv, &cosv);
-
+		// 2. SVM 输出
+		float angle_deg = ed->driver_elec_angle * RAD_TO_DEG;
+		float s, c;
+		sin_cos_f32(angle_deg, &s, &c);
 		float abc[3];
-		svm_set(v_mag * cosv, v_mag * sinv, abc);
+		svm_set(v_mag * c, v_mag * s, abc);
 		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
 
-		/* 读取并 unwrap 编码器 raw 累积 diff */
-		int32_t raw = (int32_t)fb_cfg->get_raw();
-		int32_t delta = unwrap_raw(raw, &ed->raw_prev, (int32_t)cfg->encoder_max);
-		ed->raw_delta_acc += delta;
+		// 4. 【关键】检测过零点 (Zero Crossing)
+		// 如果上一刻小于0，这一刻大于等于0，说明跨过了0度
+		uint32_t raw_curr = read_feedback_raw(fb);
+		if (prev_angle < 0.0f && ed->driver_elec_angle >= 0.0f) {
+			// 简单的最近邻采样 (因为 dt 很小，插值提升有限且复杂)
+			// 记录当前的 raw 值作为 FWD 零点
+			ed->raw_fwd = (uint32_t)raw_curr;
+			ed->fwd_captured = true;
+		}
 
+		// 5. 结束判断
+		if (ed->driver_elec_angle >= SCAN_RANGE_END) {
+			ed->driver_elec_angle = SCAN_RANGE_END; // 钳位
+			ed->state = ENC_CALIB_STATE_SCAN_BWD;
+		}
 	} break;
 
 	/* -----------------------------------------------------
-	 * PROCESSING：计算零偏（zero offset）并做最终验证
+	 * Step 3: 反向扫描 (+PI -> -PI)
 	 * ----------------------------------------------------- */
-	case ENC_CALIB_STATE_PROCESSING: {
+	case ENC_CALIB_STATE_SCAN_BWD: {
+		float prev_angle = ed->driver_elec_angle;
 
-		/* 计算机械圈数（累积差 / encoder_max） */
-		float mech_rounds = (float)ed->raw_delta_acc / (float)cfg->encoder_max;
+		// 1. 更新角度 (反向)
+		ed->driver_elec_angle -= cfg->speed * dt;
 
-		/* 如果旋转量太小，认为失败 */
-		if (fabsf(mech_rounds) < cfg->min_rotation_frac) {
-			ed->state = ENC_CALIB_STATE_ERROR;
-			break;
+		// 2. SVM 输出
+		float angle_deg = ed->driver_elec_angle * RAD_TO_DEG;
+		float s, c;
+		sin_cos_f32(angle_deg, &s, &c);
+		float abc[3];
+		svm_set(v_mag * c, v_mag * s, abc);
+		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
+
+		// 3. 更新 raw_prev (用于 unwrap 连续性)
+		uint32_t raw_curr = read_feedback_raw(fb);
+
+		// 4. 【关键】检测过零点
+		// 如果上一刻大于0，这一刻小于等于0
+		if (prev_angle > 0.0f && ed->driver_elec_angle <= 0.0f) {
+			ed->raw_bwd = (uint32_t)raw_curr;
+			ed->bwd_captured = true;
 		}
 
-		/* 判断方向：如果 raw_delta_acc 与施加电角度的方向一致，polarity 为 +1，否则为 -1 */
-		/* 注意：openloop_speed 正负决定了我们施加的旋转方向 */
-		int16_t polarity;
-		if ((ed->raw_delta_acc > 0 && cfg->openloop_speed > 0.0f) ||
-		    (ed->raw_delta_acc < 0 && cfg->openloop_speed < 0.0f)) {
-			polarity = 1;
+		// 5. 结束判断
+		if (ed->driver_elec_angle <= SCAN_RANGE_START) {
+			inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f); // 停机
+			ed->state = ENC_CALIB_STATE_CALCULATE;
+		}
+	} break;
+
+	/* -----------------------------------------------------
+	 * Step 4: 计算与平均
+	 * ----------------------------------------------------- */
+	case ENC_CALIB_STATE_CALCULATE: {
+
+		// 1. 计算平均零偏 (处理环绕问题)
+		if (ed->fwd_captured && ed->bwd_captured) {
+			int32_t r1 = (int32_t)ed->raw_fwd;
+			int32_t r2 = (int32_t)ed->raw_bwd;
+			int32_t max = (int32_t)cfg->encoder_max;
+
+			// 关键：处理边界环绕 (例如 r1=10, r2=4090, max=4096)
+			// 如果两点距离超过半圈，说明跨越了 wrap-around
+			if (abs(r1 - r2) > max / 2) {
+				if (r1 < r2) {
+					r1 += max;
+				} else {
+					r2 += max;
+				}
+			}
+
+			int32_t avg = (r1 + r2) / 2;
+			// 归一化
+			while (avg >= max) {
+				avg -= max;
+			}
+			while (avg < 0) {
+				avg += max;
+			}
+
+			write_feedback_offset(fb, (uint32_t)avg);
+			ed->state = ENC_CALIB_STATE_COMPLETE;
 		} else {
-			polarity = -1;
+			// 如果没捕获到 (速度过快或配置错误)，报错
+			ed->state = ENC_CALIB_STATE_ERROR;
 		}
-
-		// 【保存结果】
-		feedback_set_direction(fb, polarity);
-
-		ed->state = ENC_CALIB_STATE_COMPLETE;
-
 	} break;
 
-	/* -----------------------------------------------------
-	 * COMPLETE：完成
-	 * ----------------------------------------------------- */
-	case ENC_CALIB_STATE_COMPLETE: {
+	case ENC_CALIB_STATE_COMPLETE:
+		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
 		ret = 1;
-	} break;
+		break;
 
-	/* -----------------------------------------------------
-	 * ERROR：失败
-	 * ----------------------------------------------------- */
-	case ENC_CALIB_STATE_ERROR: {
+	case ENC_CALIB_STATE_ERROR:
 		ret = -1;
 		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
-	} break;
+		break;
 
 	default:
 		ed->state = ENC_CALIB_STATE_IDLE;
