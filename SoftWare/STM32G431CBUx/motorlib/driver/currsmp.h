@@ -24,7 +24,7 @@ struct currsmp_data {
 	float ic;
 };
 void currsmp_init(struct device *currsmp);
-void currsmp_update_currents(struct device *dev);
+void currsmp_update_currents(struct device *dev, float *iabc);
 void currsmp_caribe_offset(struct device *dev);
 void currsmp_update_raw(struct device *currsmp, uint32_t *adc_raw);
 

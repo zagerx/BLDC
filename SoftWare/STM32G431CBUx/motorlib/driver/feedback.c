@@ -26,12 +26,12 @@ static float angle_difference(float current, float previous)
 }
 
 // 初始化反馈模块
-void feedback_init(struct device *dev)
+int feedback_init(struct device *dev)
 {
 	struct feedback_config *cfg = dev->config;
 
 	if (cfg->cpr == 0 || cfg->direction == 0 || cfg->pole_pairs == 0) {
-		return;
+		return -1;
 	}
 	cfg->pos_estimate_weight = 0.1f;
 
@@ -46,10 +46,11 @@ void feedback_init(struct device *dev)
 	data->pll_pos = 0.0f;
 	data->pll_vel = 0.0f;
 #endif
+	return 0;
 }
 
 // 角度/速度更新
-void feedback_update_angle_vel(struct device *dev, float dt)
+void feedback_update(struct device *dev, float dt)
 {
 	struct feedback_config *cfg = dev->config;
 	struct feedback_data *data = dev->data;
@@ -157,7 +158,7 @@ void feedback_update_angle_vel(struct device *dev, float dt)
 }
 
 /* 其余函数保持不变 */
-float feedback_calc_elec_angle(struct device *dev)
+inline float read_feedback_elec_angle(struct device *dev)
 {
 	struct feedback_data *data = dev->data;
 	return data->elec_angle;

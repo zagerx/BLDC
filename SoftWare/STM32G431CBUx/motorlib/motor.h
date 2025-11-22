@@ -3,6 +3,7 @@
 #include "device.h"
 #include "foc_pid.h"
 #include "statemachine.h"
+#include "foc_parameters.h"
 #include "stdint.h"
 #include "stdbool.h"
 /**
@@ -65,28 +66,6 @@ struct motor_control_parameters {
 	// 速度环参数
 	struct motot_velocity_parameters velocity;
 	//...
-};
-
-struct foc_parameters {
-	// only read
-	float ia;
-	float ib;
-	float ic;
-	float id;
-	float iq;
-
-	float eangle;
-	float velocity;
-	float position;
-
-	//
-	float id_ref;
-	float iq_ref;       // 速度环输出
-	float velocity_ref; // 位置环输出
-
-	float position_tar; // 目标位置
-	float velocity_tar;
-	float torque_tar;
 };
 
 enum motor_flag {

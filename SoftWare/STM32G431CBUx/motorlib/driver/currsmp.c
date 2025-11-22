@@ -17,7 +17,7 @@ void currsmp_init(struct device *currsmp)
 	// K = V_REF / (N_ADC * R_shunt * A_v)
 	cfg->gain = cfg->vol_ref / (cfg->adc_rang * cfg->rs * cfg->opm);
 }
-void currsmp_update_currents(struct device *dev)
+void currsmp_update_currents(struct device *dev, float *iabc)
 {
 	struct currsmp_data *data = (struct currsmp_data *)dev->data;
 	struct currsmp_config *cfg = dev->config;
@@ -25,6 +25,9 @@ void currsmp_update_currents(struct device *dev)
 	data->ia = ((float)data->channle_raw_a - (float)data->offset_a) * cfg->gain;
 	data->ib = ((float)data->channle_raw_b - (float)data->offset_b) * cfg->gain;
 	data->ic = ((float)data->channle_raw_c - (float)data->offset_c) * cfg->gain;
+	iabc[0] = data->ia;
+	iabc[1] = data->ib;
+	iabc[2] = data->ic;
 }
 
 void currsmp_update_raw(struct device *currsmp, uint32_t *adc_raw)

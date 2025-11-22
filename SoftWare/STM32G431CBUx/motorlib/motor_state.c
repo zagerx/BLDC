@@ -156,25 +156,35 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		RUNING = USER_STATUS,
 	};
 	const struct device *motor = obj->p1;
+	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
 	struct device *feedback = m_cfg->feedback;
-	struct feedback_data *fb_data = feedback->data;
+	struct foc_parameters *foc_param = &(m_data->foc_data);
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
 	switch (obj->chState) {
 	case ENTER:
-		// feedback_init(feedback);
+		if (feedback_init(feedback)) {
+			break;
+		}
 		obj->chState = RUNING;
 		break;
 	case RUNING: {
-		feedback_update_angle_vel(feedback, PWM_CYCLE);
-		currsmp_update_currents(currsmp);
+		feedback_update(feedback, PWM_CYCLE);
+		float elec_angle = read_feedback_elec_angle(feedback);
+
+		float i_abc[3];
+		float i_alpha, i_beta;
+		currsmp_update_currents(currsmp, i_abc);
+		clarke_f32(i_abc[0], i_abc[1], &i_alpha, &i_beta);
+		update_focparam_idq(foc_param, i_alpha, i_beta, elec_angle);
+
 		float sin_val, cos_val;
-		sin_cos_f32(fb_data->elec_angle * (180.0f / M_PI), &sin_val, &cos_val);
+		sin_cos_f32(elec_angle * (180.0f / M_PI), &sin_val, &cos_val);
 		float ud, uq;
 		float ualpha, ubeta;
 		ud = 0.0f;
-		uq = -0.04f;
+		uq = -0.02f;
 		inv_park_f32(ud, uq, &ualpha, &ubeta, sin_val, cos_val);
 		float duty[3];
 		svm_set(ualpha, ubeta, duty);

@@ -62,14 +62,14 @@ struct feedback_api {
 	void (*reset)(struct device *);
 	void (*set_offset)(struct device *, uint16_t);
 };
-void feedback_init(struct device *dev);
-void feedback_update_angle_vel(struct device *dev, float dt);
+int feedback_init(struct device *dev);
+void feedback_update(struct device *dev, float dt);
 void write_feedback_offset(struct device *dev, uint16_t offset);
 void feedback_set_pole_pairs(struct device *dev, uint8_t pole_pairs);
 void write_feedback_direction(struct device *dev, int8_t direction);
 float feedback_get_mech_angle(struct device *dev);
 float feedback_get_continuous_mech_angle(struct device *dev);
-float feedback_calc_elec_angle(struct device *dev);
+float read_feedback_elec_angle(struct device *dev);
 float feedback_calc_velocity(struct device *dev);
 float feedback_calc_elec_velocity(struct device *dev);
 
