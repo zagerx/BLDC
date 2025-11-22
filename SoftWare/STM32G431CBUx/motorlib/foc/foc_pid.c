@@ -1,105 +1,80 @@
+#include "foc_pid.h"
+// #include <math.h>
+
+// 辅助宏：限制范围
+#define CLAMP(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
+
+void foc_pid_init(struct foc_pid *pid, float kp, float ki, float limit)
+{
+	pid->kp = kp;
+	pid->ki = ki;
+	pid->limit = limit;
+	pid->integral = 0.0f;
+	pid->err_prev = 0.0f;
+}
+
+void foc_pid_reset(struct foc_pid *pid)
+{
+	pid->integral = 0.0f;
+	pid->err_prev = 0.0f;
+}
+
 /**
- * @file pid.c
- * @brief PID controller implementation
- *
- * Implements:
- * - PID controller initialization
- * - Reset functionality
- * - Anti-windup control
- *
- * Copyright (c) 2023 Your Company
- * SPDX-License-Identifier: Apache-2.0
+ * @brief 优化后的PID计算
+ * @param dt: 采样周期 (例如 10kHz 就是 0.0001f)
  */
 
- #include "./foc_pid.h"
+float foc_pid_run(struct foc_pid *pid, float target, float meas, float dt)
+{
 
- /**
-  * @brief Initialize PID controller
-  * @param pid PID control block pointer
-  * @param kp Proportional gain
-  * @param ki Integral gain
-  * @param kc Anti-windup correction gain
-  * @param outmax Maximum output limit
-  * @param outmin Minimum output limit
-  *
-  * Initializes all PID parameters and resets internal states.
-  */
- void pid_init(pid_cb_t *pid, float kp, float ki, float kc,
-               float outmax, float outmin)
- {
-     if (!pid) {
-         return;
-     }
- 
-     pid->kp = kp;
-     pid->ki = ki;
-     pid->kc = kc;
-     pid->u_i = 0.0f;       /* Integral term */
-     pid->satErr = 0.0f;    /* Saturation error */
-     pid->out_debug = 0.0f; /* Debug output */
-     pid->out_max = outmax;  /* Upper output limit */
-     pid->out_min = outmin;  /* Lower output limit */
- }
- 
- /**
-  * @brief Reset PID controller internal states
-  * @param pid PID control block pointer
-  *
-  * Resets integral term and saturation error while keeping gains.
-  */
- void pid_reset(pid_cb_t *pid)
- {
-     if (!pid) {
-         return;
-     }
- 
-     pid->out_debug = 0.0f;
-     pid->u_i = 0.0f;
-     pid->satErr = 0.0f;
- }
- 
- /**
-  * @brief Execute PID control calculation
-  * @param pid PID control block pointer
-  * @param tar Target value
-  * @param cur Current feedback value
-  * @return Controller output after limiting
-  *
-  * Implements:
-  * - Standard PID algorithm
-  * - Output saturation
-  * - Anti-windup compensation
-  */
- float pid_contrl(pid_cb_t *pid, float tar, float cur)
- {
-     if (!pid) {
-         return 0.0f;
-     }
- 
-     float err, u_p, v_out, presat;
- 
-     /* Calculate error and proportional term */
-     err = tar - cur;
-     u_p = pid->kp * err;
- 
-     /* Update integral term with anti-windup */
-     pid->u_i = pid->u_i + pid->ki * u_p + pid->kc * pid->satErr;
- 
-     /* Calculate pre-saturated output */
-     presat = u_p + pid->u_i;
- 
-     /* Apply output saturation */
-     if (presat > pid->out_max) {
-         v_out = pid->out_max;
-     } else if (presat < pid->out_min) {
-         v_out = pid->out_min;
-     } else {
-         v_out = presat;
-     }
- 
-     /* Update saturation error for anti-windup */
-     pid->satErr = v_out - presat;
-     pid->out_debug = v_out;
- 
-     return v_out;
- }
+	float error = target - meas;
+
+	// 1. P项计算
+	float p_term = pid->kp * error;
+
+	// 2. I项计算 (离散化积分: sum += Ki * err * dt)
+	// 暂不加到integral里，先预测
+	float i_term_predict = pid->integral + (pid->ki * error * dt);
+
+	// 3. 输出预测
+	float output = p_term + i_term_predict;
+
+	// 4. 动态抗饱和 (Dynamic Clamping) - ODrive风格
+	// 如果输出已经饱和，并且误差试图让输出继续超出饱和区，则停止积分累加
+	// 或者：直接限制积分项，使其为了配合P项而不让总输出超限
+
+	// 方案A：简单截断法 (最适合电流环，计算量小)
+	if (output > pid->limit) {
+		output = pid->limit;
+		// 只有当误差是负的（试图退出饱和区）时，才允许积分变大(反之亦然)
+		// 这里采用更激进的方法：反推积分项允许的最大值
+		// I_max = Limit - P_term
+		float i_max = pid->limit - p_term;
+		if (i_term_predict > i_max) {
+			i_term_predict = i_max;
+		}
+	} else if (output < -pid->limit) {
+		output = -pid->limit;
+		float i_min = -pid->limit - p_term;
+		if (i_term_predict < i_min) {
+			i_term_predict = i_min;
+		}
+	}
+
+	// 更新真正的积分器
+	pid->integral = i_term_predict;
+
+	return output;
+}
+
+void foc_pid_saturation_feedback(struct foc_pid *pid, float output_real, float output_desire)
+{
+	// 如果实际输出等于期望输出，说明没饱和，啥都不用做
+	if (output_real == output_desire) {
+		return;
+	}
+
+	float scale = output_real / output_desire;
+
+	pid->integral *= scale;
+}
