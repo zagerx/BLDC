@@ -24,11 +24,28 @@ void tim1_pwm_stop(void)
 	HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_2);
 	HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_3);
 }
-
 void tim1_pwm_set(float a, float b, float c)
 {
-	uint16_t _a, _b, _c;
 
+	uint16_t _a, _b, _c;
+	if (a > 0.95f) {
+		a = 0.95f;
+	}
+	if (a < 0.05f) {
+		a = 0.05f;
+	}
+	if (b > 0.95f) {
+		b = 0.95f;
+	}
+	if (b < 0.05f) {
+		b = 0.05f;
+	}
+	if (c > 0.95f) {
+		c = 0.95f;
+	}
+	if (c < 0.05f) {
+		c = 0.05f;
+	}
 	_a = (uint16_t)((a) * (M_TIM_ARR));
 	_b = (uint16_t)((b) * (M_TIM_ARR));
 	_c = (uint16_t)((c) * (M_TIM_ARR));
