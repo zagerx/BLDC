@@ -144,7 +144,7 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 		break;
 	case RUNNING:
 		if (motor_calib_update(m_data->calib, PWM_CYCLE) == 1) {
-			TRAN_STATE(m_data->state_machine, motor_encoder_openloop_state);
+			TRAN_STATE(m_data->state_machine, motor_debug_id_state);
 		}
 		break;
 	case EXIT:
@@ -223,8 +223,8 @@ fsm_rt_t motor_debug_id_state(fsm_cb_t *obj)
 		if (feedback_init(feedback)) {
 			break;
 		}
-		foc_pid_init(&foc_param->id_pi_control, 0.05f, 0.0, 0.2f);
-		foc_pid_init(&foc_param->iq_pi_control, 0.05f, 0.0, 0.2f);
+		foc_pid_init(&foc_param->id_pi_control, 0.004f, 20.0, 13.0f);
+		foc_pid_init(&foc_param->iq_pi_control, 0.004f, 20.0, 13.0f);
 		obj->chState = RUNING;
 		break;
 
@@ -275,15 +275,15 @@ fsm_rt_t motor_debug_id_state(fsm_cb_t *obj)
 			uq_final = uq_req * scale;
 		}
 
-		// // 步骤 5: 核心优化 - 积分抗饱和回馈 (Anti-Windup Feedback)
-		// foc_pid_saturation_feedback(&(foc_param->id_pi_control), ud_final, ud_req);
-		// foc_pid_saturation_feedback(&(foc_param->iq_pi_control), uq_final, uq_req);
+		// 步骤 5: 核心优化 - 积分抗饱和回馈 (Anti-Windup Feedback)
+		foc_pid_saturation_feedback(&(foc_param->id_pi_control), ud_final, ud_req);
+		foc_pid_saturation_feedback(&(foc_param->iq_pi_control), uq_final, uq_req);
 
 		// // 步骤 6: 坐标变换与输出
 		// ud_final = 0.03f;
-		// uq_final = 0.0f;
+		uq_final = 0.0f;
 		float sin_val, cos_val;
-		sin_cos_f32(0.0f * (180.0f / M_PI), &sin_val, &cos_val);
+		sin_cos_f32(elec_angle, &sin_val, &cos_val);
 		float ualpha, ubeta;
 		// 使用最终限幅后的 ud_final, uq_final
 		inv_park_f32(ud_final, uq_final, &ualpha, &ubeta, sin_val, cos_val);

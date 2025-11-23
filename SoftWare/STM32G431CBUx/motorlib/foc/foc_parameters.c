@@ -24,6 +24,6 @@ void read_focparam_idq(struct foc_parameters *foc_param, float *id, float *iq)
 
 void debug_update_iq_ref(struct foc_parameters *foc_param, float iq_ref)
 {
-	foc_param->id_ref = 0.0f;
 	foc_param->id_ref = iq_ref;
+	foc_param->iq_ref = 0.0f;
 }

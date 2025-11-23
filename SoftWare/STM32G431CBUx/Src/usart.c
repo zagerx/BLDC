@@ -229,8 +229,9 @@ void process_data(uint8_t *data, uint16_t len)
 		return;
 	}
 
-	if (strcmp(cmd, "iq_ref") == 0) {
+	if (strcmp(cmd, "set_dq_Ref") == 0) {
 		debug_update_foc_data(value);
+		HAL_GPIO_TogglePin(LED02_GPIO_Port, LED02_Pin);
 		return;
 	}
 }
