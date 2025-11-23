@@ -192,7 +192,7 @@ void feedback_reset(struct device *dev)
 
 void write_feedback_offset(struct device *dev, uint16_t offset)
 {
-	struct feedback_config *cfg = dev->data;
+	struct feedback_config *cfg = dev->config;
 	cfg->zero_offset = offset;
 }
 
