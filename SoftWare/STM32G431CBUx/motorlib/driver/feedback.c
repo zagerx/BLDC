@@ -164,7 +164,7 @@ inline float read_feedback_elec_angle(struct device *dev)
 	return data->elec_angle;
 }
 
-float feedback_calc_velocity(struct device *dev)
+float read_feedback_velocity(struct device *dev)
 {
 	struct feedback_data *data = dev->data;
 	return data->vel_estimate;

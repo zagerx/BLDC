@@ -14,6 +14,7 @@ struct foc_parameters {
 	float torque_tar;
 	struct foc_pid id_pi_control;
 	struct foc_pid iq_pi_control;
+	struct foc_pid velocity_pi_control;
 };
 void update_focparam_idq(struct foc_parameters *foc_param, float i_alpha, float i_beta,
 			 float eangle);

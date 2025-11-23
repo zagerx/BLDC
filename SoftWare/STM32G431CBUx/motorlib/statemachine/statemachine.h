@@ -20,11 +20,11 @@
  * @brief State machine return codes
  */
 typedef enum {
-	fsm_rt_err = -1,	 ///< FSM error (check error code from other interface)
-	fsm_rt_cpl = 0,		 ///< FSM completed successfully
-	fsm_rt_on_going = 1,	 ///< FSM operation in progress
+	fsm_rt_err = -1,         ///< FSM error (check error code from other interface)
+	fsm_rt_cpl = 0,          ///< FSM completed successfully
+	fsm_rt_on_going = 1,     ///< FSM operation in progress
 	fsm_rt_wait_for_obj = 2, ///< FSM waiting for resource/object
-	fsm_rt_asyn = 3,	 ///< FSM in asynchronous mode (check status later)
+	fsm_rt_asyn = 3,         ///< FSM in asynchronous mode (check status later)
 } fsm_rt_t;
 
 /**
@@ -33,7 +33,7 @@ typedef enum {
  */
 enum {
 	ENTER = 0,  ///< Entry state handler
-	EXIT,	    ///< Exit state handler
+	EXIT,       ///< Exit state handler
 	USER_STATUS ///< First available user-defined state
 };
 /**
@@ -45,7 +45,7 @@ enum {
  */
 enum fsm_signal {
 	NULL_USE_SING = 0, /* Reserved null signal identifier */
-	USER_SIG	   /* First available user-defined signal */
+	USER_SIG           /* First available user-defined signal */
 };
 /**
  * @struct state_transition_map
@@ -53,7 +53,7 @@ enum fsm_signal {
  */
 struct state_transition_map {
 	enum fsm_signal signal; ///< Input signal that triggers transition
-	int16_t target_state;	///< Resulting state after signal processing
+	int16_t target_state;   ///< Resulting state after signal processing
 };
 /* Forward declarations */
 typedef struct fsm_cb fsm_cb_t;
@@ -66,11 +66,12 @@ typedef fsm_rt_t (*fsm_t)(fsm_cb_t *);
 struct fsm_cb {
 	unsigned char chState; ///< Current state
 	const char *name;      ///< State machine name (for debugging)
+	uint32_t count;
 	enum fsm_signal sig;
 	struct state_transition_map *transition_table; ///< Signal-state mapping table
-	int8_t transition_table_size;		       ///< Number of entries in table
+	int8_t transition_table_size;                  ///< Number of entries in table
 
-	void *p1;	     ///< User data pointer
+	void *p1;            ///< User data pointer
 	fsm_t current_state; ///< Current state handler function
 	fsm_t previous_state;
 	fsm_cb_t *sub_state_machine;

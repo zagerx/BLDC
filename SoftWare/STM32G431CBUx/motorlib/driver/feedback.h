@@ -70,7 +70,7 @@ void write_feedback_direction(struct device *dev, int8_t direction);
 float feedback_get_mech_angle(struct device *dev);
 float feedback_get_continuous_mech_angle(struct device *dev);
 float read_feedback_elec_angle(struct device *dev);
-float feedback_calc_velocity(struct device *dev);
+float read_feedback_velocity(struct device *dev);
 float feedback_calc_elec_velocity(struct device *dev);
 
 uint32_t read_feedback_raw(struct device *feedback);
