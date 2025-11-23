@@ -50,23 +50,23 @@ struct motor_parameters {
 	uint16_t pole_pairs; // 极对数
 	float flux_linkage;  // 磁链 (Wb)
 };
-struct motor_currment_parameters {
-	pid_cb_t pi;
-};
-struct motot_velocity_parameters {
-	pid_cb_t pi;
-	// 速度规划的相关参数，
-};
+// struct motor_currment_parameters {
+// 	// pid_cb_t pi;
+// };
+// struct motot_velocity_parameters {
+// 	// pid_cb_t pi;
+// 	// 速度规划的相关参数，
+// };
 
-struct motor_control_parameters {
-	// d轴PI参数
-	struct motor_currment_parameters d_axis;
-	// q轴PI参数
-	struct motor_currment_parameters q_axis;
-	// 速度环参数
-	struct motot_velocity_parameters velocity;
-	//...
-};
+// struct motor_control_parameters {
+// 	// d轴PI参数
+// 	struct motor_currment_parameters d_axis;
+// 	// q轴PI参数
+// 	struct motor_currment_parameters q_axis;
+// 	// 速度环参数
+// 	struct motot_velocity_parameters velocity;
+// 	//...
+// };
 
 enum motor_flag {
 	PARAM_NEVER_LOADED = 0, /* 板子首次上电，外部 FLASH 无有效数据 */
@@ -76,7 +76,7 @@ enum motor_flag {
 
 struct motor_data {
 	struct motor_parameters model_paramters;
-	struct motor_control_parameters control_paramters;
+	// struct motor_control_parameters control_paramters;
 	struct foc_parameters foc_data;
 	struct motor_calibration_modules *calib;
 	enum motor_flag flag;

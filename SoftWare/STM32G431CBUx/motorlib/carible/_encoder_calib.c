@@ -160,7 +160,6 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 			ed->raw_bwd = (uint32_t)raw_curr;
 			ed->bwd_captured = true;
 		}
-
 		// 5. 结束判断
 		if (ed->driver_elec_angle <= SCAN_RANGE_START) {
 			inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f); // 停机
@@ -172,7 +171,6 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 	 * Step 4: 计算与平均
 	 * ----------------------------------------------------- */
 	case ENC_CALIB_STATE_CALCULATE: {
-
 		// 1. 计算平均零偏 (处理环绕问题)
 		if (ed->fwd_captured && ed->bwd_captured) {
 			int32_t r1 = (int32_t)ed->raw_fwd;
@@ -198,7 +196,7 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 				avg += max;
 			}
 
-			write_feedback_offset(fb, (uint32_t)avg);
+			write_feedback_offset(fb, avg);
 			ed->state = ENC_CALIB_STATE_COMPLETE;
 		} else {
 			// 如果没捕获到 (速度过快或配置错误)，报错

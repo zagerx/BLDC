@@ -11,7 +11,7 @@ void update_focparam_idq(struct foc_parameters *foc_param, float i_alpha, float 
 {
 	float sin_val, cos_val;
 	float i_d, i_q;
-	sin_cos_f32(eangle * RAD_TO_DEG, &sin_val, &cos_val);
+	sin_cos_f32(eangle, &sin_val, &cos_val);
 	park_f32(i_alpha, i_beta, &i_d, &i_q, sin_val, cos_val);
 	foc_param->id = i_d;
 	foc_param->iq = i_q;

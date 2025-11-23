@@ -3,6 +3,7 @@
 #include "currsmp.h"
 #include "device.h"
 #include "feedback.h"
+#include "foc_parameters.h"
 #include "inverter.h"
 #include "svpwm.h"
 
@@ -47,31 +48,6 @@ void foc_curr_regulator(uint32_t *adc_raw)
 			1、电流闭环 速度闭环 位置闭环 位置规划
 	*/
 	DISPATCH_FSM(m_data->state_machine);
-	// pp_ident_update(motor, PWM_CYCLE);
-	// struct currsmp_data *c_data = currsmp->data;
-	// c_data->channle_raw_a = adc_raw[0];
-	// c_data->channle_raw_c = adc_raw[2];
-	// currsmp_update_calibration(currsmp);
-	// feedback_update_angle_vec(feedback);
-	// currsmp_updata(currsmp);
-
-	// static float self_theta = 360.0f;
-	// self_theta -= 0.002f;
-	// if (self_theta < 0.0f) {
-	//   self_theta = 360.0f;
-	// }
-
-	// float sin_val, cos_val;
-	// sin_cos_f32(self_theta, &sin_val, &cos_val);
-
-	// float ud, uq;
-	// float ualpha, ubeta;
-	// ud = 0.0f;
-	// uq = 0.02f;
-	// inv_park_f32(ud, uq, &ualpha, &ubeta, sin_val, cos_val);
-	// float duty[3];
-	// svm_set(ualpha, ubeta, duty);
-	// inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);
 }
 
 void motor_init(struct device *motor)
@@ -108,17 +84,10 @@ void motor_task(struct device *motor)
 		break;
 	}
 }
-#include "stdio.h"
-void motor_debug_info(struct device *motor)
+void debug_update_foc_data(float debug_data)
 {
-	// struct device *motor = &motor1;
+	struct device *motor = &motor1;
 	struct motor_data *m_data = motor->data;
-	fsm_cb_t *fsm = m_data->state_machine;
-	if (fsm->current_state != fsm->previous_state) {
-		if (fsm->current_state == motor_carible_state) {
-			printf("current state:   motor_carible_state\r\n");
-		} else if (fsm->current_state == motor_idle_state) {
-			printf("current state:   motor_idle_state\r\n");
-		}
-	}
+	struct foc_parameters *foc_param = &m_data->foc_data;
+	debug_update_iq_ref(foc_param, debug_data);
 }

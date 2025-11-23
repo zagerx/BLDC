@@ -185,12 +185,12 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 			// data_length = 0;
 			HAL_UART_Receive_DMA(huart, (uint8_t *)sg_uartreceive_buff,
 					     sizeof(sg_uartreceive_buff));
-			HAL_GPIO_TogglePin(LED02_GPIO_Port, LED02_Pin);
 		}
 	}
 }
 #include <string.h>
 #include <stdlib.h>
+extern void debug_update_foc_data(float debug_data);
 
 void process_data(uint8_t *data, uint16_t len)
 {
@@ -229,7 +229,10 @@ void process_data(uint8_t *data, uint16_t len)
 		return;
 	}
 
-	// printf("Unknown command: %s\r\n", cmd);
+	if (strcmp(cmd, "iq_ref") == 0) {
+		debug_update_foc_data(value);
+		return;
+	}
 }
 
 /* USER CODE END 1 */
