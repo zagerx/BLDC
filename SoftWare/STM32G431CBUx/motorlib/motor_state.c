@@ -223,14 +223,14 @@ fsm_rt_t motor_debug_id_state(fsm_cb_t *obj)
 		if (feedback_init(feedback)) {
 			break;
 		}
-		foc_pid_init(&foc_param->id_pi_control, 0.004f, 20.0, 13.0f);
-		foc_pid_init(&foc_param->iq_pi_control, 0.004f, 20.0, 13.0f);
+		foc_pid_init(&foc_param->id_pi_control, 0.001f, 30.0, 13.0f);
+		foc_pid_init(&foc_param->iq_pi_control, 0.001f, 30.0, 13.0f);
 		obj->chState = RUNING;
 		break;
 
 	case RUNING: {
 		feedback_update(feedback, PWM_CYCLE);
-		float elec_angle = read_feedback_elec_angle(feedback);
+		float elec_angle = read_feedback_elec_angle(feedback) * RAD_TO_DEG;
 
 		float i_abc[3];
 		float i_alpha, i_beta;
@@ -280,8 +280,12 @@ fsm_rt_t motor_debug_id_state(fsm_cb_t *obj)
 		foc_pid_saturation_feedback(&(foc_param->iq_pi_control), uq_final, uq_req);
 
 		// // 步骤 6: 坐标变换与输出
-		// ud_final = 0.03f;
+		// ud_final = 0.0f;
 		uq_final = 0.0f;
+
+		// 归一化处理
+		ud_final *= (1 / (24.0f * 0.57735f));
+		uq_final *= (1 / (24.0f * 0.57735f));
 		float sin_val, cos_val;
 		sin_cos_f32(elec_angle, &sin_val, &cos_val);
 		float ualpha, ubeta;
