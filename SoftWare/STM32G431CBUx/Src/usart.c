@@ -190,7 +190,7 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 }
 #include <string.h>
 #include <stdlib.h>
-extern void debug_update_foc_data(float debug_data);
+// extern void debug_update_foc_data(float debug_data);
 
 void process_data(uint8_t *data, uint16_t len)
 {
@@ -230,7 +230,7 @@ void process_data(uint8_t *data, uint16_t len)
 	}
 
 	if (strcmp(cmd, "set_dq_Ref") == 0) {
-		debug_update_foc_data(value);
+		// debug_update_foc_data(value);
 		HAL_GPIO_TogglePin(LED02_GPIO_Port, LED02_Pin);
 		return;
 	}
