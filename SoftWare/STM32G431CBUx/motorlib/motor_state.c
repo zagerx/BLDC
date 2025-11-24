@@ -213,6 +213,10 @@ fsm_rt_t motor_debug_idle_state(fsm_cb_t *obj)
 	return 0;
 }
 
+#define DEBUG_D_PI 0
+#define DEBUG_Q_PI 1
+#define DEBUG_VEL_PI 2
+#define CURRENT_DEBUG DEBUG_Q_PI
 fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 {
 	enum {
@@ -237,7 +241,16 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		read_foc_param_(foc_param,INDEX_D_PI,data);
 		kp = data[0];
 		ki = data[1];
+		#if (CURRENT_DEBUG == DEBUG_D_PI)
 		foc_pid_init(&foc_param->id_pi_control,kp, ki, 13.0f);
+		#elif (CURRENT_DEBUG == DEBUG_Q_PI)
+		foc_pid_init(&foc_param->id_pi_control,kp, ki, 13.0f);
+		#elif (CURRENT_DEBUG == DEBUG_VEL_PI)
+		foc_pid_init(&foc_param->id_pi_control,0.01f, 30.0f, 13.0f);
+		foc_pid_init(&foc_param->id_pi_control,0.01f, 30.0f, 13.0f);
+		foc_pid_init(&foc_param->velocity_pi_control,kp, ki, 13.0f);
+		#else
+		#endif
 		obj->chState = RUNING;
 		break;
 
@@ -260,7 +273,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		// 留一点裕量 (Margin)，比如 0.95，防止MOS管死区时间和采样噪声导致削顶
 		float v_max_abs = v_bus * 0.57735f * 0.96f; // 0.57735 = 1/sqrt(3)
 		float v_max_sq = SQ(v_max_abs);
-#if 0
+#if (CURRENT_DEBUG == DEBUG_VEL_PI)
 		// 速度环计算
 		if (((++obj->count) * PWM_CYCLE) >= 0.002f) {
 			obj->count = 0;
@@ -271,11 +284,19 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		}
 #endif
 		// 步骤 2: PID 计算
-		float ud_req =
-			foc_pid_run(&(foc_param->id_pi_control), foc_param->id_ref, id, PWM_CYCLE);
-		float uq_req =
-			foc_pid_run(&(foc_param->iq_pi_control), foc_param->iq_ref, iq, PWM_CYCLE);
+		float ud_req,uq_req;
+#if (CURRENT_DEBUG == DEBUG_D_PI)
+	ud_req = foc_pid_run(&(foc_param->id_pi_control), foc_param->id_ref, id, PWM_CYCLE);
+	uq_req = 0.0f;
+#elif (CURRENT_DEBUG == DEBUG_Q_PI)
+	ud_req = 0.0f;
+	uq_req = foc_pid_run(&(foc_param->iq_pi_control), foc_param->iq_ref, iq, PWM_CYCLE);
+#elif (CURRENT_DEBUG == DEBUG_VEL_PI)
+	ud_req = foc_pid_run(&(foc_param->id_pi_control), foc_param->id_ref, id, PWM_CYCLE);
+	uq_req = foc_pid_run(&(foc_param->iq_pi_control), foc_param->iq_ref, iq, PWM_CYCLE);
+#else
 
+#endif
 		// 步骤 3: 优化的前馈解耦 (Decoupling)
 		// float speed_elec = get_elec_velocity(feedback);
 		// ud_req -= speed_elec * Lq * iq;
@@ -302,8 +323,14 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		foc_pid_saturation_feedback(&(foc_param->iq_pi_control), uq_final, uq_req);
 
 		// // 步骤 6: 坐标变换与输出
+#if (CURRENT_DEBUG == DEBUG_D_PI)		
 		// ud_final = 0.0f;
 		uq_final = 0.0f;
+#elif (CURRENT_DEBUG == DEBUG_Q_PI)
+		ud_final = 0.0f;
+		// uq_final = 0.0f;
+#else
+#endif
 
 		// 归一化处理
 		ud_final *= (1 / (24.0f * 0.57735f));
