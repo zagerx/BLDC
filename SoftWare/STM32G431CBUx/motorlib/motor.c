@@ -84,19 +84,22 @@ void motor_task(struct device *motor)
 		break;
 	}
 }
-void debug_update_foc_data(float *input,enum foc_parameters_index flag)
+void debug_update_foc_data(float *input, enum foc_parameters_index flag)
 {
 	struct device *motor = &motor1;
 	struct motor_data *m_data = motor->data;
 	struct foc_parameters *foc_param = &m_data->foc_data;
-	
-	if (flag == INDEX_ID_REF)//目标参数更新
-	{
-		write_foc_param_(foc_param,INDEX_ID_REF,input);	
-	}else if(flag == 2){//PI参数更新
-		write_foc_param_(foc_param,INDEX_ID_REF,input);	
-		TRAN_STATE(m_data->state_machine, motor_debug_idle_state);	
-	}
-	
 
+	if (flag == INDEX_ID_REF) // 目标参数更新
+	{
+		write_foc_param_(foc_param, INDEX_ID_REF, input);
+	} else if (flag == INDEX_D_PI) { // PI参数更新
+		write_foc_param_(foc_param, INDEX_D_PI, input);
+		TRAN_STATE(m_data->state_machine, motor_debug_idle_state);
+	} else if (flag == INDEX_VELOCITY_PI) {
+		write_foc_param_(foc_param, INDEX_VELOCITY_PI, input);
+		TRAN_STATE(m_data->state_machine, motor_debug_idle_state);
+	} else if (flag == INDEX_VELOCITY_REG) {
+		write_foc_param_(foc_param, INDEX_VELOCITY_REG, input);
+	}
 }

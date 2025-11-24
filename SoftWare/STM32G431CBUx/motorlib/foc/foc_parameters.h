@@ -1,7 +1,7 @@
 #ifndef FOC_PARAMETERS_H
 #define FOC_PARAMETERS_H
 #include "foc_pid.h"
-enum foc_parameters_index{
+enum foc_parameters_index {
 	INDEX_ID_REF = 0,
 	INDEX_IQ_REF,
 	INDEX_VELOCITY_REG,
@@ -10,14 +10,13 @@ enum foc_parameters_index{
 	INDEX_D_PI,
 	INDEX_Q_PI,
 	INDEX_VELOCITY_PI,
-
 };
 struct foc_parameters {
 	// Only Read
 	float id;
 	float iq;
 
-	//RW
+	// RW
 	float id_ref;
 	float iq_ref;       // 速度环输出
 	float velocity_ref; // 位置环输出
@@ -33,6 +32,7 @@ void update_focparam_idq(struct foc_parameters *foc_param, float i_alpha, float 
 			 float eangle);
 void read_focparam_idq(struct foc_parameters *foc_param, float *id, float *iq);
 
-void read_foc_param_(struct foc_parameters *foc_param,enum foc_parameters_index flag,float *data);
-void write_foc_param_(struct foc_parameters *foc_param,enum foc_parameters_index flag,float *data);
+void read_foc_param_(struct foc_parameters *foc_param, enum foc_parameters_index flag, float *data);
+void write_foc_param_(struct foc_parameters *foc_param, enum foc_parameters_index flag,
+		      float *data);
 #endif

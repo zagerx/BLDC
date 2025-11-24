@@ -22,6 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "string.h"
+#include "device.h"
 #include <stdint.h>
 static uint8_t sg_uartreceive_buff[125];
 /* USER CODE END 0 */
@@ -191,7 +192,8 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 #include <string.h>
 #include <stdlib.h>
 // extern void debug_update_foc_data(float debug_data);
-
+#include "foc_parameters.h"
+void debug_update_foc_data(float *input, enum foc_parameters_index flag);
 void process_data(uint8_t *data, uint16_t len)
 {
 	if (data[0] == 0) {
@@ -213,24 +215,50 @@ void process_data(uint8_t *data, uint16_t len)
 	float value = atof(val_str);
 
 	// ========== 命令判断 ==========
-	if (strcmp(cmd, "id") == 0) {
-		printf("ID Command, value = %.3f\r\n", value);
-
+	float input[2];
+	if (strcmp(cmd, "D_Kp") == 0) {
+		input[0] = value;
+		input[1] = 20.00f;
+		debug_update_foc_data(input, INDEX_D_PI);
+		return;
+	}
+	if (strcmp(cmd, "D_Ki") == 0) {
+		input[0] = 0.1f; // 需要根据调试好的Kp写入
+		input[1] = value;
+		debug_update_foc_data(input, INDEX_D_PI);
 		return;
 	}
 
-	if (strcmp(cmd, "iq") == 0) {
+	if (strcmp(cmd, "Q_Kp") == 0) {
 		printf("IQ Command, value = %.3f\r\n", value);
 		return;
 	}
-
-	if (strcmp(cmd, "speed") == 0) {
-		printf("Speed Command, value = %.3f\r\n", value);
+	if (strcmp(cmd, "Q_Ki") == 0) {
+		printf("IQ Command, value = %.3f\r\n", value);
+		return;
+	}
+	if (strcmp(cmd, "SpeedKp") == 0) {
+		input[0] = value;
+		input[1] = 1.01f;
+		debug_update_foc_data(input, INDEX_VELOCITY_PI);
+		return;
+	}
+	if (strcmp(cmd, "SpeedKi") == 0) {
+		// input[0] = ;
+		input[1] = value;
+		debug_update_foc_data(input, INDEX_VELOCITY_PI);
+		return;
+	}
+	if (strcmp(cmd, "set_dq_Ref") == 0) {
+		input[0] = value;
+		debug_update_foc_data(input, INDEX_ID_REF);
+		HAL_GPIO_TogglePin(LED02_GPIO_Port, LED02_Pin);
 		return;
 	}
 
-	if (strcmp(cmd, "set_dq_Ref") == 0) {
-		// debug_update_foc_data(value);
+	if (strcmp(cmd, "set_speed_Ref") == 0) {
+		input[0] = value;
+		debug_update_foc_data(input, INDEX_VELOCITY_REG);
 		HAL_GPIO_TogglePin(LED02_GPIO_Port, LED02_Pin);
 		return;
 	}

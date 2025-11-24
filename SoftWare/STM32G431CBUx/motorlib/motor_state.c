@@ -125,7 +125,7 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 		break;
 	case RUNNING:
 		if (motor_calib_update(m_data->calib, PWM_CYCLE) == 1) {
-			TRAN_STATE(m_data->state_machine, motor_running_state);
+			TRAN_STATE(m_data->state_machine, motor_encoder_openloop_state);
 		}
 		break;
 	case EXIT:
@@ -178,6 +178,7 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);
 	} break;
 	case EXIT:
+		inverter_set_3phase_voltages(inverer, 0.0f, 0.0f, 0.0f);
 		break;
 	default:
 		break;
@@ -198,9 +199,9 @@ fsm_rt_t motor_debug_idle_state(fsm_cb_t *obj)
 		break;
 
 	case RUNING: {
-		if(++obj->count>10000){
+		if (++obj->count > 10000) {
 			obj->count = 0;
-			TRAN_STATE(obj,motor_debug_state);
+			TRAN_STATE(obj, motor_debug_state);
 		}
 	} break;
 
@@ -213,10 +214,11 @@ fsm_rt_t motor_debug_idle_state(fsm_cb_t *obj)
 	return 0;
 }
 
-#define DEBUG_D_PI 0
-#define DEBUG_Q_PI 1
-#define DEBUG_VEL_PI 2
-#define CURRENT_DEBUG DEBUG_Q_PI
+#define DEBUG_D_PI    0
+#define DEBUG_Q_PI    1
+#define DEBUG_VEL_PI  2
+#define CURRENT_DEBUG DEBUG_VEL_PI
+#include "stdio.h"
 fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 {
 	enum {
@@ -236,21 +238,27 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 			break;
 		}
 
-		float kp,ki;
+		float kp, ki;
 		float data[2] = {0};
-		read_foc_param_(foc_param,INDEX_D_PI,data);
+#if (CURRENT_DEBUG == DEBUG_D_PI)
+		read_foc_param_(foc_param, INDEX_D_PI, data);
 		kp = data[0];
 		ki = data[1];
-		#if (CURRENT_DEBUG == DEBUG_D_PI)
-		foc_pid_init(&foc_param->id_pi_control,kp, ki, 13.0f);
-		#elif (CURRENT_DEBUG == DEBUG_Q_PI)
-		foc_pid_init(&foc_param->id_pi_control,kp, ki, 13.0f);
-		#elif (CURRENT_DEBUG == DEBUG_VEL_PI)
-		foc_pid_init(&foc_param->id_pi_control,0.01f, 30.0f, 13.0f);
-		foc_pid_init(&foc_param->id_pi_control,0.01f, 30.0f, 13.0f);
-		foc_pid_init(&foc_param->velocity_pi_control,kp, ki, 13.0f);
-		#else
-		#endif
+		foc_pid_init(&foc_param->id_pi_control, kp, ki, 13.0f);
+#elif (CURRENT_DEBUG == DEBUG_Q_PI)
+		foc_pid_init(&foc_param->id_pi_control, kp, ki, 13.0f);
+#elif (CURRENT_DEBUG == DEBUG_VEL_PI)
+		read_foc_param_(foc_param, INDEX_VELOCITY_PI, data);
+		kp = data[0];
+		ki = data[1];
+		foc_pid_init(&foc_param->id_pi_control, 0.01f, 30.0f, 13.0f);
+		foc_pid_init(&foc_param->id_pi_control, 0.01f, 30.0f, 13.0f);
+		foc_pid_init(&foc_param->velocity_pi_control, kp, ki, 50.0f);
+		// foc_pid_init(&foc_param->id_pi_control, 0.001f, 30.0, 13.0f);
+		// foc_pid_init(&foc_param->iq_pi_control, 0.001f, 30.0, 13.0f);
+		// foc_pid_init(&foc_param->velocity_pi_control, 0.1f, 2.001f, 10.0f);
+#else
+#endif
 		obj->chState = RUNING;
 		break;
 
@@ -284,16 +292,16 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		}
 #endif
 		// 步骤 2: PID 计算
-		float ud_req,uq_req;
+		float ud_req, uq_req;
 #if (CURRENT_DEBUG == DEBUG_D_PI)
-	ud_req = foc_pid_run(&(foc_param->id_pi_control), foc_param->id_ref, id, PWM_CYCLE);
-	uq_req = 0.0f;
+		ud_req = foc_pid_run(&(foc_param->id_pi_control), foc_param->id_ref, id, PWM_CYCLE);
+		uq_req = 0.0f;
 #elif (CURRENT_DEBUG == DEBUG_Q_PI)
-	ud_req = 0.0f;
-	uq_req = foc_pid_run(&(foc_param->iq_pi_control), foc_param->iq_ref, iq, PWM_CYCLE);
+		ud_req = 0.0f;
+		uq_req = foc_pid_run(&(foc_param->iq_pi_control), foc_param->iq_ref, iq, PWM_CYCLE);
 #elif (CURRENT_DEBUG == DEBUG_VEL_PI)
-	ud_req = foc_pid_run(&(foc_param->id_pi_control), foc_param->id_ref, id, PWM_CYCLE);
-	uq_req = foc_pid_run(&(foc_param->iq_pi_control), foc_param->iq_ref, iq, PWM_CYCLE);
+		ud_req = foc_pid_run(&(foc_param->id_pi_control), foc_param->id_ref, id, PWM_CYCLE);
+		uq_req = foc_pid_run(&(foc_param->iq_pi_control), foc_param->iq_ref, iq, PWM_CYCLE);
 #else
 
 #endif
@@ -323,7 +331,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		foc_pid_saturation_feedback(&(foc_param->iq_pi_control), uq_final, uq_req);
 
 		// // 步骤 6: 坐标变换与输出
-#if (CURRENT_DEBUG == DEBUG_D_PI)		
+#if (CURRENT_DEBUG == DEBUG_D_PI)
 		// ud_final = 0.0f;
 		uq_final = 0.0f;
 #elif (CURRENT_DEBUG == DEBUG_Q_PI)
@@ -331,7 +339,8 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		// uq_final = 0.0f;
 #else
 #endif
-
+		// ud_final = 0.0f;
+		// uq_final = 0.02f;
 		// 归一化处理
 		ud_final *= (1 / (24.0f * 0.57735f));
 		uq_final *= (1 / (24.0f * 0.57735f));
@@ -353,7 +362,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		foc_pid_reset(&foc_param->id_pi_control);
 		foc_pid_reset(&foc_param->iq_pi_control);
 		foc_pid_reset(&foc_param->velocity_pi_control);
-		inverter_set_3phase_voltages(inverer,0.0f,0.0f,0.0f);
+		inverter_set_3phase_voltages(inverer, 0.0f, 0.0f, 0.0f);
 		break;
 	default:
 		break;
