@@ -191,10 +191,9 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 }
 #include <string.h>
 #include <stdlib.h>
-// extern void debug_update_foc_data(float debug_data);
 #include "foc_parameters.h"
 void debug_update_foc_data(float *input, enum foc_parameters_index flag);
-#if 1
+#if 0
 void process_data(uint8_t *data, uint16_t len)
 {
 	if (data[0] == 0) {
@@ -265,7 +264,21 @@ void process_data(uint8_t *data, uint16_t len)
 	}
 }
 #else
-// 更高效的参数解析版本
+// 命令映射表结构
+typedef struct {
+    const char *cmd_name;
+    uint8_t min_params;  // 最少需要的参数个数
+    enum foc_parameters_index data_index;
+} command_map_t;
+
+// 命令表定义
+static const command_map_t cmd_map[] = {
+    {"D_PI", 2, INDEX_D_PI},
+    {"D_ref", 2, 	INDEX_ID_REF},
+
+    {"Velocity_PI", 2, INDEX_VELOCITY_PI},
+    {"Valocity_tar", 2, INDEX_VELOCITY_REG},
+};
 void process_data(uint8_t *data, uint16_t len)
 {
     if (data[0] == 0 || len == 0 || len > 255) {
