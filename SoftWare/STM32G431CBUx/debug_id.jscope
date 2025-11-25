@@ -10,6 +10,9 @@
             <Scope>
                 <Options TimeResolutionUs="1000000" />
             </Scope>
+            <Trigger>
+                <Options Level="0" Symbol="vel_estimate" On="0" Auto="0" Rise="0" Fall="0" />
+            </Trigger>
         </Configuration>
         <Windows>
             <Graph Show="1" />
@@ -17,10 +20,7 @@
         </Windows>
         <SelectedSymbols>
             <Symbol>
-                <Options Name="ia" Address="0x200003C8" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="0" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".currsmp1_data.ia" />
-            </Symbol>
-            <Symbol>
-                <Options Name="vel_estimate" Address="0x200003E4" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="255" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".feedback1_data.vel_estimate" />
+                <Options Name="vel_estimate" Address="0x200003E8" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="255" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".feedback1_data.vel_estimate" />
             </Symbol>
             <Symbol>
                 <Options Name="id" Address="0x200001A0" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="0" GraphColorBlue="255" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".m1_data.foc_data.id" />
@@ -35,16 +35,19 @@
                 <Options Name="iq_ref" Address="0x200001AC" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="255" GraphColorBlue="255" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".m1_data.foc_data.iq_ref" />
             </Symbol>
             <Symbol>
-                <Options Name="velocity_tar" Address="0x200001B8" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="255" GraphColorBlue="255" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".m1_data.foc_data.velocity_tar" />
+                <Options Name="velocity_tar" Address="0x200001B8" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="0" GraphColorBlue="255" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".m1_data.foc_data.velocity_tar" />
             </Symbol>
             <Symbol>
-                <Options Name="kp" Address="0x200001C0" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="0" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".m1_data.foc_data.id_pi_control.kp" />
+                <Options Name="kp" Address="0x200001E8" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="255" GraphColorBlue="0" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".m1_data.foc_data.velocity_pi_control.kp" />
             </Symbol>
             <Symbol>
-                <Options Name="kp" Address="0x200001E8" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="255" GraphColorBlue="0" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".m1_data.foc_data.velocity_pi_control.kp" />
+                <Options Name="ki" Address="0x200001EC" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="255" GraphColorBlue="0" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".m1_data.foc_data.velocity_pi_control.ki" />
             </Symbol>
             <Symbol>
-                <Options Name="ki" Address="0x200001EC" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="255" GraphColorBlue="0" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/motorlib/motor_cfg.c" DrawStyle="0" NameWithParents=".m1_data.foc_data.velocity_pi_control.ki" />
+                <Options Name="test[0]" Address="0x20000864" Type="float" TypeID="1" Size="4" GraphColorRed="255" GraphColorGreen="0" GraphColorBlue="0" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/Src/usart.c" DrawStyle="0" NameWithParents=".test[0]" />
+            </Symbol>
+            <Symbol>
+                <Options Name="test[1]" Address="0x20000868" Type="float" TypeID="1" Size="4" GraphColorRed="0" GraphColorGreen="0" GraphColorBlue="255" YMinSampled="1.79769e+308" YMaxSampled="-1.79769e+308" YAvgSampled="0" Offset="0" ShowInGraph="1" YOffset="0" IsAutoConfig="0" YResolution="1" MaxValue="-2147483648" File="/home/zhangge/worknote/BLDC/SoftWare/STM32G431CBUx/Src/usart.c" DrawStyle="0" NameWithParents=".test[1]" />
             </Symbol>
         </SelectedSymbols>
     </Project>

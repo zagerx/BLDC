@@ -252,11 +252,8 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		kp = data[0];
 		ki = data[1];
 		foc_pid_init(&foc_param->id_pi_control, 0.01f, 30.0f, 13.0f);
-		foc_pid_init(&foc_param->id_pi_control, 0.01f, 30.0f, 13.0f);
-		foc_pid_init(&foc_param->velocity_pi_control, kp, ki, 50.0f);
-		// foc_pid_init(&foc_param->id_pi_control, 0.001f, 30.0, 13.0f);
-		// foc_pid_init(&foc_param->iq_pi_control, 0.001f, 30.0, 13.0f);
-		// foc_pid_init(&foc_param->velocity_pi_control, 0.1f, 2.001f, 10.0f);
+		foc_pid_init(&foc_param->iq_pi_control, 0.01f, 30.0f, 13.0f);
+		foc_pid_init(&foc_param->velocity_pi_control, kp, ki, 10.0f); // 0.08f,3.0f
 #else
 #endif
 		obj->chState = RUNING;
