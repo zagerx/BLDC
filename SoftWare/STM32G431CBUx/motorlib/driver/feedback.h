@@ -15,6 +15,9 @@
  * 否则默认使用差分法估计速度，且 PLL 字段与代码将被剔除。
  */
 
+#ifdef FEEDBACK_USE_VEL_FILTER
+#include "lfp.h"
+#endif 
 struct feedback_config {
 	uint32_t (*get_raw)(void);
 
@@ -54,6 +57,10 @@ struct feedback_data {
 	/* 其他状态 */
 	int32_t turns;
 	float pos_estimate;
+
+#ifdef FEEDBACK_USE_VEL_FILTER
+    struct first_order_lpf vel_filter; // 速度滤波器实例
+#endif
 };
 
 struct feedback_api {

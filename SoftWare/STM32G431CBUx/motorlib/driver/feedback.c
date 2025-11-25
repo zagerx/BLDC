@@ -46,6 +46,11 @@ int feedback_init(struct device *dev)
 	data->pll_pos = 0.0f;
 	data->pll_vel = 0.0f;
 #endif
+
+#ifdef FEEDBACK_USE_VEL_FILTER
+    // 默认控制频率为10kHz，截止频率设为50Hz
+    lpf_init(&data->vel_filter, 50.0f, PWM_FREQ);
+#endif
 	return 0;
 }
 
