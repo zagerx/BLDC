@@ -29,12 +29,13 @@ static float angle_difference(float current, float previous)
 int feedback_init(struct device *dev)
 {
 	struct feedback_config *cfg = dev->config;
+	struct feedback_data *data = dev->data;
 
 	if (cfg->cpr == 0 || cfg->direction == 0 || cfg->pole_pairs == 0) {
 		return -1;
 	}
 	cfg->pos_estimate_weight = 0.1f;
-
+	data->accumulated_dt = 0.0f;
 #ifdef FEEDBACK_USE_PLL
 	/* PLL 参数默认 */
 	cfg->pll_kp = 100.0f; // 默认PLL参数
@@ -42,14 +43,13 @@ int feedback_init(struct device *dev)
 	// data->pll_kp_scale 已删除 (冗余)
 
 	/* 初始化 PLL 状态 */
-	struct feedback_data *data = dev->data;
 	data->pll_pos = 0.0f;
 	data->pll_vel = 0.0f;
 #endif
 
 #ifdef FEEDBACK_USE_VEL_FILTER
-    // 默认控制频率为10kHz，截止频率设为50Hz
-    lpf_init(&data->vel_filter, 50.0f, PWM_FREQ);
+	// 默认控制频率为10kHz，截止频率设为50Hz
+	lpf_init(&data->vel_filter, 50.0f, PWM_FREQ);
 #endif
 	return 0;
 }
@@ -76,10 +76,11 @@ void feedback_update(struct device *dev, float dt)
 
 	// 考虑编码器偏移量并转为调整后的原始值
 	int32_t adjusted_raw = (int32_t)data->raw - (int32_t)cfg->zero_offset;
+	adjusted_raw %= cpr_i;
+
 	if (adjusted_raw < 0) {
 		adjusted_raw += cpr_i;
 	}
-	adjusted_raw %= cpr_i;
 
 	// 计算机械角度、电角度（新的计算结果）
 	float raw_angle = two_pi * (float)adjusted_raw / cpr_f;
@@ -127,15 +128,32 @@ void feedback_update(struct device *dev, float dt)
 
 #else
 
-	/* 差分法路径：用机械角度差分估计速度（简单且轻量） */
+	/* 差分法路径（抗丢帧优化版） */
 	float mech_angle_diff = angle_difference(current_mech_angle, mech_angle_prev);
 
-	if (dt > 1e-6f) {
-		data->vel_estimate = mech_angle_diff / dt;
-	} else {
-		data->vel_estimate = 0.0f;
-	}
+	// 累加时间
+	data->accumulated_dt += dt;
 
+	// 只有当角度发生变化（检测到脉冲），或者时间累积太久（防止堵转误判）时，才计算速度
+	// 1e-5f 是一个极小的角度阈值，约等于0.5个count (视CPR而定，这里假设防抖)
+	// 0.05f 是最大等待时间（50ms），防止电机真停了但速度一直保持非0
+	if (fabsf(mech_angle_diff) > 1e-5f || data->accumulated_dt > 0.05f) {
+
+		// 使用累积的时间进行除法
+		// 正常情况：accumulated_dt = dt, diff = 1, vel = 1/dt = 40
+		// 丢帧情况：accumulated_dt = 2*dt, diff = 2, vel = 2/(2*dt) = 40 (完美解决！)
+		float raw_vel = mech_angle_diff / data->accumulated_dt;
+
+		// 重置累积时间
+		data->accumulated_dt = 0.0f;
+
+		// 在这里应用低通滤波 (系数根据需要调整，0.1-0.3)
+		// 注意：这是对“计算出的速度”滤波，不是对角度
+		const float filter_alpha = 0.15f; // 新值权重 15%
+		data->vel_estimate =
+			(1.0f - filter_alpha) * data->vel_estimate + filter_alpha * raw_vel;
+		// data->vel_estimate = raw_vel; // 0.8f * data->vel_estimate + 0.2f * raw_vel;
+	}
 	/* 电速度 = 机械速度 * 极对数 */
 	data->vel_elec = data->vel_estimate * pole_pairs_f;
 

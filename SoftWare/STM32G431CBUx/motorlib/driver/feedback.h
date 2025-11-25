@@ -17,7 +17,7 @@
 
 #ifdef FEEDBACK_USE_VEL_FILTER
 #include "lfp.h"
-#endif 
+#endif
 struct feedback_config {
 	uint32_t (*get_raw)(void);
 
@@ -36,7 +36,7 @@ struct feedback_config {
 struct feedback_data {
 	/* 原始数据 */
 	uint32_t raw;
-
+	float accumulated_dt;
 	/* 角度信息 */
 	float mech_angle;
 	float mech_angle_prev; // 用于差分法计算速度
@@ -59,7 +59,7 @@ struct feedback_data {
 	float pos_estimate;
 
 #ifdef FEEDBACK_USE_VEL_FILTER
-    struct first_order_lpf vel_filter; // 速度滤波器实例
+	struct first_order_lpf vel_filter; // 速度滤波器实例
 #endif
 };
 
