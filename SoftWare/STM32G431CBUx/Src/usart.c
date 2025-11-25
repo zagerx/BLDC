@@ -194,6 +194,7 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 // extern void debug_update_foc_data(float debug_data);
 #include "foc_parameters.h"
 void debug_update_foc_data(float *input, enum foc_parameters_index flag);
+#if 1
 void process_data(uint8_t *data, uint16_t len)
 {
 	if (data[0] == 0) {
@@ -263,5 +264,78 @@ void process_data(uint8_t *data, uint16_t len)
 		return;
 	}
 }
+#else
+// 更高效的参数解析版本
+void process_data(uint8_t *data, uint16_t len)
+{
+    if (data[0] == 0 || len == 0 || len > 255) {
+        return;
+    }
+    
+    char buf[256];
+    uint16_t copy_len = (len < sizeof(buf) - 1) ? len : sizeof(buf) - 1;
+    memcpy(buf, (char *)data, copy_len);
+    buf[copy_len] = '\0';
 
+    // 找冒号
+    char *colon_pos = strchr(buf, ':');
+    if (!colon_pos) {
+        return;
+    }
+
+    *colon_pos = '\0';
+    char *cmd = buf;
+    char *params_str = colon_pos + 1;
+
+    // ========== 高效参数解析 ==========
+    float params[10];
+    uint8_t param_count = 0;
+    char *ptr = params_str;
+    
+    while (*ptr != '\0' && param_count < 10) {
+        // 跳过空格
+        while (*ptr == ' ') ptr++;
+        if (*ptr == '\0') break;
+        
+        // 解析浮点数
+        char *end;
+        params[param_count] = strtof(ptr, &end);
+        
+        if (end == ptr) {
+            // 转换失败，跳过这个字段
+            while (*end != ',' && *end != '\0') end++;
+        } else {
+            param_count++;
+        }
+        
+        // 移动到下一个参数
+        ptr = end;
+        if (*ptr == ',') {
+            ptr++;
+        } else {
+            break;
+        }
+    }
+
+    if (param_count == 0) {
+        return;
+    }
+
+    for (size_t i = 0; i < sizeof(cmd_map) / sizeof(cmd_map[0]); i++) {
+        if (strcmp(cmd, cmd_map[i].cmd_name) == 0) {
+            if (param_count >= cmd_map[i].min_params) {
+                float input[10];
+                uint8_t copy_count = (param_count < 10) ? param_count : 10;
+                
+                for (int j = 0; j < copy_count; j++) {
+                    input[j] = params[j];
+                }
+                
+                debug_update_foc_data(input, cmd_map[i].data_index);
+            }
+            return;
+        }
+    }
+}
+#endif
 /* USER CODE END 1 */
