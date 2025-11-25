@@ -1,6 +1,5 @@
 #include "foc_parameters.h"
 #include "coord_transform.h"
-
 #undef M_PI
 #define M_PI 3.14159265358979323846f
 #undef RAD_TO_DEG
@@ -21,7 +20,7 @@ void read_focparam_idq(struct foc_parameters *foc_param, float *id, float *iq)
 	*id = foc_param->id;
 	*iq = foc_param->iq;
 }
-#include "stdio.h"
+
 void write_foc_param_(struct foc_parameters *foc_param, enum foc_parameters_index flag, float *data)
 {
 	if (flag == INDEX_ID_REF) // 目标参数更新
@@ -45,7 +44,6 @@ void write_foc_param_(struct foc_parameters *foc_param, enum foc_parameters_inde
 		ki = data[1];
 		foc_param->velocity_pi_control.kp = kp;
 		foc_param->velocity_pi_control.ki = ki;
-		printf("set kp\r\n");
 	} else if (flag == INDEX_VELOCITY_REG) {
 		foc_param->velocity_tar = data[0];
 	}

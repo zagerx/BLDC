@@ -39,8 +39,6 @@ struct motor_config {
 	struct device *currsmp;
 	struct device *inverter;
 	struct device *feedback;
-
-	// struct device *pp_ident;
 };
 struct motor_parameters {
 	float phase_resistance;   // 相电阻 (Ω)
@@ -50,23 +48,6 @@ struct motor_parameters {
 	uint16_t pole_pairs; // 极对数
 	float flux_linkage;  // 磁链 (Wb)
 };
-// struct motor_currment_parameters {
-// 	// pid_cb_t pi;
-// };
-// struct motot_velocity_parameters {
-// 	// pid_cb_t pi;
-// 	// 速度规划的相关参数，
-// };
-
-// struct motor_control_parameters {
-// 	// d轴PI参数
-// 	struct motor_currment_parameters d_axis;
-// 	// q轴PI参数
-// 	struct motor_currment_parameters q_axis;
-// 	// 速度环参数
-// 	struct motot_velocity_parameters velocity;
-// 	//...
-// };
 
 enum motor_flag {
 	PARAM_NEVER_LOADED = 0, /* 板子首次上电，外部 FLASH 无有效数据 */
@@ -76,7 +57,6 @@ enum motor_flag {
 
 struct motor_data {
 	struct motor_parameters model_paramters;
-	// struct motor_control_parameters control_paramters;
 	struct foc_parameters foc_data;
 	struct motor_calibration_modules *calib;
 	enum motor_flag flag;
@@ -86,5 +66,4 @@ struct motor_data {
 	fsm_cb_t *state_machine;
 };
 void foc_curr_regulator(uint32_t *adc_raw);
-void motor_debug_info(struct device *motor);
 #endif

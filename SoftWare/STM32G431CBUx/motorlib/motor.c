@@ -66,10 +66,6 @@ void motor_init(struct device *motor)
 void motor_task(struct device *motor)
 {
 	struct motor_data *m_data = motor->data;
-	// if (m_data->flag == PARAM_NEVER_LOADED) {
-
-	// } else {
-	// }
 	static int16_t state = 0;
 	switch (state) {
 	case 0:
@@ -77,10 +73,6 @@ void motor_task(struct device *motor)
 		state = 1;
 		break;
 	case 1:
-		// if (motor_get_calibstate(m_data->calib) == M_ALL_CALIB_DONE) {
-		// 	TRAN_STATE(m_data->state_machine, motor_encoder_openloop_state);
-		// 	state = 2;
-		// }
 		break;
 	}
 }

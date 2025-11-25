@@ -3,8 +3,8 @@
 #include "motor.h"
 #include <statemachine.h>
 #include <stdint.h>
-#include "_current_calib.h"
-#include "_pp_ident.h"
+// #include "_current_calib.h"
+// #include "_pp_ident.h"
 #include "motor_cfg.h"
 #include "motor_carible.h"
 #include "coord_transform.h"
@@ -12,7 +12,7 @@
 #include "feedback.h"
 #include "inverter.h"
 #include "svpwm.h"
-#include "arm_math.h"
+// #include "arm_math.h"
 #include "foc_pid.h"
 
 #undef M_PI
