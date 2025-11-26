@@ -21,20 +21,6 @@
 #define SCAN_RANGE_START (-M_PI)
 #define SCAN_RANGE_END   (M_PI)
 
-/* 辅助：unwrap 处理 */
-static inline int32_t unwrap_raw(uint32_t current, uint32_t *prev, uint32_t max)
-{
-	int32_t diff = current - *prev;
-	int32_t half = max / 2;
-	if (diff > half) {
-		diff -= max;
-	} else if (diff < -half) {
-		diff += max;
-	}
-	*prev = current;
-	return diff;
-}
-
 /* ---------------------------------------------------------
  * 启动
  * --------------------------------------------------------- */
@@ -117,12 +103,9 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 		svm_set(v_mag * c, v_mag * s, abc);
 		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
 
-		// 4. 【关键】检测过零点 (Zero Crossing)
-		// 如果上一刻小于0，这一刻大于等于0，说明跨过了0度
 		uint32_t raw_curr = read_feedback_raw(fb);
+		// 4. 找到过零点 (Zero Crossing)
 		if (prev_angle < 0.0f && ed->driver_elec_angle >= 0.0f) {
-			// 简单的最近邻采样 (因为 dt 很小，插值提升有限且复杂)
-			// 记录当前的 raw 值作为 FWD 零点
 			ed->raw_fwd = (uint32_t)raw_curr;
 			ed->fwd_captured = true;
 		}
@@ -154,8 +137,7 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 		// 3. 更新 raw_prev (用于 unwrap 连续性)
 		uint32_t raw_curr = read_feedback_raw(fb);
 
-		// 4. 【关键】检测过零点
-		// 如果上一刻大于0，这一刻小于等于0
+		// 4. 找到过零点 (Zero Crossing)
 		if (prev_angle > 0.0f && ed->driver_elec_angle <= 0.0f) {
 			ed->raw_bwd = (uint32_t)raw_curr;
 			ed->bwd_captured = true;
