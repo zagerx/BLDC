@@ -2,7 +2,7 @@
 #include "device.h"
 #include <stdint.h>
 #include <math.h>
-
+#define LUT_SIZE 256
 // 角度归一化到 [0, 2PI]
 static float normalize_angle(float angle)
 {
@@ -53,7 +53,20 @@ int feedback_init(struct device *dev)
 #endif
 	return 0;
 }
+void feedback_set_error_lut(struct device *dev, uint32_t *lut_ptr)
+{
+	struct feedback_config *cfg = dev->config;
+	if (lut_ptr != NULL) {
+		cfg->error_lut_buf = lut_ptr;
+		cfg->lut_enabled = true;
+	}
+}
 
+uint32_t feedback_get_cpr(struct device *dev)
+{
+	struct feedback_config *cfg = dev->config;
+	return cfg->cpr;
+}
 // 角度/速度更新
 void update_feedback(struct device *dev, float dt)
 {
@@ -61,29 +74,63 @@ void update_feedback(struct device *dev, float dt)
 	struct feedback_data *data = dev->data;
 
 	// --- 局部变量缓存配置和常用常量 ---
-	const float two_pi = 2.0f * M_PI;
 	const float cpr_f = (float)cfg->cpr;
 	const int32_t cpr_i = (int32_t)cfg->cpr;
 	const float pole_pairs_f = (float)cfg->pole_pairs;
-
+	const int32_t cpr_half = cpr_i / 2;
 	// 保存上一次的角度值
 	float mech_angle_prev = data->mech_angle;
 	data->mech_angle_prev = mech_angle_prev;
-	// data->elec_angle_prev 已删除 (冗余)
 
 	// 获取原始编码器值
 	data->raw = cfg->get_raw();
 
-	// 考虑编码器偏移量并转为调整后的原始值
-	int32_t adjusted_raw = (int32_t)data->raw - (int32_t)cfg->zero_offset;
-	adjusted_raw %= cpr_i;
-
-	if (adjusted_raw < 0) {
-		adjusted_raw += cpr_i;
+	// 2. 基础线性化 (减去校准时确定的基准 Offset)
+	int32_t raw_linear = (int32_t)data->raw - (int32_t)cfg->offset;
+	// 归一化到 [0, CPR)
+	raw_linear %= cpr_i;
+	if (raw_linear < 0) {
+		raw_linear += cpr_i;
 	}
 
+	// 3. 应用 LUT 误差补偿 (Error Compensation)
+	int32_t final_counts = raw_linear;
+
+	if (cfg->lut_enabled && cfg->error_lut_buf) {
+		// 计算浮点索引
+		float idx_f = ((float)raw_linear / cpr_f) * (float)LUT_SIZE;
+
+		// 线性插值
+		int32_t idx_0 = (int32_t)idx_f;
+		int32_t idx_1 = (idx_0 + 1) % LUT_SIZE;
+		float alpha = idx_f - (float)idx_0;
+
+		// 读取带Bias的误差
+		int32_t err_bias_0 = (int32_t)cfg->error_lut_buf[idx_0];
+		int32_t err_bias_1 = (int32_t)cfg->error_lut_buf[idx_1];
+
+		// 还原真实误差 (减去 CPR/2)
+		int32_t err_0 = err_bias_0 - cpr_half;
+		int32_t err_1 = err_bias_1 - cpr_half;
+
+		// 插值得到当前位置的误差
+		float current_error = (float)err_0 * (1.0f - alpha) + (float)err_1 * alpha;
+
+		// --- 核心修正公式 ---
+		// True_Pos = Measured - Error
+		final_counts = raw_linear + (int32_t)roundf(current_error);
+
+		// 再次归一化
+		final_counts %= cpr_i;
+		if (final_counts < 0) {
+			final_counts += cpr_i;
+		}
+	}
+
+	// 4. 转为角度 (使用补偿后的 Counts)
+	float raw_angle = (2.0f * M_PI * (float)final_counts) / cpr_f;
+
 	// 计算机械角度、电角度（新的计算结果）
-	float raw_angle = two_pi * (float)adjusted_raw / cpr_f;
 	float current_mech_angle = raw_angle * (float)cfg->direction;
 	float current_elec_angle = normalize_angle(current_mech_angle * pole_pairs_f);
 
@@ -208,7 +255,7 @@ void feedback_reset(struct device *dev)
 void update_feedback_offset(struct device *dev, uint16_t offset)
 {
 	struct feedback_config *cfg = dev->config;
-	cfg->zero_offset = offset;
+	cfg->offset = offset;
 }
 
 void update_feedback_pole_pairs(struct device *dev, uint8_t pole_pairs)
@@ -224,6 +271,11 @@ void update_feedback_direction(struct device *dev, int8_t direction)
 	}
 	struct feedback_config *cfg = dev->config;
 	cfg->direction = direction;
+}
+int8_t get_feedback_direction(struct device *dev)
+{
+	struct feedback_config *cfg = dev->config;
+	return cfg->direction;
 }
 
 float feedback_get_mech_angle(struct device *dev)

@@ -24,9 +24,11 @@ struct feedback_config {
 	uint32_t cpr;       // 编码器每转计数
 	uint8_t pole_pairs; // 电机极对数
 	int8_t direction;   // 编码器方向: 1 或 -1
-	uint32_t zero_offset;
+	uint32_t offset;
 	float pos_estimate_weight; // 位置估计权重
-
+	// 新增：误差查找表指针
+	uint32_t *error_lut_buf;
+	bool lut_enabled;
 #ifdef FEEDBACK_USE_PLL
 	float pll_kp; // PLL比例增益
 	float pll_ki; // PLL积分增益
@@ -74,9 +76,10 @@ void update_feedback(struct device *dev, float dt);
 void update_feedback_offset(struct device *dev, uint16_t offset);
 void update_feedback_pole_pairs(struct device *dev, uint8_t pole_pairs);
 void update_feedback_direction(struct device *dev, int8_t direction);
+int8_t get_feedback_direction(struct device *dev);
 void update_feedback_cpr(struct device *feedback, uint32_t cpr);
 float read_feedback_velocity(struct device *dev);
 uint32_t read_feedback_raw(struct device *feedback);
 float read_feedback_elec_angle(struct device *dev);
-
+void feedback_set_error_lut(struct device *dev, uint32_t *lut_ptr);
 #endif
