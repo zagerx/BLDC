@@ -39,8 +39,6 @@ struct pp_ident_config {
 struct pp_ident_data {
 	enum pp_calib_state state;
 
-	uint16_t pole_pairs; // 结果：识别出的极对数
-
 	// 运行时计数器
 	float time_acc; // 通用时间累加器
 
@@ -51,8 +49,6 @@ struct pp_ident_data {
 	// 编码器相关
 	uint32_t raw_prev;     // 上一次的编码器原始值
 	int32_t raw_delta_acc; // 累计机械角度变化量
-
-	int16_t mech_direction;
 };
 
 /* ---------------------------------------------------------

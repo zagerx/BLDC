@@ -1,5 +1,5 @@
 #include <stddef.h>
-
+#include "motor_cfg.h"
 #include "_encoder_calib.h"
 #include "device.h"
 #include "inverter.h"
@@ -31,10 +31,10 @@ static struct device inverter1 = {
 };
 
 static struct currsmp_config currsmp1_conf = {
-	.adc_rang = 4096,
-	.vol_ref = 3.3f,
-	.rs = 0.005f,
-	.opm = 7.33f,
+	.adc_rang = BOARD_ADC_RES,
+	.vol_ref = BOARD_ADC_VREF_V,
+	.rs = BOARD_SHUNT_R_OHM,
+	.opm = BOARD_OPAMP_GAIN,
 };
 static struct currsmp_data currsmp1_data = {0};
 
@@ -69,11 +69,11 @@ static fsm_cb_t m1_statemachine = {
 static struct pp_ident_config pp_cfg = {
 	.feedback = &feedback1,
 	.inverter = &inverter1,
-	.encoder_max = 16383,
-	.openloop_speed = 5.0f,
-	.openloop_voltage = 0.03f,
-	.rotate_duration = 6.0f,
-	.align_duration = 1.0f,
+	.encoder_max = ENC_CPR,
+	.openloop_speed = OPENLOOP_SPEED_RPM,
+	.openloop_voltage = OPENLOOP_VOLTAGE_V,
+	.rotate_duration = ROTATE_DURATION_S,
+	.align_duration = ALIGN_DURATION_S,
 };
 static struct pp_ident_data pp_data = {0};
 static struct device pp1 = {
@@ -83,7 +83,7 @@ static struct device pp1 = {
 static struct curr_calib_config curr_calib_cfg1 = {
 	.currsmp = &currsmp1,
 	.inverter = &inverter1,
-	.align_duration = 1.0f,
+	.align_duration = ROTATE_DURATION_S,
 	.sample_count = 1000,
 };
 static struct curr_calib_data curr_calib_data1 = {0};
@@ -94,15 +94,9 @@ static struct device curr_calib = {
 static struct encoder_calib_config ec_carb_cfg1 = {
 	.feedback = &feedback1,
 	.inverter = &inverter1,
-	.encoder_max = 16383,
-	// .openloop_speed = 5.0f,
-	// .openloop_voltage = 0.03f,
-	// .align_voltage = 0.03f,
-	// .rotate_duration = 6.0f,
-	// .min_rotation_frac = 0.05f,
-	// .align_duration = 2.0f,
-	.speed = 5.0f,
-	.voltage = 0.03f,
+	.encoder_max = ENC_CPR,
+	.speed = OPENLOOP_SPEED_RPM,
+	.voltage = OPENLOOP_VOLTAGE_V,
 
 };
 static struct encoder_calib_data ec_carb_data1 = {0};

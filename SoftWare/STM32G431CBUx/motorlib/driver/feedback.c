@@ -55,7 +55,7 @@ int feedback_init(struct device *dev)
 }
 
 // 角度/速度更新
-void feedback_update(struct device *dev, float dt)
+void update_feedback(struct device *dev, float dt)
 {
 	struct feedback_config *cfg = dev->config;
 	struct feedback_data *data = dev->data;
@@ -152,7 +152,6 @@ void feedback_update(struct device *dev, float dt)
 		const float filter_alpha = 0.15f; // 新值权重 15%
 		data->vel_estimate =
 			(1.0f - filter_alpha) * data->vel_estimate + filter_alpha * raw_vel;
-		// data->vel_estimate = raw_vel; // 0.8f * data->vel_estimate + 0.2f * raw_vel;
 	}
 	/* 电速度 = 机械速度 * 极对数 */
 	data->vel_elec = data->vel_estimate * pole_pairs_f;
@@ -179,9 +178,8 @@ void feedback_update(struct device *dev, float dt)
 		data->vel_elec = -max_elec_vel;
 	}
 }
-
 /* 其余函数保持不变 */
-inline float read_feedback_elec_angle(struct device *dev)
+float read_feedback_elec_angle(struct device *dev)
 {
 	struct feedback_data *data = dev->data;
 	return data->elec_angle;
@@ -191,12 +189,6 @@ float read_feedback_velocity(struct device *dev)
 {
 	struct feedback_data *data = dev->data;
 	return data->vel_estimate;
-}
-
-float feedback_calc_elec_velocity(struct device *dev)
-{
-	struct feedback_data *data = dev->data;
-	return data->vel_elec;
 }
 
 void feedback_reset(struct device *dev)
@@ -213,19 +205,19 @@ void feedback_reset(struct device *dev)
 	data->mech_angle_prev = data->mech_angle;
 }
 
-void write_feedback_offset(struct device *dev, uint16_t offset)
+void update_feedback_offset(struct device *dev, uint16_t offset)
 {
 	struct feedback_config *cfg = dev->config;
 	cfg->zero_offset = offset;
 }
 
-void feedback_set_pole_pairs(struct device *dev, uint8_t pole_pairs)
+void update_feedback_pole_pairs(struct device *dev, uint8_t pole_pairs)
 {
 	struct feedback_config *cfg = dev->config;
 	cfg->pole_pairs = pole_pairs;
 }
 
-void write_feedback_direction(struct device *dev, int8_t direction)
+void update_feedback_direction(struct device *dev, int8_t direction)
 {
 	if (!direction) {
 		return;
@@ -251,7 +243,7 @@ uint32_t read_feedback_raw(struct device *feedback)
 	return fb_cfg->get_raw();
 }
 
-void write_feedback_cpr(struct device *feedback, uint32_t cpr)
+void update_feedback_cpr(struct device *feedback, uint32_t cpr)
 {
 	struct feedback_config *fb_cfg = feedback->config;
 	fb_cfg->cpr = cpr;

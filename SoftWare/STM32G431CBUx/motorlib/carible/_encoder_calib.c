@@ -178,7 +178,7 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 				avg += max;
 			}
 
-			write_feedback_offset(fb, avg);
+			update_feedback_offset(fb, avg);
 			ed->state = ENC_CALIB_STATE_COMPLETE;
 		} else {
 			// 如果没捕获到 (速度过快或配置错误)，报错

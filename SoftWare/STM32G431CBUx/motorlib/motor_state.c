@@ -157,7 +157,7 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		obj->phase = RUNING;
 		break;
 	case RUNING: {
-		feedback_update(feedback, PWM_CYCLE);
+		update_feedback(feedback, PWM_CYCLE);
 		float elec_angle = read_feedback_elec_angle(feedback) * RAD_TO_DEG;
 
 		float i_abc[3];
@@ -260,7 +260,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		break;
 
 	case RUNING: {
-		feedback_update(feedback, PWM_CYCLE);
+		update_feedback(feedback, PWM_CYCLE);
 		float elec_angle = read_feedback_elec_angle(feedback) * RAD_TO_DEG;
 
 		float i_abc[3];
@@ -280,12 +280,12 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		float v_max_sq = SQ(v_max_abs);
 #if (CURRENT_DEBUG == DEBUG_VEL_PI)
 		// 速度环计算
-		if (((++obj->count) * PWM_CYCLE) >= 0.002f) {
+		if (((++obj->count) * PWM_CYCLE) >= SPEED_LOOP_CYCLE) {
 			obj->count = 0;
 			foc_param->id_ref = 0.0f;
-			foc_param->iq_ref = foc_pid_run(&(foc_param->velocity_pi_control),
-							foc_param->velocity_tar,
-							read_feedback_velocity(feedback), 0.002f);
+			foc_param->iq_ref = foc_pid_run(
+				&(foc_param->velocity_pi_control), foc_param->velocity_tar,
+				read_feedback_velocity(feedback), SPEED_LOOP_CYCLE);
 		}
 #endif
 		// 步骤 2: PID 计算

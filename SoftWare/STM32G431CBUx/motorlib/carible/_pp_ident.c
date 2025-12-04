@@ -5,6 +5,7 @@
 #include "svpwm.h"
 #include "coord_transform.h"
 #include <stddef.h>
+#include <stdint.h>
 
 #undef M_PI
 #define M_PI 3.14159265358979323846f
@@ -47,7 +48,7 @@ void pp_ident_start(struct device *pp)
 	struct pp_ident_data *pd = pp->data;
 
 	pd->state = PP_CALIB_STATE_ALIGN;
-	pd->pole_pairs = 0;
+	// pd->pole_pairs = 0;
 
 	pd->time_acc = 0.0f;
 	pd->drive_angle = 0.0f;
@@ -153,21 +154,21 @@ int32_t pp_ident_update(struct device *pp, float dt)
 		}
 
 		float ratio = fabsf(elec_rounds / mech_rounds);
-		pd->pole_pairs = (uint16_t)roundf(ratio);
-
+		uint16_t pole_pairs = (uint16_t)roundf(ratio);
 		// 应用结果
-		feedback_set_pole_pairs(fb, pd->pole_pairs);
+		update_feedback_pole_pairs(fb, pole_pairs);
 		// **方向判断**
 		// 如果电角度和机械角度的累计方向一致，则方向正确（1），否则方向错误（-1）。
 		// 注意：total_elec_rad 的符号取决于 openloop_speed
+		int16_t mech_direction;
 		if ((pd->total_elec_rad > 0 && pd->raw_delta_acc > 0) ||
 		    (pd->total_elec_rad < 0 && pd->raw_delta_acc < 0)) {
-			pd->mech_direction = 1; // 编码器方向与开环驱动方向一致
+			mech_direction = 1; // 编码器方向与开环驱动方向一致
 		} else {
-			pd->mech_direction = -1; // 编码器方向与开环驱动方向相反，需要反转
+			mech_direction = -1; // 编码器方向与开环驱动方向相反，需要反转
 		}
-		write_feedback_direction(fb, pd->mech_direction);
-		write_feedback_cpr(fb, cfg->encoder_max);
+		update_feedback_direction(fb, mech_direction);
+		update_feedback_cpr(fb, cfg->encoder_max);
 		pd->state = PP_CALIB_STATE_COMPLETE;
 	} break;
 
@@ -184,7 +185,6 @@ int32_t pp_ident_update(struct device *pp, float dt)
 	 * ----------------------------------------------------- */
 	case PP_CALIB_STATE_ERROR:
 		ret = -1;
-		pd->pole_pairs = 0;
 		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
 		break;
 
