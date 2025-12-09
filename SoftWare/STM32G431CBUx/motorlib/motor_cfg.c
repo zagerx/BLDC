@@ -8,7 +8,6 @@
 #include "_current_calib.h"
 #include "motor_carible.h"
 #include "statemachine.h"
-#include "motor_mode.h"
 #include "motor_state.h"
 
 #include "currsmp.h"

@@ -29,7 +29,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MODE_SRCS})
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     motor.c
-    motor_mode.c
     motor_state.c
     ${_driver_src}
     ${_foc_src}

@@ -36,25 +36,6 @@ enum {
 	EXIT,       ///< Exit state handler
 	USER_STATUS ///< First available user-defined state
 };
-/**
- * enum fsm_signal - Finite State Machine signal identifiers
- * @NULL_USE_SING: Null signal (unused/reserved)
- * @USER_SIG: Base value for user-defined signals
- *
- * Note: User signals should be defined consecutively after USER_SIG
- */
-enum fsm_signal {
-	NULL_USE_SING = 0, /* Reserved null signal identifier */
-	USER_SIG           /* First available user-defined signal */
-};
-/**
- * @struct state_transition_map
- * @brief Signal-to-state transition mapping table entry
- */
-struct state_transition_map {
-	enum fsm_signal signal; ///< Input signal that triggers transition
-	int16_t target_state;   ///< Resulting state after signal processing
-};
 /* Forward declarations */
 typedef struct fsm_cb fsm_cb_t;
 typedef fsm_rt_t (*fsm_t)(fsm_cb_t *);
@@ -64,13 +45,9 @@ typedef fsm_rt_t (*fsm_t)(fsm_cb_t *);
  * @brief State machine control block
  */
 struct fsm_cb {
-	unsigned char chState; ///< Current state
-	const char *name;      ///< State machine name (for debugging)
+	unsigned char phase; ///< Current state
+	const char *name;
 	uint32_t count;
-	enum fsm_signal sig;
-	struct state_transition_map *transition_table; ///< Signal-state mapping table
-	int8_t transition_table_size;                  ///< Number of entries in table
-
 	void *p1;            ///< User data pointer
 	fsm_t current_state; ///< Current state handler function
 	fsm_t previous_state;
@@ -95,18 +72,14 @@ struct fsm_cb {
  */
 #define TRAN_STATE(me, targe)                                                                      \
 	do {                                                                                       \
-		(me)->chState = EXIT;                                                              \
+		(me)->phase = EXIT;                                                                \
 		(me)->current_state(me);                                                           \
 		(me)->previous_state = (me)->current_state;                                        \
 		(me)->current_state = (fsm_t)(targe);                                              \
-		(me)->chState = ENTER;                                                             \
+		(me)->phase = ENTER;                                                               \
 		(me)->current_state(me);                                                           \
 	} while (0)
 
 /* Function prototypes */
-fsm_rt_t statemachine_init(fsm_cb_t *obj, const char *name, fsm_t initial_state, void *context,
-			   struct state_transition_map *arr, int8_t arr_size);
-void statemachine_updatestatus(fsm_cb_t *obj, enum fsm_signal sig);
-void statemachine_setsig(fsm_cb_t *obj, enum fsm_signal sig);
 
 #endif /* _STATEMACHINE_H */

@@ -30,9 +30,9 @@ fsm_rt_t motor_idle_state(fsm_cb_t *obj)
 		RUNING = USER_STATUS,
 	};
 
-	switch (obj->chState) {
+	switch (obj->phase) {
 	case ENTER:
-		obj->chState = RUNING;
+		obj->phase = RUNING;
 		break;
 	case RUNING:
 		break;
@@ -50,9 +50,9 @@ fsm_rt_t motor_ready_state(fsm_cb_t *obj)
 		RUNING = USER_STATUS,
 	};
 
-	switch (obj->chState) {
+	switch (obj->phase) {
 	case ENTER:
-		obj->chState = RUNING;
+		obj->phase = RUNING;
 		break;
 	case RUNING:
 		break;
@@ -73,7 +73,7 @@ fsm_rt_t motor_stop_state(fsm_cb_t *obj)
 	const struct device *motor = obj->p1;
 	struct motor_data *m_data = motor->data;
 
-	switch (obj->chState) {
+	switch (obj->phase) {
 	case ENTER:
 		m_data->statue = MOTOR_STATE_STOP;
 		break;
@@ -96,7 +96,7 @@ fsm_rt_t motor_falut_state(fsm_cb_t *obj)
 	const struct device *motor = obj->p1;
 	struct motor_data *m_data = motor->data;
 
-	switch (obj->chState) {
+	switch (obj->phase) {
 	case ENTER:
 		m_data->statue = MOTOR_STATE_FAULT;
 		break;
@@ -119,9 +119,9 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 	struct device *motor = obj->p1;
 	struct motor_data *m_data = motor->data;
 
-	switch (obj->chState) {
+	switch (obj->phase) {
 	case ENTER:
-		obj->chState = RUNNING;
+		obj->phase = RUNNING;
 		break;
 	case RUNNING:
 		if (motor_calib_update(m_data->calib, PWM_CYCLE) == 1) {
@@ -149,12 +149,12 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 	struct foc_parameters *foc_param = &(m_data->foc_data);
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
-	switch (obj->chState) {
+	switch (obj->phase) {
 	case ENTER:
 		if (feedback_init(feedback)) {
 			break;
 		}
-		obj->chState = RUNING;
+		obj->phase = RUNING;
 		break;
 	case RUNING: {
 		feedback_update(feedback, PWM_CYCLE);
@@ -193,9 +193,9 @@ fsm_rt_t motor_debug_idle_state(fsm_cb_t *obj)
 		RUNING = USER_STATUS,
 	};
 
-	switch (obj->chState) {
+	switch (obj->phase) {
 	case ENTER:
-		obj->chState = RUNING;
+		obj->phase = RUNING;
 		break;
 
 	case RUNING: {
@@ -232,7 +232,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
 
-	switch (obj->chState) {
+	switch (obj->phase) {
 	case ENTER:
 		if (feedback_init(feedback)) {
 			break;
@@ -256,7 +256,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		foc_pid_init(&foc_param->velocity_pi_control, kp, ki, 10.0f); // 0.08f,3.0f
 #else
 #endif
-		obj->chState = RUNING;
+		obj->phase = RUNING;
 		break;
 
 	case RUNING: {
@@ -372,10 +372,10 @@ fsm_rt_t motor_running_state(fsm_cb_t *obj)
 	enum {
 		RUNING = USER_STATUS,
 	};
-	switch (obj->chState) {
+	switch (obj->phase) {
 	case ENTER:
 
-		obj->chState = RUNING;
+		obj->phase = RUNING;
 		break;
 
 	case RUNING: {

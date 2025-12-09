@@ -7,7 +7,6 @@
 #include "inverter.h"
 #include "svpwm.h"
 
-#include "motor_mode.h"
 #include "statemachine.h"
 
 #include "motor_cfg.h"
