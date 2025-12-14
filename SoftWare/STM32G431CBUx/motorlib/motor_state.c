@@ -14,7 +14,7 @@
 #include "svpwm.h"
 // #include "arm_math.h"
 #include "foc_pid.h"
-
+#include "foc_trajectory_plan.h"
 #undef M_PI
 #define M_PI 3.14159265358979323846f
 #undef RAD_TO_DEG
@@ -26,6 +26,10 @@ fsm_rt_t motor_running_state(fsm_cb_t *obj);
 
 fsm_rt_t motor_idle_state(fsm_cb_t *obj)
 {
+	struct device *motor = obj->p1;
+	struct motor_data *m_data = motor->data;
+	struct foc_parameters *foc_param = &(m_data->foc_data);
+
 	enum {
 		RUNING = USER_STATUS,
 	};
@@ -33,8 +37,13 @@ fsm_rt_t motor_idle_state(fsm_cb_t *obj)
 	switch (obj->phase) {
 	case ENTER:
 		obj->phase = RUNING;
+		s_planner_init(m_data->scp, 0.0f, 0.0f, 0.0f, SPEED_LOOP_CYCLE);
 		break;
 	case RUNING:
+		if (((++obj->count) * PWM_CYCLE) >= SPEED_LOOP_CYCLE) {
+			s_planner_action(m_data->scp, SPEED_LOOP_CYCLE);
+			obj->count = 0;
+		}
 		break;
 	case EXIT:
 		break;

@@ -110,13 +110,24 @@ static struct motor_calibration_modules m1_calib_modul = {
 	.encoder_calibration = &encoder1_calib,
 	.state = M_CARIBLE_CURR_STATR,
 };
-
+#include "foc_trajectory_plan.h"
+static s_tarj_config_t scp1_config = {
+	.acc = 200.0f,   /* m/s^2 */
+	.jerk = 10.0f,   /* m/s^3 */
+	.vmax = 4000.0f, /* m/s */
+};
+static s_tarj_data_t scp1_data;
+static struct device traj_plan1 = {
+	.config = &scp1_config,
+	.data = &scp1_data,
+};
 static struct motor_data m1_data = {
 	.statue = MOTOR_STATE_IDLE,
 	.mode = MOTOR_MODE_IDLE,
 	.faultcode = MOTOR_FAULTCODE_NOERR,
 	.state_machine = &m1_statemachine,
 	.calib = &m1_calib_modul,
+	.scp = &traj_plan1,
 };
 
 struct device motor1 = {

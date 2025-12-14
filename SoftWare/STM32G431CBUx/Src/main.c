@@ -102,7 +102,7 @@ int main(void)
 		static int cout;
 		if (cout++ > 1000) {
 			cout = 0;
-			printf("hell\r\n");
+			// printf("hell\r\n");
 		}
 		HAL_Delay(1);
 

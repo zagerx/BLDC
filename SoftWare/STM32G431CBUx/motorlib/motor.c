@@ -48,6 +48,8 @@ void foc_curr_regulator(uint32_t *adc_raw)
 	*/
 	DISPATCH_FSM(m_data->state_machine);
 }
+#include "foc_trajectory_plan.h"
+extern void test_solve_unconstrained_peak_velocity(void);
 
 void motor_init(struct device *motor)
 {
@@ -65,7 +67,7 @@ void motor_init(struct device *motor)
 void motor_task(struct device *motor)
 {
 	struct motor_data *m_data = motor->data;
-	static int16_t state = 0;
+	static int16_t state = 1;
 	switch (state) {
 	case 0:
 		TRAN_STATE(m_data->state_machine, motor_carible_state);
@@ -75,6 +77,7 @@ void motor_task(struct device *motor)
 		break;
 	}
 }
+
 void debug_update_foc_data(float *input, enum foc_parameters_index flag)
 {
 	struct device *motor = &motor1;
@@ -92,5 +95,7 @@ void debug_update_foc_data(float *input, enum foc_parameters_index flag)
 		TRAN_STATE(m_data->state_machine, motor_debug_idle_state);
 	} else if (flag == INDEX_VELOCITY_REG) {
 		write_foc_param_(foc_param, INDEX_VELOCITY_REG, input);
+		static int16_t test_temp;
+		test_temp = s_planner_update_target(m_data->scp, input[0]);
 	}
 }

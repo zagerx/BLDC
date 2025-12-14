@@ -64,6 +64,7 @@ struct motor_data {
 	enum motor_state statue;
 	enum motor_fault_code faultcode;
 	fsm_cb_t *state_machine;
+	struct device *scp;
 };
 void foc_curr_regulator(uint32_t *adc_raw);
 #endif
