@@ -14,7 +14,7 @@
 #include "svpwm.h"
 // #include "arm_math.h"
 #include "foc_pid.h"
-#include "foc_trajectory_plan.h"
+#include "t_trajectory.h"
 #undef M_PI
 #define M_PI 3.14159265358979323846f
 #undef RAD_TO_DEG
