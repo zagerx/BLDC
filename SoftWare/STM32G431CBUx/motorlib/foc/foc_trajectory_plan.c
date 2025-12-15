@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 int16_t test_ret;
+int16_t test_flag = 3;
 
 static void traj_exec_init(s_traj_exec_data_t *d, float start_pos, float start_vel,
 			   float start_acc);
@@ -13,19 +14,6 @@ static void traj_plan_init(s_traj_plan_data_t *d, float acc_max, float v_max, fl
 			   float exex_cycle);
 static bool traj_plan_seven_segment(const s_traj_plan_input_t *in, s_traj_plan_output_t *out,
 				    float dir);
-static bool traj_plan_five_segment(const s_traj_plan_input_t *in, s_traj_plan_output_t *out,
-				   float dir);
-static bool traj_plan_three_segment(const s_traj_plan_input_t *in, s_traj_plan_output_t *out,
-				    float dir);
-
-trajectory_type_t determine_trajectory_type(const s_traj_plan_input_t *in, float dir);
-static float calc_t1_from_jerk(const s_traj_plan_input_t *in);
-static float calc_t2_from_acc(const s_traj_plan_input_t *in, float dir);
-static float calc_t4_from_vel(const s_traj_plan_input_t *in, float dir);
-static inline float traj_pos_jerk(float v0, float a0, float j, float t);
-static float calc_dec_side_pos(float v1, float a1, float j, float t7, float t6, float t5);
-static float calc_acc_side_pos(float v0, float a0, float j, float t1, float t2, float t3);
-
 // 该函数只会在系统上电之后调用一次
 int s_planner_init(struct device *dev, float start_pos, float start_vel, float start_acc,
 		   float exex_cycle)
@@ -60,16 +48,18 @@ s_traj_plan_status_t s_planner_update_target(struct device *dev, float new_targe
 	s_traj_exec_data_t *exec = &d->exec_data;
 	s_traj_plan_status_t ret;
 
-	if (fabsf(new_target_pos - plan->target_pos) < 1e-4f) {
+	if (fabsf(new_target_pos - plan->pre_pos) < 1e-4f) {
 		return TRAJ_PLAN_NOT_NEEDED;
 	}
-	plan->target_pos = new_target_pos;
+	plan->pre_pos = new_target_pos;
 
 	plan->plan_in.a0 = exec->acc;
 	plan->plan_in.v0 = exec->vel;
 	plan->plan_in.p0 = exec->pos;
 
+	plan->plan_in.target_pos = new_target_pos;
 	ret = traj_plan(plan);
+	test_ret = ret;
 	if (ret != TRAJ_PLAN_OK) {
 		return ret;
 	}
@@ -90,36 +80,36 @@ static s_traj_plan_status_t traj_plan(s_traj_plan_data_t *d)
 	if (in->j_max <= 0.0f || in->a_max <= 0.0f || in->v_max <= 0.0f) {
 		return TRAJ_PLAN_ERR_PARAM;
 	}
+	test_flag = 20;
 
-	float dp = in->p1 - in->p0;
+	float dp = in->target_pos - in->p0;
 	if (fabsf(dp) < 1e-6f) {
 		out->seg_cnt = 0;
 		return TRAJ_PLAN_OK;
 	}
-
+	test_flag = 21;
 	/* ================= 2. 方向统一 ================= */
 	float dir = (dp >= 0.0f) ? 1.0f : -1.0f;
 
-	float v0 = in->v0 * dir;
-	float v1 = in->v1 * dir;
-	float a0 = in->a0 * dir;
-	float a1 = in->a1 * dir;
+	float v0 = in->v0;
+	float a0 = in->a0;
 
 	/* ================= 3. 状态约束检查 ================= */
-	if (fabsf(v0) > in->v_max + 1e-6f || fabsf(v1) > in->v_max + 1e-6f ||
-	    fabsf(a0) > in->a_max + 1e-6f || fabsf(a1) > in->a_max + 1e-6f) {
+	if (fabsf(v0) > in->v_max + 0.2f || fabsf(a0) > in->a_max + 0.2f) {
+		test_flag = 22;
 		return TRAJ_PLAN_ERR_PARAM;
 	}
+	test_flag = 2;
 
 	/* ================= 4. 轨迹类型判定（冻结逻辑） ================= */
-	trajectory_type_t type = determine_trajectory_type(in, dir);
+	trajectory_type_t type;
 
 	/* ================= 5. 清空输出 ================= */
 	out->seg_cnt = 0;
 
 	/* ================= 6. 调用对应规划器 ================= */
 	bool ok = false;
-
+	type = TRAJ_TYPE_SEVEN_SEGMENT;
 	switch (type) {
 
 	case TRAJ_TYPE_SEVEN_SEGMENT:
@@ -144,302 +134,193 @@ static s_traj_plan_status_t traj_plan(s_traj_plan_data_t *d)
 
 	return TRAJ_PLAN_OK;
 }
-
-trajectory_type_t determine_trajectory_type(const s_traj_plan_input_t *in, float dir)
-{
-	/* ================= 0. 工程参数 ================= */
-	const float t_min = in->t_min; // 最小可执行时间（控制周期 / 插补周期）
-
-	/* ================= 1. 理论时间计算（只算判定量） ================= */
-	float t1 = calc_t1_from_jerk(in);     // a_max / j_max
-	float t2 = calc_t2_from_acc(in, dir); // 是否存在匀加速
-	float t4 = calc_t4_from_vel(in, dir); // 是否存在匀速
-
-	/* ================= 2. jerk 可执行性判定 ================= */
-	if (t1 < t_min) {
-		/*
-		 * jerk 斜坡在工程上不可执行
-		 * S 曲线模型整体失效
-		 */
-		return TRAJ_TYPE_INVALID;
-	}
-
-	/* ================= 3. 是否退化为数学三段 ================= */
-	if (t2 <= t_min) {
-		/*
-		 * 无法形成匀加速段
-		 * 但 jerk 仍然存在
-		 */
-		return TRAJ_TYPE_THREE_SEGMENT;
-	}
-
-	/* ================= 4. 是否退化为五段 ================= */
-	if (t4 <= t_min) {
-		/*
-		 * 无法形成匀速段
-		 * t1 / t2 均成立
-		 */
-		return TRAJ_TYPE_FIVE_SEGMENT;
-	}
-
-	/* ================= 5. 完整七段 ================= */
-	return TRAJ_TYPE_SEVEN_SEGMENT;
-}
-static float calc_t1_from_jerk(const s_traj_plan_input_t *in)
-{
-	/* t1 = a_max / j_max */
-	return in->a_max / in->j_max;
-}
-static float calc_t2_from_acc(const s_traj_plan_input_t *in, float dir)
-{
-	float v0 = in->v0 * dir;
-
-	/* jerk 斜坡带来的速度增量 */
-	float dv_jerk = (in->a_max * in->a_max) / (2.0f * in->j_max);
-
-	/* 剩余可用于匀加速的速度空间 */
-	float dv_remain = in->v_max - v0 - dv_jerk;
-
-	/* 匀加速时间 */
-	return dv_remain / in->a_max;
-}
-static float calc_t4_from_vel(const s_traj_plan_input_t *in, float dir)
-{
-	float v0 = in->v0 * dir;
-	float v1 = in->v1 * dir;
-
-	float a = in->a_max;
-	float j = in->j_max;
-	float vmax = in->v_max;
-	float dist = fabsf(in->p1 - in->p0);
-
-	/* jerk 段时间 */
-	float t1 = a / j;
-
-	/* jerk 段速度增量 */
-	float dv_jerk = a * a / (2.0f * j);
-
-	/* 匀加速段时间（加速侧） */
-	float t2 = (vmax - v0 - dv_jerk) / a;
-
-	/* 加速侧位移 */
-	float s_acc = v0 * (2.0f * t1 + t2) + a * (t1 * t1 + t1 * t2 + 0.5f * t2 * t2);
-
-	/* 对称计算减速侧 */
-	float t6 = (vmax - v1 - dv_jerk) / a;
-
-	float s_dec = v1 * (2.0f * t1 + t6) + a * (t1 * t1 + t1 * t6 + 0.5f * t6 * t6);
-
-	/* 剩余位移用于匀速 */
-	float s_remain = dist - s_acc - s_dec;
-
-	/* 匀速时间 */
-	return s_remain / vmax;
-}
-
 static bool traj_plan_seven_segment(const s_traj_plan_input_t *in, s_traj_plan_output_t *out,
 				    float dir)
 {
-	float j = in->j_max * dir;
-	float aL = in->a_max;
-	float vL = in->v_max;
 
-	float v0 = in->v0 * dir;
-	float a0 = in->a0 * dir;
-	float v1 = in->v1 * dir;
-	float a1 = in->a1 * dir;
+	float j = in->j_max;
+	float a_max = in->a_max;
+	float v_max = in->v_max;
 
-	/* === 1. 加速侧 === */
-	float t1 = (aL - a0) / j;
-	float t3 = aL / j;
+	// 获取当前状态（保持原始符号）
+	float v0 = in->v0;
+	float a0 = in->a0;
 
-	if (t1 < 0.0f || t3 < 0.0f) {
+	// 计算总位移（带符号）
+	float dp_total = in->target_pos - in->p0;
+
+	/* === 1. 将状态转换到规划方向 === */
+	// 将速度和加速度投影到规划方向上
+	float v0_dir = v0 * dir; // 在规划方向上的速度分量
+	float a0_dir = a0 * dir; // 在规划方向上的加速度分量
+
+	/* === 2. 计算加速段各段时间 === */
+	// t1: 加速度从a0_dir增加到a_max所需时间
+	float t1 = (a_max - a0_dir) / j;
+	if (t1 < 0) {
+		// 如果初始加速度已经超过最大加速度，需要先减速
+		// 但根据我们的假设，这种情况不应该出现
+		t1 = 0;
+	}
+
+	// 计算t1段结束时的速度
+	float v1 = v0_dir + a0_dir * t1 + 0.5f * j * t1 * t1;
+
+	// t3: 加速度从a_max减到0的时间
+	float t3 = a_max / j;
+
+	// 计算没有t2段时能达到的速度
+	float v_without_t2 = v1 + a_max * t3 - 0.5f * j * t3 * t3;
+
+	// t2: 匀加速段时间
+	float t2 = (v_max - v_without_t2) / a_max;
+
+	// 确保所有时间都为正
+	if (t1 < 1e-6f) {
+		t1 = 0;
+	}
+	if (t2 < 1e-6f) {
+		t2 = 0;
+	}
+	if (t3 < 1e-6f) {
+		t3 = 0;
+	}
+
+	/* === 3. 计算减速段各段时间 === */
+	// t5: 加速度从0增加到-a_max的时间（负方向加速）
+	float t5 = a_max / j;
+
+	// t7: 加速度从-a_max减到0的时间
+	float t7 = a_max / j;
+
+	// t6: 匀减速段时间
+	// 减速段速度变化：从v_max减到0
+	// 速度方程：v_max = a_max * t5 + a_max * t6 + a_max * t7
+	// 注意：t5和t7段的速度变化量分别为0.5*a_max*t5和0.5*a_max*t7
+	// 所以：v_max = 0.5*a_max*t5 + a_max*t6 + 0.5*a_max*t7
+	// 由于t5 = t7，所以：v_max = a_max*t5 + a_max*t6
+	float t6 = (v_max - a_max * t5) / a_max;
+
+	// 确保减速段时间都为正
+	if (t5 < 1e-6f) {
+		t5 = 0;
+	}
+	if (t6 < 1e-6f) {
+		t6 = 0;
+	}
+	if (t7 < 1e-6f) {
+		t7 = 0;
+	}
+
+	/* === 4. 计算各段位移 === */
+	// 加速段位移
+	float s1 = v0_dir * t1 + 0.5f * a0_dir * t1 * t1 + (1.0f / 6.0f) * j * t1 * t1 * t1;
+	float v1_actual = v0_dir + a0_dir * t1 + 0.5f * j * t1 * t1;
+	float s2 = v1_actual * t2 + 0.5f * a_max * t2 * t2;
+	float v2 = v1_actual + a_max * t2;
+	float s3 = v2 * t3 + 0.5f * a_max * t3 * t3 - (1.0f / 6.0f) * j * t3 * t3 * t3;
+	float s_acc = s1 + s2 + s3;
+
+	// 减速段位移
+	float s5 = v_max * t5 - 0.5f * a_max * t5 * t5 + (1.0f / 6.0f) * j * t5 * t5 * t5;
+	float v5 = v_max - a_max * t5 + 0.5f * j * t5 * t5;
+	float s6 = v5 * t6 - 0.5f * a_max * t6 * t6;
+	float v6 = v5 - a_max * t6;
+	float s7 = v6 * t7 - 0.5f * a_max * t7 * t7 - (1.0f / 6.0f) * j * t7 * t7 * t7;
+	float s_dec = s5 + s6 + s7;
+
+	// 计算总位移
+	float total_distance = fabsf(dp_total);
+
+	// t4: 匀速段时间
+	float t4 = (total_distance - s_acc - s_dec) / v_max;
+
+	// 确保匀速段时间为正
+	if (t4 < 1e-6f) {
+		t4 = 0;
+	}
+
+	/* === 5. 验证计算结果 === */
+	// 验证总位移
+	float calculated_distance = s_acc + v_max * t4 + s_dec;
+	if (fabsf(calculated_distance - total_distance) > 1e-3f) {
+		// 位移不匹配，说明规划有误
 		return false;
 	}
 
-	float v_after = v0 + a0 * t1 + 0.5f * j * t1 * t1 + aL * t3 - 0.5f * j * t3 * t3;
-
-	float t2 = (vL - v_after) / aL;
-	if (t2 < 0.0f) {
+	// 验证最终速度（应为0）
+	float final_vel = v6 - a_max * t7 + 0.5f * j * t7 * t7;
+	if (fabsf(final_vel) > 1e-3f) {
+		// 最终速度不为0
 		return false;
 	}
 
-	/* === 2. 减速侧 === */
-	float t7 = (aL - a1) / j;
-	float t5 = aL / j;
-	float t6 = (vL - v1) / aL;
-
-	if (t6 < 0.0f) {
-		return false;
-	}
-
-	/* === 3. 位移计算 === */
-	float pos_acc = calc_acc_side_pos(v0, a0, j, t1, t2, t3);
-	float pos_dec = calc_dec_side_pos(v1, a1, j, t7, t6, t5);
-
-	float dp = (in->p1 - in->p0) * dir;
-	float t4 = (dp - pos_acc - pos_dec) / vL;
-
-	if (t4 < 0.0f) {
-		return false;
-	}
-
-	/* === 4. 填充段 === */
+	/* === 6. 填充轨迹段 === */
 	int i = 0;
-	out->segs[i++] = (s_traj_seg_t){t1, +j};
-	out->segs[i++] = (s_traj_seg_t){t2, 0};
-	out->segs[i++] = (s_traj_seg_t){t3, -j};
+	float j_dir = j * dir;
+
+	// 加速段
+	out->segs[i++] = (s_traj_seg_t){t1, +j_dir}; // 加加速度段
+	out->segs[i++] = (s_traj_seg_t){t2, 0};      // 匀加速段
+	out->segs[i++] = (s_traj_seg_t){t3, -j_dir}; // 减加速度段
+
+	// 匀速段
 	out->segs[i++] = (s_traj_seg_t){t4, 0};
-	out->segs[i++] = (s_traj_seg_t){t5, -j};
-	out->segs[i++] = (s_traj_seg_t){t6, 0};
-	out->segs[i++] = (s_traj_seg_t){t7, +j};
+
+	// 减速段
+	out->segs[i++] = (s_traj_seg_t){t5, -j_dir}; // 加减速段
+	out->segs[i++] = (s_traj_seg_t){t6, 0};      // 匀减速段
+	out->segs[i++] = (s_traj_seg_t){t7, +j_dir}; // 减减速段
 
 	out->seg_cnt = i;
+
 	return true;
 }
-/* ==================== 五段规划器 ==================== */
-static bool traj_plan_five_segment(const s_traj_plan_input_t *in, s_traj_plan_output_t *out,
-				   float dir)
-{
-	float v0 = in->v0 * dir;
-	float v1 = in->v1 * dir;
-	float a0 = in->a0 * dir;
-	float a1 = in->a1 * dir;
-	float amax = in->a_max;
-	float jmax = in->j_max;
-	float dist = fabsf(in->p1 - in->p0);
+// static bool traj_plan_seven_segment(const s_traj_plan_input_t *in, s_traj_plan_output_t *out,
+// 									float dir)
+// {
+// 	float j = in->j_max;
+// 	float aL = in->a_max;
+// 	float vL = in->v_max;
 
-	/* 1. 计算各段时间（没有匀速 t4） */
-	float t1 = (amax - a0) / jmax; // 加加
-	float t2 = (amax * amax / (2.0f * jmax) + amax * (amax / jmax) +
-		    amax / jmax);      // 可以根据实际算法重算
-	float t3 = amax / jmax;        // 加减
-	float t5 = amax / jmax;        // 减加
-	float t6 = (amax - a1) / jmax; // 减减
+// 	float v0 = fabsf(in->v0);
+// 	float a0 = fabsf(in->a0);
 
-	/* 2. 计算加速/减速段位移 */
-	float s_acc = calc_acc_side_pos(v0, a0, jmax, t1, t2, t3);
-	float s_dec = calc_dec_side_pos(v1, a1, jmax, t6, t5, 0.0f); // 五段没有匀速段
+// 	/* === 1. 加速侧 === */
+// 	float t1 = (aL - a0) / j;
+// 	float t3 = t1;
 
-	/* 3. 检查总位移 */
-	if (s_acc + s_dec > dist) {
-		return false; // 不满足五段条件
-	}
+// 	// 计算 t1 段结束时的速度
+// 	float v1 = v0 + a0 * t1 + 0.5f * j * t1 * t1;
+// 	// 计算 t3 段开始时的速度（如果没有 t2 段）
+// 	float v_without_t2 = v1 + aL * t3 - 0.5f * j * t3 * t3;
+// 	// 计算需要的 t2 段
+// 	float t2 = (vL - v_without_t2) / aL;
+// 	/* === 3. 位移计算 === */
+// 	float s1 = v0 * t1 + 0.5f * a0 * t1 * t1 + (1.0f / 6.0f) * j * t1 * t1 * t1;
+// 	float s2 = v1 * t2 + 0.5f * aL * t2 * t2;
+// 	float v2 = v1 + aL * t2;
+// 	float s3 = v2 * t3 + 0.5f * aL * t3 * t3 - (1.0f / 6.0f) * j * t3 * t3 * t3;
 
-	/* 4. 填充输出段 */
-	int idx = 0;
-	out->segs[idx++] = (s_traj_seg_t){t1, dir * jmax};
-	out->segs[idx++] = (s_traj_seg_t){t2, 0.0f};
-	out->segs[idx++] = (s_traj_seg_t){t3, -dir * jmax};
-	out->segs[idx++] = (s_traj_seg_t){t5, -dir * jmax};
-	out->segs[idx++] = (s_traj_seg_t){t6, dir * jmax};
+// 	float s_acc = s1 + s2 + s3;
+// 	float s_dec = s_acc;
+// 	float dp = (in->target_pos - in->p0) * dir;
+// 	float t4 = (dp - s_acc - s_dec) / vL;
 
-	out->seg_cnt = idx;
-	return true;
-}
+// 	/* === 4. 填充段 === */
+// 	int i = 0;
+// 	float j_dir = j * dir;
+// 	out->segs[i++] = (s_traj_seg_t){t1, +j_dir};
+// 	out->segs[i++] = (s_traj_seg_t){t2, 0};
+// 	out->segs[i++] = (s_traj_seg_t){t3, -j_dir};
+// 	out->segs[i++] = (s_traj_seg_t){t4, 0};
+// 	out->segs[i++] = (s_traj_seg_t){t1, -j_dir};
+// 	out->segs[i++] = (s_traj_seg_t){t2, 0};
+// 	out->segs[i++] = (s_traj_seg_t){t3, +j_dir};
 
-/* ==================== 三段规划器 ==================== */
-static bool traj_plan_three_segment(const s_traj_plan_input_t *in, s_traj_plan_output_t *out,
-				    float dir)
-{
-	float v0 = in->v0 * dir;
-	float v1 = in->v1 * dir;
-	float a0 = in->a0 * dir;
-	float a1 = in->a1 * dir;
-	float amax = in->a_max;
-	float jmax = in->j_max;
-	float dist = fabsf(in->p1 - in->p0);
-
-	/* 三段：只有加加/减减，没有匀加/匀速 */
-	float t1 = (amax - a0) / jmax; // 加加
-	float t3 = (amax - a1) / jmax; // 减减
-
-	float s_acc = calc_acc_side_pos(v0, a0, jmax, t1, 0.0f, 0.0f);
-	float s_dec = calc_dec_side_pos(v1, a1, jmax, t3, 0.0f, 0.0f);
-
-	if (s_acc + s_dec > dist) {
-		return false; // 三段不可行
-	}
-
-	int idx = 0;
-	out->segs[idx++] = (s_traj_seg_t){t1, dir * jmax};
-	out->segs[idx++] = (s_traj_seg_t){0.0f, 0.0f}; // 占位
-	out->segs[idx++] = (s_traj_seg_t){t3, -dir * jmax};
-
-	out->seg_cnt = idx;
-	return true;
-}
-
-static float calc_dec_side_pos(float v1, float a1, float j, float t7, float t6, float t5)
-{
-	float pos = 0.0f;
-
-	float v = v1;
-	float a = a1;
-
-	/* ===== S7: +j ===== */
-	if (t7 > 0.0f) {
-		pos += traj_pos_jerk(v, a, +j, t7);
-
-		v += a * t7 + 0.5f * j * t7 * t7;
-		a += j * t7;
-	}
-
-	/* ===== S6: 0 ===== */
-	if (t6 > 0.0f) {
-		pos += traj_pos_jerk(v, a, 0.0f, t6);
-
-		v += a * t6;
-	}
-
-	/* ===== S5: -j ===== */
-	if (t5 > 0.0f) {
-		pos += traj_pos_jerk(v, a, -j, t5);
-
-		v += a * t5 - 0.5f * j * t5 * t5;
-		a -= j * t5;
-	}
-
-	return pos;
-}
-static float calc_acc_side_pos(float v0, float a0, float j, float t1, float t2, float t3)
-{
-	float pos = 0.0f;
-
-	float v = v0;
-	float a = a0;
-
-	/* ===== S1: +j ===== */
-	if (t1 > 0.0f) {
-		pos += traj_pos_jerk(v, a, +j, t1);
-
-		v += a * t1 + 0.5f * j * t1 * t1;
-		a += j * t1;
-	}
-
-	/* ===== S2: 0 ===== */
-	if (t2 > 0.0f) {
-		pos += traj_pos_jerk(v, a, 0.0f, t2);
-
-		v += a * t2;
-		/* a 不变 */
-	}
-
-	/* ===== S3: -j ===== */
-	if (t3 > 0.0f) {
-		pos += traj_pos_jerk(v, a, -j, t3);
-
-		v += a * t3 - 0.5f * j * t3 * t3;
-		a -= j * t3;
-	}
-
-	/* 理论上：a → 0，v → v_max */
-	return pos;
-}
-static inline float traj_pos_jerk(float v0, float a0, float j, float t)
-{
-	return v0 * t + 0.5f * a0 * t * t + (1.0f / 6.0f) * j * t * t * t;
-}
+// 	out->seg_cnt = i;
+// 	return true;
+// }
 
 static void traj_plan_init(s_traj_plan_data_t *d, float acc_max, float v_max, float jerk_max,
 			   float exex_cycle)

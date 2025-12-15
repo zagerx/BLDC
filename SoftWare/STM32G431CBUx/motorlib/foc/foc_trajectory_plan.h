@@ -52,9 +52,10 @@ typedef struct {
 	float v0;
 	float a0;
 
-	float p1;
-	float v1;
-	float a1;
+	// float p1;
+	// float v1;
+	// float a1;
+	float target_pos;
 
 	float v_max;
 	float a_max;
@@ -70,8 +71,8 @@ typedef struct {
 typedef struct {
 	s_traj_plan_input_t plan_in;
 	s_traj_plan_output_t plan_out;
+	float pre_pos;  // 上一次的目标位置
 	bool plan_done; // 规划器的状态
-	float target_pos;
 } s_traj_plan_data_t;
 
 typedef struct {
