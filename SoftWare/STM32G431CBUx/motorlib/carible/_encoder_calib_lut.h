@@ -7,10 +7,13 @@
 
 enum encoder_calib_state {
 	ENC_CALIB_STATE_IDLE = 0,
-	ENC_CALIB_STATE_ALIGN_START, // 初始定位到扫描起点
-	ENC_CALIB_STATE_SCAN_FWD,    // 正向扫描 (过零点记录)
-	ENC_CALIB_STATE_SCAN_BWD,    // 反向扫描 (过零点记录)
-	ENC_CALIB_STATE_CALCULATE,   // 计算平均值
+	ENC_CALIB_STATE_ALIGN_START,  // 初始定位到扫描起点
+	ENC_CALIB_STATE_SCAN_FWD,     // 正向扫描 (过零点记录)
+	ENC_CALIB_STATE_SCAN_BWD,     // 反向扫描 (过零点记录)
+	ENC_CALIB_STATE_CALCULATE,    // 计算平均值
+	ENC_CALIB_STATE_LUT_SETUP,    // 新增：LUT 内存申请和初始化
+	ENC_CALIB_STATE_LUT_SCAN,     // 新增：扫描并填充 LUT (AC Compensation)
+	ENC_CALIB_STATE_LUT_FINALIZE, // 新增：处理 LUT 结果
 	ENC_CALIB_STATE_COMPLETE,
 	ENC_CALIB_STATE_ERROR,
 };
@@ -30,11 +33,10 @@ struct encoder_calib_data {
 
 	float driver_elec_angle; // 当前输出的电角度  自给的
 	float time_acc;
-	// 扫描相关
-	uint32_t raw_fwd;  // 正向扫描时的零点捕获值
-	uint32_t raw_bwd;  // 反向扫描时的零点捕获值
-	bool fwd_captured; // 标志位
-	bool bwd_captured;
+
+	// LUT 扫描相关
+	uint32_t lut_index;
+	uint32_t *lut_buf_ptr; // 临时分配的 LUT 内存指针
 };
 
 void encoder_calib_start(struct device *encoder_calib);

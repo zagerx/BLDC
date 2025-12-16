@@ -67,7 +67,7 @@ void motor_init(struct device *motor)
 void motor_task(struct device *motor)
 {
 	struct motor_data *m_data = motor->data;
-	static int16_t state = 1;
+	static int16_t state = 0;
 	switch (state) {
 	case 0:
 		TRAN_STATE(m_data->state_machine, motor_carible_state);
