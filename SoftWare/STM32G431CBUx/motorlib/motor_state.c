@@ -164,7 +164,7 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		if (feedback_init(feedback)) {
 			break;
 		}
-		obj->phase = IDLE;
+		obj->phase = RUNING;
 		break;
 	case RUNING: {
 		update_feedback(feedback, PWM_CYCLE);

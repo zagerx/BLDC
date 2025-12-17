@@ -8,6 +8,7 @@
 #include <stdlib.h> // for abs
 #include "coord_transform.h"
 #include <stdlib.h> // for abs, malloc, free
+#include "foc.h"
 #undef M_PI
 #define M_PI 3.14159265358979323846f
 

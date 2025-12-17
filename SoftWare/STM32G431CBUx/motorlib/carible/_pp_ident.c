@@ -6,7 +6,7 @@
 #include "coord_transform.h"
 #include <stddef.h>
 #include <stdint.h>
-
+#include "foc.h"
 #undef M_PI
 #define M_PI 3.14159265358979323846f
 
@@ -48,7 +48,6 @@ void pp_ident_start(struct device *pp)
 	struct pp_ident_data *pd = pp->data;
 
 	pd->state = PP_CALIB_STATE_ALIGN;
-	// pd->pole_pairs = 0;
 
 	pd->time_acc = 0.0f;
 	pd->drive_angle = 0.0f;
@@ -79,9 +78,7 @@ int32_t pp_ident_update(struct device *pp, float dt)
 	 * Step 1: ALIGN (预定位)
 	 * ----------------------------------------------------- */
 	case PP_CALIB_STATE_ALIGN: {
-		float abc[3];
-		svm_set(cfg->openloop_voltage, 0.0f, abc);
-		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
+		_open_loop_voltage_vector_drive(inv, 0.0, cfg->openloop_voltage);
 
 		pd->time_acc += dt;
 
@@ -125,14 +122,7 @@ int32_t pp_ident_update(struct device *pp, float dt)
 			v_mag = 0.577f;
 		}
 
-		float sinv, cosv;
-		sin_cos_f32(angle, &sinv, &cosv);
-		float ualpha = v_mag * cosv;
-		float ubeta = v_mag * sinv;
-
-		float abc[3];
-		svm_set(ualpha, ubeta, abc);
-		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
+		_open_loop_voltage_vector_drive(inv, angle, v_mag);
 
 		// 累计机械角度
 		uint32_t current_raw = read_feedback_raw(fb);

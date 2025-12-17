@@ -7,7 +7,7 @@
 #include "svpwm.h"
 #include <stdlib.h> // for abs
 #include "coord_transform.h"
-
+#include "foc.h"
 #undef M_PI
 #define M_PI 3.14159265358979323846f
 
@@ -72,12 +72,7 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 	case ENC_CALIB_STATE_ALIGN_START: {
 		// 施加起始角度电压
 		float angle_deg = ed->driver_elec_angle * RAD_TO_DEG;
-		float s, c;
-		sin_cos_f32(angle_deg, &s, &c);
-
-		float abc[3];
-		svm_set(v_mag * c, v_mag * s, abc);
-		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
+		_open_loop_voltage_vector_drive(inv, angle_deg, cfg->voltage);
 
 		ed->time_acc += dt;
 		if (ed->time_acc > ALIGN_DURATION) {
@@ -97,11 +92,7 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 
 		// 2. SVM 输出
 		float angle_deg = ed->driver_elec_angle * RAD_TO_DEG;
-		float s, c;
-		sin_cos_f32(angle_deg, &s, &c);
-		float abc[3];
-		svm_set(v_mag * c, v_mag * s, abc);
-		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
+		_open_loop_voltage_vector_drive(inv, angle_deg, cfg->voltage);
 
 		uint32_t raw_curr = read_feedback_raw(fb);
 		// 4. 找到过零点 (Zero Crossing)
@@ -126,13 +117,9 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 		// 1. 更新角度 (反向)
 		ed->driver_elec_angle -= cfg->speed * dt;
 
-		// 2. SVM 输出
+		// // 2. SVM 输出
 		float angle_deg = ed->driver_elec_angle * RAD_TO_DEG;
-		float s, c;
-		sin_cos_f32(angle_deg, &s, &c);
-		float abc[3];
-		svm_set(v_mag * c, v_mag * s, abc);
-		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
+		_open_loop_voltage_vector_drive(inv, angle_deg, cfg->voltage);
 
 		// 3. 更新 raw_prev (用于 unwrap 连续性)
 		uint32_t raw_curr = read_feedback_raw(fb);
@@ -181,7 +168,6 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 			update_feedback_offset(fb, avg);
 			ed->state = ENC_CALIB_STATE_COMPLETE;
 		} else {
-			// 如果没捕获到 (速度过快或配置错误)，报错
 			ed->state = ENC_CALIB_STATE_ERROR;
 		}
 	} break;

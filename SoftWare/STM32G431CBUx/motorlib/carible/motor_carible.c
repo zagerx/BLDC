@@ -5,6 +5,7 @@
 #include "device.h"
 #include "motor_cfg.h"
 #include <stdint.h>
+
 int32_t motor_calib_update(struct motor_calibration_modules *calib, float dt)
 {
 	struct device *curr_calib = calib->current_calibration;
