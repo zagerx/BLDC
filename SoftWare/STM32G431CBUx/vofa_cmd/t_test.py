@@ -46,9 +46,9 @@ else:
 
 BAUD_RATE = 115200                # 波特率
 MIN_INTERVAL = 0.05               # 最小发送间隔(秒) = 50ms
-MAX_INTERVAL = 0.10               # 最大发送间隔(秒) = 100ms
-MIN_VELOCITY = -0.1               # 最小速度值(m/s)
-MAX_VELOCITY = 0.1                # 最大速度值(m/s)
+MAX_INTERVAL = 1.50               # 最大发送间隔(秒) = 100ms
+MIN_VELOCITY = -0.3               # 最小速度值(m/s)
+MAX_VELOCITY = 0.40                # 最大速度值(m/s)
 DECIMAL_PLACES = 3                # 速度值小数位数
 
 # 全局变量，用于控制程序运行
