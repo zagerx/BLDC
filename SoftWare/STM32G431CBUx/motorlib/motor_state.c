@@ -150,6 +150,7 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 {
 	enum {
 		RUNING = USER_STATUS,
+		IDLE,
 	};
 	const struct device *motor = obj->p1;
 	struct motor_data *m_data = motor->data;
@@ -163,7 +164,7 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		if (feedback_init(feedback)) {
 			break;
 		}
-		obj->phase = RUNING;
+		obj->phase = IDLE;
 		break;
 	case RUNING: {
 		update_feedback(feedback, PWM_CYCLE);
@@ -232,6 +233,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 {
 	enum {
 		RUNING = USER_STATUS,
+		WAIT,
 	};
 	const struct device *motor = obj->p1;
 	struct motor_data *m_data = motor->data;
@@ -258,16 +260,26 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		foc_pid_init(&foc_param->id_pi_control, kp, ki, 13.0f);
 #elif (CURRENT_DEBUG == DEBUG_VEL_PI)
 		read_foc_param_(foc_param, INDEX_VELOCITY_PI, data);
+		foc_param->velocity_tar = 0.0f;
 		kp = data[0];
 		ki = data[1];
+
 		foc_pid_init(&foc_param->id_pi_control, 0.01f, 30.0f, 13.0f);
 		foc_pid_init(&foc_param->iq_pi_control, 0.01f, 30.0f, 13.0f);
 		foc_pid_init(&foc_param->velocity_pi_control, kp, ki, 10.0f); // 0.08f,3.0f
 #else
 #endif
-		obj->phase = RUNING;
+		obj->count = 0;
+		obj->phase = WAIT;
 		break;
+	case WAIT:
+		update_feedback(feedback, PWM_CYCLE);
+		if (++obj->count > 1000) {
 
+			obj->count = 0;
+			obj->phase = RUNING;
+		}
+		break;
 	case RUNING: {
 		update_feedback(feedback, PWM_CYCLE);
 		float elec_angle = read_feedback_elec_angle(feedback) * RAD_TO_DEG;
@@ -346,7 +358,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 #else
 #endif
 		// ud_final = 0.0f;
-		// uq_final = 0.02f;
+		// uq_final = 0.2f;
 		// 归一化处理
 		ud_final *= (1 / (24.0f * 0.57735f));
 		uq_final *= (1 / (24.0f * 0.57735f));

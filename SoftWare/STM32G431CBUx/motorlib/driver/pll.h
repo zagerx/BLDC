@@ -2,6 +2,8 @@
 #define _PLL_H
 #include "stdint.h"
 #include "stdbool.h"
+#include <string.h>
+#include <math.h>
 typedef struct {
 	// PI控制器参数
 	float kp;        // 比例增益

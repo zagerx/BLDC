@@ -56,10 +56,13 @@ void update_feedback(struct device *dev, float dt)
 
 	// 考虑编码器偏移量
 	int32_t adjusted_raw = (int32_t)current_raw - (int32_t)cfg->offset;
-
-	int32_t delta_counts = adjusted_raw - data->prev_counts;
+	adjusted_raw %= cpr_i;
+	if (adjusted_raw < 0) {
+		adjusted_raw += cpr_i;
+	}
 
 	// 处理计数溢出（越过CPR边界）
+	int32_t delta_counts = adjusted_raw - data->prev_counts;
 	if (delta_counts > cpr_i / 2) {
 		delta_counts -= cpr_i;
 	} else if (delta_counts < -cpr_i / 2) {
@@ -70,7 +73,7 @@ void update_feedback(struct device *dev, float dt)
 	data->total_counts += delta_counts;
 	data->prev_counts = adjusted_raw;
 
-	// 计算机械角度（连续，不包装）
+	// 计算机械角度
 	float current_mech_angle = (two_pi / cpr_f) * data->total_counts * (float)cfg->direction;
 
 	// 计算电角度
@@ -80,8 +83,7 @@ void update_feedback(struct device *dev, float dt)
 
 	int32_t counts_diff = data->total_counts - data->total_counts_prev;
 
-	if (data->accumulated_dt > 0.0002f) // 或 0.002f
-	{
+	if (data->accumulated_dt > 0.001f) {
 		// 基于计数差计算角度变化
 		float angle_diff = (two_pi / cpr_f) * counts_diff * (float)cfg->direction;
 
@@ -91,7 +93,7 @@ void update_feedback(struct device *dev, float dt)
 		data->total_counts_prev = data->total_counts;
 
 		// 滤波
-		float filter_alpha = 1.0f;
+		float filter_alpha = 0.15f;
 		data->mech_vel = (1.0f - filter_alpha) * data->mech_vel + filter_alpha * raw_vel;
 	}
 }

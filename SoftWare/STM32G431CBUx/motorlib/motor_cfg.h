@@ -2,7 +2,7 @@
 #define MOTOR_CFG_H
 #define PWM_FREQ         10000.0f // 10KHZ
 #define PWM_CYCLE        0.0001f  // 100us
-#define SPEED_LOOP_CYCLE 0.002f   // 2ms
+#define SPEED_LOOP_CYCLE 0.001f   // 2ms
 
 /*  电流采样  */
 #define BOARD_ADC_RES           4096     // 分辨率 12-bit
