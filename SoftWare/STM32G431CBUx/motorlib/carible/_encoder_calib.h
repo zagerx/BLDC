@@ -11,7 +11,12 @@ enum encoder_calib_state {
 	ENC_CALIB_STATE_SCAN_FWD,    // 正向扫描 (过零点记录)
 	ENC_CALIB_STATE_SCAN_BWD,    // 反向扫描 (过零点记录)
 	ENC_CALIB_STATE_CALCULATE,   // 计算平均值
+	ENC_CALIB_STATE_LUT_START,
+	ENC_CALIB_STATE_LUT_SCAN_WAIT,
+	ENC_CALIB_STATE_LUT_SCAN_DRIVE,
+	ENC_CALIB_STATE_REBACK_ZERO,
 	ENC_CALIB_STATE_COMPLETE,
+	ENC_CALIB_STATE_DEBUG,
 	ENC_CALIB_STATE_ERROR,
 };
 
@@ -28,13 +33,20 @@ struct encoder_calib_config {
 struct encoder_calib_data {
 	enum encoder_calib_state state;
 
+	uint32_t offset;
 	float driver_elec_angle; // 当前输出的电角度  自给的
 	float time_acc;
-	// 扫描相关
+	uint16_t counter;
+
 	uint32_t raw_fwd;  // 正向扫描时的零点捕获值
 	uint32_t raw_bwd;  // 反向扫描时的零点捕获值
 	bool fwd_captured; // 标志位
 	bool bwd_captured;
+	uint32_t avg_sum;
+
+	// lut
+	uint16_t lut_index;
+	int32_t ideal_rel_temp;
 };
 
 void encoder_calib_start(struct device *encoder_calib);

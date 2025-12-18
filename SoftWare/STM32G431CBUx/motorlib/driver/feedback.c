@@ -2,6 +2,7 @@
 #include "device.h"
 #include <stdint.h>
 #include <math.h>
+static float get_interpolated_error(const struct feedback_config *cfg, float pos);
 
 // 角度归一化到 [0, 2PI]
 static float normalize_angle(float angle)
@@ -40,7 +41,6 @@ int feedback_init(struct device *dev)
 	return 0;
 }
 
-// 角度/速度更新
 void update_feedback(struct device *dev, float dt)
 {
 	struct feedback_config *cfg = dev->config;
@@ -54,48 +54,90 @@ void update_feedback(struct device *dev, float dt)
 	uint32_t current_raw = cfg->get_raw();
 	data->raw = current_raw;
 
-	// 考虑编码器偏移量
 	int32_t adjusted_raw = (int32_t)current_raw - (int32_t)cfg->offset;
 	adjusted_raw %= cpr_i;
 	if (adjusted_raw < 0) {
 		adjusted_raw += cpr_i;
 	}
+#if 0
+	// 计算经LUT校正后的编码器计数
+	float corrected_counts_f =
+		(float)adjusted_raw - get_interpolated_error(cfg, (float)adjusted_raw);
 
-	// 处理计数溢出（越过CPR边界）
-	int32_t delta_counts = adjusted_raw - data->prev_counts;
+	// 将校正后的计数规整到 [0, cpr) 范围内
+	// 因为误差校正可能导致值略微超出范围
+	corrected_counts_f = fmodf(corrected_counts_f, cpr_f);
+	if (corrected_counts_f < 0.0f) {
+		corrected_counts_f += cpr_f;
+	}
+	int32_t corrected_counts = (int32_t)roundf(corrected_counts_f);
+
+	int32_t delta_counts = corrected_counts - data->prev_counts;
 	if (delta_counts > cpr_i / 2) {
 		delta_counts -= cpr_i;
 	} else if (delta_counts < -cpr_i / 2) {
 		delta_counts += cpr_i;
 	}
 
-	// 更新总计数
+	data->total_counts += delta_counts;
+	data->prev_counts = corrected_counts; // 存储校正后的值供下次使用
+#else
+	int32_t delta_counts = adjusted_raw - data->prev_counts;
+	if (delta_counts > cpr_i / 2) {
+		delta_counts -= cpr_i;
+	} else if (delta_counts < -cpr_i / 2) {
+		delta_counts += cpr_i;
+	}
 	data->total_counts += delta_counts;
 	data->prev_counts = adjusted_raw;
+#endif
+	float current_mech_angle =
+		(two_pi / cpr_f) * (float)data->total_counts * (float)cfg->direction;
 
-	// 计算机械角度
-	float current_mech_angle = (two_pi / cpr_f) * data->total_counts * (float)cfg->direction;
-
-	// 计算电角度
 	data->elec_angle = normalize_angle(current_mech_angle * pole_pairs_f);
 
 	data->accumulated_dt += dt;
-
 	int32_t counts_diff = data->total_counts - data->total_counts_prev;
 
 	if (data->accumulated_dt > 0.001f) {
-		// 基于计数差计算角度变化
 		float angle_diff = (two_pi / cpr_f) * counts_diff * (float)cfg->direction;
-
 		float raw_vel = angle_diff / data->accumulated_dt;
-		// 重置累积时间和计数
 		data->accumulated_dt = 0.0f;
 		data->total_counts_prev = data->total_counts;
 
-		// 滤波
 		float filter_alpha = 0.15f;
 		data->mech_vel = (1.0f - filter_alpha) * data->mech_vel + filter_alpha * raw_vel;
 	}
+}
+static float get_interpolated_error(const struct feedback_config *cfg, float pos)
+{
+	// 1. 将位置映射到LUT的“连续索引”
+	// LUT覆盖了从0到CPR的整个范围，pos_float的范围是 [0, cpr)
+	float index_float = (pos * (float)LUT_SIZE) / ((float)cfg->cpr);
+
+	// 2. 处理索引，确保其在LUT范围内（考虑周期性）
+	// 由于角度是周期性的，我们对LUT索引也取模
+	if (index_float < 0) {
+		index_float += (float)LUT_SIZE;
+	}
+	if (index_float >= LUT_SIZE) {
+		index_float -= (float)LUT_SIZE;
+	}
+
+	// 3. 找到用于插值的两个索引（i0 和 i1）
+	int i0 = (int)floorf(index_float); // 下界索引
+	float t = index_float - (float)i0; // 小数部分，即插值权重 (0 <= t < 1)
+
+	// 由于LUT是周期性的，确保i0在[0, LUT_SIZE-1]内，i1处理“绕回”情况
+	i0 = i0 % LUT_SIZE;
+	int i1 = (i0 + 1) % LUT_SIZE; // 上界索引，在末尾处绕回0
+
+	// 4. 获取这两个索引对应的误差值
+	float error0 = (float)(cfg->lut[i0]);
+	float error1 = (float)(cfg->lut[i1]);
+
+	// 5. 执行线性插值： error = error0 + (error1 - error0) * t
+	return error0 + (error1 - error0) * t;
 }
 
 /* 其余函数保持不变 */

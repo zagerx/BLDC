@@ -410,3 +410,180 @@ fsm_rt_t motor_running_state(fsm_cb_t *obj)
 
 	return 0;
 }
+#include "foc.h"
+fsm_rt_t motor_lut_test_state(fsm_cb_t *obj)
+{
+	enum {
+		TEST_ENTER = USER_STATUS,
+		TEST_INIT_PARAMS,
+		TEST_DRIVE_TO_POINT,
+		TEST_WAIT_STABLE,
+		TEST_SAMPLE_ERROR,
+		TEST_NEXT_POINT,
+		TEST_NEXT_CYCLE,
+		TEST_CALC_AVERAGE,
+		TEST_COMPLETE,
+		TEST_EXIT
+	};
+
+	const struct device *motor = obj->p1;
+	struct motor_config *m_cfg = motor->config;
+	struct device *feedback = m_cfg->feedback;
+	struct device *inverter = m_cfg->inverter;
+	struct feedback_config *fb_cfg = feedback->config;
+
+	// --- 静态变量（测试控制与数据）---
+	static uint8_t s_cycle_cnt;      // 已完成循环次数 (0~5)
+	static uint16_t s_point_idx;     // 当前采样点索引 (0~POINTS_TOTAL-1)
+	static float s_target_angle_rad; // 当前目标电角度 (弧度)
+	static float s_timer;            // 通用计时器
+
+// --- 测试参数 (可根据需要调整) ---
+// 总循环次数
+#define CYCLES_TOTAL     5
+// 总采样点数: 3圈 * 64点/圈 = 192点
+#define POINTS_PER_CYCLE 64 * 3
+	const float STABLE_TIME = 0.1f; // 驱动后稳定等待时间 (秒)
+	const float VOLTAGE = 0.08f;    // 开环驱动电压
+
+// 角度常数
+#define TWO_PI    (2.0f * M_PI)
+#define THREE_REV (3.0f * TWO_PI)
+	// const float  = 180.0f / M_PI; // 弧度转度
+
+	// --- 误差数据存储 (累加法) ---
+	static float s_error_sum[POINTS_PER_CYCLE];     // 误差累加和数组 (弧度)
+	static float s_avg_error[POINTS_PER_CYCLE];     // 最终平均误差数组 (弧度)
+	static float s_cmd_angle_rad[POINTS_PER_CYCLE]; // 每个采样点对应的指令电角度 (弧度)
+
+	static float test_error;
+	update_feedback(feedback, PWM_CYCLE); // PWM_CYCLE = 0.0001F
+
+	switch (obj->phase) {
+	case ENTER:
+		// 1. 初始化所有控制变量
+		s_cycle_cnt = 0;
+		s_point_idx = 0;
+		s_timer = 0.0f;
+
+		// 2. 清零误差累加和数组
+		for (int i = 0; i < POINTS_PER_CYCLE; i++) {
+			s_error_sum[i] = 0.0f;
+			s_avg_error[i] = 0.0f;
+			s_cmd_angle_rad[i] = 0.0f;
+		}
+
+		// 3. 初始化反馈模块
+		feedback_init(feedback);
+		obj->phase = TEST_INIT_PARAMS;
+		break;
+
+	case TEST_INIT_PARAMS:
+		// 计算当前目标电角度 (弧度)
+		// 总机械角度 = (当前点索引 / 总点数) * (3圈 * 2π)
+		// 目标电角度 = 总机械角度 * 极对数
+		{
+			float total_mech_angle_rad =
+				((float)s_point_idx / (float)POINTS_PER_CYCLE) * THREE_REV;
+			s_target_angle_rad = total_mech_angle_rad * (float)fb_cfg->pole_pairs;
+
+			// 存储指令角度（仅在第一轮记录一次）
+			if (s_cycle_cnt == 0) {
+				s_cmd_angle_rad[s_point_idx] = s_target_angle_rad;
+			}
+		}
+		s_timer = 0.0f;
+		obj->phase = TEST_DRIVE_TO_POINT;
+		break;
+
+	case TEST_DRIVE_TO_POINT:
+		// 开环驱动到目标电角度，需要将弧度转换为度
+		_open_loop_voltage_vector_drive(inverter, s_target_angle_rad * RAD_TO_DEG, VOLTAGE);
+		obj->phase = TEST_WAIT_STABLE;
+		break;
+
+	case TEST_WAIT_STABLE:
+		// 等待转子稳定
+		s_timer += PWM_CYCLE;
+		if (s_timer >= STABLE_TIME) {
+			s_timer = 0.0f;
+			obj->phase = TEST_SAMPLE_ERROR;
+		}
+		break;
+
+	case TEST_SAMPLE_ERROR:
+		// 采样一次误差：误差 = 反馈电角度 - 指令电角度 (全部使用弧度)
+		{
+			float feedback_elec_angle_rad = read_feedback_elec_angle(feedback);
+
+			// 计算角度误差（弧度），并确保在±π范围内（最短路径）
+			float error_rad = feedback_elec_angle_rad - s_target_angle_rad;
+
+			// 将误差归一化到[-π, π)区间
+			if (error_rad > M_PI) {
+				error_rad -= TWO_PI;
+			} else if (error_rad < -M_PI) {
+				error_rad += TWO_PI;
+			}
+
+			// 累加误差
+			s_error_sum[s_point_idx] += error_rad;
+		}
+		obj->phase = TEST_NEXT_POINT;
+		break;
+
+	case TEST_NEXT_POINT:
+		// 移动到下一个采样点
+		s_point_idx++;
+
+		if (s_point_idx >= POINTS_PER_CYCLE) {
+			// 已完成一个完整循环（3圈）
+			s_point_idx = 0;
+			obj->phase = TEST_NEXT_CYCLE;
+		} else {
+			// 继续当前循环的下一个点
+			obj->phase = TEST_INIT_PARAMS;
+		}
+		break;
+
+	case TEST_NEXT_CYCLE:
+		// 准备下一个循环
+		s_cycle_cnt++;
+		if (s_cycle_cnt >= CYCLES_TOTAL) {
+			// 所有循环完成，进入结果计算
+			obj->phase = TEST_CALC_AVERAGE;
+		} else {
+			// 开始新一轮循环
+			obj->phase = TEST_INIT_PARAMS;
+		}
+		break;
+
+	case TEST_CALC_AVERAGE:
+		// 计算平均误差 (弧度)
+		for (int i = 0; i < POINTS_PER_CYCLE; i++) {
+			s_avg_error[i] = s_error_sum[i] / (float)CYCLES_TOTAL;
+			test_error = s_avg_error[i];
+		}
+
+		// --- 可选的：添加结果分析代码 ---
+		// 例如：计算整体误差的峰峰值、标准差等
+		// 将 s_avg_error 数组复制到全局变量供J-Scope观察
+
+		obj->phase = TEST_COMPLETE;
+		break;
+
+	case TEST_COMPLETE:
+		// 停止驱动，测试结束
+		inverter_set_3phase_voltages(inverter, 0.0f, 0.0f, 0.0f);
+		obj->phase = TEST_EXIT;
+		break;
+
+	case TEST_EXIT:
+		return 0; // 返回成功状态
+
+	default:
+		break;
+	}
+
+	return 0; // 返回进行中状态
+}

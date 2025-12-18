@@ -55,15 +55,6 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 	struct device *inv = cfg->inverter;
 	struct device *fb = cfg->feedback;
 
-	// 电压限幅
-	float v_mag = cfg->voltage;
-	if (v_mag > 0.577f) {
-		v_mag = 0.577f;
-	}
-	if (v_mag < 0.01f) {
-		v_mag = 0.01f;
-	}
-
 	switch (ed->state) {
 
 	/* -----------------------------------------------------
@@ -77,6 +68,8 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 		ed->time_acc += dt;
 		if (ed->time_acc > ALIGN_DURATION) {
 			ed->time_acc = 0.0f;
+			ed->counter = 0;
+			ed->avg_sum = 0;
 			ed->state = ENC_CALIB_STATE_SCAN_FWD;
 		}
 	} break;
@@ -165,13 +158,127 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 				avg += max;
 			}
 
-			update_feedback_offset(fb, avg);
-			ed->state = ENC_CALIB_STATE_COMPLETE;
+			if (ed->counter >= 3) {
+				avg = ed->avg_sum / ed->counter;
+				ed->offset = avg;
+				update_feedback_offset(fb, avg);
+				ed->state = ENC_CALIB_STATE_LUT_START;
+				ed->counter = 0;
+				ed->avg_sum = 0;
+			} else {
+				ed->avg_sum += avg;
+				ed->counter++;
+				ed->state = ENC_CALIB_STATE_SCAN_FWD;
+			}
 		} else {
 			ed->state = ENC_CALIB_STATE_ERROR;
 		}
 	} break;
+	case ENC_CALIB_STATE_LUT_START: {
+		_open_loop_voltage_vector_drive(inv, 0.0f, cfg->voltage);
+		ed->time_acc += dt;
+		if (ed->time_acc > ALIGN_DURATION) {
+			ed->time_acc = 0.0f;
+			ed->state = ENC_CALIB_STATE_LUT_SCAN_DRIVE;
+		}
+	} break;
+	case ENC_CALIB_STATE_LUT_SCAN_DRIVE: {
+		// 1. 计算目标位置并驱动
+		struct feedback_config *fb_conf = fb->config;
+		const float pp = (float)fb_conf->pole_pairs;
+		const int32_t cpr_i = (int32_t)fb_conf->cpr;
 
+		float mech_step = M_TWOPI / (float)LUT_SIZE;
+		float mech_angle = (float)ed->lut_index * mech_step;
+		ed->driver_elec_angle = mech_angle * pp;
+
+		_open_loop_voltage_vector_drive(inv, ed->driver_elec_angle * RAD_TO_DEG,
+						cfg->voltage);
+
+		// 记录理想值供后续使用
+		ed->ideal_rel_temp =
+			(int32_t)(((float)ed->lut_index / (float)LUT_SIZE) * (float)cpr_i);
+
+		// 进入等待状态
+		ed->time_acc = 0.0f;
+		ed->state = ENC_CALIB_STATE_LUT_SCAN_WAIT;
+		break;
+	}
+
+	case ENC_CALIB_STATE_LUT_SCAN_WAIT: {
+		struct feedback_config *fb_conf = fb->config;
+
+		// 2. 等待转子稳定（至少50ms）
+		ed->time_acc += dt;
+		if (ed->time_acc < 0.1f) // 50ms稳定时间
+		{
+			break;
+		}
+
+		// 3. 稳定后读取编码器值
+		uint32_t raw = read_feedback_raw(fb);
+
+		/*在feedback计算角度时，在使用用offset*/
+		// int32_t adjusted_raw = (int32_t)raw - (int32_t)ed->offset;
+		// adjusted_raw %= fb_conf->cpr;
+		// if (adjusted_raw < 0)
+		// 	adjusted_raw += fb_conf->cpr;
+
+		int32_t error = raw - ed->ideal_rel_temp;
+		const int32_t cpr_half = fb_conf->cpr / 2;
+
+		if (error > cpr_half) {
+			error -= fb_conf->cpr;
+		}
+		if (error < -cpr_half) {
+			error += fb_conf->cpr;
+		}
+
+		fb_conf->lut[ed->lut_index] = (int16_t)error;
+
+		// 5. 递增索引，准备下一个点
+		ed->lut_index++;
+		if (ed->lut_index >= LUT_SIZE) {
+			ed->lut_index = 0;
+			ed->driver_elec_angle = 2 * M_PI;
+			ed->state = ENC_CALIB_STATE_REBACK_ZERO;
+		} else {
+			ed->state = ENC_CALIB_STATE_LUT_SCAN_DRIVE;
+		}
+		break;
+	}
+	case ENC_CALIB_STATE_REBACK_ZERO: {
+		float prev_angle = ed->driver_elec_angle;
+
+		// 1. 更新角度 (反向)
+		ed->driver_elec_angle -= cfg->speed * dt;
+
+		float angle_deg = ed->driver_elec_angle * RAD_TO_DEG;
+		_open_loop_voltage_vector_drive(inv, angle_deg, cfg->voltage);
+
+		if (ed->driver_elec_angle <= 0.0f) {
+			inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f); // 停机
+			ed->state = ENC_CALIB_STATE_DEBUG;
+		}
+	} break;
+	case ENC_CALIB_STATE_DEBUG: {
+		struct feedback_config *fb_conf = fb->config;
+
+		ed->time_acc += dt;
+
+		if (ed->time_acc < 0.1f) {
+			break;
+		}
+		ed->time_acc = 0.0f;
+		static int16_t test_value_error;
+		static int16_t test_value_error_zero;
+		test_value_error_zero = fb_conf->lut[0];
+		test_value_error = fb_conf->lut[ed->lut_index];
+		if (ed->lut_index++ >= 127) {
+			ed->lut_index = 0;
+			ed->state = ENC_CALIB_STATE_COMPLETE;
+		}
+	} break;
 	case ENC_CALIB_STATE_COMPLETE:
 		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
 		ret = 1;
