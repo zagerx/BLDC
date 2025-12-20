@@ -86,15 +86,15 @@ void debug_update_foc_data(float *input, enum foc_data_index flag)
 
 	if (flag == INDEX_ID_REF) // 目标参数更新
 	{
-		write_foc_param_(foc_param, INDEX_ID_REF, input);
+		write_foc_data_(foc_param, INDEX_ID_REF, input);
 	} else if (flag == INDEX_D_PI) { // PI参数更新
-		write_foc_param_(foc_param, INDEX_D_PI, input);
+		write_foc_data_(foc_param, INDEX_D_PI, input);
 		TRAN_STATE(m_data->state_machine, motor_debug_idle_state);
 	} else if (flag == INDEX_VELOCITY_PI) {
-		write_foc_param_(foc_param, INDEX_VELOCITY_PI, input);
+		write_foc_data_(foc_param, INDEX_VELOCITY_PI, input);
 		TRAN_STATE(m_data->state_machine, motor_debug_idle_state);
 	} else if (flag == INDEX_VELOCITY_REG) {
-		write_foc_param_(foc_param, INDEX_VELOCITY_REG, input);
+		write_foc_data_(foc_param, INDEX_VELOCITY_REG, input);
 		s_planner_update_target(m_data->scp, input[0]);
 	}
 }

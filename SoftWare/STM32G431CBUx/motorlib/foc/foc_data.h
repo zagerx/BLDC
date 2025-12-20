@@ -28,9 +28,7 @@ struct foc_data {
 	struct foc_pid iq_pi_control;
 	struct foc_pid velocity_pi_control;
 };
-void update_focparam_idq(struct foc_data *f_data, float i_alpha, float i_beta, float eangle);
 void read_focparam_idq(struct foc_data *f_data, float *id, float *iq);
-
 void read_foc_data(struct foc_data *f_data, enum foc_data_index flag, float *data);
-void write_foc_param_(struct foc_data *f_data, enum foc_data_index flag, float *data);
+void write_foc_data_(struct foc_data *f_data, enum foc_data_index flag, float *data);
 #endif

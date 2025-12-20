@@ -3,8 +3,6 @@
 #include "motor.h"
 #include <statemachine.h>
 #include <stdint.h>
-// #include "_current_calib.h"
-// #include "_pp_ident.h"
 #include "motor_cfg.h"
 #include "motor_carible.h"
 #include "coord_transform.h"
@@ -12,13 +10,9 @@
 #include "feedback.h"
 #include "inverter.h"
 #include "svpwm.h"
-// #include "arm_math.h"
 #include "foc_pid.h"
 #include "t_trajectory.h"
-#undef M_PI
-#define M_PI 3.14159265358979323846f
-#undef RAD_TO_DEG
-#define RAD_TO_DEG (180.0f / M_PI)
+#include "foc.h"
 
 fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj);
 fsm_rt_t motor_debug_state(fsm_cb_t *obj);
@@ -167,24 +161,15 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		break;
 	case RUNING: {
 		update_feedback(feedback, PWM_CYCLE);
-		float elec_angle = read_feedback_elec_angle(feedback) * RAD_TO_DEG;
+		float elec_angle = read_feedback_elec_angle(feedback);
 
 		float i_abc[3];
-		float i_alpha, i_beta;
 		currsmp_update_currents(currsmp, i_abc);
-		clarke_f32(i_abc[0], i_abc[1], &i_alpha, &i_beta);
-		update_focparam_idq(f_data, i_alpha, i_beta, elec_angle);
-
-		float sin_val, cos_val;
-		sin_cos_f32(elec_angle, &sin_val, &cos_val);
+		foc_update_current_idq(f_data, i_abc, elec_angle);
 		float ud, uq;
-		float ualpha, ubeta;
 		ud = 0.0f;
 		uq = -0.02f;
-		inv_park_f32(ud, uq, &ualpha, &ubeta, sin_val, cos_val);
-		float duty[3];
-		svm_set(ualpha, ubeta, duty);
-		inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);
+		foc_apply_voltage_dq(inverer, ud, uq, elec_angle);
 	} break;
 	case EXIT:
 		inverter_set_3phase_voltages(inverer, 0.0f, 0.0f, 0.0f);
@@ -275,7 +260,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		obj->count = 0;
 		obj->phase = WAIT;
 		break;
-	case WAIT:
+	case WAIT: // TODO 禁止删除
 		update_feedback(feedback, PWM_CYCLE);
 		if (++obj->count > 1000) {
 
@@ -285,14 +270,12 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		break;
 	case RUNING: {
 		update_feedback(feedback, PWM_CYCLE);
-		float elec_angle = read_feedback_elec_angle(feedback) * RAD_TO_DEG;
+		float elec_angle = read_feedback_elec_angle(feedback);
 
 		float i_abc[3];
 		float i_alpha, i_beta;
 		currsmp_update_currents(currsmp, i_abc);
-		clarke_f32(i_abc[0], i_abc[1], &i_alpha, &i_beta);
-		update_focparam_idq(f_data, i_alpha, i_beta, elec_angle);
-
+		foc_update_current_idq(f_data, i_abc, elec_angle);
 		float id, iq;
 		read_focparam_idq(f_data, &id, &iq);
 
@@ -360,23 +343,10 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		// uq_final = 0.0f;
 #else
 #endif
-		// ud_final = 0.0f;
-		// uq_final = 0.2f;
 		// 归一化处理
 		ud_final *= (1 / (24.0f * 0.57735f));
 		uq_final *= (1 / (24.0f * 0.57735f));
-		float sin_val, cos_val;
-		sin_cos_f32(elec_angle, &sin_val, &cos_val);
-		float ualpha, ubeta;
-		// 使用最终限幅后的 ud_final, uq_final
-		inv_park_f32(ud_final, uq_final, &ualpha, &ubeta, sin_val, cos_val);
-
-		float duty[3];
-		// 此时送入SVM的 ualpha, ubeta 模长已经被严格限制在内切圆内，不会削顶
-		svm_set(ualpha, ubeta, duty);
-
-		inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);
-
+		foc_apply_voltage_dq(inverer, ud_final, uq_final, elec_angle);
 	} break;
 
 	case EXIT:

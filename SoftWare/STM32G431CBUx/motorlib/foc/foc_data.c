@@ -5,22 +5,13 @@
 #undef RAD_TO_DEG
 #define RAD_TO_DEG (180.0f / M_PI)
 
-void update_focparam_idq(struct foc_data *f_data, float i_alpha, float i_beta, float eangle)
-{
-	float sin_val, cos_val;
-	float i_d, i_q;
-	sin_cos_f32(eangle, &sin_val, &cos_val);
-	park_f32(i_alpha, i_beta, &i_d, &i_q, sin_val, cos_val);
-	f_data->id = i_d;
-	f_data->iq = i_q;
-}
 void read_focparam_idq(struct foc_data *f_data, float *id, float *iq)
 {
 	*id = f_data->id;
 	*iq = f_data->iq;
 }
 
-void write_foc_param_(struct foc_data *f_data, enum foc_data_index flag, float *data)
+void write_foc_data_(struct foc_data *f_data, enum foc_data_index flag, float *data)
 {
 	if (flag == INDEX_ID_REF) // 目标参数更新
 	{
