@@ -19,6 +19,7 @@
 #include "stm32_as5047.h"
 
 extern struct device motor1;
+struct motor_parameters motor1_params;
 
 static struct inverter_config inverter1_cfg = {
 	.tim_pwm_start = tim1_pwm_start,
@@ -35,6 +36,7 @@ static struct currsmp_config currsmp1_conf = {
 	.vol_ref = BOARD_ADC_VREF_V,
 	.rs = BOARD_SHUNT_R_OHM,
 	.opm = BOARD_OPAMP_GAIN,
+	.params = &(motor1_params.currsmp_params),
 };
 static struct currsmp_data currsmp1_data = {0};
 
@@ -45,6 +47,7 @@ static struct device currsmp1 = {
 
 static struct feedback_config feedback1_cfg = {
 	.get_raw = as5047_read_raw,
+	.params = &motor1_params.feedback_params,
 };
 
 static struct feedback_data feedback1_data = {0};
@@ -120,6 +123,12 @@ static struct device traj_plan1 = {
 	.config = &scp1_config,
 	.data = &scp1_data,
 };
+struct foc_data foc1_data = {
+	.id_pi_control.params = &motor1_params.d_pi_params,
+	.iq_pi_control.params = &motor1_params.q_pi_params,
+	.velocity_pi_control.params = &motor1_params.vel_pi_params,
+	// .pos_pi_control.params = &motor1_params.pos_pi_params,
+};
 static struct motor_data m1_data = {
 	.statue = MOTOR_STATE_IDLE,
 	.mode = MOTOR_MODE_IDLE,
@@ -127,6 +136,8 @@ static struct motor_data m1_data = {
 	.state_machine = &m1_statemachine,
 	.calib = &m1_calib_modul,
 	.scp = &traj_plan1,
+	.foc_data = &foc1_data,
+
 };
 
 struct device motor1 = {

@@ -1,5 +1,5 @@
 #include <stddef.h>
-#include "foc_parameters.h"
+#include "foc_data.h"
 #include "motor.h"
 #include <statemachine.h>
 #include <stdint.h>
@@ -28,7 +28,6 @@ fsm_rt_t motor_idle_state(fsm_cb_t *obj)
 {
 	struct device *motor = obj->p1;
 	struct motor_data *m_data = motor->data;
-	struct foc_parameters *foc_param = &(m_data->foc_data);
 
 	enum {
 		RUNING = USER_STATUS,
@@ -156,7 +155,7 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
 	struct device *feedback = m_cfg->feedback;
-	struct foc_parameters *foc_param = &(m_data->foc_data);
+	struct foc_data *f_data = (m_data->foc_data);
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
 	switch (obj->phase) {
@@ -174,7 +173,7 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		float i_alpha, i_beta;
 		currsmp_update_currents(currsmp, i_abc);
 		clarke_f32(i_abc[0], i_abc[1], &i_alpha, &i_beta);
-		update_focparam_idq(foc_param, i_alpha, i_beta, elec_angle);
+		update_focparam_idq(f_data, i_alpha, i_beta, elec_angle);
 
 		float sin_val, cos_val;
 		sin_cos_f32(elec_angle, &sin_val, &cos_val);
@@ -239,7 +238,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
 	struct device *feedback = m_cfg->feedback;
-	struct foc_parameters *foc_param = &(m_data->foc_data);
+	struct foc_data *f_data = (m_data->foc_data);
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
 
@@ -252,21 +251,25 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		float kp, ki;
 		float data[2] = {0};
 #if (CURRENT_DEBUG == DEBUG_D_PI)
-		read_foc_param_(foc_param, INDEX_D_PI, data);
+		read_foc_data(f_data, INDEX_D_PI, data);
 		kp = data[0];
 		ki = data[1];
-		foc_pid_init(&foc_param->id_pi_control, kp, ki, 13.0f);
+		foc_pid_init(&f_data->id_pi_control, kp, ki, 13.0f);
 #elif (CURRENT_DEBUG == DEBUG_Q_PI)
-		foc_pid_init(&foc_param->id_pi_control, kp, ki, 13.0f);
+		foc_pid_init(&f_data->id_pi_control, kp, ki, 13.0f);
 #elif (CURRENT_DEBUG == DEBUG_VEL_PI)
-		read_foc_param_(foc_param, INDEX_VELOCITY_PI, data);
-		foc_param->velocity_tar = 0.0f;
+		read_foc_data(f_data, INDEX_VELOCITY_PI, data);
+		f_data->velocity_tar = 0.0f;
 		kp = data[0];
 		ki = data[1];
 
-		foc_pid_init(&foc_param->id_pi_control, 0.01f, 30.0f, 13.0f);
-		foc_pid_init(&foc_param->iq_pi_control, 0.01f, 30.0f, 13.0f);
-		foc_pid_init(&foc_param->velocity_pi_control, kp, ki, 10.0f); // 0.08f,3.0f
+		foc_pid_init(&f_data->id_pi_control, 0.01f, 30.0f, 13.0f);
+		foc_pid_init(&f_data->iq_pi_control, 0.01f, 30.0f, 13.0f);
+#if 1
+		foc_pid_init(&f_data->velocity_pi_control, kp, ki, 10.0f); // 0.08f,3.0f
+#else
+		foc_pid_init(&f_data->velocity_pi_control, 0.06f, 3.0f, 10.0f); // 0.08f,3.0f
+#endif
 #else
 #endif
 		obj->count = 0;
@@ -288,10 +291,10 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		float i_alpha, i_beta;
 		currsmp_update_currents(currsmp, i_abc);
 		clarke_f32(i_abc[0], i_abc[1], &i_alpha, &i_beta);
-		update_focparam_idq(foc_param, i_alpha, i_beta, elec_angle);
+		update_focparam_idq(f_data, i_alpha, i_beta, elec_angle);
 
 		float id, iq;
-		read_focparam_idq(foc_param, &id, &iq);
+		read_focparam_idq(f_data, &id, &iq);
 
 		// 步骤 1: 动态获取母线电压
 		float v_bus = 24.0f; // inverter_get_bus_voltage(inverer);
@@ -303,23 +306,23 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		// 速度环计算
 		if (((++obj->count) * PWM_CYCLE) >= SPEED_LOOP_CYCLE) {
 			obj->count = 0;
-			foc_param->id_ref = 0.0f;
-			foc_param->iq_ref = foc_pid_run(
-				&(foc_param->velocity_pi_control), foc_param->velocity_tar,
-				read_feedback_velocity(feedback), SPEED_LOOP_CYCLE);
+			f_data->id_ref = 0.0f;
+			f_data->iq_ref =
+				foc_pid_run(&(f_data->velocity_pi_control), f_data->velocity_tar,
+					    read_feedback_velocity(feedback), SPEED_LOOP_CYCLE);
 		}
 #endif
 		// 步骤 2: PID 计算
 		float ud_req, uq_req;
 #if (CURRENT_DEBUG == DEBUG_D_PI)
-		ud_req = foc_pid_run(&(foc_param->id_pi_control), foc_param->id_ref, id, PWM_CYCLE);
+		ud_req = foc_pid_run(&(f_data->id_pi_control), f_data->id_ref, id, PWM_CYCLE);
 		uq_req = 0.0f;
 #elif (CURRENT_DEBUG == DEBUG_Q_PI)
 		ud_req = 0.0f;
-		uq_req = foc_pid_run(&(foc_param->iq_pi_control), foc_param->iq_ref, iq, PWM_CYCLE);
+		uq_req = foc_pid_run(&(f_data->iq_pi_control), f_data->iq_ref, iq, PWM_CYCLE);
 #elif (CURRENT_DEBUG == DEBUG_VEL_PI)
-		ud_req = foc_pid_run(&(foc_param->id_pi_control), foc_param->id_ref, id, PWM_CYCLE);
-		uq_req = foc_pid_run(&(foc_param->iq_pi_control), foc_param->iq_ref, iq, PWM_CYCLE);
+		ud_req = foc_pid_run(&(f_data->id_pi_control), f_data->id_ref, id, PWM_CYCLE);
+		uq_req = foc_pid_run(&(f_data->iq_pi_control), f_data->iq_ref, iq, PWM_CYCLE);
 #else
 
 #endif
@@ -345,8 +348,8 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		}
 
 		// 步骤 5: 核心优化 - 积分抗饱和回馈 (Anti-Windup Feedback)
-		foc_pid_saturation_feedback(&(foc_param->id_pi_control), ud_final, ud_req);
-		foc_pid_saturation_feedback(&(foc_param->iq_pi_control), uq_final, uq_req);
+		foc_pid_saturation_feedback(&(f_data->id_pi_control), ud_final, ud_req);
+		foc_pid_saturation_feedback(&(f_data->iq_pi_control), uq_final, uq_req);
 
 		// // 步骤 6: 坐标变换与输出
 #if (CURRENT_DEBUG == DEBUG_D_PI)
@@ -377,9 +380,9 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 	} break;
 
 	case EXIT:
-		foc_pid_reset(&foc_param->id_pi_control);
-		foc_pid_reset(&foc_param->iq_pi_control);
-		foc_pid_reset(&foc_param->velocity_pi_control);
+		foc_pid_reset(&f_data->id_pi_control);
+		foc_pid_reset(&f_data->iq_pi_control);
+		foc_pid_reset(&f_data->velocity_pi_control);
 		inverter_set_3phase_voltages(inverer, 0.0f, 0.0f, 0.0f);
 		break;
 	default:
@@ -410,6 +413,7 @@ fsm_rt_t motor_running_state(fsm_cb_t *obj)
 
 	return 0;
 }
+#if 0
 #include "foc.h"
 fsm_rt_t motor_lut_test_state(fsm_cb_t *obj)
 {
@@ -447,8 +451,8 @@ fsm_rt_t motor_lut_test_state(fsm_cb_t *obj)
 	const float VOLTAGE = 0.08f;    // 开环驱动电压
 
 // 角度常数
-#define TWO_PI    (2.0f * M_PI)
-#define THREE_REV (3.0f * TWO_PI)
+#define TWO_PI           (2.0f * M_PI)
+#define THREE_REV        (3.0f * TWO_PI)
 	// const float  = 180.0f / M_PI; // 弧度转度
 
 	// --- 误差数据存储 (累加法) ---
@@ -587,3 +591,4 @@ fsm_rt_t motor_lut_test_state(fsm_cb_t *obj)
 
 	return 0; // 返回进行中状态
 }
+#endif

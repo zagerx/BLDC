@@ -12,7 +12,11 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
-
+# 全局把 incompatible-pointer-types 当错误
+add_compile_options(
+    -Werror=incompatible-pointer-types
+    -Werror=implicit-function-declaration
+)
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")

@@ -41,7 +41,6 @@ int32_t curr_calib_update(struct device *curr_calib, float dt)
 	struct curr_calib_config *cfg = cc->config;
 	struct device *inv = cfg->inverter;
 	struct device *currsmp = cfg->currsmp;
-	struct currsmp_data *currsmp_data = currsmp->data;
 
 	switch (cd->state) {
 
@@ -63,9 +62,11 @@ int32_t curr_calib_update(struct device *curr_calib, float dt)
 
 		// 整数累加
 		// 假设 channle_raw_x 是 uint16_t 或 uint32_t
-		cd->offset_a_acc += currsmp_data->channle_raw_a;
-		cd->offset_b_acc += currsmp_data->channle_raw_b;
-		cd->offset_c_acc += currsmp_data->channle_raw_c;
+		uint32_t channle_raw[4];
+		_read_currsmp_raw(currsmp, channle_raw);
+		cd->offset_a_acc += channle_raw[0];
+		cd->offset_b_acc += channle_raw[1];
+		cd->offset_c_acc += channle_raw[2];
 
 		cd->sample_index++;
 	} break;
@@ -80,10 +81,11 @@ int32_t curr_calib_update(struct device *curr_calib, float dt)
 		 * 例如：累加和 20485，采样 10 次 -> 结果 2048
 		 * 小数部分直接被舍弃 (向下取整)
 		 */
-		currsmp_data->offset_a = cd->offset_a_acc / cfg->sample_count;
-		currsmp_data->offset_b = cd->offset_b_acc / cfg->sample_count;
-		currsmp_data->offset_c = cd->offset_c_acc / cfg->sample_count;
-
+		uint32_t offset_buf[3];
+		offset_buf[0] = cd->offset_a_acc / cfg->sample_count;
+		offset_buf[1] = cd->offset_b_acc / cfg->sample_count;
+		offset_buf[2] = cd->offset_c_acc / cfg->sample_count;
+		_update_currsmp_offset(currsmp, offset_buf);
 		cd->state = CURR_CALIB_STATE_DONE;
 	} break;
 

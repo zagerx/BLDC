@@ -191,8 +191,8 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 }
 #include <string.h>
 #include <stdlib.h>
-#include "foc_parameters.h"
-void debug_update_foc_data(float *input, enum foc_parameters_index flag);
+#include "foc_data.h"
+void debug_update_foc_data(float *input, enum foc_data_index flag);
 #if 0
 void process_data(uint8_t *data, uint16_t len)
 {
@@ -268,7 +268,7 @@ void process_data(uint8_t *data, uint16_t len)
 typedef struct {
 	const char *cmd_name;
 	uint8_t min_params; // 最少需要的参数个数
-	enum foc_parameters_index data_index;
+	enum foc_data_index data_index;
 } command_map_t;
 
 // 命令表定义

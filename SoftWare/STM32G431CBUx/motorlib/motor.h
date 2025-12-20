@@ -3,9 +3,11 @@
 #include "device.h"
 #include "foc_pid.h"
 #include "statemachine.h"
-#include "foc_parameters.h"
+#include "foc_data.h"
 #include "stdint.h"
 #include "stdbool.h"
+#include "feedback.h"
+#include "currsmp.h"
 /**
  * @brief FOC电机控制状态枚举
  */
@@ -41,12 +43,20 @@ struct motor_config {
 	struct device *feedback;
 };
 struct motor_parameters {
-	float phase_resistance;   // 相电阻 (Ω)
-	float phase_inductance_d; // D轴电感 (H)
-	float phase_inductance_q; // Q轴电感 (H)
+	struct _pid_parameters d_pi_params;
+	struct _pid_parameters q_pi_params;
+	struct _pid_parameters vel_pi_params;
+	struct _pid_parameters pos_pi_params;
 
-	uint16_t pole_pairs; // 极对数
-	float flux_linkage;  // 磁链 (Wb)
+	struct feedback_paramters feedback_params;
+	struct currsmp_paramters currsmp_params;
+
+	// float phase_resistance;	  // 相电阻 (Ω)
+	// float phase_inductance_d; // D轴电感 (H)
+	// float phase_inductance_q; // Q轴电感 (H)
+
+	// uint16_t pole_pairs; // 极对数
+	// float flux_linkage;	 // 磁链 (Wb)
 };
 
 enum motor_flag {
@@ -56,8 +66,7 @@ enum motor_flag {
 };
 
 struct motor_data {
-	struct motor_parameters model_paramters;
-	struct foc_parameters foc_data;
+	struct foc_data *foc_data;
 	struct motor_calibration_modules *calib;
 	enum motor_flag flag;
 	enum motor_mode mode;

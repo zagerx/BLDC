@@ -2,13 +2,21 @@
 #define __FOC_PID_H
 
 #include <stdint.h>
+struct _pid_parameters {
+	float kp;
+	float ki;
+	float limit;
+};
 
 struct foc_pid {
-	float kp; // 比例增益
-	float ki; // 积分增益 (注意：这里的单位通常是 1/s * kp 或者是纯积分增益，建议用纯积分增益)
+	struct _pid_parameters *params;
+
+	// float kp;	 // 比例增益
+	// float ki;	 // 积分增益 (注意：这里的单位通常是 1/s * kp
+	// 或者是纯积分增益，建议用纯积分增益) float limit; // 输出限幅 (电压限制)
+
 	float err_prev; // 上一次误差 (如果需要D项，电流环通常不需要D)
 	float integral; // 积分累加器
-	float limit;    // 输出限幅 (电压限制)
 };
 
 // 初始化

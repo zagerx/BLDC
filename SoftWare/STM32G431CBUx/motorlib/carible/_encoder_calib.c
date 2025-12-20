@@ -162,7 +162,7 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 				avg = ed->avg_sum / ed->counter;
 				ed->offset = avg;
 				update_feedback_offset(fb, avg);
-				ed->state = ENC_CALIB_STATE_LUT_START;
+				ed->state = ENC_CALIB_STATE_COMPLETE;
 				ed->counter = 0;
 				ed->avg_sum = 0;
 			} else {
@@ -185,8 +185,8 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 	case ENC_CALIB_STATE_LUT_SCAN_DRIVE: {
 		// 1. 计算目标位置并驱动
 		struct feedback_config *fb_conf = fb->config;
-		const float pp = (float)fb_conf->pole_pairs;
-		const int32_t cpr_i = (int32_t)fb_conf->cpr;
+		const float pp = (float)read_feedback_pair(fb);
+		const int32_t cpr_i = (int32_t)read_feedback_cpr(fb);
 
 		float mech_step = M_TWOPI / (float)LUT_SIZE;
 		float mech_angle = (float)ed->lut_index * mech_step;
@@ -196,8 +196,8 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 						cfg->voltage);
 
 		// 记录理想值供后续使用
-		ed->ideal_rel_temp =
-			(int32_t)(((float)ed->lut_index / (float)LUT_SIZE) * (float)cpr_i);
+		// ed->ideal_rel_temp =
+		// 	(int32_t)(((float)ed->lut_index / (float)LUT_SIZE) * (float)cpr_i);
 
 		// 进入等待状态
 		ed->time_acc = 0.0f;
@@ -206,7 +206,6 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 	}
 
 	case ENC_CALIB_STATE_LUT_SCAN_WAIT: {
-		struct feedback_config *fb_conf = fb->config;
 
 		// 2. 等待转子稳定（至少50ms）
 		ed->time_acc += dt;
@@ -225,16 +224,16 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 		// 	adjusted_raw += fb_conf->cpr;
 
 		int32_t error = raw - ed->ideal_rel_temp;
-		const int32_t cpr_half = fb_conf->cpr / 2;
+		const int32_t cpr_half = read_feedback_cpr(fb) / 2;
 
 		if (error > cpr_half) {
-			error -= fb_conf->cpr;
+			error -= read_feedback_cpr(fb);
 		}
 		if (error < -cpr_half) {
-			error += fb_conf->cpr;
+			error += read_feedback_cpr(fb);
 		}
 
-		fb_conf->lut[ed->lut_index] = (int16_t)error;
+		// fb_conf->lut[ed->lut_index] = (int16_t)error;
 
 		// 5. 递增索引，准备下一个点
 		ed->lut_index++;
@@ -248,7 +247,6 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 		break;
 	}
 	case ENC_CALIB_STATE_REBACK_ZERO: {
-		float prev_angle = ed->driver_elec_angle;
 
 		// 1. 更新角度 (反向)
 		ed->driver_elec_angle -= cfg->speed * dt;
@@ -272,8 +270,8 @@ int32_t encoder_calib_update(struct device *encoder_calib, float dt)
 		ed->time_acc = 0.0f;
 		static int16_t test_value_error;
 		static int16_t test_value_error_zero;
-		test_value_error_zero = fb_conf->lut[0];
-		test_value_error = fb_conf->lut[ed->lut_index];
+		// test_value_error_zero = fb_conf->lut[0];
+		// test_value_error = fb_conf->lut[ed->lut_index];
 		if (ed->lut_index++ >= 127) {
 			ed->lut_index = 0;
 			ed->state = ENC_CALIB_STATE_COMPLETE;

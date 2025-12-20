@@ -3,7 +3,7 @@
 #include "currsmp.h"
 #include "device.h"
 #include "feedback.h"
-#include "foc_parameters.h"
+#include "foc_data.h"
 #include "inverter.h"
 #include "svpwm.h"
 
@@ -78,11 +78,11 @@ void motor_task(struct device *motor)
 	}
 }
 
-void debug_update_foc_data(float *input, enum foc_parameters_index flag)
+void debug_update_foc_data(float *input, enum foc_data_index flag)
 {
 	struct device *motor = &motor1;
 	struct motor_data *m_data = motor->data;
-	struct foc_parameters *foc_param = &m_data->foc_data;
+	struct foc_data *foc_param = m_data->foc_data;
 
 	if (flag == INDEX_ID_REF) // 目标参数更新
 	{
