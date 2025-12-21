@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdint.h>
 
-#define K_LINE 3.81971863420f
+#define K_LINE 1.0f // 3.81971863420f
 // 角度归一化到 [0, 2PI]
 static float normalize_angle(float angle)
 {

@@ -86,10 +86,10 @@ int main(void)
 	MX_SPI1_Init();
 	/* USER CODE BEGIN 2 */
 
+	motor_init(&motor1);
 	tim_pwm_enable();
 	adc_start();
 	opamp_start();
-	motor_init(&motor1);
 	HAL_Delay(1000);
 	printf("hello world\r\n");
 	/* USER CODE END 2 */

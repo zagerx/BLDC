@@ -54,26 +54,21 @@ struct motor_parameters {
 	// float phase_resistance;	  // 相电阻 (Ω)
 	// float phase_inductance_d; // D轴电感 (H)
 	// float phase_inductance_q; // Q轴电感 (H)
-
 	// uint16_t pole_pairs; // 极对数
 	// float flux_linkage;	 // 磁链 (Wb)
 };
-
-enum motor_flag {
-	PARAM_NEVER_LOADED = 0, /* 板子首次上电，外部 FLASH 无有效数据 */
-	PARAM_LOAD_PENDING,     /* 其它任务正在读 FLASH，数据尚未就绪   */
-	PARAM_UPD_YES           /* 参数已成功更新，当前可用             */
-};
-
 struct motor_data {
-	struct foc_data *foc_data;
+	struct device *scp;
+	struct foc_data foc_data;
 	struct motor_calibration_modules *calib;
-	enum motor_flag flag;
+	struct motor_parameters params;
 	enum motor_mode mode;
 	enum motor_state statue;
 	enum motor_fault_code faultcode;
 	fsm_cb_t *state_machine;
-	struct device *scp;
 };
 void foc_curr_regulator(uint32_t *adc_raw);
+void update_motor_vel_pi_param(struct device *motor, float kp, float ki);
+void update_motor_vel_target(struct device *motor, float tar);
+
 #endif

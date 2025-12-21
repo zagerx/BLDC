@@ -149,7 +149,7 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
 	struct device *feedback = m_cfg->feedback;
-	struct foc_data *f_data = (m_data->foc_data);
+	struct foc_data *f_data = &(m_data->foc_data);
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
 	switch (obj->phase) {
@@ -223,18 +223,22 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
 	struct device *feedback = m_cfg->feedback;
-	struct foc_data *f_data = (m_data->foc_data);
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *inverer = m_cfg->inverter;
+
+	struct foc_data *f_data = &(m_data->foc_data);
+	struct foc_pid *d_pi = &f_data->controller.id;
+	struct foc_pid *q_pi = &f_data->controller.iq;
+	struct foc_pid *velocity_pi = &f_data->controller.velocity;
+	struct device *scp = m_data->scp;
 
 	switch (obj->phase) {
 	case ENTER:
 		if (feedback_init(feedback)) {
 			break;
 		}
-
+		s_planner_init(scp, 0.0f, 0.0f, 0.0f, 0.0f);
 		float kp, ki;
-		float data[2] = {0};
 #if (CURRENT_DEBUG == DEBUG_D_PI)
 		read_foc_data(f_data, INDEX_D_PI, data);
 		kp = data[0];
@@ -243,17 +247,15 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 #elif (CURRENT_DEBUG == DEBUG_Q_PI)
 		foc_pid_init(&f_data->id_pi_control, kp, ki, 13.0f);
 #elif (CURRENT_DEBUG == DEBUG_VEL_PI)
-		read_foc_data(f_data, INDEX_VELOCITY_PI, data);
-		f_data->velocity_tar = 0.0f;
-		kp = data[0];
-		ki = data[1];
+		kp = f_data->controller.velocity.params->kp;
+		ki = f_data->controller.velocity.params->ki;
 
-		foc_pid_init(&f_data->id_pi_control, 0.01f, 30.0f, 13.0f);
-		foc_pid_init(&f_data->iq_pi_control, 0.01f, 30.0f, 13.0f);
+		foc_pid_init(d_pi, 0.01f, 30.0f, 13.0f);
+		foc_pid_init(q_pi, 0.01f, 30.0f, 13.0f);
 #if 1
-		foc_pid_init(&f_data->velocity_pi_control, kp, ki, 10.0f); // 0.08f,3.0f
+		foc_pid_init(velocity_pi, kp, ki, 10.0f); // 0.08f,3.0f
 #else
-		foc_pid_init(&f_data->velocity_pi_control, 0.06f, 3.0f, 10.0f); // 0.08f,3.0f
+		foc_pid_init(velocity_pi, 0.06f, 3.0f, 10.0f); // 0.08f,3.0f
 #endif
 #else
 #endif
@@ -273,11 +275,11 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		float elec_angle = read_feedback_elec_angle(feedback);
 
 		float i_abc[3];
-		float i_alpha, i_beta;
 		currsmp_update_currents(currsmp, i_abc);
 		foc_update_current_idq(f_data, i_abc, elec_angle);
 		float id, iq;
-		read_focparam_idq(f_data, &id, &iq);
+		id = f_data->meas.id;
+		iq = f_data->meas.iq;
 
 		// 步骤 1: 动态获取母线电压
 		float v_bus = 24.0f; // inverter_get_bus_voltage(inverer);
@@ -286,12 +288,14 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		float v_max_abs = v_bus * 0.57735f * 0.96f; // 0.57735 = 1/sqrt(3)
 		float v_max_sq = SQ(v_max_abs);
 #if (CURRENT_DEBUG == DEBUG_VEL_PI)
+		s_planner_action(scp, SPEED_LOOP_CYCLE);
+		f_data->ref.velocity = s_planner_get_vel(scp);
 		// 速度环计算
 		if (((++obj->count) * PWM_CYCLE) >= SPEED_LOOP_CYCLE) {
 			obj->count = 0;
-			f_data->id_ref = 0.0f;
-			f_data->iq_ref =
-				foc_pid_run(&(f_data->velocity_pi_control), f_data->velocity_tar,
+			f_data->ref.id = 0.0f;
+			f_data->ref.iq =
+				foc_pid_run(velocity_pi, f_data->ref.velocity,
 					    read_feedback_velocity(feedback), SPEED_LOOP_CYCLE);
 		}
 #endif
@@ -304,8 +308,8 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		ud_req = 0.0f;
 		uq_req = foc_pid_run(&(f_data->iq_pi_control), f_data->iq_ref, iq, PWM_CYCLE);
 #elif (CURRENT_DEBUG == DEBUG_VEL_PI)
-		ud_req = foc_pid_run(&(f_data->id_pi_control), f_data->id_ref, id, PWM_CYCLE);
-		uq_req = foc_pid_run(&(f_data->iq_pi_control), f_data->iq_ref, iq, PWM_CYCLE);
+		ud_req = foc_pid_run(d_pi, f_data->ref.id, id, PWM_CYCLE);
+		uq_req = foc_pid_run(q_pi, f_data->ref.iq, iq, PWM_CYCLE);
 #else
 
 #endif
@@ -331,8 +335,8 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		}
 
 		// 步骤 5: 核心优化 - 积分抗饱和回馈 (Anti-Windup Feedback)
-		foc_pid_saturation_feedback(&(f_data->id_pi_control), ud_final, ud_req);
-		foc_pid_saturation_feedback(&(f_data->iq_pi_control), uq_final, uq_req);
+		foc_pid_saturation_feedback(d_pi, ud_final, ud_req);
+		foc_pid_saturation_feedback(q_pi, uq_final, uq_req);
 
 		// // 步骤 6: 坐标变换与输出
 #if (CURRENT_DEBUG == DEBUG_D_PI)
@@ -350,9 +354,9 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 	} break;
 
 	case EXIT:
-		foc_pid_reset(&f_data->id_pi_control);
-		foc_pid_reset(&f_data->iq_pi_control);
-		foc_pid_reset(&f_data->velocity_pi_control);
+		foc_pid_reset(d_pi);
+		foc_pid_reset(q_pi);
+		foc_pid_reset(velocity_pi);
 		inverter_set_3phase_voltages(inverer, 0.0f, 0.0f, 0.0f);
 		break;
 	default:

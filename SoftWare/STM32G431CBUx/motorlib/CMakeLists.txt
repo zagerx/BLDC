@@ -7,11 +7,9 @@ option(DRIVER_TYPE_EULRE "欧拉驱动器" OFF)
 
 add_subdirectory(bsp)
 add_subdirectory(carible)
-
+add_subdirectory(foc)
 file(GLOB _driver_src CONFIGURE_DEPENDS
      "${CMAKE_CURRENT_SOURCE_DIR}/driver/*.c")
-file(GLOB _foc_src CONFIGURE_DEPENDS
-     "${CMAKE_CURRENT_SOURCE_DIR}/foc/*.c")
 file(GLOB _sm_src CONFIGURE_DEPENDS
      "${CMAKE_CURRENT_SOURCE_DIR}/statemachine/*.c")
 
@@ -36,10 +34,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/bsp
-    ${CMAKE_CURRENT_SOURCE_DIR}/carible
     ${CMAKE_CURRENT_SOURCE_DIR}/driver
-    ${CMAKE_CURRENT_SOURCE_DIR}/foc
     ${CMAKE_CURRENT_SOURCE_DIR}/statemachine
 )
 

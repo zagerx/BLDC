@@ -23,6 +23,7 @@
 /* USER CODE BEGIN 0 */
 #include "string.h"
 #include "device.h"
+#include "motor.h"
 #include <stdint.h>
 static uint8_t sg_uartreceive_buff[125];
 /* USER CODE END 0 */
@@ -192,78 +193,19 @@ void USER_UART_IRQHandler(UART_HandleTypeDef *huart)
 #include <string.h>
 #include <stdlib.h>
 #include "foc_data.h"
-void debug_update_foc_data(float *input, enum foc_data_index flag);
 #if 0
-void process_data(uint8_t *data, uint16_t len)
-{
-	if (data[0] == 0) {
-		return;
-	}
-	char buf[64];
-	memcpy(buf, data, len);
-	buf[len] = '\0';
-
-	// 找冒号
-	char *p = strchr(buf, ':');
-	if (!p) {
-		return;
-	}
-
-	*p = '\0';             // 将命令名与参数分开
-	char *cmd = buf;       // 命令名
-	char *val_str = p + 1; // 参数字符串
-	float value = atof(val_str);
-
-	// ========== 命令判断 ==========
-	float input[2];
-	if (strcmp(cmd, "D_Kp") == 0) {
-		input[0] = value;
-		input[1] = 20.00f;
-		debug_update_foc_data(input, INDEX_D_PI);
-		return;
-	}
-	if (strcmp(cmd, "D_Ki") == 0) {
-		input[0] = 0.1f; // 需要根据调试好的Kp写入
-		input[1] = value;
-		debug_update_foc_data(input, INDEX_D_PI);
-		return;
-	}
-
-	if (strcmp(cmd, "Q_Kp") == 0) {
-		printf("IQ Command, value = %.3f\r\n", value);
-		return;
-	}
-	if (strcmp(cmd, "Q_Ki") == 0) {
-		printf("IQ Command, value = %.3f\r\n", value);
-		return;
-	}
-	if (strcmp(cmd, "SpeedKp") == 0) {
-		input[0] = value;
-		input[1] = 1.01f;
-		debug_update_foc_data(input, INDEX_VELOCITY_PI);
-		return;
-	}
-	if (strcmp(cmd, "SpeedKi") == 0) {
-		// input[0] = ;
-		input[1] = value;
-		debug_update_foc_data(input, INDEX_VELOCITY_PI);
-		return;
-	}
-	if (strcmp(cmd, "set_dq_Ref") == 0) {
-		input[0] = value;
-		debug_update_foc_data(input, INDEX_ID_REF);
-		HAL_GPIO_TogglePin(LED02_GPIO_Port, LED02_Pin);
-		return;
-	}
-
-	if (strcmp(cmd, "set_speed_Ref") == 0) {
-		input[0] = value;
-		debug_update_foc_data(input, INDEX_VELOCITY_REG);
-		HAL_GPIO_TogglePin(LED02_GPIO_Port, LED02_Pin);
-		return;
-	}
-}
 #else
+enum foc_data_index {
+	INDEX_ID_REF = 0,
+	INDEX_IQ_REF,
+	INDEX_VELOCITY_REG,
+
+	INDEX_POSITION_TAR,
+	INDEX_D_PI,
+	INDEX_Q_PI,
+	INDEX_VELOCITY_PI,
+};
+
 // 命令映射表结构
 typedef struct {
 	const char *cmd_name;
@@ -279,6 +221,9 @@ static const command_map_t cmd_map[] = {
 	{"Velocity_PI", 2, INDEX_VELOCITY_PI},
 	{"Valocity_tar", 1, INDEX_VELOCITY_REG},
 };
+extern fsm_rt_t motor_debug_idle_state(fsm_cb_t *obj);
+extern struct device motor1;
+#include "t_trajectory.h"
 void process_data(uint8_t *data, uint16_t len)
 {
 
@@ -351,7 +296,17 @@ void process_data(uint8_t *data, uint16_t len)
 					input[j] = params[j];
 				}
 
-				debug_update_foc_data(input, cmd_map[i].data_index);
+				struct device *motor = &motor1;
+				struct motor_data *m_data = motor->data;
+				if (cmd_map[i].data_index == INDEX_VELOCITY_PI) {
+					float kp, ki;
+					kp = input[0];
+					ki = input[1];
+					update_motor_vel_pi_param(motor, kp, ki);
+					TRAN_STATE(m_data->state_machine, motor_debug_idle_state);
+				} else if (cmd_map[i].data_index == INDEX_VELOCITY_REG) {
+					update_motor_vel_target(motor, input[0]);
+				}
 			}
 			return;
 		}

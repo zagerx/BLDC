@@ -14,8 +14,6 @@ else()
 endif()
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MODE_SRCS})
 
-
-#target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-#    stm32_pwm_eulr.c
-#    stm32_as5047.c
-#)
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)

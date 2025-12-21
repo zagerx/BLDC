@@ -1,34 +1,49 @@
 #ifndef FOC_PARAMETERS_H
 #define FOC_PARAMETERS_H
 #include "foc_pid.h"
-enum foc_data_index {
-	INDEX_ID_REF = 0,
-	INDEX_IQ_REF,
-	INDEX_VELOCITY_REG,
+#include <stdbool.h>
 
-	INDEX_POSITION_TAR,
-	INDEX_D_PI,
-	INDEX_Q_PI,
-	INDEX_VELOCITY_PI,
+/* =========================================================
+ *  Measurement (FOC feedback quantities)
+ *  - 来源：电流采样 / 编码器 / 观测器
+ *  - 特点：只读（对控制环而言）
+ * ========================================================= */
+struct foc_meas {
+	float id;       /* d-axis current */
+	float iq;       /* q-axis current */
+	float velocity; /* mechanical or electrical velocity */
+	float position; /* mechanical or electrical position */
 };
+
+/* =========================================================
+ *  Reference (Internal loop references)
+ *  - 来源：控制环内部计算
+ *  - 特点：环间中间量，不允许外部直接写
+ * ========================================================= */
+struct foc_ref {
+	float id;       /* current loop reference */
+	float iq;       /* current loop reference */
+	float velocity; /* velocity loop reference */
+};
+
+/* =========================================================
+ *  Controller (Regulators and parameters)
+ *  - 来源：初始化 / 调试接口
+ *  - 特点：低频修改
+ * ========================================================= */
+struct foc_ctrl {
+	struct foc_pid id;
+	struct foc_pid iq;
+	struct foc_pid velocity;
+};
+
+/* =========================================================
+ *  FOC Core Data
+ * ========================================================= */
 struct foc_data {
-	// Only Read
-	float id;
-	float iq;
-
-	// RW
-	float id_ref;
-	float iq_ref;       // 速度环输出
-	float velocity_ref; // 位置环输出
-
-	float position_tar; // 目标位置
-	float velocity_tar;
-	float torque_tar;
-	struct foc_pid id_pi_control;
-	struct foc_pid iq_pi_control;
-	struct foc_pid velocity_pi_control;
+	struct foc_meas meas;       /* measured quantities */
+	struct foc_ref ref;         /* internal references */
+	struct foc_ctrl controller; /* controllers */
 };
-void read_focparam_idq(struct foc_data *f_data, float *id, float *iq);
-void read_foc_data(struct foc_data *f_data, enum foc_data_index flag, float *data);
-void write_foc_data_(struct foc_data *f_data, enum foc_data_index flag, float *data);
+
 #endif

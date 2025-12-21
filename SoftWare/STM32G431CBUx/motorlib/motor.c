@@ -18,13 +18,10 @@ extern struct device motor1;
 
 void foc_curr_regulator(uint32_t *adc_raw)
 {
-	// struct device *motor = (struct device *)ctx;
 	struct device *motor = &motor1;
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
-	// struct device *feedback = m_cfg->feedback;
 	struct device *currsmp = m_cfg->currsmp;
-	// struct device *inverer = m_cfg->inverter;
 	currsmp_update_raw(currsmp, adc_raw);
 
 	/*
@@ -54,13 +51,27 @@ extern void test_solve_unconstrained_peak_velocity(void);
 void motor_init(struct device *motor)
 {
 	struct motor_data *m_data = motor->data;
+	struct motor_config *m_cfg = motor->config;
+	struct device *currsmp = m_cfg->currsmp;
+	struct device *feedback = m_cfg->feedback;
+
+	/* 电流采样参数绑定 */
+	struct currsmp_config *cs_cfg = currsmp->config;
+	cs_cfg->params = &m_data->params.currsmp_params;
+
+	/* 编码器参数绑定 */
+	struct feedback_config *fb_cfg = feedback->config;
+	fb_cfg->params = &m_data->params.feedback_params;
+
+	/* FOC PID 参数绑定 */
+	m_data->foc_data.controller.id.params = &m_data->params.d_pi_params;
+	m_data->foc_data.controller.iq.params = &m_data->params.q_pi_params;
+	m_data->foc_data.controller.velocity.params = &m_data->params.vel_pi_params;
+
 	fsm_cb_t *fsm = m_data->state_machine;
 	if (!fsm->p1) {
 		fsm->p1 = (void *)motor;
 	}
-
-	struct motor_config *m_cfg = motor->config;
-	struct device *currsmp = m_cfg->currsmp;
 	currsmp_init(currsmp);
 }
 
@@ -78,23 +89,15 @@ void motor_task(struct device *motor)
 	}
 }
 
-void debug_update_foc_data(float *input, enum foc_data_index flag)
+void update_motor_vel_pi_param(struct device *motor, float kp, float ki)
 {
-	struct device *motor = &motor1;
 	struct motor_data *m_data = motor->data;
-	struct foc_data *foc_param = m_data->foc_data;
-
-	if (flag == INDEX_ID_REF) // 目标参数更新
-	{
-		write_foc_data_(foc_param, INDEX_ID_REF, input);
-	} else if (flag == INDEX_D_PI) { // PI参数更新
-		write_foc_data_(foc_param, INDEX_D_PI, input);
-		TRAN_STATE(m_data->state_machine, motor_debug_idle_state);
-	} else if (flag == INDEX_VELOCITY_PI) {
-		write_foc_data_(foc_param, INDEX_VELOCITY_PI, input);
-		TRAN_STATE(m_data->state_machine, motor_debug_idle_state);
-	} else if (flag == INDEX_VELOCITY_REG) {
-		write_foc_data_(foc_param, INDEX_VELOCITY_REG, input);
-		s_planner_update_target(m_data->scp, input[0]);
-	}
+	struct motor_parameters *params = &m_data->params;
+	params->vel_pi_params.kp = kp;
+	params->vel_pi_params.ki = ki;
+}
+void update_motor_vel_target(struct device *motor, float tar)
+{
+	struct motor_data *m_data = motor->data;
+	s_planner_update_target(m_data->scp, tar);
 }

@@ -45,6 +45,6 @@ void foc_update_current_idq(struct foc_data *f_data, const float i_abc[3], float
 	park_f32(i_alpha, i_beta, &i_d, &i_q, sin_val, cos_val);
 
 	/* Update FOC runtime data */
-	f_data->id = i_d;
-	f_data->iq = i_q;
+	f_data->meas.id = i_d;
+	f_data->meas.iq = i_q;
 }
