@@ -1,41 +1,35 @@
 #ifndef _CURRENT_CALIB_H
 #define _CURRENT_CALIB_H
 
+#include "carlib_cfg.h"
 #include "device.h"
 #include <stdint.h>
 #include <stdbool.h>
-
+#include "openloop_voltage.h"
 enum curr_calib_state {
-	CURR_CALIB_STATE_IDLE = 0,
+	CURR_CALIB_STATE_IDLE = 1,
 	CURR_CALIB_STATE_ALIGN,
 	CURR_CALIB_STATE_SAMPLING,
 	CURR_CALIB_STATE_PROCESSING,
-	CURR_CALIB_STATE_DONE,
 	CURR_CALIB_STATE_ERROR,
+	CURR_CALIB_STATE_DONE,
 };
 
-struct curr_calib_config {
-	uint16_t sample_count; // 采样次数
-	float align_duration;  // 对齐时间 (s)
+struct carlib_current {
+	struct carlib_config *cfg;
 
-	struct device *inverter;
-	struct device *currsmp;
-};
-
-struct curr_calib_data {
 	enum curr_calib_state state;
 
-	float tim_acc;         // 时间累加器 (保持 float 以匹配 dt)
-	uint32_t sample_index; // 采样计数
+	uint32_t a_channle_sum;
+	uint32_t b_channle_sum;
+	uint32_t c_channle_sum;
 
-	// 优化：使用 uint32_t 进行整数累加
-	// 前提：Raw值 * sample_count 不超过 uint32 最大值 (约42亿)
-	uint32_t offset_a_acc;
-	uint32_t offset_b_acc;
-	uint32_t offset_c_acc;
+	uint16_t sample_conut;
+	uint16_t sample_target; // 例如 1024 / 2048
+
+	float align_time; // 对齐等待时间
+	float align_timer;
 };
-
-void curr_calib_start(struct device *curr_calib, uint16_t sample_count);
-int32_t curr_calib_update(struct device *curr_calib, float dt);
-
+void carlib_current_init(struct carlib_current *carlib, struct carlib_config *cfg);
+int32_t curr_calib_update(struct carlib_current *carlib, float dt);
 #endif

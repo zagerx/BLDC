@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include "motor_state.h"
 #include "motor_carible.h"
+#include "openloop_voltage.h"
 extern struct device motor1;
 
 void foc_curr_regulator(uint32_t *adc_raw)
@@ -54,7 +55,7 @@ void motor_init(struct device *motor)
 	struct motor_config *m_cfg = motor->config;
 	struct device *currsmp = m_cfg->currsmp;
 	struct device *feedback = m_cfg->feedback;
-
+	struct device *inverer = m_cfg->inverter;
 	/* 电流采样参数绑定 */
 	struct currsmp_config *cs_cfg = currsmp->config;
 	cs_cfg->params = &m_data->params.currsmp_params;
@@ -72,6 +73,11 @@ void motor_init(struct device *motor)
 	if (!fsm->p1) {
 		fsm->p1 = (void *)motor;
 	}
+
+	struct calibration_modules *carlib = &m_data->calib;
+	openloop_voltage_t *op = &m_data->op;
+	struct motor_parameters *m_params = &m_data->params;
+	calibration_modules_init(carlib, inverer, currsmp, feedback, op, m_params);
 	currsmp_init(currsmp);
 }
 

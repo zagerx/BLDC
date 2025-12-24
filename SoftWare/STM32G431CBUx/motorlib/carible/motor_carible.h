@@ -2,26 +2,34 @@
 #define MOTOR_CARIBLE_H
 
 #include <stdbool.h>
+#include "carlib_cfg.h"
 #include "device.h"
 #include "statemachine.h"
-enum m_carible {
-	M_CARIBLE_CURR_STATR,
-	M_CARIBLE_CURR_RUNING,
-	M_CARIBLE_CURR_DONE,
-	M_CARIBLE_PP_RUNING,
-	M_CARIBLE_PP_DONE,
-	M_CARIBLE_ENCODER_RUNING,
-	M_CARIBLE_ENCODER_DONE,
-	M_CARIBLE_ERR,
-	M_ALL_CALIB_DONE,
+#include "openloop_voltage.h"
+#include "_current_calib.h"
+enum carible_state {
+	CARIBLE_CURR_INIT = 1,
+	CARIBLE_CURR_RUNING,
+	CARIBLE_CURR_DONE,
+	CARIBLE_ERR,
+	ALL_CALIB_DONE,
 };
-struct motor_calibration_modules {
-	struct device *pp_ident;
-	struct device *encoder_calibration;
-	struct device *current_calibration;
-	struct device *rl_ident;
-	enum m_carible state;
+typedef uint32_t calib_error_t;
+struct calibration_modules {
+	struct carlib_config cfg;
+	/* ---------- 子模块 ---------- */
+	struct carlib_current curr_calib;
+	// struct carlib_rslsflux rslsflux_calib;
+	// struct carlib_encoder encoder_calib;
+
+	/* ---------- 状态 ---------- */
+	enum carible_state state;
+	calib_error_t error;
 };
 
-int32_t motor_calib_update(struct motor_calibration_modules *calib, float dt);
+void calibration_modules_init(struct calibration_modules *calib, struct device *inverter,
+			      struct device *currents, struct device *feedback,
+			      openloop_voltage_t *op, struct motor_parameters *params);
+
+int calibration_modules_update(struct calibration_modules *calib, float dt);
 #endif

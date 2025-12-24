@@ -68,50 +68,49 @@ static fsm_cb_t m1_statemachine = {
 	.p1 = &motor1,
 };
 
-static struct pp_ident_config pp_cfg = {
-	.feedback = &feedback1,
-	.inverter = &inverter1,
-	.encoder_max = ENC_CPR,
-	.openloop_speed = OPENLOOP_SPEED_RPM,
-	.openloop_voltage = OPENLOOP_VOLTAGE_V,
-	.rotate_duration = ROTATE_DURATION_S,
-	.align_duration = ALIGN_DURATION_S,
-};
-static struct pp_ident_data pp_data = {0};
-static struct device pp1 = {
-	.config = &pp_cfg,
-	.data = &pp_data,
-};
-static struct curr_calib_config curr_calib_cfg1 = {
-	.currsmp = &currsmp1,
-	.inverter = &inverter1,
-	.align_duration = ROTATE_DURATION_S,
-	.sample_count = 1000,
-};
-static struct curr_calib_data curr_calib_data1 = {0};
-static struct device curr_calib = {
-	.config = &curr_calib_cfg1,
-	.data = &curr_calib_data1,
-};
-static struct encoder_calib_config ec_carb_cfg1 = {
-	.feedback = &feedback1,
-	.inverter = &inverter1,
-	.encoder_max = ENC_CPR,
-	.speed = OPENLOOP_SPEED_RPM,
-	.voltage = OPENLOOP_VOLTAGE_V,
+// static struct pp_ident_config pp_cfg = {
+// 	.feedback = &feedback1,
+// 	.inverter = &inverter1,
+// 	.encoder_max = ENC_CPR,
+// 	.openloop_speed = OPENLOOP_SPEED_RPM,
+// 	.openloop_voltage = OPENLOOP_VOLTAGE_V,
+// 	.rotate_duration = ROTATE_DURATION_S,
+// 	.align_duration = ALIGN_DURATION_S,
+// };
+// static struct pp_ident_data pp_data = {0};
+// static struct device pp1 = {
+// 	.config = &pp_cfg,
+// 	.data = &pp_data,
+// };
+// static struct curr_calib_config curr_calib_cfg1 = {
+// 	.currsmp = &currsmp1,
+// 	.inverter = &inverter1,
+// 	.align_duration = ROTATE_DURATION_S,
+// 	.sample_count = 1000,
+// };
+// static struct curr_calib_data curr_calib_data1 = {0};
+// static struct device curr_calib = {
+// 	.config = &curr_calib_cfg1,
+// 	.data = &curr_calib_data1,
+// };
+// static struct encoder_calib_config ec_carb_cfg1 = {
+// 	.feedback = &feedback1,
+// 	.inverter = &inverter1,
+// 	.encoder_max = ENC_CPR,
+// 	.speed = OPENLOOP_SPEED_RPM,
+// 	.voltage = OPENLOOP_VOLTAGE_V,
 
-};
-static struct encoder_calib_data ec_carb_data1 = {0};
-static struct device encoder1_calib = {
-	.config = &ec_carb_cfg1,
-	.data = &ec_carb_data1,
-};
-static struct motor_calibration_modules m1_calib_modul = {
-	.pp_ident = &pp1,
-	.current_calibration = &curr_calib,
-	.encoder_calibration = &encoder1_calib,
-	.state = M_CARIBLE_CURR_STATR,
-};
+// };
+// static struct encoder_calib_data ec_carb_data1 = {0};
+// static struct device encoder1_calib = {
+// 	.config = &ec_carb_cfg1,
+// 	.data = &ec_carb_data1,
+// };
+// struct carlib_current carlib_current_1;
+// static struct calibration_modules m1_calib_modul = {
+// 	.curr_calib = &carlib_current_1,
+
+// };
 #include "t_trajectory.h"
 static s_tarj_config_t scp1_config = {
 	.acc = 5.0f,  // 2 m/s²
@@ -132,7 +131,6 @@ static struct motor_data m1_data = {
 	.mode = MOTOR_MODE_IDLE,
 	.faultcode = MOTOR_FAULTCODE_NOERR,
 	.state_machine = &m1_statemachine,
-	.calib = &m1_calib_modul,
 	.scp = &traj_plan1,
 	// .foc_data = &foc1_data,
 

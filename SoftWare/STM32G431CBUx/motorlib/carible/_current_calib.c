@@ -5,102 +5,92 @@
 #include <stdint.h>
 #include <stddef.h>
 
-void curr_calib_start(struct device *curr_calib, uint16_t sample_count)
+void carlib_current_init(struct carlib_current *carlib, struct carlib_config *cfg)
 {
-	if (curr_calib == NULL) {
+	if (carlib == NULL) {
 		return;
 	}
+	carlib->cfg = cfg;
+	/* 初始化 */
+	carlib->a_channle_sum = 0;
+	carlib->b_channle_sum = 0;
+	carlib->c_channle_sum = 0;
+	carlib->sample_conut = 0;
 
-	struct device *cc = curr_calib;
-	struct curr_calib_data *cd = cc->data;
-	struct curr_calib_config *cc_cfg = cc->config;
-
-	cc_cfg->sample_count = sample_count;
-
-	cd->state = CURR_CALIB_STATE_ALIGN;
-
-	cd->tim_acc = 0.0f;
-	cd->sample_index = 0;
-
-	// 整数归零
-	cd->offset_a_acc = 0;
-	cd->offset_b_acc = 0;
-	cd->offset_c_acc = 0;
+	carlib->align_timer = 0.0f;
+	carlib->align_time = 0.005f;  // 5ms 工业常见
+	carlib->sample_target = 2048; // 工业常用
+	carlib->state = CURR_CALIB_STATE_IDLE;
 }
 
-int32_t curr_calib_update(struct device *curr_calib, float dt)
+int32_t curr_calib_update(struct carlib_current *carlib, float dt)
 {
-	if (curr_calib == NULL || curr_calib->data == NULL || curr_calib->config == NULL) {
+	if (carlib == NULL || carlib->cfg == NULL) {
 		return -1;
 	}
 
-	int32_t ret = 0;
-	struct device *cc = curr_calib;
+	struct carlib_config *cfg = carlib->cfg;
+	struct device *currsmp = cfg->currents;
+	struct device *inverter = cfg->inverter;
+	switch (carlib->state) {
 
-	struct curr_calib_data *cd = cc->data;
-	struct curr_calib_config *cfg = cc->config;
-	struct device *inv = cfg->inverter;
-	struct device *currsmp = cfg->currsmp;
+	case CURR_CALIB_STATE_IDLE:
 
-	switch (cd->state) {
+		inverter_set_3phase_enable(inverter);
+		carlib->state = CURR_CALIB_STATE_ALIGN;
+		break;
 
-	case CURR_CALIB_STATE_ALIGN: {
-		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
+	case CURR_CALIB_STATE_ALIGN:
+		/* 强制逆变器零输出 */
+		inverter_set_3phase_voltages(inverter, 0.0f, 0.0f, 0.0f);
 
-		cd->tim_acc += dt;
-		if (cd->tim_acc >= cfg->align_duration) {
-			cd->tim_acc = 0.0f;
-			cd->state = CURR_CALIB_STATE_SAMPLING;
+		carlib->align_timer += dt;
+		if (carlib->align_timer >= carlib->align_time) {
+			carlib->state = CURR_CALIB_STATE_SAMPLING;
 		}
-	} break;
+		break;
 
 	case CURR_CALIB_STATE_SAMPLING: {
-		if (cd->sample_index >= cfg->sample_count) {
-			cd->state = CURR_CALIB_STATE_PROCESSING;
+		uint32_t iabc[3];
+
+		_read_currsmp_raw(currsmp, iabc);
+
+		carlib->a_channle_sum += iabc[0];
+		carlib->b_channle_sum += iabc[1];
+		carlib->c_channle_sum += iabc[2];
+
+		carlib->sample_conut++;
+
+		if (carlib->sample_conut >= carlib->sample_target) {
+			carlib->state = CURR_CALIB_STATE_PROCESSING;
+		}
+	} break;
+
+	case CURR_CALIB_STATE_PROCESSING:
+		if (carlib->sample_conut == 0) {
+			carlib->state = CURR_CALIB_STATE_ERROR;
 			break;
 		}
 
-		// 整数累加
-		// 假设 channle_raw_x 是 uint16_t 或 uint32_t
-		uint32_t channle_raw[4];
-		_read_currsmp_raw(currsmp, channle_raw);
-		cd->offset_a_acc += channle_raw[0];
-		cd->offset_b_acc += channle_raw[1];
-		cd->offset_c_acc += channle_raw[2];
+		/* 求均值 */
+		uint32_t offset_abc[3];
+		offset_abc[0] = (float)carlib->a_channle_sum / carlib->sample_conut;
+		offset_abc[1] = (float)carlib->b_channle_sum / carlib->sample_conut;
+		offset_abc[2] = (float)carlib->c_channle_sum / carlib->sample_conut;
+		_update_currsmp_offset(currsmp, offset_abc);
+		inverter_set_3phase_disable(inverter);
 
-		cd->sample_index++;
-	} break;
-
-	case CURR_CALIB_STATE_PROCESSING: {
-		if (cfg->sample_count == 0) {
-			cd->state = CURR_CALIB_STATE_ERROR;
-			break;
-		}
-
-		/* 整数除法
-		 * 例如：累加和 20485，采样 10 次 -> 结果 2048
-		 * 小数部分直接被舍弃 (向下取整)
-		 */
-		uint32_t offset_buf[3];
-		offset_buf[0] = cd->offset_a_acc / cfg->sample_count;
-		offset_buf[1] = cd->offset_b_acc / cfg->sample_count;
-		offset_buf[2] = cd->offset_c_acc / cfg->sample_count;
-		_update_currsmp_offset(currsmp, offset_buf);
-		cd->state = CURR_CALIB_STATE_DONE;
-	} break;
-
-	case CURR_CALIB_STATE_DONE: {
-		ret = 1;
-		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
-	} break;
-
-	case CURR_CALIB_STATE_ERROR: {
-		ret = -1;
-	} break;
-
-	default:
+		carlib->state = CURR_CALIB_STATE_DONE;
 		break;
+
+	case CURR_CALIB_STATE_DONE:
+		return 1; // 校准完成
+
+	case CURR_CALIB_STATE_ERROR:
+	default:
+		inverter_set_3phase_disable(inverter);
+		return -1;
 	}
 
-	return ret;
+	return 0; // 进行中
 }

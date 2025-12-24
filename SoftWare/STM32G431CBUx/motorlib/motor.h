@@ -2,12 +2,14 @@
 #define MOTOR_H
 #include "device.h"
 #include "foc_pid.h"
+#include "openloop_voltage.h"
 #include "statemachine.h"
 #include "foc_data.h"
 #include "stdint.h"
 #include "stdbool.h"
 #include "feedback.h"
 #include "currsmp.h"
+#include "motor_carible.h"
 /**
  * @brief FOC电机控制状态枚举
  */
@@ -60,7 +62,8 @@ struct motor_parameters {
 struct motor_data {
 	struct device *scp;
 	struct foc_data foc_data;
-	struct motor_calibration_modules *calib;
+	struct calibration_modules calib;
+	openloop_voltage_t op;
 	struct motor_parameters params;
 	enum motor_mode mode;
 	enum motor_state statue;

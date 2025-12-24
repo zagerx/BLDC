@@ -3,53 +3,45 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "device.h"
+#include "carlib_cfg.h"
 
 enum encoder_calib_state {
-	ENC_CALIB_STATE_IDLE = 0,
-	ENC_CALIB_STATE_ALIGN_START, // 初始定位到扫描起点
-	ENC_CALIB_STATE_SCAN_FWD,    // 正向扫描 (过零点记录)
-	ENC_CALIB_STATE_SCAN_BWD,    // 反向扫描 (过零点记录)
-	ENC_CALIB_STATE_CALCULATE,   // 计算平均值
-	ENC_CALIB_STATE_LUT_START,
-	ENC_CALIB_STATE_LUT_SCAN_WAIT,
-	ENC_CALIB_STATE_LUT_SCAN_DRIVE,
-	ENC_CALIB_STATE_REBACK_ZERO,
-	ENC_CALIB_STATE_COMPLETE,
-	ENC_CALIB_STATE_DEBUG,
-	ENC_CALIB_STATE_ERROR,
+	ENC_CALIB_IDLE = 0,
+	ENC_CALIB_ALIGN,
+	ENC_CALIB_DIR_CHECK,
+	ENC_CALIB_ROTATE,
+	ENC_CALIB_PROCESS,
+	ENC_CALIB_OFFSET,
+	ENC_CALIB_DONE,
+	ENC_CALIB_ERROR,
 };
 
-struct encoder_calib_config {
-	struct device *feedback;
-	struct device *inverter;
+struct carlib_encoder {
+	struct carlib_config *cfg;
 
-	float voltage; // 扫描电压 (ODrive: calib_current * phase_res)
-	float speed;   // 扫描速度 (rad/s)
-
-	uint32_t encoder_max; // CPR (Counts Per Revolution)
-};
-
-struct encoder_calib_data {
 	enum encoder_calib_state state;
 
-	uint32_t offset;
-	float driver_elec_angle; // 当前输出的电角度  自给的
-	float time_acc;
-	uint16_t counter;
+	/* ---------- 配置参数 ---------- */
+	float align_voltage; /* D轴对齐电压 */
+	float align_time;    /* 对齐保持时间 */
+	float rotate_speed;  /* 电角速度 rad/s */
+	float rotate_time;   /* 转动时间 */
 
-	uint32_t raw_fwd;  // 正向扫描时的零点捕获值
-	uint32_t raw_bwd;  // 反向扫描时的零点捕获值
-	bool fwd_captured; // 标志位
-	bool bwd_captured;
-	uint32_t avg_sum;
+	/* ---------- 运行变量 ---------- */
+	float elapsed;
+	float elec_angle_start;
+	float elec_angle_end;
+	float mech_angle_start;
+	float mech_angle_end;
 
-	// lut
-	uint16_t lut_index;
-	int32_t ideal_rel_temp;
+	int encoder_dir;
+	int pole_pairs;
+	float encoder_offset;
+
+	int32_t error;
 };
 
-void encoder_calib_start(struct device *encoder_calib);
-int32_t encoder_calib_update(struct device *encoder_calib, float dt);
+void carlib_encoder_init(struct carlib_encoder *ec);
+int32_t encoder_calib_update(struct carlib_encoder *ec, float dt);
 
 #endif
