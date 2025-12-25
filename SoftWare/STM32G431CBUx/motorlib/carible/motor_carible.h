@@ -7,10 +7,15 @@
 #include "statemachine.h"
 #include "openloop_voltage.h"
 #include "_current_calib.h"
+#include "_encoder_calib.h"
 enum carible_state {
 	CARIBLE_CURR_INIT = 1,
 	CARIBLE_CURR_RUNING,
 	CARIBLE_CURR_DONE,
+	CARIBLE_ENCODER_INIT,
+	CARIBLE_ENCODER_RUNING,
+	CARIBLE_ENCODER_DONE,
+
 	CARIBLE_ERR,
 	ALL_CALIB_DONE,
 };
@@ -20,7 +25,7 @@ struct calibration_modules {
 	/* ---------- 子模块 ---------- */
 	struct carlib_current curr_calib;
 	// struct carlib_rslsflux rslsflux_calib;
-	// struct carlib_encoder encoder_calib;
+	struct carlib_encoder encoder_calib;
 
 	/* ---------- 状态 ---------- */
 	enum carible_state state;

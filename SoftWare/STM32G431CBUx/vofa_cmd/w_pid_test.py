@@ -12,7 +12,7 @@ import sys
 import time
 import argparse
 
-def check_and_open_serial(port='COM16', baudrate=115200):
+def check_and_open_serial(port='COM15', baudrate=115200):
     """
     检查并打开串口
     """
@@ -53,7 +53,7 @@ def send_command(ser, command):
 def main():
     parser = argparse.ArgumentParser(description='向嵌入式设备发送调试参数')
     parser.add_argument('command', help='命令字符串，格式如: D_KpKiKd:1.2,23.3,43.5')
-    parser.add_argument('--port', '-p', default='COM16', help='串口设备路径 (默认: COM16)')
+    parser.add_argument('--port', '-p', default='COM15', help='串口设备路径 (默认: COM15)')
     parser.add_argument('--baudrate', '-b', type=int, default=115200, help='串口波特率 (默认: 115200)')
     
     args = parser.parse_args()

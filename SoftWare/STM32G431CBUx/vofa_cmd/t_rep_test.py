@@ -1,33 +1,32 @@
 #!/usr/bin/env python3
 """
-串口速度指令自动下发工具
+串口位置指令自动下发工具 - 双位置交替模式
 
 功能描述:
-    本脚本以固定时间间隔（50ms～100ms）通过串口向目标设备自动发送速度指令。
-    指令格式为："Valocity_tar:X.X"，其中速度值在-3.0到3.0范围内随机生成。
+    本脚本以固定时间间隔（1秒）通过串口向目标设备自动发送位置指令。
+    指令格式为："Pos_tar:X.XXX"，其中位置值仅在0.0和0.4之间交替变化。
     脚本持续运行，直到用户手动中断（Ctrl+C）。
-    
+
 特点:
     1. 支持Windows、Linux、macOS多个平台
-    2. 指令间隔随机在50ms～100ms之间
-    3. 速度值随机变化在-3.0～3.0范围内
+    2. 固定1秒发送间隔
+    3. 位置值仅在0.0和0.4两个值之间切换
     4. 自动检测和报告串口异常
     5. 支持优雅退出（Ctrl+C）
 
 注意事项:
-    1. Windows默认使用COM3，请根据实际情况修改
+    1. 根据实际情况修改串口设备名称
     2. 需要安装pyserial库：pip install pyserial
     3. 在Windows上可能需要管理员权限访问某些COM口
 
 运行方式:
-    python velocity_auto_sender.py
+    python position_auto_sender.py
     按Ctrl+C停止运行
 """
 
 import sys
 import os
 import time
-import random
 import serial
 import signal
 import platform
@@ -45,11 +44,11 @@ else:
     SERIAL_PORT = '/dev/ttyUSB0'  # 其他系统默认
 
 BAUD_RATE = 115200                # 波特率
-MIN_INTERVAL = 0.05               # 最小发送间隔(秒) = 50ms
-MAX_INTERVAL = 1.50               # 最大发送间隔(秒) = 100ms
-MIN_VELOCITY = -0.3               # 最小速度值(m/s)
-MAX_VELOCITY = 0.40                # 最大速度值(m/s)
-DECIMAL_PLACES = 3                # 速度值小数位数
+INTERVAL = 2.0                    # 固定发送间隔(秒) = 1s
+DECIMAL_PLACES = 3                # 位置值小数位数
+
+# 发送状态标志
+send_zero = True                  # True发送0.0，False发送0.4
 
 # 全局变量，用于控制程序运行
 running = True
@@ -191,27 +190,25 @@ def open_serial_connection():
     except Exception as e:
         return False, f"未知错误: {e}"
 
-def generate_random_velocity():
+def send_position_command(ser):
     """
-    生成随机速度值
-    
-    Returns:
-        float: 在MIN_VELOCITY到MAX_VELOCITY范围内的随机速度值
-    """
-    # 生成指定范围和精度的随机速度值
-    velocity = round(random.uniform(MIN_VELOCITY, MAX_VELOCITY), DECIMAL_PLACES)
-    return velocity
-
-def send_velocity_command(ser, velocity):
-    """
-    发送速度指令到串口
+    发送位置指令到串口（交替发送0.0和0.4）
     
     Args:
         ser: 串口对象
-        velocity: 速度值
     """
+    global send_zero
+    
+    # 确定本次发送的值
+    if send_zero:
+        position = -0.3
+        value_str = "-0.300"
+    else:
+        position = 0.4
+        value_str = "0.400"
+    
     # 构建指令字符串
-    command = f"Pos_tar:{velocity:.{DECIMAL_PLACES}f}"
+    command = f"Pos_tar:{value_str}"
     
     try:
         # 发送指令，添加换行符作为结束标志
@@ -225,6 +222,9 @@ def send_velocity_command(ser, velocity):
             print(f"设备响应: {response}")
         else:
             print(f"已发送: {command}")
+        
+        # 切换下一次发送的值
+        send_zero = not send_zero
             
     except serial.SerialException as e:
         print(f"发送失败: {e}")
@@ -234,16 +234,17 @@ def main():
     """主函数"""
     global running
     
-    print("=" * 50)
-    print("串口速度指令自动下发工具")
-    print("=" * 50)
+    print("=" * 60)
+    print("串口位置指令自动下发工具 - 双位置交替模式")
+    print("=" * 60)
     print(f"操作系统: {SYSTEM}")
     print(f"串口设备: {SERIAL_PORT}")
     print(f"波特率: {BAUD_RATE}")
-    print(f"指令间隔: {MIN_INTERVAL*1000:.0f}ms ~ {MAX_INTERVAL*1000:.0f}ms")
-    print(f"速度范围: {MIN_VELOCITY} ~ {MAX_VELOCITY} m/s")
+    print(f"发送间隔: {INTERVAL} 秒")
+    print("位置值: 0.0 和 0.4 交替发送")
+    print("指令格式: Pos_tar:X.XXX")
     print("按 Ctrl+C 停止运行")
-    print("-" * 50)
+    print("-" * 60)
     
     # 注册信号处理器，用于优雅退出
     if SYSTEM != "Windows":
@@ -269,24 +270,20 @@ def main():
     print(f"串口连接成功: {SERIAL_PORT}")
     
     # 开始发送指令
-    print("开始发送速度指令...")
-    print("-" * 50)
+    print("开始交替发送位置指令 (0.0 和 0.4)...")
+    print("-" * 60)
     
     command_count = 0
     
     try:
         while running:
-            # 生成随机速度值
-            velocity = generate_random_velocity()
-            
-            # 发送速度指令
-            send_velocity_command(ser, velocity)
+            # 发送位置指令
+            send_position_command(ser)
             
             command_count += 1
             
-            # 计算并等待随机间隔
-            interval = random.uniform(MIN_INTERVAL, MAX_INTERVAL)
-            time.sleep(interval)
+            # 固定间隔等待
+            time.sleep(INTERVAL)
             
     except KeyboardInterrupt:
         print("\n用户中断，正在停止...")
@@ -300,10 +297,11 @@ def main():
             ser.close()
             print("串口连接已关闭")
         
-        print("-" * 50)
+        print("-" * 60)
         print(f"程序运行结束")
         print(f"总共发送指令: {command_count} 条")
-        print("=" * 50)
+        print(f"最后发送的值: {'0.0' if send_zero else '0.4'}")  # 注意: send_zero在切换后表示下一个要发的值
+        print("=" * 60)
 
 if __name__ == '__main__':
     main()

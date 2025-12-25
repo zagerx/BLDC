@@ -17,6 +17,7 @@ int s_planner_init(struct device *dev, float start_pos, float start_vel, float s
 	plan->plan_in.target_pos = 0.0f;
 	exec->pos = 0.0f;
 	exec->vel = 0.0f;
+	return 0;
 }
 void s_planner_action(struct device *dev, float dt)
 {

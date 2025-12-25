@@ -31,10 +31,7 @@ typedef struct {
 } openloop_voltage_t;
 
 /* 初始化 */
-void openloop_voltage_init(openloop_voltage_t *ol);
-
-/* 绑定逆变器 */
-void openloop_voltage_bind_inverter(openloop_voltage_t *ol, struct device *inverter);
+void openloop_voltage_init(openloop_voltage_t *ol, struct device *inverter);
 
 /* 使能 / 失能 */
 void openloop_voltage_enable(openloop_voltage_t *ol);

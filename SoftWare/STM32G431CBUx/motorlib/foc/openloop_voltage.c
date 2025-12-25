@@ -29,26 +29,18 @@ static float wrap_angle(float angle)
 /* ------------------------------------------------------------ */
 /* 接口实现 */
 /* ------------------------------------------------------------ */
-void openloop_voltage_init(openloop_voltage_t *ol)
-{
-	if (!ol) {
-		return;
-	}
-
-	ol->voltage = 0.0f;
-	ol->elec_speed = 0.0f;
-	ol->elec_angle = 0.0f;
-	ol->mode = OPENLOOP_MODE_HOLD_ANGLE;
-	ol->inverter = NULL;
-	ol->enabled = false;
-}
-
-void openloop_voltage_bind_inverter(openloop_voltage_t *ol, struct device *inverter)
+void openloop_voltage_init(openloop_voltage_t *ol, struct device *inverter)
 {
 	if (!ol) {
 		return;
 	}
 	ol->inverter = inverter;
+
+	ol->voltage = 0.0f;
+	ol->elec_speed = 0.0f;
+	ol->elec_angle = 0.0f;
+	ol->mode = OPENLOOP_MODE_HOLD_ANGLE;
+	ol->enabled = false;
 }
 
 void openloop_voltage_enable(openloop_voltage_t *ol)

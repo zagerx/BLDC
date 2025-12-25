@@ -1,6 +1,5 @@
 #include "motor_carible.h"
 #include "_current_calib.h"
-#include "_pp_ident.h"
 #include "_encoder_calib.h"
 #include "carlib_cfg.h"
 #include "coord_transform.h"
@@ -30,6 +29,7 @@ void calibration_modules_init(struct calibration_modules *calib, struct device *
 int calibration_modules_update(struct calibration_modules *calib, float dt)
 {
 	struct carlib_current *curr_calib = &calib->curr_calib;
+	struct carlib_encoder *ec_carlib = &calib->encoder_calib;
 	struct carlib_config *carlib_cfg = &calib->cfg;
 	int ret = 0;
 	switch (calib->state) {
@@ -43,8 +43,23 @@ int calibration_modules_update(struct calibration_modules *calib, float dt)
 		}
 		break;
 	case CARIBLE_CURR_DONE:
-		calib->state = CARIBLE_ERR;
+		calib->state = CARIBLE_ENCODER_INIT;
 		break;
+	case CARIBLE_ENCODER_INIT: {
+		carlib_encoder_init(ec_carlib, carlib_cfg);
+		calib->state = CARIBLE_ENCODER_RUNING;
+
+	} break;
+
+	case CARIBLE_ENCODER_RUNING: {
+		if (encoder_calib_update(ec_carlib, dt)) {
+			calib->state = CARIBLE_ENCODER_DONE;
+		}
+	} break;
+	case CARIBLE_ENCODER_DONE: {
+		calib->state = CARIBLE_ERR;
+
+	} break;
 
 	case ALL_CALIB_DONE:
 		ret = 1;

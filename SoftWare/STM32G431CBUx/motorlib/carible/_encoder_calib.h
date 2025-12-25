@@ -36,12 +36,29 @@ struct carlib_encoder {
 
 	int encoder_dir;
 	int pole_pairs;
-	float encoder_offset;
+	uint32_t encoder_offset;
 
 	int32_t error;
+
+	// /* ---------- 错误追踪 ---------- */
+	uint32_t error_code;
+	// float last_mech_counts;
+	// float delta_counts;
+	float total_elec_rad; // 累计走过的总电角度
+
+	// 编码器相关
+	uint32_t raw_prev;     // 上一次的编码器原始值
+	int32_t raw_delta_acc; // 累计机械角度变化量
 };
 
-void carlib_encoder_init(struct carlib_encoder *ec);
+void carlib_encoder_init(struct carlib_encoder *ec, struct carlib_config *cfg);
 int32_t encoder_calib_update(struct carlib_encoder *ec, float dt);
+
+/* 错误代码定义 */
+#define ENC_ERR_NONE            0
+#define ENC_ERR_PARAM           (1 << 0)
+#define ENC_ERR_ANGLE_TOO_SMALL (1 << 1)
+#define ENC_ERR_CALC_FAILED     (1 << 2)
+#define ENC_ERR_OVERFLOW        (1 << 3)
 
 #endif

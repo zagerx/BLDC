@@ -10,7 +10,6 @@
 #include "statemachine.h"
 
 #include "motor_cfg.h"
-#include "_pp_ident.h"
 #include <stdint.h>
 #include "motor_state.h"
 #include "motor_carible.h"
