@@ -1,54 +1,38 @@
-/* openloop_voltage.h */
 #pragma once
 
-#include <stdbool.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <stdint.h>
 
 struct device;
-
-/* 开环模式 */
-typedef enum {
-	OPENLOOP_MODE_HOLD_ANGLE = 0, /* 固定电角度施压 */
-	OPENLOOP_MODE_CONST_SPEED,    /* 匀速旋转 */
-} openloop_mode_t;
-
-/* Open-loop 电压控制器（集成逆变器） */
 typedef struct {
-	/* ===== 配置参数 ===== */
-	float voltage;    /* uq 电压幅值（SVPWM 归一化 0~1） */
-	float elec_speed; /* 电角速度 rad/s（仅 CONST_SPEED 有效） */
-	float elec_angle; /* 当前电角度 rad */
-	openloop_mode_t mode;
+	float voltage;     // 电压
+	float align_tim;   // 对齐时间
+	float align_angle; // 对齐角度
+} op_align_config_t;
 
-	/* ===== 依赖 ===== */
-	struct device *inverter;
+typedef struct {
+	float voltage;     // 旋转电压
+	float speed;       // 角速度
+	float duration;    // 旋转时间
+	float start_angle; // 起始角度
 
-	/* ===== 运行状态 ===== */
-	bool enabled;
+} op_rotate_config_t;
+
+typedef struct {
+	struct device *inv;
+	op_rotate_config_t rotate_cfg;
+	op_align_config_t align_cfg;
+
+	float elapsed; // 计时器
+
+	float elec_angle;
+	float total_elec_rad;
 } openloop_voltage_t;
 
-/* 初始化 */
-void openloop_voltage_init(openloop_voltage_t *ol, struct device *inverter);
+void openloop_voltage_init(openloop_voltage_t *op, struct device *inv);
 
-/* 使能 / 失能 */
-void openloop_voltage_enable(openloop_voltage_t *ol);
-void openloop_voltage_disable(openloop_voltage_t *ol);
+void openloop_voltage_align_start(openloop_voltage_t *op, const op_align_config_t *cfg);
+int openloop_voltage_align_update(openloop_voltage_t *op, float dt);
 
-/* 参数设置 */
-void openloop_voltage_set_mode(openloop_voltage_t *ol, openloop_mode_t mode);
-void openloop_voltage_set_voltage(openloop_voltage_t *ol, float voltage);
-void openloop_voltage_set_speed(openloop_voltage_t *ol, float elec_speed);
-void openloop_voltage_set_angle(openloop_voltage_t *ol, float elec_angle);
-
-/* 周期更新（每个控制周期调用） */
-void openloop_voltage_update(openloop_voltage_t *ol, float dt);
-
-/* 获取当前电角度 */
-float openloop_voltage_get_angle(const openloop_voltage_t *ol);
-
-#ifdef __cplusplus
-}
-#endif
+void openloop_voltage_roate_start(openloop_voltage_t *op, const op_rotate_config_t *cfg);
+int openloop_voltage_rotate_update(openloop_voltage_t *op, float dt);
+float openloop_voltage_get_total_elec_rad(openloop_voltage_t *op);

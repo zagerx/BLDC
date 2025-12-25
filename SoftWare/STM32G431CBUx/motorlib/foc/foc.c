@@ -3,17 +3,6 @@
 #define M_PI 3.14159265358979323846f
 #undef RAD_TO_DEG
 #define RAD_TO_DEG (180.0f / M_PI)
-void _open_loop_voltage_vector_drive(struct device *inverer, float driver_angle, float driver_vol)
-{
-	float sin_val, cos_val;
-	sin_cos_f32(driver_angle, &sin_val, &cos_val);
-	float ualpha, ubeta;
-	inv_park_f32(driver_vol, 0.0f, &ualpha, &ubeta, sin_val, cos_val);
-	float duty[3];
-	svm_set(ualpha, ubeta, duty);
-	inverter_set_3phase_voltages(inverer, duty[0], duty[1], duty[2]);
-}
-
 void foc_apply_voltage_dq(struct device *inverter, float ud, float uq, float elec_angle)
 {
 	float sin_val, cos_val;

@@ -127,7 +127,7 @@ fsm_rt_t motor_carible_state(fsm_cb_t *obj)
 		break;
 	case RUNNING:
 		if (calibration_modules_update(&m_data->calib, PWM_CYCLE) == 1) {
-			TRAN_STATE(m_data->state_machine, motor_ready_state);
+			TRAN_STATE(m_data->state_machine, motor_encoder_openloop_state);
 		}
 		break;
 	case EXIT:

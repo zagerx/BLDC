@@ -1,131 +1,101 @@
-/* openloop_voltage.c */
-
 #include "openloop_voltage.h"
-#include <math.h>
 #include "device.h"
+#include <string.h>
+#include <math.h>
 #include "inverter.h"
+#ifndef M_TWOPI
+#define M_TWOPI (2.0f * 3.14159265358979323846f)
+#endif
 
-#undef M_PI
-#define M_PI 3.14159265358979323846f
-/* 外部已有接口 */
 extern void foc_apply_voltage_dq(struct device *inverter, float ud, float uq, float elec_angle);
 
-/* ------------------------------------------------------------ */
-/* 内部工具函数 */
-/* ------------------------------------------------------------ */
-static float wrap_angle(float angle)
+void openloop_voltage_init(openloop_voltage_t *op, struct device *inv)
 {
-	const float two_pi = 2.0f * (float)M_PI;
-
-	while (angle >= two_pi) {
-		angle -= two_pi;
-	}
-	while (angle < 0.0f) {
-		angle += two_pi;
-	}
-	return angle;
-}
-
-/* ------------------------------------------------------------ */
-/* 接口实现 */
-/* ------------------------------------------------------------ */
-void openloop_voltage_init(openloop_voltage_t *ol, struct device *inverter)
-{
-	if (!ol) {
+	if (!op || !inv) {
 		return;
 	}
-	ol->inverter = inverter;
 
-	ol->voltage = 0.0f;
-	ol->elec_speed = 0.0f;
-	ol->elec_angle = 0.0f;
-	ol->mode = OPENLOOP_MODE_HOLD_ANGLE;
-	ol->enabled = false;
+	memset(op, 0, sizeof(*op));
+	op->inv = inv;
 }
-
-void openloop_voltage_enable(openloop_voltage_t *ol)
+void openloop_voltage_align_start(openloop_voltage_t *op, const op_align_config_t *cfg)
 {
-	if (!ol) {
+	if (!op || !cfg || !op->inv) {
 		return;
 	}
-	ol->enabled = true;
-}
+	op->align_cfg.voltage = cfg->voltage;
+	op->align_cfg.align_tim = cfg->align_tim;
+	op->align_cfg.align_angle = cfg->align_angle;
+	op->elapsed = 0.0f;
 
-void openloop_voltage_disable(openloop_voltage_t *ol)
+	return;
+}
+int openloop_voltage_align_update(openloop_voltage_t *op, float dt)
 {
-	if (!ol) {
+	if (!op || !op->inv) {
+		return -1;
+	}
+	op_align_config_t *align_cfg = &op->align_cfg;
+
+	op->elapsed += dt;
+	if (op->elapsed > align_cfg->align_tim) {
+		inverter_set_3phase_voltages(op->inv, 0.0f, 0.0f, 0.0f);
+		return 0;
+	}
+	foc_apply_voltage_dq(op->inv, 0.0f, align_cfg->voltage, align_cfg->align_angle);
+	return 1;
+}
+void openloop_voltage_roate_start(openloop_voltage_t *op, const op_rotate_config_t *cfg)
+{
+	if (!op || !cfg || !op->inv) {
 		return;
 	}
-	ol->enabled = false;
 
-	/* 安全起见：关断输出 */
-	if (ol->inverter) {
-		inverter_set_3phase_voltages(ol->inverter, 0.0f, 0.0f, 0.0f);
-	}
+	op->rotate_cfg.duration = cfg->duration;
+	op->rotate_cfg.speed = cfg->speed;
+	op->rotate_cfg.voltage = cfg->voltage;
+	op->elapsed = 0.0f;
+
+	/* 初始化角度 */
+	op->elec_angle = cfg->start_angle;
+	op->total_elec_rad = 0.0f;
 }
 
-void openloop_voltage_set_mode(openloop_voltage_t *ol, openloop_mode_t mode)
+int openloop_voltage_rotate_update(openloop_voltage_t *op, float dt)
 {
-	if (!ol) {
-		return;
+	if (!op || !op->inv) {
+		return -1;
 	}
-	ol->mode = mode;
+
+	op_rotate_config_t *cfg = &op->rotate_cfg;
+	float voltage = cfg->voltage;
+	float duration = cfg->duration;
+	float speed = cfg->speed;
+
+	op->elapsed += dt;
+	if (op->elapsed > duration) {
+		inverter_set_3phase_voltages(op->inv, 0.0f, 0.0f, 0.0f);
+		return 0;
+	}
+
+	float delta = speed * dt;
+	op->elec_angle += delta;
+	op->total_elec_rad += delta;
+
+	if (op->elec_angle >= M_TWOPI) {
+		op->elec_angle -= M_TWOPI;
+	} else if (op->elec_angle < 0.0f) {
+		op->elec_angle += M_TWOPI;
+	}
+	foc_apply_voltage_dq(op->inv, 0.0f, voltage, op->elec_angle);
+	return 1;
 }
 
-void openloop_voltage_set_voltage(openloop_voltage_t *ol, float voltage)
+float openloop_voltage_get_total_elec_rad(openloop_voltage_t *op)
 {
-	if (!ol) {
-		return;
-	}
-	ol->voltage = voltage;
-}
-
-void openloop_voltage_set_speed(openloop_voltage_t *ol, float elec_speed)
-{
-	if (!ol) {
-		return;
-	}
-	ol->elec_speed = elec_speed;
-}
-
-void openloop_voltage_set_angle(openloop_voltage_t *ol, float elec_angle)
-{
-	if (!ol) {
-		return;
-	}
-	ol->elec_angle = wrap_angle(elec_angle);
-}
-
-float openloop_voltage_get_angle(const openloop_voltage_t *ol)
-{
-	if (!ol) {
+	if (!op) {
 		return 0.0f;
 	}
-	return ol->elec_angle;
-}
 
-void openloop_voltage_update(openloop_voltage_t *ol, float dt)
-{
-	if (!ol || !ol->enabled || !ol->inverter) {
-		return;
-	}
-
-	/* -------- 角度生成 -------- */
-	switch (ol->mode) {
-	case OPENLOOP_MODE_HOLD_ANGLE:
-		/* 角度保持不变 */
-		break;
-
-	case OPENLOOP_MODE_CONST_SPEED:
-		ol->elec_angle += ol->elec_speed * dt;
-		ol->elec_angle = wrap_angle(ol->elec_angle);
-		break;
-
-	default:
-		break;
-	}
-
-	/* -------- 电压输出 -------- */
-	/* 开环：ud = 0，仅施加 uq */
-	foc_apply_voltage_dq(ol->inverter, 0.0f, ol->voltage, ol->elec_angle);
+	return op->total_elec_rad;
 }

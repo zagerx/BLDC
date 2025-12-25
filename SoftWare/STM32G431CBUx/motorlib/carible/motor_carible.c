@@ -57,7 +57,7 @@ int calibration_modules_update(struct calibration_modules *calib, float dt)
 		}
 	} break;
 	case CARIBLE_ENCODER_DONE: {
-		calib->state = CARIBLE_ERR;
+		calib->state = ALL_CALIB_DONE;
 
 	} break;
 
