@@ -1,5 +1,7 @@
-#include "motor.h"
+#include "motor_params.h"
 #include <stdbool.h>
+#undef NULL
+#define NULL ((void *)0)
 void _update_d_axies_pi_params(struct motor_parameters *m_params, float kp, float ki)
 {
 	if (m_params == NULL) {
@@ -16,6 +18,22 @@ void _update_q_axies_pi_params(struct motor_parameters *m_params, float kp, floa
 	}
 	m_params->q_pi_params.kp = kp;
 	m_params->q_pi_params.ki = ki;
+}
+void _update_vel_pi_params(struct motor_parameters *m_params, float kp, float ki)
+{
+	if (m_params == NULL) {
+		return;
+	}
+	m_params->vel_pi_params.kp = kp;
+	m_params->vel_pi_params.ki = ki;
+}
+void _update_pos_pi_params(struct motor_parameters *m_params, float kp, float ki)
+{
+	if (m_params == NULL) {
+		return;
+	}
+	m_params->pos_pi_params.kp = kp;
+	m_params->pos_pi_params.ki = ki;
 }
 
 void _update_feedback_dir_params(struct motor_parameters *m_params, int16_t dir)

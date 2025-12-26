@@ -74,7 +74,7 @@ void motor_init(struct device *motor)
 	}
 
 	struct calibration_modules *carlib = &m_data->calib;
-	openloop_voltage_t *op = &m_data->op;
+	struct openloop_voltage *op = &m_data->op;
 	openloop_voltage_init(op, inverer);
 	struct motor_parameters *m_params = &m_data->params;
 	calibration_modules_init(carlib, inverer, currsmp, feedback, op, m_params);

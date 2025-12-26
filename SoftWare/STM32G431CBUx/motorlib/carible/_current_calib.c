@@ -1,4 +1,5 @@
 #include "_current_calib.h"
+#include "motor_params.h"
 #include "currsmp.h"
 #include "inverter.h"
 #include "device.h"
@@ -18,8 +19,8 @@ void carlib_current_init(struct carlib_current *carlib, struct carlib_config *cf
 	carlib->sample_conut = 0;
 
 	carlib->align_timer = 0.0f;
-	carlib->align_time = 0.005f;  // 5ms 工业常见
-	carlib->sample_target = 2048; // 工业常用
+	carlib->align_time = 0.005f;
+	carlib->sample_target = 2048;
 	carlib->state = CURR_CALIB_STATE_IDLE;
 }
 
@@ -32,6 +33,7 @@ int32_t curr_calib_update(struct carlib_current *carlib, float dt)
 	struct carlib_config *cfg = carlib->cfg;
 	struct device *currsmp = cfg->currents;
 	struct device *inverter = cfg->inverter;
+	struct motor_parameters *m_parms = cfg->params;
 	switch (carlib->state) {
 
 	case CURR_CALIB_STATE_IDLE:
@@ -77,7 +79,7 @@ int32_t curr_calib_update(struct carlib_current *carlib, float dt)
 		offset_abc[0] = (float)carlib->a_channle_sum / carlib->sample_conut;
 		offset_abc[1] = (float)carlib->b_channle_sum / carlib->sample_conut;
 		offset_abc[2] = (float)carlib->c_channle_sum / carlib->sample_conut;
-		_update_currsmp_offset(currsmp, offset_abc);
+		_update_currsmp_offset_params(m_parms, offset_abc[0], offset_abc[1], offset_abc[2]);
 		inverter_set_3phase_disable(inverter);
 
 		carlib->state = CURR_CALIB_STATE_DONE;

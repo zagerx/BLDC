@@ -10,7 +10,7 @@
 
 void calibration_modules_init(struct calibration_modules *calib, struct device *inverter,
 			      struct device *currents, struct device *feedback,
-			      openloop_voltage_t *op, struct motor_parameters *params)
+			      struct openloop_voltage *op, struct motor_parameters *params)
 {
 	if (calib == NULL) {
 		return;

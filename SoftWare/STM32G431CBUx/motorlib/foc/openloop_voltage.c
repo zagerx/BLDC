@@ -9,7 +9,7 @@
 
 extern void foc_apply_voltage_dq(struct device *inverter, float ud, float uq, float elec_angle);
 
-void openloop_voltage_init(openloop_voltage_t *op, struct device *inv)
+void openloop_voltage_init(struct openloop_voltage *op, struct device *inv)
 {
 	if (!op || !inv) {
 		return;
@@ -18,7 +18,7 @@ void openloop_voltage_init(openloop_voltage_t *op, struct device *inv)
 	memset(op, 0, sizeof(*op));
 	op->inv = inv;
 }
-void openloop_voltage_align_start(openloop_voltage_t *op, const op_align_config_t *cfg)
+void openloop_voltage_align_start(struct openloop_voltage *op, const struct op_align_config *cfg)
 {
 	if (!op || !cfg || !op->inv) {
 		return;
@@ -30,12 +30,12 @@ void openloop_voltage_align_start(openloop_voltage_t *op, const op_align_config_
 
 	return;
 }
-int openloop_voltage_align_update(openloop_voltage_t *op, float dt)
+int openloop_voltage_align_update(struct openloop_voltage *op, float dt)
 {
 	if (!op || !op->inv) {
 		return -1;
 	}
-	op_align_config_t *align_cfg = &op->align_cfg;
+	struct op_align_config *align_cfg = &op->align_cfg;
 
 	op->elapsed += dt;
 	if (op->elapsed > align_cfg->align_tim) {
@@ -45,7 +45,7 @@ int openloop_voltage_align_update(openloop_voltage_t *op, float dt)
 	foc_apply_voltage_dq(op->inv, 0.0f, align_cfg->voltage, align_cfg->align_angle);
 	return 1;
 }
-void openloop_voltage_roate_start(openloop_voltage_t *op, const op_rotate_config_t *cfg)
+void openloop_voltage_roate_start(struct openloop_voltage *op, const struct op_rotate_config *cfg)
 {
 	if (!op || !cfg || !op->inv) {
 		return;
@@ -61,13 +61,13 @@ void openloop_voltage_roate_start(openloop_voltage_t *op, const op_rotate_config
 	op->total_elec_rad = 0.0f;
 }
 
-int openloop_voltage_rotate_update(openloop_voltage_t *op, float dt)
+int openloop_voltage_rotate_update(struct openloop_voltage *op, float dt)
 {
 	if (!op || !op->inv) {
 		return -1;
 	}
 
-	op_rotate_config_t *cfg = &op->rotate_cfg;
+	struct op_rotate_config *cfg = &op->rotate_cfg;
 	float voltage = cfg->voltage;
 	float duration = cfg->duration;
 	float speed = cfg->speed;
@@ -91,7 +91,7 @@ int openloop_voltage_rotate_update(openloop_voltage_t *op, float dt)
 	return 1;
 }
 
-float openloop_voltage_get_total_elec_rad(openloop_voltage_t *op)
+float openloop_voltage_get_total_elec_rad(struct openloop_voltage *op)
 {
 	if (!op) {
 		return 0.0f;

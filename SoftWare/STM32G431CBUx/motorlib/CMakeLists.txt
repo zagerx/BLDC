@@ -26,6 +26,7 @@ endif()
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MODE_SRCS})
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+    motor_params.c
     motor.c
     motor_state.c
     ${_driver_src}

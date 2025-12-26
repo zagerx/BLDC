@@ -63,7 +63,7 @@ struct motor_data {
 	struct device *scp;
 	struct foc_data foc_data;
 	struct calibration_modules calib;
-	openloop_voltage_t op;
+	struct openloop_voltage op;
 	struct motor_parameters params;
 	enum motor_mode mode;
 	enum motor_state statue;

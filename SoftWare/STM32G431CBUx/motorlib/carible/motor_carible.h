@@ -34,7 +34,7 @@ struct calibration_modules {
 
 void calibration_modules_init(struct calibration_modules *calib, struct device *inverter,
 			      struct device *currents, struct device *feedback,
-			      openloop_voltage_t *op, struct motor_parameters *params);
+			      struct openloop_voltage *op, struct motor_parameters *params);
 
 int calibration_modules_update(struct calibration_modules *calib, float dt);
 #endif
