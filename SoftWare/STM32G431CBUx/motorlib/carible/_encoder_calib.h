@@ -11,8 +11,15 @@ enum encoder_calib_state {
 	ENC_CALIB_DIR_CHECK,
 	ENC_CALIB_ROTATE,
 	ENC_CALIB_PROCESS,
-	ENC_CALIB_OFFSET_INIT,
-	ENC_CALIB_OFFSET_RUNING,
+
+	/* ---------- OFFSET 升级 ---------- */
+	ENC_CALIB_OFFSET_ALIGN, // 固定电角度对齐（-pi/2）
+	ENC_CALIB_OFFSET_ALIGN_RUN,
+	ENC_CALIB_OFFSET_INIT,       // 准备旋转 + 采样
+	ENC_CALIB_OFFSET_ROTATE_POS, // 正转，过点采样
+	ENC_CALIB_OFFSET_ROTATE_NEG, // 反转，过点采样
+	ENC_CALIB_OFFSET_PROCESS,    // 计算 offset
+
 	ENC_CALIB_DONE,
 	ENC_CALIB_ERROR,
 };
@@ -38,6 +45,15 @@ struct carlib_encoder {
 	// 编码器相关
 	uint32_t raw_prev;     // 上一次的编码器原始值
 	int32_t raw_delta_acc; // 累计机械角度变化量
+
+	struct op_align_position *offset_align_pos;
+	uint8_t offset_align_num;
+
+	float prev_elec_angle;
+	uint32_t raw_hit_pos;
+	uint32_t raw_hit_neg;
+	uint8_t hit_pos_valid;
+	uint8_t hit_neg_valid;
 };
 
 void carlib_encoder_init(struct carlib_encoder *ec, struct carlib_config *cfg);
@@ -49,5 +65,5 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt);
 #define ENC_ERR_ANGLE_TOO_SMALL (1 << 1)
 #define ENC_ERR_CALC_FAILED     (1 << 2)
 #define ENC_ERR_OVERFLOW        (1 << 3)
-
+#define ENC_ERR_NO_MEM          (1 << 4)
 #endif
