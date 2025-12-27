@@ -44,15 +44,20 @@ struct feedback_api {
 	void (*set_offset)(struct device *, uint16_t);
 };
 
-int feedback_init(struct device *dev);
-void update_feedback(struct device *dev, float dt);
+struct feedback_t {
+	struct feedback_config *config;
+	struct feedback_data *data;
+};
 
-uint32_t read_feedback_cpr(struct device *feedback);
-uint16_t read_feedback_pair(struct device *feedback);
+int feedback_init(struct feedback_t *feedback);
+void update_feedback(struct feedback_t *feedback, float dt);
 
-float read_feedback_velocity(struct device *dev);
-float read_feedback_odome(struct device *dev);
-void clear_feedback_odome(struct device *dev);
-uint32_t read_feedback_raw(struct device *feedback);
-float read_feedback_elec_angle(struct device *dev);
+uint32_t read_feedback_cpr(struct feedback_t *feedback);
+uint16_t read_feedback_pair(struct feedback_t *feedback);
+
+float read_feedback_velocity(struct feedback_t *feedback);
+float read_feedback_odome(struct feedback_t *feedback);
+void clear_feedback_odome(struct feedback_t *feedback);
+uint32_t read_feedback_raw(struct feedback_t *feedback);
+float read_feedback_elec_angle(struct feedback_t *feedback);
 #endif

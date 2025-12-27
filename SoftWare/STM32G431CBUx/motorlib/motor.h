@@ -40,9 +40,9 @@ enum motor_mode {
 };
 
 struct motor_config {
-	struct device *currsmp;
-	struct device *inverter;
-	struct device *feedback;
+	struct currsmp_t *currsmp;
+	struct inverter_t *inverter;
+	struct feedback_t *feedback;
 };
 struct motor_parameters {
 	struct _pid_parameters d_pi_params;

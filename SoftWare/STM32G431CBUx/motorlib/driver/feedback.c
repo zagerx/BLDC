@@ -15,10 +15,10 @@ static float normalize_angle(float angle)
 }
 
 // 初始化反馈模块
-int feedback_init(struct device *dev)
+int feedback_init(struct feedback_t *feedback)
 {
-	struct feedback_config *cfg = dev->config;
-	struct feedback_data *data = dev->data;
+	struct feedback_config *cfg = feedback->config;
+	struct feedback_data *data = feedback->data;
 
 	if (cfg->params->cpr == 0 || cfg->params->direction == 0 || cfg->params->pole_pairs == 0) {
 		return -1;
@@ -28,10 +28,10 @@ int feedback_init(struct device *dev)
 }
 
 // 角度/速度更新
-void update_feedback(struct device *dev, float dt)
+void update_feedback(struct feedback_t *feedback, float dt)
 {
-	struct feedback_config *cfg = dev->config;
-	struct feedback_data *data = dev->data;
+	struct feedback_config *cfg = feedback->config;
+	struct feedback_data *data = feedback->data;
 
 	const float two_pi = 2.0f * M_PI;
 	const float cpr_f = (float)cfg->params->cpr;
@@ -90,41 +90,41 @@ void update_feedback(struct device *dev, float dt)
 	data->odom = current_mech_angle * K_LINE;
 }
 /* 其余函数保持不变 */
-float read_feedback_elec_angle(struct device *dev)
+float read_feedback_elec_angle(struct feedback_t *feedback)
 {
-	struct feedback_data *data = dev->data;
+	struct feedback_data *data = feedback->data;
 	return data->elec_angle;
 }
 
-float read_feedback_velocity(struct device *dev)
+float read_feedback_velocity(struct feedback_t *feedback)
 {
-	struct feedback_data *data = dev->data;
+	struct feedback_data *data = feedback->data;
 	return data->mech_vel;
 }
-float read_feedback_odome(struct device *dev)
+float read_feedback_odome(struct feedback_t *feedback)
 {
-	struct feedback_data *data = dev->data;
+	struct feedback_data *data = feedback->data;
 	return data->odom;
 }
-void clear_feedback_odome(struct device *dev)
+void clear_feedback_odome(struct feedback_t *feedback)
 {
-	struct feedback_data *data = dev->data;
+	struct feedback_data *data = feedback->data;
 	data->odom = 0.0f;
 }
-void feedback_reset(struct device *dev)
+void feedback_reset(struct feedback_t *feedback)
 {
-	struct feedback_data *data = dev->data;
+	struct feedback_data *data = feedback->data;
 	data->mech_vel = 0;
 	data->odom = 0;
 }
 
-uint32_t read_feedback_raw(struct device *feedback)
+uint32_t read_feedback_raw(struct feedback_t *feedback)
 {
 	struct feedback_config *fb_cfg = feedback->config;
 	return fb_cfg->get_raw();
 }
 
-uint16_t read_feedback_pair(struct device *feedback)
+uint16_t read_feedback_pair(struct feedback_t *feedback)
 {
 	struct feedback_config *cfg = feedback->config;
 	return cfg->params->pole_pairs;

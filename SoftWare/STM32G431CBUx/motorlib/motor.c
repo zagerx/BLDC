@@ -21,7 +21,7 @@ void foc_curr_regulator(uint32_t *adc_raw)
 	struct device *motor = &motor1;
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
-	struct device *currsmp = m_cfg->currsmp;
+	struct currsmp_t *currsmp = m_cfg->currsmp;
 	currsmp_update_raw(currsmp, adc_raw);
 
 	/*
@@ -52,9 +52,9 @@ void motor_init(struct device *motor)
 {
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
-	struct device *currsmp = m_cfg->currsmp;
-	struct device *feedback = m_cfg->feedback;
-	struct device *inverer = m_cfg->inverter;
+	struct currsmp_t *currsmp = m_cfg->currsmp;
+	struct feedback_t *feedback = m_cfg->feedback;
+	struct inverter_t *inverter = m_cfg->inverter;
 	/* 电流采样参数绑定 */
 	struct currsmp_config *cs_cfg = currsmp->config;
 	cs_cfg->params = &m_data->params.currsmp_params;
@@ -75,9 +75,9 @@ void motor_init(struct device *motor)
 
 	struct calibration_modules *carlib = &m_data->calib;
 	struct openloop_voltage *op = &m_data->op;
-	openloop_voltage_init(op, inverer);
+	openloop_voltage_init(op, inverter);
 	struct motor_parameters *m_params = &m_data->params;
-	calibration_modules_init(carlib, inverer, currsmp, feedback, op, m_params);
+	calibration_modules_init(carlib, inverter, currsmp, feedback, op, m_params);
 	currsmp_init(currsmp);
 }
 

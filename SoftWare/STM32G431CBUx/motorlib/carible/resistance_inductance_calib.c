@@ -47,7 +47,7 @@ int32_t motor_param_calib_update(struct device *motor_param_calib, float dt)
 	int32_t ret = 0;
 	struct motor_param_calib_data *md = motor_param_calib->data;
 	struct motor_param_calib_config *cfg = motor_param_calib->config;
-	struct device *inv = cfg->inverter;
+	struct inverter_t *inverter = cfg->inverter;
 	struct device *curr_sensor = cfg->current_sensor;
 
 	// 读取三相电流
@@ -81,7 +81,7 @@ int32_t motor_param_calib_update(struct device *motor_param_calib, float dt)
 		float abc[3];
 		svm_set(cfg->resistance_calib_max_voltage * c,
 			cfg->resistance_calib_max_voltage * s, abc);
-		inverter_set_3phase_voltages(inv, abc[0], abc[1], abc[2]);
+		inverter_set_3phase_voltages(inverter, abc[0], abc[1], abc[2]);
 
 		md->time_acc += dt;
 		if (md->time_acc >= cfg->align_duration) {
@@ -107,7 +107,7 @@ int32_t motor_param_calib_update(struct device *motor_param_calib, float dt)
 		float vb = -0.5f * v_alpha + 0.86602540378f * v_beta;
 		float vc = -0.5f * v_alpha - 0.86602540378f * v_beta;
 
-		inverter_set_3phase_voltages(inv, va, vb, vc);
+		inverter_set_3phase_voltages(inverter, va, vb, vc);
 
 		// 累加D轴电流测量
 		md->id_sum += id;
@@ -159,7 +159,7 @@ int32_t motor_param_calib_update(struct device *motor_param_calib, float dt)
 		float vb = -0.5f * v_alpha + 0.86602540378f * v_beta;
 		float vc = -0.5f * v_alpha - 0.86602540378f * v_beta;
 
-		inverter_set_3phase_voltages(inv, va, vb, vc);
+		inverter_set_3phase_voltages(inverter, va, vb, vc);
 
 		// 跟踪Q轴电流峰值
 		if (fabsf(iq) > md->iq_peak) {
@@ -199,13 +199,13 @@ int32_t motor_param_calib_update(struct device *motor_param_calib, float dt)
 	} break;
 
 	case MOTOR_PARAM_CALIB_STATE_COMPLETE:
-		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
+		inverter_set_3phase_voltages(inverter, 0.0f, 0.0f, 0.0f);
 		ret = 1;
 		break;
 
 	case MOTOR_PARAM_CALIB_STATE_ERROR:
 		ret = -1;
-		inverter_set_3phase_voltages(inv, 0.0f, 0.0f, 0.0f);
+		inverter_set_3phase_voltages(inverter, 0.0f, 0.0f, 0.0f);
 		break;
 
 	default:

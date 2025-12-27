@@ -20,7 +20,7 @@ enum motor_param_calib_state {
 };
 
 struct motor_param_calib_config {
-	struct device *inverter;       // 逆变器设备
+	struct inverter_t *inverter;   // 逆变器设备
 	struct device *current_sensor; // 电流传感器设备
 
 	// 校准参数（与ODrive保持一致）

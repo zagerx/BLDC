@@ -63,8 +63,8 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt)
 	}
 
 	struct carlib_config *cfg = ec->cfg;
-	struct device *feedback = cfg->feedback;
-	struct device *inverter = cfg->inverter;
+	struct feedback_t *feedback = cfg->feedback;
+	struct inverter_t *inverter = cfg->inverter;
 	struct motor_parameters *m_parms = cfg->params;
 	struct openloop_voltage *op = cfg->op;
 

@@ -3,7 +3,7 @@
 #define M_PI 3.14159265358979323846f
 #undef RAD_TO_DEG
 #define RAD_TO_DEG (180.0f / M_PI)
-void foc_apply_voltage_dq(struct device *inverter, float ud, float uq, float elec_angle)
+void foc_apply_voltage_dq(struct inverter_t *inverter, float ud, float uq, float elec_angle)
 {
 	float sin_val, cos_val;
 	float ualpha, ubeta;

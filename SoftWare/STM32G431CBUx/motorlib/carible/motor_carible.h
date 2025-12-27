@@ -32,8 +32,8 @@ struct calibration_modules {
 	calib_error_t error;
 };
 
-void calibration_modules_init(struct calibration_modules *calib, struct device *inverter,
-			      struct device *currents, struct device *feedback,
+void calibration_modules_init(struct calibration_modules *calib, struct inverter_t *inverter,
+			      struct currsmp_t *currsmp, struct feedback_t *feedback,
 			      struct openloop_voltage *op, struct motor_parameters *params);
 
 int calibration_modules_update(struct calibration_modules *calib, float dt);

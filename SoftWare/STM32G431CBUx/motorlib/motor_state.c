@@ -148,10 +148,10 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 	const struct device *motor = obj->p1;
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
-	struct device *feedback = m_cfg->feedback;
+	struct feedback_t *feedback = m_cfg->feedback;
 	struct foc_data *f_data = &(m_data->foc_data);
-	struct device *currsmp = m_cfg->currsmp;
-	struct device *inverer = m_cfg->inverter;
+	struct currsmp_t *currsmp = m_cfg->currsmp;
+	struct inverter_t *inverter = m_cfg->inverter;
 	switch (obj->phase) {
 	case ENTER:
 		if (feedback_init(feedback)) {
@@ -169,10 +169,10 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 		float ud, uq;
 		ud = 0.0f;
 		uq = -0.02f;
-		foc_apply_voltage_dq(inverer, ud, uq, elec_angle);
+		foc_apply_voltage_dq(inverter, ud, uq, elec_angle);
 	} break;
 	case EXIT:
-		inverter_set_3phase_voltages(inverer, 0.0f, 0.0f, 0.0f);
+		inverter_set_3phase_voltages(inverter, 0.0f, 0.0f, 0.0f);
 		break;
 	default:
 		break;
@@ -222,9 +222,9 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 	const struct device *motor = obj->p1;
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
-	struct device *feedback = m_cfg->feedback;
-	struct device *currsmp = m_cfg->currsmp;
-	struct device *inverer = m_cfg->inverter;
+	struct feedback_t *feedback = m_cfg->feedback;
+	struct currsmp_t *currsmp = m_cfg->currsmp;
+	struct inverter_t *inverter = m_cfg->inverter;
 
 	struct foc_data *f_data = &(m_data->foc_data);
 	struct foc_pid *d_pi = &f_data->controller.id;
@@ -350,14 +350,14 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		// 归一化处理
 		ud_final *= (1 / (v_bus * 0.57735f));
 		uq_final *= (1 / (v_bus * 0.57735f));
-		foc_apply_voltage_dq(inverer, ud_final, uq_final, elec_angle);
+		foc_apply_voltage_dq(inverter, ud_final, uq_final, elec_angle);
 	} break;
 
 	case EXIT:
 		foc_pid_reset(d_pi);
 		foc_pid_reset(q_pi);
 		foc_pid_reset(velocity_pi);
-		inverter_set_3phase_voltages(inverer, 0.0f, 0.0f, 0.0f);
+		inverter_set_3phase_voltages(inverter, 0.0f, 0.0f, 0.0f);
 		break;
 	default:
 		break;
@@ -406,8 +406,8 @@ fsm_rt_t motor_lut_test_state(fsm_cb_t *obj)
 
 	const struct device *motor = obj->p1;
 	struct motor_config *m_cfg = motor->config;
-	struct device *feedback = m_cfg->feedback;
-	struct device *inverter = m_cfg->inverter;
+	struct feedback_t *feedback = m_cfg->feedback;
+	struct inverter_t *inverter = m_cfg->inverter;
 	struct feedback_config *fb_cfg = feedback->config;
 
 	// --- 静态变量（测试控制与数据）---

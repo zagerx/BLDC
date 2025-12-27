@@ -8,8 +8,8 @@
 #include "openloop_voltage.h"
 #include <stdint.h>
 
-void calibration_modules_init(struct calibration_modules *calib, struct device *inverter,
-			      struct device *currents, struct device *feedback,
+void calibration_modules_init(struct calibration_modules *calib, struct inverter_t *inverter,
+			      struct currsmp_t *currsmp, struct feedback_t *feedback,
 			      struct openloop_voltage *op, struct motor_parameters *params)
 {
 	if (calib == NULL) {
@@ -17,7 +17,7 @@ void calibration_modules_init(struct calibration_modules *calib, struct device *
 	}
 
 	struct carlib_config *carlib_cfg = &calib->cfg;
-	carlib_cfg->currents = currents;
+	carlib_cfg->currsmp = currsmp;
 	carlib_cfg->feedback = feedback;
 	carlib_cfg->inverter = inverter;
 	carlib_cfg->op = op;

@@ -30,7 +30,7 @@ struct op_rotate_config {
 /* ---------------- openloop 对象 ---------------- */
 
 struct openloop_voltage {
-	struct device *inv;
+	struct inverter_t *inverter;
 
 	/* align 状态 */
 	struct op_align_config align_cfg;
@@ -45,7 +45,7 @@ struct openloop_voltage {
 
 /* ---------------- API ---------------- */
 
-void openloop_voltage_init(struct openloop_voltage *op, struct device *inv);
+void openloop_voltage_init(struct openloop_voltage *op, struct inverter_t *inverter);
 
 /* 对齐（单点 / 多点统一） */
 void openloop_voltage_align_start(struct openloop_voltage *op, const struct op_align_config *cfg);

@@ -30,11 +30,16 @@ struct currsmp_data {
 	float ic;
 	float vbus;
 };
-void currsmp_init(struct device *currsmp);
-void currsmp_update_currents(struct device *dev, float *iabc);
-void currsmp_update_raw(struct device *currsmp, uint32_t *adc_raw);
-float get_currsmp_vbus(struct device *dev);
-void _read_currsmp_raw(struct device *dev, uint32_t *raw_buf);
-void _update_currsmp_offset(struct device *dev, uint32_t *raw_buf);
+
+struct currsmp_t {
+	struct currsmp_config *config;
+	struct currsmp_data *data;
+};
+void currsmp_init(struct currsmp_t *currsmp);
+void currsmp_update_currents(struct currsmp_t *currsmp, float *iabc);
+void currsmp_update_raw(struct currsmp_t *currsmp, uint32_t *adc_raw);
+float get_currsmp_vbus(struct currsmp_t *currsmp);
+void _read_currsmp_raw(struct currsmp_t *currsmp, uint32_t *raw_buf);
+void _update_currsmp_offset(struct currsmp_t *currsmp, uint32_t *raw_buf);
 
 #endif

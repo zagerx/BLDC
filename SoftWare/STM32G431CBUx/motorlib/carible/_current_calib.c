@@ -31,8 +31,8 @@ int32_t curr_calib_update(struct carlib_current *carlib, float dt)
 	}
 
 	struct carlib_config *cfg = carlib->cfg;
-	struct device *currsmp = cfg->currents;
-	struct device *inverter = cfg->inverter;
+	struct currsmp_t *currsmp = cfg->currsmp;
+	struct inverter_t *inverter = cfg->inverter;
 	struct motor_parameters *m_parms = cfg->params;
 	switch (carlib->state) {
 

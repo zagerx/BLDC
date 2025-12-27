@@ -8,17 +8,17 @@
 #define M_TWOPI (2.0f * 3.14159265358979323846f)
 #endif
 
-extern void foc_apply_voltage_dq(struct device *inv, float ud, float uq, float elec_angle);
+extern void foc_apply_voltage_dq(struct inverter_t *inverter, float ud, float uq, float elec_angle);
 
 /* --------------------------------------------------------- */
 
-void openloop_voltage_init(struct openloop_voltage *op, struct device *inv)
+void openloop_voltage_init(struct openloop_voltage *op, struct inverter_t *inverter)
 {
-	if (!op || !inv) {
+	if (!op || !inverter) {
 		return;
 	}
 	memset(op, 0, sizeof(*op));
-	op->inv = inv;
+	op->inverter = inverter;
 }
 
 /* ---------------------------------------------------------
@@ -40,7 +40,7 @@ int openloop_voltage_align_update(struct openloop_voltage *op, float dt)
 {
 	const struct op_align_position *pos;
 
-	if (!op || !op->inv) {
+	if (!op || !op->inverter) {
 		return -1;
 	}
 
@@ -56,14 +56,14 @@ int openloop_voltage_align_update(struct openloop_voltage *op, float dt)
 		op->align_index++;
 
 		if (op->align_index >= op->align_cfg.num_positions) {
-			inverter_set_3phase_voltages(op->inv, 0.0f, 0.0f, 0.0f);
+			inverter_set_3phase_voltages(op->inverter, 0.0f, 0.0f, 0.0f);
 			return 0;
 		}
 
 		pos = &op->align_cfg.positions[op->align_index];
 	}
 
-	foc_apply_voltage_dq(op->inv, 0.0f, op->align_cfg.voltage, pos->angle);
+	foc_apply_voltage_dq(op->inverter, 0.0f, op->align_cfg.voltage, pos->angle);
 	return 1;
 }
 
@@ -73,7 +73,7 @@ int openloop_voltage_align_update(struct openloop_voltage *op, float dt)
 
 void openloop_voltage_rotate_start(struct openloop_voltage *op, const struct op_rotate_config *cfg)
 {
-	if (!op || !cfg || !op->inv) {
+	if (!op || !cfg || !op->inverter) {
 		return;
 	}
 
@@ -87,13 +87,13 @@ int openloop_voltage_rotate_update(struct openloop_voltage *op, float dt)
 {
 	float delta;
 
-	if (!op || !op->inv) {
+	if (!op || !op->inverter) {
 		return -1;
 	}
 
 	op->elapsed += dt;
 	if (op->elapsed >= op->rotate_cfg.duration) {
-		inverter_set_3phase_voltages(op->inv, 0.0f, 0.0f, 0.0f);
+		inverter_set_3phase_voltages(op->inverter, 0.0f, 0.0f, 0.0f);
 		return 0;
 	}
 
@@ -107,7 +107,7 @@ int openloop_voltage_rotate_update(struct openloop_voltage *op, float dt)
 		op->elec_angle += M_TWOPI;
 	}
 
-	foc_apply_voltage_dq(op->inv, 0.0f, op->rotate_cfg.voltage, op->elec_angle);
+	foc_apply_voltage_dq(op->inverter, 0.0f, op->rotate_cfg.voltage, op->elec_angle);
 	return 1;
 }
 
