@@ -77,7 +77,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_11;
+  sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -224,11 +224,12 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     /**ADC1 GPIO Configuration
+    PA0     ------> ADC1_IN1
     PA2     ------> ADC1_IN3
     PB1     ------> ADC1_IN12
     PB12     ------> ADC1_IN11
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_2;
+    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_2;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -299,11 +300,12 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     }
 
     /**ADC1 GPIO Configuration
+    PA0     ------> ADC1_IN1
     PA2     ------> ADC1_IN3
     PB1     ------> ADC1_IN12
     PB12     ------> ADC1_IN11
     */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0|GPIO_PIN_2);
 
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_1|GPIO_PIN_12);
 
@@ -373,11 +375,12 @@ void adc_stop(void)
 #include "motor.h"
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	uint32_t raw_uvw[3];
+	uint32_t raw_uvw[4];
 	if (hadc->Instance == ADC1) {
 		raw_uvw[0] = (uint32_t)(hadc->Instance->JDR1);
 		raw_uvw[1] = (uint32_t)(hadc2.Instance->JDR1);
 		raw_uvw[2] = (uint32_t)(hadc->Instance->JDR2);
+		raw_uvw[3] = (uint32_t)(hadc->Instance->DR);
 
 		static uint32_t cout;
 		if (cout++ > 800) {

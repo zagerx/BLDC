@@ -34,6 +34,8 @@ static struct currsmp_config currsmp1_conf = {
 	.vol_ref = BOARD_ADC_VREF_V,
 	.rs = BOARD_SHUNT_R_OHM,
 	.opm = BOARD_OPAMP_GAIN,
+	.r2 = 75000.0f,
+	.r1 = 2670.0f,
 	.params = NULL,
 };
 static struct currsmp_data currsmp1_data = {0};

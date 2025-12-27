@@ -282,7 +282,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		iq = f_data->meas.iq;
 
 		// 步骤 1: 动态获取母线电压
-		float v_bus = 24.0f; // inverter_get_bus_voltage(inverer);
+		float v_bus = get_currsmp_vbus(currsmp);
 
 		// 留一点裕量 (Margin)，比如 0.95，防止MOS管死区时间和采样噪声导致削顶
 		float v_max_abs = v_bus * 0.57735f * 0.96f; // 0.57735 = 1/sqrt(3)
@@ -348,8 +348,8 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 #else
 #endif
 		// 归一化处理
-		ud_final *= (1 / (24.0f * 0.57735f));
-		uq_final *= (1 / (24.0f * 0.57735f));
+		ud_final *= (1 / (v_bus * 0.57735f));
+		uq_final *= (1 / (v_bus * 0.57735f));
 		foc_apply_voltage_dq(inverer, ud_final, uq_final, elec_angle);
 	} break;
 

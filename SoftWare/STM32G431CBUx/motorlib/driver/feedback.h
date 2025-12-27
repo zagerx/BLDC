@@ -46,10 +46,7 @@ struct feedback_api {
 
 int feedback_init(struct device *dev);
 void update_feedback(struct device *dev, float dt);
-void update_feedback_offset(struct device *dev, uint16_t offset);
-void update_feedback_pole_pairs(struct device *dev, uint8_t pole_pairs);
-void update_feedback_direction(struct device *dev, int8_t direction);
-void update_feedback_cpr(struct device *feedback, uint32_t cpr);
+
 uint32_t read_feedback_cpr(struct device *feedback);
 uint16_t read_feedback_pair(struct device *feedback);
 

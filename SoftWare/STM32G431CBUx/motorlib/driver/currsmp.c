@@ -42,7 +42,7 @@ void currsmp_update_raw(struct device *currsmp, uint32_t *adc_raw)
 	data->channle_raw_a = adc_raw[0];
 	data->channle_raw_b = adc_raw[1];
 	data->channle_raw_c = adc_raw[2];
-	// data->channle_raw_vbus = adc_raw[3];
+	data->channle_raw_vbus = adc_raw[3];
 }
 void _read_currsmp_raw(struct device *dev, uint32_t *raw_buf)
 {

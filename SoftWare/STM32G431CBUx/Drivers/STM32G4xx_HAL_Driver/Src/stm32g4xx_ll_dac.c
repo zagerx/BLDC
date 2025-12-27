@@ -45,9 +45,17 @@
 /** @addtogroup DAC_LL_Private_Macros
   * @{
   */
-#if defined(STM32G474xx) || defined(STM32G484xx) || defined(STM32G473xx) || defined(STM32G483xx)
+#if defined(STM32G414xx) || defined(STM32G474xx) || defined(STM32G484xx) || defined(STM32G473xx) || defined(STM32G483xx)
 #define IS_LL_DAC_CHANNEL(__DACX__, __DAC_CHANNEL__)                       \
   (((__DACX__) == DAC2) ?                                                  \
+   ((__DAC_CHANNEL__) == LL_DAC_CHANNEL_1)                                 \
+   :                                                                       \
+   (((__DAC_CHANNEL__) == LL_DAC_CHANNEL_1)                                \
+    ||  ((__DAC_CHANNEL__) == LL_DAC_CHANNEL_2))                           \
+  )
+#elif defined(STM32G411xB) || defined(STM32G411xC)
+#define IS_LL_DAC_CHANNEL(__DACX__, __DAC_CHANNEL__)                       \
+  (((__DACX__) == DAC1) ?                                                  \
    ((__DAC_CHANNEL__) == LL_DAC_CHANNEL_1)                                 \
    :                                                                       \
    (((__DAC_CHANNEL__) == LL_DAC_CHANNEL_1)                                \
@@ -58,9 +66,9 @@
   (((__DAC_CHANNEL__) == LL_DAC_CHANNEL_1)                                 \
    ||  ((__DAC_CHANNEL__) == LL_DAC_CHANNEL_2)                             \
   )
-#endif /* #if defined(STM32G474xx) || defined(STM32G484xx) || defined(STM32G473xx) || defined(STM32G483xx) */
+#endif /* STM32G414xx || STM32G474xx || STM32G484xx || STM32G473xx || STM32G483xx */
 
-#if defined(STM32G474xx) || defined(STM32G484xx)
+#if defined(STM32G414xx) || defined(STM32G474xx) || defined(STM32G484xx)
 #define IS_LL_DAC_TRIGGER_SOURCE(__DACX__, __TRIGGER_SOURCE__)                       \
   (((__TRIGGER_SOURCE__) == LL_DAC_TRIG_SOFTWARE)                                    \
    || ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM7_TRGO)                            \
@@ -77,7 +85,7 @@
    || ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_HRTIM_RST_TRG5)                       \
    || ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_HRTIM_RST_TRG6)                       \
    || (((__DACX__) == DAC3) ? ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM1_TRGO)    \
-       : ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM8_TRGO))                       \
+        : ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM8_TRGO))                       \
    || (((__DACX__) == DAC1) && ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_HRTIM_TRGO1))\
    || (((__DACX__) == DAC2) && ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_HRTIM_TRGO2))\
    || (((__DACX__) == DAC3) && ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_HRTIM_TRGO3))\
@@ -94,11 +102,11 @@
    || ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM6_TRGO)                            \
    || ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM3_TRGO)                            \
    || (((__DACX__) == DAC3) ? ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM1_TRGO)    \
-       : ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM8_TRGO))                       \
+        : ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM8_TRGO))                       \
   )
-#endif /* STM32G474xx || STM32G484xx */
+#endif /* STM32G414xx || STM32G474xx || STM32G484xx */
 
-#if defined(STM32G474xx) || defined(STM32G484xx)
+#if defined(STM32G414xx) || defined(STM32G474xx) || defined(STM32G484xx)
 #define IS_LL_DAC_TRIGGER_SOURCE2(__DACX__, __TRIGGER_SOURCE__)                      \
   (((__TRIGGER_SOURCE__) == LL_DAC_TRIG_SOFTWARE)                                    \
    || ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM7_TRGO)                            \
@@ -115,7 +123,7 @@
    || ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_HRTIM_STEP_TRG5)                      \
    || ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_HRTIM_STEP_TRG6)                      \
    || (((__DACX__) == DAC3) ? ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM1_TRGO)    \
-       : ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM8_TRGO))                       \
+        : ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM8_TRGO))                       \
   )
 #else
 #define IS_LL_DAC_TRIGGER_SOURCE2(__DACX__, __TRIGGER_SOURCE__)                      \
@@ -128,9 +136,9 @@
    || ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM6_TRGO)                            \
    || ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM3_TRGO)                            \
    || (((__DACX__) == DAC3) ? ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM1_TRGO)    \
-       : ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM8_TRGO))                       \
+        : ((__TRIGGER_SOURCE__) == LL_DAC_TRIG_EXT_TIM8_TRGO))                       \
   )
-#endif /* STM32G474xx || STM32G484xx */
+#endif /* STM32G414xx || STM32G474xx || STM32G484xx */
 
 #define IS_LL_DAC_WAVE_AUTO_GENER_MODE(__WAVE_AUTO_GENERATION_MODE__)           \
   (((__WAVE_AUTO_GENERATION_MODE__) == LL_DAC_WAVE_AUTO_GENERATION_NONE)        \

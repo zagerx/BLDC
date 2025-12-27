@@ -118,43 +118,12 @@ void feedback_reset(struct device *dev)
 	data->odom = 0;
 }
 
-void update_feedback_offset(struct device *dev, uint16_t offset)
-{
-	struct feedback_config *cfg = dev->config;
-	cfg->params->offset = offset;
-}
-
-void update_feedback_pole_pairs(struct device *dev, uint8_t pole_pairs)
-{
-	struct feedback_config *cfg = dev->config;
-	cfg->params->pole_pairs = pole_pairs;
-}
-
-void update_feedback_direction(struct device *dev, int8_t direction)
-{
-	if (!direction) {
-		return;
-	}
-	struct feedback_config *cfg = dev->config;
-	cfg->params->direction = direction;
-}
-
 uint32_t read_feedback_raw(struct device *feedback)
 {
 	struct feedback_config *fb_cfg = feedback->config;
 	return fb_cfg->get_raw();
 }
 
-void update_feedback_cpr(struct device *feedback, uint32_t cpr)
-{
-	struct feedback_config *cfg = feedback->config;
-	cfg->params->cpr = cpr;
-}
-uint32_t read_feedback_cpr(struct device *feedback)
-{
-	struct feedback_config *cfg = feedback->config;
-	return cfg->params->cpr;
-}
 uint16_t read_feedback_pair(struct device *feedback)
 {
 	struct feedback_config *cfg = feedback->config;
