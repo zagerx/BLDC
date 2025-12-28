@@ -67,6 +67,7 @@ void motor_init(struct device *motor)
 	m_data->foc_data.controller.id.params = &m_data->params.d_pi_params;
 	m_data->foc_data.controller.iq.params = &m_data->params.q_pi_params;
 	m_data->foc_data.controller.velocity.params = &m_data->params.vel_pi_params;
+	m_data->foc_data.controller.postion.params = &m_data->params.pos_pi_params;
 
 	fsm_cb_t *fsm = m_data->state_machine;
 	if (!fsm->p1) {
@@ -94,14 +95,36 @@ void motor_task(struct device *motor)
 		break;
 	}
 }
+#include "motor_params.h"
+
+void update_motor_dq_pi_param(struct device *motor, float kp, float ki)
+{
+	struct motor_data *m_data = motor->data;
+	struct motor_parameters *params = &m_data->params;
+	_update_d_axies_pi_params(params, kp, ki);
+	_update_q_axies_pi_params(params, kp, ki);
+}
 
 void update_motor_vel_pi_param(struct device *motor, float kp, float ki)
 {
 	struct motor_data *m_data = motor->data;
 	struct motor_parameters *params = &m_data->params;
-	params->vel_pi_params.kp = kp;
-	params->vel_pi_params.ki = ki;
+	_update_vel_pi_params(params, kp, ki);
 }
+
+void update_motor_pos_pi_param(struct device *motor, float kp, float ki)
+{
+	struct motor_data *m_data = motor->data;
+	struct motor_parameters *params = &m_data->params;
+	_update_pos_pi_params(params, kp, ki);
+}
+
+void update_motor_pos_target(struct device *motor, float tar)
+{
+	struct motor_data *m_data = motor->data;
+	s_planner_update_target(m_data->scp, tar);
+}
+
 void update_motor_vel_target(struct device *motor, float tar)
 {
 	struct motor_data *m_data = motor->data;

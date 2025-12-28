@@ -17,7 +17,7 @@ struct feedback_paramters {
 
 struct feedback_config {
 	uint32_t (*get_raw)(void);
-
+	float radius;
 	struct feedback_paramters *params;
 };
 
@@ -29,7 +29,7 @@ struct feedback_data {
 	int64_t total_counts;
 	/* 角度信息 */
 	float elec_angle;
-
+	float mech_angle;
 	/* 速度信息 */
 	float mech_vel; // 机械速度rad/s
 
@@ -54,7 +54,7 @@ void update_feedback(struct feedback_t *feedback, float dt);
 
 uint32_t read_feedback_cpr(struct feedback_t *feedback);
 uint16_t read_feedback_pair(struct feedback_t *feedback);
-
+float read_feedback_mech_angle(struct feedback_t *feedback);
 float read_feedback_velocity(struct feedback_t *feedback);
 float read_feedback_odome(struct feedback_t *feedback);
 void clear_feedback_odome(struct feedback_t *feedback);

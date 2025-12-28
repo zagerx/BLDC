@@ -9,8 +9,9 @@
  *  - 特点：只读（对控制环而言）
  * ========================================================= */
 struct foc_meas {
-	float id;       /* d-axis current */
-	float iq;       /* q-axis current */
+	float id; /* d-axis current */
+	float iq; /* q-axis current */
+	float pre_mech_angle;
 	float velocity; /* mechanical or electrical velocity */
 	float position; /* mechanical or electrical position */
 };
@@ -35,6 +36,7 @@ struct foc_ctrl {
 	struct foc_pid id;
 	struct foc_pid iq;
 	struct foc_pid velocity;
+	struct foc_pid postion;
 };
 
 /* =========================================================

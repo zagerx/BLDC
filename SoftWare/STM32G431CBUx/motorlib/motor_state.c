@@ -20,8 +20,8 @@ fsm_rt_t motor_running_state(fsm_cb_t *obj);
 
 fsm_rt_t motor_idle_state(fsm_cb_t *obj)
 {
-	struct device *motor = obj->p1;
-	struct motor_data *m_data = motor->data;
+	// struct device *motor = obj->p1;
+	// struct motor_data *m_data = motor->data;
 
 	enum {
 		RUNING = USER_STATUS,
@@ -30,11 +30,11 @@ fsm_rt_t motor_idle_state(fsm_cb_t *obj)
 	switch (obj->phase) {
 	case ENTER:
 		obj->phase = RUNING;
-		s_planner_init(m_data->scp, 0.0f, 0.0f, 0.0f, SPEED_LOOP_CYCLE);
+		// s_planner_init(m_data->scp, 0.0f, 0.0f, 0.0f, SPEED_LOOP_CYCLE);
 		break;
 	case RUNING:
 		if (((++obj->count) * PWM_CYCLE) >= SPEED_LOOP_CYCLE) {
-			s_planner_action(m_data->scp, SPEED_LOOP_CYCLE);
+			// s_planner_action(m_data->scp, SPEED_LOOP_CYCLE);
 			obj->count = 0;
 		}
 		break;
@@ -152,17 +152,52 @@ fsm_rt_t motor_encoder_openloop_state(fsm_cb_t *obj)
 	struct foc_data *f_data = &(m_data->foc_data);
 	struct currsmp_t *currsmp = m_cfg->currsmp;
 	struct inverter_t *inverter = m_cfg->inverter;
+
+	struct foc_pid *velocity_pi = &f_data->controller.velocity;
 	switch (obj->phase) {
 	case ENTER:
+		obj->count = 0;
 		if (feedback_init(feedback)) {
 			break;
 		}
-		obj->phase = RUNING;
+		obj->phase = IDLE;
 		break;
-	case RUNING: {
+	case IDLE: {
 		update_feedback(feedback, PWM_CYCLE);
 		float elec_angle = read_feedback_elec_angle(feedback);
+		float i_abc[3];
+		currsmp_update_currents(currsmp, i_abc);
+		foc_update_current_idq(f_data, i_abc, elec_angle);
+	}; break;
+	case RUNING: {
+		update_feedback(feedback, PWM_CYCLE);
+		if (((obj->count) % VELOCITY_LOOP_DIVIDER == 0)) {
+			float cur_mech_angle = read_feedback_mech_angle(feedback);
 
+			float dtheta = cur_mech_angle - f_data->meas.pre_mech_angle;
+			if (dtheta > M_PI) {
+				dtheta -= 2.0f * M_PI;
+			} else if (dtheta < -M_PI) {
+				dtheta += 2.0f * M_PI;
+			}
+
+			float radius = 50.0f; // 50mm -> 0.05m
+			float speed_raw = dtheta / SPEED_LOOP_CYCLE * radius;
+
+			/* 一阶低通滤波（基于时间常数） */
+			float tau = 0.02f; // 20ms
+			float alpha = SPEED_LOOP_CYCLE / (tau + SPEED_LOOP_CYCLE);
+
+			f_data->meas.velocity =
+				(1.0f - alpha) * f_data->meas.velocity + alpha * speed_raw;
+
+			f_data->meas.pre_mech_angle = cur_mech_angle;
+			f_data->ref.id = 0.0f;
+			f_data->ref.iq = foc_pid_run(velocity_pi, f_data->ref.velocity,
+						     f_data->meas.velocity, SPEED_LOOP_CYCLE);
+		}
+		obj->count++;
+		float elec_angle = read_feedback_elec_angle(feedback);
 		float i_abc[3];
 		currsmp_update_currents(currsmp, i_abc);
 		foc_update_current_idq(f_data, i_abc, elec_angle);
@@ -208,10 +243,12 @@ fsm_rt_t motor_debug_idle_state(fsm_cb_t *obj)
 	return 0;
 }
 
-#define DEBUG_D_PI    0
-#define DEBUG_Q_PI    1
-#define DEBUG_VEL_PI  2
-#define CURRENT_DEBUG DEBUG_VEL_PI
+#define DEBUG_D_PI     0
+#define DEBUG_Q_PI     1
+#define DEBUG_VEL_PI   2
+#define DEBUG_POS_MODE 3
+
+#define CURRENT_DEBUG DEBUG_POS_MODE
 #include "stdio.h"
 fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 {
@@ -230,6 +267,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 	struct foc_pid *d_pi = &f_data->controller.id;
 	struct foc_pid *q_pi = &f_data->controller.iq;
 	struct foc_pid *velocity_pi = &f_data->controller.velocity;
+	struct foc_pid *pos_pi = &f_data->controller.postion;
 	struct device *scp = m_data->scp;
 
 	switch (obj->phase) {
@@ -237,7 +275,7 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 		if (feedback_init(feedback)) {
 			break;
 		}
-		s_planner_init(scp, 0.0f, 0.0f, 0.0f, 0.0f);
+		s_planner_init(scp, read_feedback_odome(feedback) / 1000.0f, 0.0f, 0.0f, 0.0f);
 		float kp, ki;
 #if (CURRENT_DEBUG == DEBUG_D_PI)
 		read_foc_data(f_data, INDEX_D_PI, data);
@@ -257,6 +295,14 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 #else
 		foc_pid_init(velocity_pi, 0.06f, 3.0f, 10.0f); // 0.08f,3.0f
 #endif
+
+#elif (CURRENT_DEBUG == DEBUG_POS_MODE)
+		foc_pid_init(d_pi, 0.01f, 30.0f, 13.0f);
+		foc_pid_init(q_pi, 0.01f, 30.0f, 13.0f);
+		foc_pid_init(velocity_pi, f_data->controller.velocity.params->kp,
+			     f_data->controller.velocity.params->ki, 10.0f);
+		foc_pid_init(pos_pi, f_data->controller.postion.params->kp,
+			     f_data->controller.postion.params->ki, 5000.0f);
 #else
 #endif
 		obj->count = 0;
@@ -298,9 +344,56 @@ fsm_rt_t motor_debug_state(fsm_cb_t *obj)
 				foc_pid_run(velocity_pi, f_data->ref.velocity,
 					    read_feedback_velocity(feedback), SPEED_LOOP_CYCLE);
 		}
+#elif (CURRENT_DEBUG == DEBUG_POS_MODE)
+		float pos, vel;
+		float pos_loop_out, vel_in;
+		static float test_pos, test_vel;
+		if (((obj->count) % POSITION_LOOP_DIVIDER == 0)) {
+			s_planner_action(scp, 0.01f);
+			pos = s_planner_get_pos(scp) * 1000.0f;
+			vel = s_planner_get_vel(scp) * 1000.0f;
+			test_pos = pos;
+			test_vel = vel;
+			pos_loop_out = foc_pid_run(pos_pi, pos, read_feedback_odome(feedback),
+						   POS_LOOP_CYCLE);
+			vel_in = pos_loop_out + vel;
+			f_data->ref.velocity = vel_in;
+		}
+		if (((obj->count) % VELOCITY_LOOP_DIVIDER == 0)) {
+			float cur_mech_angle = read_feedback_mech_angle(feedback);
+
+			float dtheta = cur_mech_angle - f_data->meas.pre_mech_angle;
+			if (dtheta > M_PI) {
+				dtheta -= 2.0f * M_PI;
+			} else if (dtheta < -M_PI) {
+				dtheta += 2.0f * M_PI;
+			}
+
+			float radius = 50.0f; // 50mm -> 0.05m
+			float speed_raw = dtheta / SPEED_LOOP_CYCLE * radius;
+
+			/* 一阶低通滤波（基于时间常数） */
+			float tau = 0.02f; // 20ms
+			float alpha = SPEED_LOOP_CYCLE / (tau + SPEED_LOOP_CYCLE);
+
+			f_data->meas.velocity =
+				(1.0f - alpha) * f_data->meas.velocity + alpha * speed_raw;
+
+			f_data->meas.pre_mech_angle = cur_mech_angle;
+
+			f_data->ref.id = 0.0f;
+			f_data->ref.iq = foc_pid_run(velocity_pi, f_data->ref.velocity,
+						     f_data->meas.velocity, SPEED_LOOP_CYCLE);
+		}
+		obj->count++;
+
+		float ud_req, uq_req;
+		ud_req = foc_pid_run(d_pi, f_data->ref.id, id, PWM_CYCLE);
+		uq_req = foc_pid_run(q_pi, f_data->ref.iq, iq, PWM_CYCLE);
+
 #endif
 		// 步骤 2: PID 计算
-		float ud_req, uq_req;
+		// float ud_req, uq_req;
 #if (CURRENT_DEBUG == DEBUG_D_PI)
 		ud_req = foc_pid_run(&(f_data->id_pi_control), f_data->id_ref, id, PWM_CYCLE);
 		uq_req = 0.0f;

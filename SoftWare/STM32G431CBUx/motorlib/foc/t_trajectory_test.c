@@ -11,9 +11,9 @@ int s_planner_init(struct device *dev, float start_pos, float start_vel, float s
 	UNUSED(start_vel);
 	UNUSED(start_acc);
 	UNUSED(exex_cycle);
-	s_tarj_data_t *d = dev->data;
-	s_traj_exec_data_t *exec = &d->exec_data;
-	s_traj_plan_data_t *plan = &d->plan_data;
+	t_tarj_data_t *d = dev->data;
+	t_traj_exec_data_t *exec = &d->exec_data;
+	t_traj_plan_data_t *plan = &d->plan_data;
 	plan->plan_in.target_pos = 0.0f;
 	exec->pos = 0.0f;
 	exec->vel = 0.0f;
@@ -22,19 +22,19 @@ int s_planner_init(struct device *dev, float start_pos, float start_vel, float s
 void s_planner_action(struct device *dev, float dt)
 {
 	UNUSED(dt);
-	s_tarj_data_t *d = dev->data;
-	s_traj_plan_data_t *plan = &d->plan_data;
-	s_traj_exec_data_t *exec = &d->exec_data;
+	t_tarj_data_t *d = dev->data;
+	t_traj_plan_data_t *plan = &d->plan_data;
+	t_traj_exec_data_t *exec = &d->exec_data;
 	exec->pos = plan->plan_in.target_pos;
 	exec->vel = plan->plan_in.target_pos;
 
 	return;
 }
 
-s_traj_plan_status_t s_planner_update_target(struct device *dev, float new_target_pos)
+t_traj_plan_status_t s_planner_update_target(struct device *dev, float new_target_pos)
 {
-	s_tarj_data_t *d = dev->data;
-	s_traj_plan_data_t *plan = &d->plan_data;
+	t_tarj_data_t *d = dev->data;
+	t_traj_plan_data_t *plan = &d->plan_data;
 	plan->plan_in.target_pos = new_target_pos;
 
 	return TRAJ_PLAN_OK;
@@ -42,21 +42,21 @@ s_traj_plan_status_t s_planner_update_target(struct device *dev, float new_targe
 
 float s_planner_get_pos(const struct device *dev)
 {
-	s_tarj_data_t *d = dev->data;
-	s_traj_exec_data_t *exec = &d->exec_data;
+	t_tarj_data_t *d = dev->data;
+	t_traj_exec_data_t *exec = &d->exec_data;
 	return exec->pos;
 }
 
 float s_planner_get_vel(const struct device *dev)
 {
-	s_tarj_data_t *d = dev->data;
-	s_traj_exec_data_t *exec = &d->exec_data;
+	t_tarj_data_t *d = dev->data;
+	t_traj_exec_data_t *exec = &d->exec_data;
 	return exec->vel;
 }
 
 float s_planner_get_acc(const struct device *dev)
 {
-	s_tarj_data_t *d = dev->data;
-	s_traj_exec_data_t *exec = &d->exec_data;
+	t_tarj_data_t *d = dev->data;
+	t_traj_exec_data_t *exec = &d->exec_data;
 	return exec->acc;
 }

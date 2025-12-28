@@ -70,8 +70,13 @@ struct motor_data {
 	enum motor_fault_code faultcode;
 	fsm_cb_t *state_machine;
 };
+
 void foc_curr_regulator(uint32_t *adc_raw);
+
+void update_motor_dq_pi_param(struct device *motor, float kp, float ki);
+void update_motor_pos_pi_param(struct device *motor, float kp, float ki);
 void update_motor_vel_pi_param(struct device *motor, float kp, float ki);
 void update_motor_vel_target(struct device *motor, float tar);
+void update_motor_pos_target(struct device *motor, float tar);
 
 #endif

@@ -45,6 +45,7 @@ static struct currsmp_t currsmp1 = {
 
 static struct feedback_config feedback1_cfg = {
 	.get_raw = as5047_read_raw,
+	.radius = 50.0f,
 	.params = NULL,
 };
 static struct feedback_data feedback1_data = {0};
@@ -67,11 +68,11 @@ static fsm_cb_t m1_statemachine = {
 };
 
 #include "t_trajectory.h"
-static s_tarj_config_t scp1_config = {
-	.acc = 5.0f,  // 2 m/s²
-	.vmax = 4.0f, // 1 m/s
+static t_tarj_config_t scp1_config = {
+	.acc = 3.0f,  // 2 m/s²
+	.vmax = 5.0f, // 1 m/s
 };
-static s_tarj_data_t scp1_data;
+static t_tarj_data_t scp1_data;
 static struct device traj_plan1 = {
 	.config = &scp1_config,
 	.data = &scp1_data,

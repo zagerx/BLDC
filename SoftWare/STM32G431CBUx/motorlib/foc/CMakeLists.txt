@@ -8,7 +8,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     foc.c
     openloop_voltage.c
     svpwm.c
-    t_trajectory_test.c
+    t_trajectory.c
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE

@@ -37,7 +37,7 @@ void update_feedback(struct feedback_t *feedback, float dt)
 	const float cpr_f = (float)cfg->params->cpr;
 	const int32_t cpr_i = (int32_t)cfg->params->cpr;
 	const float pole_pairs_f = (float)cfg->params->pole_pairs;
-
+	const float radius = cfg->radius;
 	uint32_t current_raw = cfg->get_raw();
 	data->raw = current_raw;
 
@@ -70,7 +70,7 @@ void update_feedback(struct feedback_t *feedback, float dt)
 	static int32_t total_counts_prev = 0;
 	int32_t counts_diff = data->total_counts - total_counts_prev;
 
-	if (data->accumulated_dt > 0.0002f) // 或 0.002f
+	if (data->accumulated_dt > 0.001f) // 10KHZ的PWM频率 对应1KHZ
 	{
 		// 基于计数差计算角度变化
 		float angle_diff = (two_pi / cpr_f) * counts_diff * (float)cfg->params->direction;
@@ -81,14 +81,21 @@ void update_feedback(struct feedback_t *feedback, float dt)
 		total_counts_prev = data->total_counts;
 
 		// 滤波
-		float filter_alpha = 1.0f;
-		data->mech_vel =
-			(1.0f - filter_alpha) * data->mech_vel + filter_alpha * raw_vel * K_LINE;
+		float filter_alpha = 0.3f;
+		data->mech_vel = (1.0f - filter_alpha) * data->mech_vel +
+				 filter_alpha * raw_vel * cfg->radius;
 	}
+	data->mech_angle = current_mech_angle;
 
 	// 更新位置
-	data->odom = current_mech_angle * K_LINE;
+	data->odom = current_mech_angle * radius;
 }
+float read_feedback_mech_angle(struct feedback_t *feedback)
+{
+	struct feedback_data *data = feedback->data;
+	return data->mech_angle;
+}
+
 /* 其余函数保持不变 */
 float read_feedback_elec_angle(struct feedback_t *feedback)
 {
@@ -99,6 +106,7 @@ float read_feedback_elec_angle(struct feedback_t *feedback)
 float read_feedback_velocity(struct feedback_t *feedback)
 {
 	struct feedback_data *data = feedback->data;
+	// struct feedback_config *cfg = feedback->config;
 	return data->mech_vel;
 }
 float read_feedback_odome(struct feedback_t *feedback)

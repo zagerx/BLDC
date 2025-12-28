@@ -6,34 +6,34 @@
 /* =========================================================
  * 内部函数声明
  * ========================================================= */
-static void traj_exec_init(s_traj_exec_data_t *d, float start_pos, float start_vel,
+static void traj_exec_init(t_traj_exec_data_t *d, float start_pos, float start_vel,
 			   float start_acc);
 
-static void traj_exec_step(s_traj_exec_data_t *d, float dt);
+static void traj_exec_step(t_traj_exec_data_t *d, float dt);
 
-static void traj_exec_load(s_traj_exec_data_t *d, const s_traj_seg_t *segs, int seg_cnt);
+static void traj_exec_load(t_traj_exec_data_t *d, const t_traj_seg_t *segs, int seg_cnt);
 
-static s_traj_plan_status_t traj_plan(s_traj_plan_data_t *d);
+static t_traj_plan_status_t traj_plan(t_traj_plan_data_t *d);
 
-static void traj_plan_init(s_traj_plan_data_t *d, float acc_max, float v_max, float exec_cycle);
-
-static bool traj_plan_three_segment(const s_traj_plan_input_t *in, s_traj_plan_output_t *out,
+static void traj_plan_init(t_traj_plan_data_t *d, float start, float acc_max, float v_max,
+			   float exec_cycle);
+static bool traj_plan_three_segment(const t_traj_plan_input_t *in, t_traj_plan_output_t *out,
 				    float dir);
 
 /* =========================================================
  * Planner 初始化（系统上电仅调用一次）
  * ========================================================= */
-int s_planner_init(struct device *dev, float start_pos, float start_vel, float start_acc,
+int s_planner_init(struct device *t_tarj, float start_pos, float start_vel, float start_acc,
 		   float exec_cycle)
 {
-	s_tarj_data_t *data = dev->data;
-	s_traj_plan_data_t *plan = &data->plan_data;
-	s_traj_exec_data_t *exec = &data->exec_data;
+	t_tarj_data_t *data = t_tarj->data;
+	t_traj_plan_data_t *plan = &data->plan_data;
+	t_traj_exec_data_t *exec = &data->exec_data;
 
 	traj_exec_init(exec, start_pos, start_vel, start_acc);
 
-	s_tarj_config_t *conf = dev->config;
-	traj_plan_init(plan, conf->acc, conf->vmax, exec_cycle);
+	t_tarj_config_t *conf = t_tarj->config;
+	traj_plan_init(plan, start_pos, conf->acc, conf->vmax, exec_cycle);
 
 	return 0;
 }
@@ -41,9 +41,9 @@ int s_planner_init(struct device *dev, float start_pos, float start_vel, float s
 /* =========================================================
  * Planner 执行（周期调用）
  * ========================================================= */
-void s_planner_action(struct device *dev, float dt)
+void s_planner_action(struct device *t_tarj, float dt)
 {
-	s_traj_exec_data_t *exec = &((s_tarj_data_t *)dev->data)->exec_data;
+	t_traj_exec_data_t *exec = &((t_tarj_data_t *)t_tarj->data)->exec_data;
 
 	if (exec->state == TRAJ_EXEC_END) {
 		exec->state = TRAJ_EXEC_IDLE;
@@ -60,11 +60,11 @@ void s_planner_action(struct device *dev, float dt)
 /* =========================================================
  * 更新目标位置（在线 replanning）
  * ========================================================= */
-s_traj_plan_status_t s_planner_update_target(struct device *dev, float new_target_pos)
+t_traj_plan_status_t s_planner_update_target(struct device *t_tarj, float new_target_pos)
 {
-	s_tarj_data_t *d = dev->data;
-	s_traj_plan_data_t *plan = &d->plan_data;
-	s_traj_exec_data_t *exec = &d->exec_data;
+	t_tarj_data_t *d = t_tarj->data;
+	t_traj_plan_data_t *plan = &d->plan_data;
+	t_traj_exec_data_t *exec = &d->exec_data;
 
 	if (fabsf(new_target_pos - plan->pre_pos) < 1e-4f) {
 		return TRAJ_PLAN_NOT_NEEDED;
@@ -76,7 +76,7 @@ s_traj_plan_status_t s_planner_update_target(struct device *dev, float new_targe
 	plan->plan_in.a0 = exec->acc;
 	plan->plan_in.target_pos = new_target_pos;
 
-	s_traj_plan_status_t ret = traj_plan(plan);
+	t_traj_plan_status_t ret = traj_plan(plan);
 	if (ret != TRAJ_PLAN_OK) {
 		/* 保持当前轨迹继续跑 */
 		return ret;
@@ -89,10 +89,10 @@ s_traj_plan_status_t s_planner_update_target(struct device *dev, float new_targe
 /* =========================================================
  * 核心规划入口
  * ========================================================= */
-static s_traj_plan_status_t traj_plan(s_traj_plan_data_t *d)
+static t_traj_plan_status_t traj_plan(t_traj_plan_data_t *d)
 {
-	s_traj_plan_input_t *in = &d->plan_in;
-	s_traj_plan_output_t *out = &d->plan_out;
+	t_traj_plan_input_t *in = &d->plan_in;
+	t_traj_plan_output_t *out = &d->plan_out;
 
 	if (!d || in->a_max <= 0.0f || in->v_max <= 0.0f) {
 		return TRAJ_PLAN_ERR_PARAM;
@@ -122,7 +122,7 @@ static s_traj_plan_status_t traj_plan(s_traj_plan_data_t *d)
 /* =========================================================
  * 三段式（梯形）速度规划 + 位移一致性修复
  * ========================================================= */
-static bool traj_plan_three_segment(const s_traj_plan_input_t *in, s_traj_plan_output_t *out,
+static bool traj_plan_three_segment(const t_traj_plan_input_t *in, t_traj_plan_output_t *out,
 				    float dir)
 {
 	out->seg_cnt = 0;
@@ -139,7 +139,7 @@ static bool traj_plan_three_segment(const s_traj_plan_input_t *in, s_traj_plan_o
 	 * ----------------------------- */
 	if (v0 < 0.0f) {
 		float t = -v0 / a;
-		out->segs[out->seg_cnt++] = (s_traj_seg_t){.t = t, .a = dir * a};
+		out->segs[out->seg_cnt++] = (t_traj_seg_t){.t = t, .a = dir * a};
 		v0 = 0.0f;
 	}
 
@@ -153,7 +153,7 @@ static bool traj_plan_three_segment(const s_traj_plan_input_t *in, s_traj_plan_o
 	 * ----------------------------- */
 	if (dp <= d_stop) {
 		float t = v0 / a;
-		out->segs[out->seg_cnt++] = (s_traj_seg_t){.t = t, .a = -dir * a};
+		out->segs[out->seg_cnt++] = (t_traj_seg_t){.t = t, .a = -dir * a};
 		return true;
 	}
 
@@ -167,19 +167,19 @@ static bool traj_plan_three_segment(const s_traj_plan_input_t *in, s_traj_plan_o
 		/* 加速到 vmax */
 		if (v0 < v_max) {
 			float t = (v_max - v0) / a;
-			out->segs[out->seg_cnt++] = (s_traj_seg_t){.t = t, .a = dir * a};
+			out->segs[out->seg_cnt++] = (t_traj_seg_t){.t = t, .a = dir * a};
 		}
 
 		/* 匀速 */
 		float d_const = dp - d_acc - d_dec;
 		float t_const = d_const / v_max;
 		if (t_const > 0.0f) {
-			out->segs[out->seg_cnt++] = (s_traj_seg_t){.t = t_const, .a = 0.0f};
+			out->segs[out->seg_cnt++] = (t_traj_seg_t){.t = t_const, .a = 0.0f};
 		}
 
 		/* 减速到 0 */
 		float t_dec = v_max / a;
-		out->segs[out->seg_cnt++] = (s_traj_seg_t){.t = t_dec, .a = -dir * a};
+		out->segs[out->seg_cnt++] = (t_traj_seg_t){.t = t_dec, .a = -dir * a};
 	} else {
 		/* 达不到 vmax，三角形速度 */
 		float v_peak = sqrtf(a * dp + 0.5f * v0 * v0);
@@ -188,24 +188,26 @@ static bool traj_plan_three_segment(const s_traj_plan_input_t *in, s_traj_plan_o
 		float t2 = v_peak / a;
 
 		if (t1 > 0.0f) {
-			out->segs[out->seg_cnt++] = (s_traj_seg_t){.t = t1, .a = dir * a};
+			out->segs[out->seg_cnt++] = (t_traj_seg_t){.t = t1, .a = dir * a};
 		}
 
-		out->segs[out->seg_cnt++] = (s_traj_seg_t){.t = t2, .a = -dir * a};
+		out->segs[out->seg_cnt++] = (t_traj_seg_t){.t = t2, .a = -dir * a};
 	}
 
 	return (out->seg_cnt > 0);
 }
 
-static void traj_plan_init(s_traj_plan_data_t *d, float acc_max, float v_max, float exec_cycle)
+static void traj_plan_init(t_traj_plan_data_t *d, float start, float acc_max, float v_max,
+			   float exec_cycle)
 {
 	memset(d, 0, sizeof(*d));
 	d->plan_in.a_max = acc_max;
 	d->plan_in.v_max = v_max;
 	d->plan_in.t_min = exec_cycle * 4.0f;
+	d->pre_pos = start;
 }
 
-static void traj_exec_init(s_traj_exec_data_t *d, float start_pos, float start_vel, float start_acc)
+static void traj_exec_init(t_traj_exec_data_t *d, float start_pos, float start_vel, float start_acc)
 {
 	memset(d, 0, sizeof(*d));
 	d->pos = start_pos;
@@ -214,7 +216,7 @@ static void traj_exec_init(s_traj_exec_data_t *d, float start_pos, float start_v
 	d->state = TRAJ_EXEC_IDLE;
 }
 
-static void traj_exec_load(s_traj_exec_data_t *d, const s_traj_seg_t *segs, int seg_cnt)
+static void traj_exec_load(t_traj_exec_data_t *d, const t_traj_seg_t *segs, int seg_cnt)
 {
 	d->segs = segs;
 	d->seg_cnt = seg_cnt;
@@ -223,7 +225,7 @@ static void traj_exec_load(s_traj_exec_data_t *d, const s_traj_seg_t *segs, int 
 	d->state = (seg_cnt > 0) ? TRAJ_EXEC_RUNNING : TRAJ_EXEC_END;
 }
 
-static void traj_exec_step(s_traj_exec_data_t *d, float dt)
+static void traj_exec_step(t_traj_exec_data_t *d, float dt)
 {
 	float remain = dt;
 
@@ -233,7 +235,7 @@ static void traj_exec_step(s_traj_exec_data_t *d, float dt)
 			break;
 		}
 
-		const s_traj_seg_t *s = &d->segs[d->cur_seg];
+		const t_traj_seg_t *s = &d->segs[d->cur_seg];
 		float t_left = s->t - d->seg_time;
 		float use = (remain < t_left) ? remain : t_left;
 
@@ -249,4 +251,25 @@ static void traj_exec_step(s_traj_exec_data_t *d, float dt)
 			d->cur_seg++;
 		}
 	}
+}
+
+float s_planner_get_pos(const struct device *t_tarj)
+{
+	t_tarj_data_t *d = t_tarj->data;
+	t_traj_exec_data_t *exec = &d->exec_data;
+	return exec->pos;
+}
+
+float s_planner_get_vel(const struct device *t_tarj)
+{
+	t_tarj_data_t *d = t_tarj->data;
+	t_traj_exec_data_t *exec = &d->exec_data;
+	return exec->vel;
+}
+
+float s_planner_get_acc(const struct device *t_tarj)
+{
+	t_tarj_data_t *d = t_tarj->data;
+	t_traj_exec_data_t *exec = &d->exec_data;
+	return exec->acc;
 }
