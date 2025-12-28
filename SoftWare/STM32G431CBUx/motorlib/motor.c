@@ -6,14 +6,15 @@
 #include "foc_data.h"
 #include "inverter.h"
 #include "svpwm.h"
-
 #include "statemachine.h"
-
 #include "motor_cfg.h"
 #include <stdint.h>
 #include "motor_state.h"
 #include "motor_carible.h"
 #include "openloop_voltage.h"
+#include "t_trajectory.h"
+#include "motor_params.h"
+
 extern struct device motor1;
 
 void foc_curr_regulator(uint32_t *adc_raw)
@@ -45,8 +46,6 @@ void foc_curr_regulator(uint32_t *adc_raw)
 	*/
 	DISPATCH_FSM(m_data->state_machine);
 }
-#include "t_trajectory.h"
-extern void test_solve_unconstrained_peak_velocity(void);
 
 void motor_init(struct device *motor)
 {
@@ -95,7 +94,6 @@ void motor_task(struct device *motor)
 		break;
 	}
 }
-#include "motor_params.h"
 
 void update_motor_dq_pi_param(struct device *motor, float kp, float ki)
 {
