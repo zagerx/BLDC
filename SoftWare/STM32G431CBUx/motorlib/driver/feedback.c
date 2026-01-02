@@ -12,6 +12,7 @@ static float normalize_angle(float angle)
 	}
 	return angle;
 }
+static float feedback_calc_mOmega(struct feedback_t *feedback, float dt);
 
 // 初始化反馈模块
 int feedback_init(struct feedback_t *feedback)
@@ -21,22 +22,31 @@ int feedback_init(struct feedback_t *feedback)
 	if (cfg->params->cpr == 0 || cfg->params->direction == 0 || cfg->params->pole_pairs == 0) {
 		return -1;
 	}
+	struct feedback_data *data = feedback->data;
+	data->tim_acc = 0.0f;
 	return 0;
 }
-
+void update_feedback_raw(struct feedback_t *feedback)
+{
+	struct feedback_config *cfg = feedback->config;
+	struct feedback_data *data = feedback->data;
+	data->raw = cfg->get_raw();
+}
 // 角度/速度更新
 void update_feedback(struct feedback_t *feedback, float dt)
 {
 	(void)dt;
 	struct feedback_config *cfg = feedback->config;
 	struct feedback_data *data = feedback->data;
-
+	// if (cfg->params->cpr == 0 || cfg->params->direction == 0 || cfg->params->pole_pairs == 0)
+	// { 	return;
+	// }
 	const float two_pi = 2.0f * M_PI;
 	const float cpr_f = (float)cfg->params->cpr;
 	const int32_t cpr_i = (int32_t)cfg->params->cpr;
 	const float pole_pairs_f = (float)cfg->params->pole_pairs;
-	uint32_t current_raw = cfg->get_raw();
-	data->raw = current_raw;
+	uint32_t current_raw = data->raw;
+	// data->raw = current_raw;
 
 	int32_t adjusted_raw = (int32_t)current_raw - (int32_t)cfg->params->offset;
 
@@ -61,6 +71,13 @@ void update_feedback(struct feedback_t *feedback, float dt)
 	data->elec_angle = normalize_angle(current_mech_angle * pole_pairs_f);
 
 	data->mech_angle_acc = current_mech_angle;
+
+	if (data->tim_acc >= SPEED_LOOP_CYCLE) {
+		data->tim_acc = 0.0f;
+		feedback_calc_mOmega(feedback, SPEED_LOOP_CYCLE);
+	} else {
+		data->tim_acc += dt;
+	}
 }
 float read_feedback_mech_angle(struct feedback_t *feedback)
 {
@@ -74,10 +91,10 @@ float read_feedback_elec_angle(struct feedback_t *feedback)
 	struct feedback_data *data = feedback->data;
 	return data->elec_angle;
 }
-float read_feedback_mOmeage(struct feedback_t *feedback, float dt)
+static float feedback_calc_mOmega(struct feedback_t *feedback, float dt)
 {
 	struct feedback_data *data = feedback->data;
-	float cur_mech_angle = read_feedback_mech_angle(feedback);
+	float cur_mech_angle = data->mech_angle_acc;
 
 	float dtheta = cur_mech_angle - data->mech_angle_acc_prev;
 	if (dtheta > M_PI) {
@@ -97,12 +114,12 @@ float read_feedback_mOmeage(struct feedback_t *feedback, float dt)
 	data->mech_angle_acc_prev = cur_mech_angle;
 	return data->mech_omega;
 }
-float read_feedback_velocity(struct feedback_t *feedback, float dt)
+float read_feedback_velocity(struct feedback_t *feedback)
 {
 	struct feedback_config *cfg = feedback->config;
 	struct feedback_data *data = feedback->data;
 	float radius = cfg->radius;
-	data->liner_vel = read_feedback_mOmeage(feedback, dt) * radius;
+	data->liner_vel = data->mech_omega * radius;
 	return data->liner_vel;
 }
 
@@ -124,6 +141,6 @@ void feedback_reset(struct feedback_t *feedback)
 
 uint32_t read_feedback_raw(struct feedback_t *feedback)
 {
-	struct feedback_config *fb_cfg = feedback->config;
-	return fb_cfg->get_raw();
+	struct feedback_data *data = feedback->data;
+	return data->raw;
 }

@@ -45,7 +45,7 @@ typedef fsm_rt_t (*fsm_t)(fsm_cb_t *);
  * @brief State machine control block
  */
 struct fsm_cb {
-	unsigned char phase; ///< Current state
+	int16_t phase; ///< Current state
 	const char *name;
 	uint32_t count;
 	void *p1;            ///< User data pointer

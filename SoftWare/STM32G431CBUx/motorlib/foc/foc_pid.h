@@ -29,4 +29,6 @@ void foc_pid_reset(struct foc_pid *pid);
 float foc_pid_run(struct foc_pid *pid, float target, float meas, float dt);
 void foc_pid_saturation_feedback(struct foc_pid *pid, float output_real, float output_desire);
 
+void foc_currentpid_saturation(struct foc_pid *pid, float output_real, float output_desire);
+float foc_currentloop_pid_run(struct foc_pid *pid, float target, float meas, float dt);
 #endif

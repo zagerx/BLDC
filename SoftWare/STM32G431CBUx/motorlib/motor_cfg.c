@@ -8,13 +8,12 @@
 #include "motor_carible.h"
 #include "statemachine.h"
 #include "motor_state.h"
-
+#include "t_trajectory.h"
 #include "currsmp.h"
 #include "inverter.h"
 #include "stm32_pwm.h"
 
 #include "feedback.h"
-#include "stm32_mt6816.h"
 #include "stm32_as5047.h"
 
 extern struct device motor1;
@@ -67,7 +66,6 @@ static fsm_cb_t m1_statemachine = {
 	.p1 = &motor1,
 };
 
-#include "t_trajectory.h"
 static t_tarj_config_t scp1_config = {
 	.acc = 3.0f,  // 2 m/s²
 	.vmax = 5.0f, // 1 m/s
@@ -83,7 +81,10 @@ static struct motor_data m1_data = {
 	.mode = MOTOR_MODE_IDLE,
 	.faultcode = MOTOR_FAULTCODE_NOERR,
 	.state_machine = &m1_statemachine,
-	.scp = &traj_plan1,
+	.foc_data =
+		{
+			.scp = &traj_plan1,
+		},
 };
 
 struct device motor1 = {

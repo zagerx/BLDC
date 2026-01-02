@@ -14,7 +14,7 @@
 #include "openloop_voltage.h"
 #include "t_trajectory.h"
 #include "motor_params.h"
-
+#include "foc.h"
 extern struct device motor1;
 
 void foc_curr_regulator(uint32_t *adc_raw)
@@ -23,7 +23,23 @@ void foc_curr_regulator(uint32_t *adc_raw)
 	struct motor_data *m_data = motor->data;
 	struct motor_config *m_cfg = motor->config;
 	struct currsmp_t *currsmp = m_cfg->currsmp;
+	struct feedback_t *feedback = m_cfg->feedback;
+
 	currsmp_update_raw(currsmp, adc_raw);
+	update_feedback_raw(feedback);
+
+	fsm_cb_t *fsm = m_data->state_machine;
+	if (fsm->current_state != motor_carible_state) {
+		struct foc_data *f_data = &m_data->foc_data;
+		float i_abc[4];
+		currsmp_update_currents(currsmp, i_abc);
+		update_feedback(feedback, PWM_CYCLE);
+		float eangle = read_feedback_elec_angle(feedback);
+		float velocity = read_feedback_velocity(feedback);
+		float odom = read_feedback_odome(feedback);
+		foc_data_write_meas(f_data, i_abc, i_abc[3], eangle, velocity, odom);
+		foc_data_cacle_meas_idq(f_data);
+	}
 
 	/*
 		//电机状态调度
@@ -79,6 +95,11 @@ void motor_init(struct device *motor)
 	struct motor_parameters *m_params = &m_data->params;
 	calibration_modules_init(carlib, inverter, currsmp, feedback, op, m_params);
 	currsmp_init(currsmp);
+
+	// 判断编码器是否校准
+	if (feedback_init(feedback)) {
+		fsm->current_state = motor_carible_state;
+	}
 }
 
 void motor_task(struct device *motor)
@@ -120,11 +141,13 @@ void update_motor_pos_pi_param(struct device *motor, float kp, float ki)
 void update_motor_pos_target(struct device *motor, float tar)
 {
 	struct motor_data *m_data = motor->data;
-	s_planner_update_target(m_data->scp, tar);
+	struct foc_data *f_data = &m_data->foc_data;
+	s_planner_update_target(f_data->scp, tar);
 }
 
 void update_motor_vel_target(struct device *motor, float tar)
 {
 	struct motor_data *m_data = motor->data;
-	s_planner_update_target(m_data->scp, tar);
+	struct foc_data *f_data = &m_data->foc_data;
+	s_planner_update_target(f_data->scp, tar);
 }

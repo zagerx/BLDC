@@ -20,8 +20,7 @@
 #define ENC_CPR 16383U /* 单圈绝对值编码器码值（14-bit） */
 
 /* 开环试运行 */
-#define OPENLOOP_SPEED_RPM 5.0f  /* 试运行目标转速，单位 RPM */
-#define OPENLOOP_VOLTAGE_V 0.03f /* 试运行定子电压，单位 V  */
-#define ROTATE_DURATION_S  6.0f  /* 试运行旋转时长，单位 s   */
-#define ALIGN_DURATION_S   1.0f  /* 初始对齐时长，单位 s     */
+#define OPENLOOP_VOLTAGE_V 0.3f  /* 试运行定子电压，单位 V  */
+#define OPENLOOP_VBUS_V    24.0f /* 自开环强拖时母线电压 单位 V  */
+
 #endif

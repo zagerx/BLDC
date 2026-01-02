@@ -4,6 +4,7 @@
 #include "device.h"
 #include "stdint.h"
 #include "stdbool.h"
+#include "motor_cfg.h"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
 #endif
@@ -27,7 +28,7 @@ struct feedback_data {
 
 	int32_t prev_counts;
 	int64_t total_counts;
-
+	float tim_acc;
 	float mech_angle_acc;
 	float mech_angle_acc_prev;
 
@@ -56,9 +57,10 @@ struct feedback_t {
 
 int feedback_init(struct feedback_t *feedback);
 void update_feedback(struct feedback_t *feedback, float dt);
+void update_feedback_raw(struct feedback_t *feedback);
 
 float read_feedback_mech_angle(struct feedback_t *feedback);
-float read_feedback_velocity(struct feedback_t *feedback, float dt);
+float read_feedback_velocity(struct feedback_t *feedback);
 float read_feedback_odome(struct feedback_t *feedback);
 uint32_t read_feedback_raw(struct feedback_t *feedback);
 float read_feedback_elec_angle(struct feedback_t *feedback);

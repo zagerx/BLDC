@@ -226,7 +226,7 @@ static const command_map_t cmd_map[] = {
 	{"VP_PI", 6, INDEX_VP_PI},
 	{"POS_TAR", 1, INDEX_POSITION_TAR},
 };
-extern fsm_rt_t motor_debug_idle_state(fsm_cb_t *obj);
+extern fsm_rt_t motor_ready_state(fsm_cb_t *obj);
 extern struct device motor1;
 #include "t_trajectory.h"
 void process_data(uint8_t *data, uint16_t len)
@@ -308,7 +308,7 @@ void process_data(uint8_t *data, uint16_t len)
 					kp = input[0];
 					ki = input[1];
 					update_motor_vel_pi_param(motor, kp, ki);
-					TRAN_STATE(m_data->state_machine, motor_debug_idle_state);
+					TRAN_STATE(m_data->state_machine, motor_ready_state);
 				} else if (cmd_map[i].data_index == INDEX_VP_PI) {
 					float kp, ki;
 					kp = input[0];
@@ -320,7 +320,7 @@ void process_data(uint8_t *data, uint16_t len)
 					kp = input[4];
 					ki = input[5];
 					update_motor_pos_pi_param(motor, kp, ki);
-					TRAN_STATE(m_data->state_machine, motor_debug_idle_state);
+					TRAN_STATE(m_data->state_machine, motor_ready_state);
 				} else if (cmd_map[i].data_index == INDEX_POSITION_TAR) {
 					update_motor_pos_target(motor, input[0]);
 				} else if (cmd_map[i].data_index == INDEX_VELOCITY_REG) {

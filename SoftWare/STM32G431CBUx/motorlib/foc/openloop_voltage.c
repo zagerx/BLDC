@@ -3,13 +3,33 @@
 #include "inverter.h"
 #include <string.h>
 #include <math.h>
+#include "coord_transform.h"
+#include "svpwm.h"
+#include "motor_cfg.h"
+#undef RAD_TO_DEG
+#define RAD_TO_DEG (180.0f / M_PI)
 
 #ifndef M_TWOPI
 #define M_TWOPI (2.0f * 3.14159265358979323846f)
 #endif
 
-extern void foc_apply_voltage_dq(struct inverter_t *inverter, float ud, float uq, float elec_angle);
+void openloop_voltage_apply_dq(struct inverter_t *inverter, float ud, float uq, float elec_angle,
+			       float vbus)
+{
+	float sin_val, cos_val;
+	float ualpha, ubeta;
+	float duty[3];
+	ud *= (1.0f / (vbus * 0.57735f));
+	uq *= (1.0f / (vbus * 0.57735f));
+	/* dq -> αβ */
+	sin_cos_f32(elec_angle * RAD_TO_DEG, &sin_val, &cos_val);
+	inv_park_f32(ud, uq, &ualpha, &ubeta, sin_val, cos_val);
 
+	/* αβ -> PWM */
+	svpwm_seven_segment(ualpha, ubeta, &duty[0], &duty[1], &duty[2]);
+	/* Apply to inverter */
+	inverter_set_3phase_voltages(inverter, duty[0], duty[1], duty[2]);
+}
 /* --------------------------------------------------------- */
 
 void openloop_voltage_init(struct openloop_voltage *op, struct inverter_t *inverter)
@@ -63,7 +83,8 @@ int openloop_voltage_align_update(struct openloop_voltage *op, float dt)
 		pos = &op->align_cfg.positions[op->align_index];
 	}
 
-	foc_apply_voltage_dq(op->inverter, 0.0f, op->align_cfg.voltage, pos->angle);
+	openloop_voltage_apply_dq(op->inverter, 0.0f, op->align_cfg.voltage, pos->angle,
+				  OPENLOOP_VBUS_V);
 	return 1;
 }
 
@@ -107,7 +128,8 @@ int openloop_voltage_rotate_update(struct openloop_voltage *op, float dt)
 		op->elec_angle += M_TWOPI;
 	}
 
-	foc_apply_voltage_dq(op->inverter, 0.0f, op->rotate_cfg.voltage, op->elec_angle);
+	openloop_voltage_apply_dq(op->inverter, 0.0f, op->rotate_cfg.voltage, op->elec_angle,
+				  OPENLOOP_VBUS_V);
 	return 1;
 }
 

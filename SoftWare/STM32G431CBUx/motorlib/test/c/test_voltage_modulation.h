@@ -1,0 +1,4 @@
+#ifndef TEST_VOLTAGE_MODULATION_H
+#define TEST_VOLTAGE_MODULATION_H
+
+#endif

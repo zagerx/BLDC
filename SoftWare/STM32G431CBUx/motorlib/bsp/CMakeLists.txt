@@ -8,7 +8,7 @@ if(MOTOR_TYPE_HMT)
     )
 else()
     list(APPEND MODE_SRCS
-        stm32_pwm_eulr.c
+        stm32_pwm.c
         stm32_as5047.c
     )
 endif()

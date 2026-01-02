@@ -30,6 +30,7 @@ void currsmp_update_currents(struct currsmp_t *currsmp, float *iabc)
 	iabc[0] = data->ia;
 	iabc[1] = data->ib;
 	iabc[2] = data->ic;
+	iabc[3] = data->vbus;
 }
 float get_currsmp_vbus(struct currsmp_t *currsmp)
 {

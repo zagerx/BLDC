@@ -4,123 +4,60 @@
  */
 
 #include <stdint.h>
+#include <math.h>
+#define FLOAT_EPS 1e-6f
+#undef RAD_TO_DEG
+#define RAD_TO_DEG (180.0f / M_PI)
+static inline float clamp_0_1(float x)
+{
+	if (x < 0.0f) {
+		return 0.0f;
+	}
+	if (x > 1.0f) {
+		return 1.0f;
+	}
+	return x;
+}
 
-#undef CLAMP
-#undef MIN
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-#define CLAMP(val, low, high) (((val) <= (low)) ? (low) : MIN(val, high))
+/*
+ * Seven-Segment SVPWM (Projection Method)
+ */
+void svpwm_seven_segment(float v_alpha, float v_beta, float *duty_a, float *duty_b, float *duty_c)
+{
+	/* ----------- 奇点处理 ----------- */
+	if (fabsf(v_alpha) < FLOAT_EPS && fabsf(v_beta) < FLOAT_EPS) {
+		*duty_a = 0.5f;
+		*duty_b = 0.5f;
+		*duty_c = 0.5f;
+		return;
+	}
 
-/*******************************************************************************
- * Private
- ******************************************************************************/
+	/* ----------- αβ → abc 投影（α 轴对齐 A 相） ----------- */
+	float va = v_alpha;
+	float vb = -0.5f * v_alpha + 0.8660254037844386f * v_beta; // +sqrt(3)/2
+	float vc = -0.5f * v_alpha - 0.8660254037844386f * v_beta;
 
-/** Value sqrt(3). */
-#define SQRT_3 1.7320508075688773f
+	/* ----------- 排序：max / mid / min ----------- */
+	float vmax = fmaxf(va, fmaxf(vb, vc));
+	float vmin = fminf(va, fminf(vb, vc));
 
-/*******************************************************************************
- * Public
- ******************************************************************************/
+	/* ----------- 关键增益校准（封版） ----------- */
+	const float GAIN = 2.0f / 3.0f;
 
-void svm_set(float va, float vb, float *dabc) {
-  int8_t sector;
-  sector = 0;
-  if (vb * (1 << 15) > 0) {
-    sector = 1;
-  }
-  if (((SQRT_3 * va - vb) / 2.0F * (1 << 15)) > 0) {
-    sector += 2;
-  }
-  if (((-SQRT_3 * va - vb) / 2.0F) * (1 << 15) > 0) {
-    sector += 4;
-  }
-  float X, Y, Z;
-  X = (SQRT_3 * vb);
-  Y = (1.5F * va + SQRT_3 / 2.0f * vb);
-  Z = (-1.5F * va + SQRT_3 / 2.0f * vb);
+	float T1_plus_T2 = (vmax - vmin) * GAIN;
+	T1_plus_T2 = clamp_0_1(T1_plus_T2);
 
-  float s_vector = 0.0f, m_vector = 0.0f;
-  switch (sector) {
-  case 1:
-    m_vector = Z;
-    s_vector = Y;
-    break;
+	float T0 = 1.0f - T1_plus_T2;
+	T0 = clamp_0_1(T0);
 
-  case 2:
-    m_vector = Y;
-    s_vector = -X;
-    break;
+	float offset = 0.5f * T0;
 
-  case 3:
-    m_vector = -Z;
-    s_vector = X;
-    break;
+	/* ----------- 七段式等效占空比 ----------- */
+	float da = (va - vmin) * GAIN + offset;
+	float db = (vb - vmin) * GAIN + offset;
+	float dc = (vc - vmin) * GAIN + offset;
 
-  case 4:
-    m_vector = -X;
-    s_vector = Z;
-    break;
-
-  case 5:
-    m_vector = X;
-    s_vector = -Y;
-    break;
-
-  default:
-    m_vector = -Y;
-    s_vector = -Z;
-    break;
-  }
-  if (m_vector + s_vector > 1.0f) {
-    float sum;
-    sum = m_vector + s_vector;
-    m_vector = (m_vector / (sum));
-    s_vector = (s_vector / (sum));
-  }
-  float ta, tb, tc;
-  ta = (1.0f - (m_vector + s_vector)) / 4.0f;
-  tb = ta + m_vector / 2.0f;
-  tc = tb + s_vector / 2.0f;
-  float t_cmp1 = 0.0f;
-  float t_cmp2 = 0.0f;
-  float t_cmp3 = 0.0f;
-  switch (sector) {
-  case 1:
-    t_cmp1 = tb;
-    t_cmp2 = ta;
-    t_cmp3 = tc;
-    break;
-  case 2:
-    t_cmp1 = ta;
-    t_cmp2 = tc;
-    t_cmp3 = tb;
-    break;
-  case 3:
-    t_cmp1 = ta;
-    t_cmp2 = tb;
-    t_cmp3 = tc;
-    break;
-  case 4:
-    t_cmp1 = tc;
-    t_cmp2 = tb;
-    t_cmp3 = ta;
-    break;
-  case 5:
-    t_cmp1 = tc;
-    t_cmp2 = ta;
-    t_cmp3 = tb;
-    break;
-  case 6:
-    t_cmp1 = tb;
-    t_cmp2 = tc;
-    t_cmp3 = ta;
-    break;
-  }
-  /*-------------------------占空比---------------------------*/
-  float da, db, dc;
-  da = (1.0f - t_cmp1 * 2.0f);
-  db = (1.0f - t_cmp2 * 2.0f);
-  dc = (1.0f - t_cmp3 * 2.0f);
-  dabc[0] = CLAMP(da, 0.01f, 0.99f);
-  dabc[1] = CLAMP(db, 0.01f, 0.99f);
-  dabc[2] = CLAMP(dc, 0.01f, 0.99f);
+	*duty_a = clamp_0_1(da);
+	*duty_b = clamp_0_1(db);
+	*duty_c = clamp_0_1(dc);
 }

@@ -44,7 +44,8 @@ struct openloop_voltage {
 };
 
 /* ---------------- API ---------------- */
-
+void openloop_voltage_apply_dq(struct inverter_t *inverter, float ud, float uq, float elec_angle,
+			       float vbus);
 void openloop_voltage_init(struct openloop_voltage *op, struct inverter_t *inverter);
 
 /* 对齐（单点 / 多点统一） */

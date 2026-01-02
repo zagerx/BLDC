@@ -60,7 +60,6 @@ struct motor_parameters {
 	// float flux_linkage;	 // 磁链 (Wb)
 };
 struct motor_data {
-	struct device *scp;
 	struct foc_data foc_data;
 	struct calibration_modules calib;
 	struct openloop_voltage op;

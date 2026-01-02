@@ -4,6 +4,7 @@
 #include "carlib_cfg.h"
 #include "coord_transform.h"
 #include "device.h"
+#include "feedback.h"
 #include "motor_cfg.h"
 #include "openloop_voltage.h"
 #include <stdint.h>
@@ -57,8 +58,10 @@ int calibration_modules_update(struct calibration_modules *calib, float dt)
 		}
 	} break;
 	case CARIBLE_ENCODER_DONE: {
+		if (feedback_init(carlib_cfg->feedback) != 0) {
+			break;
+		}
 		calib->state = ALL_CALIB_DONE;
-
 	} break;
 
 	case ALL_CALIB_DONE:

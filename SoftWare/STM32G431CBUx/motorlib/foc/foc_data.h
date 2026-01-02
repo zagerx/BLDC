@@ -9,10 +9,15 @@
  *  - 特点：只读（对控制环而言）
  * ========================================================= */
 struct foc_meas {
+	float ia;
+	float ib;
+	float ic;
+	float vbus;
+	float eangle;
 	float id;       /* d-axis current */
 	float iq;       /* q-axis current */
-	float velocity; /* mechanical or electrical velocity */
-	float position; /* mechanical or electrical position */
+	float velocity; /* velocity */
+	float position; /* position */
 };
 
 /* =========================================================
@@ -45,6 +50,10 @@ struct foc_data {
 	struct foc_meas meas;       /* measured quantities */
 	struct foc_ref ref;         /* internal references */
 	struct foc_ctrl controller; /* controllers */
+	struct device *scp;
 };
+void foc_data_write_meas(struct foc_data *f_data, float *iabc, float vbus, float eangle,
+			 float velocity, float odom);
+void foc_data_cacle_meas_idq(struct foc_data *f_data);
 
 #endif

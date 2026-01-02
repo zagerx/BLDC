@@ -8,9 +8,8 @@
 #include "motor_params.h"
 #include <stdlib.h>
 /* 常量定义 */
-#define ENCODER_MAX_COUNT 16383.0f
-#define MIN_MECH_ROUNDS   0.02f // 最小机械圈数阈值
-#define MIN_ELEC_ROUNDS   0.20f // 最小电角度圈数阈值
+#define MIN_MECH_ROUNDS 0.02f // 最小机械圈数阈值
+#define MIN_ELEC_ROUNDS 0.20f // 最小电角度圈数阈值
 #undef M_TWOPI
 #define M_TWOPI (2.0f * M_PI)
 
@@ -88,7 +87,7 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt)
 		struct op_align_config align_cfg = {
 			.positions = ec->offset_align_pos,
 			.num_positions = ec->offset_align_num,
-			.voltage = 0.02f,
+			.voltage = OPENLOOP_VOLTAGE_V,
 		};
 
 		openloop_voltage_align_start(op, &align_cfg);
@@ -106,7 +105,7 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt)
 		ec->raw_prev = read_feedback_raw(feedback);
 
 		struct op_rotate_config cfg_rotate = {
-			.voltage = 0.02f,
+			.voltage = OPENLOOP_VOLTAGE_V,
 			.speed = 2.0f * M_PI,
 			.start_angle = 0.0f,
 			.duration = 3.0f,
@@ -119,12 +118,12 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt)
 	case ENC_CALIB_ROTATE: {
 		if (openloop_voltage_rotate_update(op, dt) != 0) {
 			uint32_t current_raw = read_feedback_raw(feedback);
-			ec->raw_delta_acc += unwrap_raw(current_raw, &ec->raw_prev, 16383);
+			ec->raw_delta_acc += unwrap_raw(current_raw, &ec->raw_prev, ENC_CPR);
 			break;
 		}
 
 		uint32_t current_raw = read_feedback_raw(feedback);
-		ec->raw_delta_acc += unwrap_raw(current_raw, &ec->raw_prev, 16383);
+		ec->raw_delta_acc += unwrap_raw(current_raw, &ec->raw_prev, ENC_CPR);
 
 		ec->total_elec_rad = openloop_voltage_get_total_elec_rad(op);
 
@@ -132,7 +131,7 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt)
 	} break;
 
 	case ENC_CALIB_PROCESS: {
-		float mech_rounds = (float)ec->raw_delta_acc / 16383.0f;
+		float mech_rounds = (float)ec->raw_delta_acc / (float)ENC_CPR;
 		float elec_rounds = ec->total_elec_rad / M_TWOPI;
 
 		if (fabsf(mech_rounds) < MIN_MECH_ROUNDS || fabsf(elec_rounds) < MIN_ELEC_ROUNDS) {
@@ -171,7 +170,7 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt)
 		struct op_align_config align_cfg = {
 			.positions = ec->offset_align_pos,
 			.num_positions = 1,
-			.voltage = 0.02f,
+			.voltage = OPENLOOP_VOLTAGE_V,
 		};
 
 		openloop_voltage_align_start(op, &align_cfg);
@@ -192,7 +191,7 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt)
 		float duration = M_PI / OFFSET_ROTATE_SPEED;
 
 		struct op_rotate_config cfg_rotate = {
-			.voltage = 0.02f,
+			.voltage = OPENLOOP_VOLTAGE_V,
 			.speed = OFFSET_ROTATE_SPEED,
 			.start_angle = POS_ROTATE_START_ELEC_ANGLE,
 			.duration = duration,
@@ -223,7 +222,7 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt)
 		ec->prev_elec_angle = NEG_ROTATE_START_ELEC_ANGLE;
 
 		struct op_rotate_config cfg_rotate = {
-			.voltage = 0.02f,
+			.voltage = OPENLOOP_VOLTAGE_V,
 			.speed = -OFFSET_ROTATE_SPEED,
 			.start_angle = NEG_ROTATE_START_ELEC_ANGLE,
 			.duration = M_PI / OFFSET_ROTATE_SPEED,
@@ -265,7 +264,7 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt)
 
 		int32_t r1 = (int32_t)ec->raw_hit_pos;
 		int32_t r2 = (int32_t)ec->raw_hit_neg;
-		int32_t max = 16383;
+		int32_t max = ENC_CPR;
 
 		/* 处理环绕 */
 		if (abs(r1 - r2) > max / 2) {
@@ -280,10 +279,9 @@ int32_t encoder_calib_update(struct carlib_encoder *ec, float dt)
 		/* ---------- 按电角度周期归一化 ---------- */
 		uint32_t elec_period = max / 7.0f;
 		uint32_t offset = avg_raw % elec_period;
-		// uint32_t offset = (uint32_t)((r1 + r2) / 2) % max;
 
 		_update_feedback_offset_params(m_parms, offset);
-		_update_feedback_cpr_params(m_parms, 16383);
+		_update_feedback_cpr_params(m_parms, ENC_CPR);
 
 		ec->state = ENC_CALIB_DONE;
 	} break;
